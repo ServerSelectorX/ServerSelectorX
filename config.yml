@@ -1,0 +1,45 @@
+# Color codes are supported in all 'user-friendly name' fields.
+# Please note that if you want to use color codesor special characters
+# such as '!' you have to enclose your string into quotation marks.
+# For example:
+#
+# name: '&aFancy &cColors!'
+
+# The name of the server selector item.
+item: COMPASS
+
+# Give the item when a player joins?
+on-join: true
+
+# What slot should the item be in?
+inv-slot: 0
+
+# Number of rows of slots of your server selector menu. For example '2' will mean 2*9 = 18 slots. Max value is 6.
+rows: 2
+
+# This will be displayed as the title of the menu. (e.g. where it would usually be 'chest')
+title: 'Server Selector'
+
+# Require the permission 'ssx.use' to open the menu
+permissions-enabled: false
+# Send a message if the player does not have permission to use the server selector?
+no-permission-message-enabled: true
+no-permission-message: '&cYou do not have permission to use the server selector.'
+
+# This is where all menu entries go.
+menu:
+  3:
+    item: DIAMOND_SWORD
+    server: kitpvp
+    name: KitPvP Server
+    lore:
+      - Line 1
+      - Line 2
+  5:
+    item: GRASS
+    server: creative
+    name: '&aBuild!!!'
+    lore:
+      - '&bLine &c1'
+      - '&5Line 2'
+      - Line 3

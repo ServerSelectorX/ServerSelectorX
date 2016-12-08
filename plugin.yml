@@ -1,0 +1,14 @@
+name: ServerSelectorX
+main: com.robinmc.serverselectorx.Main
+version: 1.2.1
+author: RobinMC
+description: 'The best server selector plugin ever!'
+
+commands:
+  serverselectorx:
+    aliases: [ss,ssx,serversel,serverselector]
+    description: The one and only command of the ServerSelectorX plugin.
+    usage: |-
+      Aliases: serverselectorx, ss, ssx, serversel, serverselector
+      
+      /ssx reload/rl - reloads the config
