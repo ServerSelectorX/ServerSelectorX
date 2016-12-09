@@ -34,7 +34,7 @@ public class Main extends JavaPlugin {
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		
 		//Register command
-		getCommand("serverselectorx").setExecutor(new Command());
+		getCommand("serverselectorx").setExecutor(new ReloadCommand());
 	}
 	
 	public static void teleportPlayerToServer(Player player, String server){
