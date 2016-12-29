@@ -30,6 +30,7 @@ no-permission-message: '&cYou do not have permission to use the server selector.
 menu:
   3:
     item: DIAMOND_SWORD
+    data: 0
     server: kitpvp
     name: KitPvP Server
     lore:
@@ -37,6 +38,7 @@ menu:
       - Line 2
   5:
     item: GRASS
+    data: 0
     server: creative
     name: '&aBuild!!!'
     lore:

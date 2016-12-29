@@ -42,7 +42,9 @@ public class SelectorMenu {
 			
 			int slot = Integer.parseInt(key);
 			Material material = Material.getMaterial(section.getString("item"));
+			short data = (short) section.getInt("data");
 			ItemStack item = new ItemStack(Material.STONE);
+			item.setDurability(data);
 			if (material != null) item.setType(material);
 			String name = section.getString("name");
 			String[] lore = section.getStringList("lore").toArray(new String[]{});
