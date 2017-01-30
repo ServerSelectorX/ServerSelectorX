@@ -27,6 +27,8 @@ no-permission-message-enabled: true
 no-permission-message: '&cYou do not have permission to use the server selector.'
 
 # This is where all menu entries go.
+# You only need to specify 'ip' and 'port' if 'show-player-count' is set to true.
+# Warning: 'show-player-count: true' will cause issues if the server is offline. I will probably fix this in a future update.
 menu:
   3:
     item: DIAMOND_SWORD
@@ -36,6 +38,10 @@ menu:
     lore:
       - Line 1
       - Line 2
+    show-player-count: false
+    player-count: 'There are {x} players online.' 
+    ip: play.example.com
+    port: 1234
   5:
     item: GRASS
     data: 0
@@ -45,3 +51,10 @@ menu:
       - '&bLine &c1'
       - '&5Line 2'
       - Line 3
+    show-player-count: false
+    player-count: 'There are {x} out of {y} players online.' 
+    ip: play.example.com
+    port: 54321
+    
+# Do not touch this
+version: 2
