@@ -17,7 +17,7 @@ inv-slot: 0
 # Number of rows of slots of your server selector menu. For example '2' will mean 2*9 = 18 slots. Max value is 6.
 rows: 2
 
-# This will be displayed as the title of the menu. (e.g. where it would usually be 'chest')
+# This will be displayed as the title of the menu. (e.g. where it would usually say 'chest')
 title: 'Server Selector'
 
 # Require the permission 'ssx.use' to open the menu
