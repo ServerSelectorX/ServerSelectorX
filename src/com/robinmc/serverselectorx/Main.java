@@ -5,6 +5,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -12,6 +13,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import com.robinmc.serverselectorx.utils.Config;
 
 public class Main extends JavaPlugin {
 	
@@ -40,6 +43,19 @@ public class Main extends JavaPlugin {
 		
 		//Register command
 		getCommand("serverselectorx").setExecutor(new ReloadCommand());
+			
+		int version = Config.getConfig().getInt("version");
+		if (version != 2){
+			invalidConfigDisablePlugin();
+		}
+	}
+	
+	private static void invalidConfigDisablePlugin(){
+		Bukkit.getLogger().log(Level.SEVERE, "************** IMPORTANT **************");
+		Bukkit.getLogger().log(Level.SEVERE, "ServerSelectorX: You updated the plugin without deleting the config.");
+		Bukkit.getLogger().log(Level.SEVERE, "Please rename config.yml to something else and restart your server.");
+		Bukkit.getLogger().log(Level.SEVERE, "***************************************");
+		Bukkit.getServer().getPluginManager().disablePlugin(getPlugin());
 	}
 	
 	public static void teleportPlayerToServer(final Player player, final String server){
