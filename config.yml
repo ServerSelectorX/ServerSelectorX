@@ -26,6 +26,9 @@ permissions-enabled: false
 no-permission-message-enabled: true
 no-permission-message: '&cYou do not have permission to use the server selector.'
 
+# If this is set to an integer higher than 0, the server selector will be refreshed every x seconds. This can cause lag if your servers are slow.
+auto-refresh: 0
+
 # This is where all menu entries go.
 # You only need to specify 'ip' and 'port' if 'show-player-count' is set to true.
 # Warning: 'show-player-count: true' will cause issues if the server is offline. I will probably fix this in a future update.
@@ -57,4 +60,4 @@ menu:
     port: 54321
     
 # Do not touch this
-version: 2
+version: 3
