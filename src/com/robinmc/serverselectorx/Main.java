@@ -32,7 +32,6 @@ public class Main extends JavaPlugin {
 		
 		//Setup config
 		super.saveDefaultConfig();
-		this.getConfig().options().copyDefaults(true);
 		
 		//Register listeners
 		Bukkit.getPluginManager().registerEvents(new SelectorOpenListener(), this);
