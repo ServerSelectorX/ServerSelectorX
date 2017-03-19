@@ -26,8 +26,8 @@ permissions-enabled: false
 no-permission-message-enabled: true
 no-permission-message: '&cYou do not have permission to use the server selector.'
 
-# If this is set to an integer higher than 0, the server selector will be refreshed every x seconds. This can cause lag if your servers are slow.
-auto-refresh: 0
+# Automatically refresh player count in the server selector. This can cause lag if your servers are slow.
+auto-refresh: false
 
 # This is where all menu entries go.
 # You only need to specify 'ip' and 'port' if 'show-player-count' is set to true.
