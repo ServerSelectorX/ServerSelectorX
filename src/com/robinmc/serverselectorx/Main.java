@@ -44,7 +44,7 @@ public class Main extends JavaPlugin {
 		getCommand("serverselectorx").setExecutor(new ReloadCommand());
 			
 		int version = Config.getConfig().getInt("version");
-		if (version != 2){
+		if (version != 3){
 			invalidConfigDisablePlugin();
 		}
 	}
@@ -53,6 +53,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getLogger().log(Level.SEVERE, "************** IMPORTANT **************");
 		Bukkit.getLogger().log(Level.SEVERE, "ServerSelectorX: You updated the plugin without deleting the config.");
 		Bukkit.getLogger().log(Level.SEVERE, "Please rename config.yml to something else and restart your server.");
+		Bukkit.getLogger().log(Level.SEVERE, "If you don't want to redo your config, see resource updates on spigotmc.org for instructions.");
 		Bukkit.getLogger().log(Level.SEVERE, "***************************************");
 		Bukkit.getServer().getPluginManager().disablePlugin(getPlugin());
 	}
