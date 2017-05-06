@@ -88,7 +88,7 @@ public class SelectorMenu {
 					//Don't re-open the menu if the player has closed the menu.
 					if (player.getOpenInventory().getType() != InventoryType.CHEST){
 						this.cancel();
-					} else menu.open(player);
+					} else open(player);
 				}
 			}.runTaskTimer(Main.getPlugin(), 50, 50);
 		}
