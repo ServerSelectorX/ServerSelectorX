@@ -31,7 +31,6 @@ auto-refresh: false
 
 # This is where all menu entries go.
 # You only need to specify 'ip' and 'port' if 'show-player-count' is set to true.
-# Warning: 'show-player-count: true' will cause issues if the server is offline. I will probably fix this in a future update.
 menu:
   3:
     item: DIAMOND_SWORD
