@@ -3,13 +3,14 @@ package com.robinmc.serverselectorx.utils;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InterruptedIOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
 public class ServerPinger {
 	
 	/**
-	 * Pings a server. Huge thanks to Xexode on the spigot forums for this! (Some modifications have been made)
+	 * Pings a server. Thanks to Xexode on the spigot forums for this! (Some modifications have been made)
 	 * 
 	 * @return A string array containing the following information:
 	 *         <ul>
@@ -17,12 +18,14 @@ public class ServerPinger {
 	 *         <li>Players online</li>
 	 *         <li>Max player count</li>
 	 *         </ul>
+	 *         Or null if the server is not reachable within half a second.
 	 * @throws PingException 
 	 */
 	public static String[] pingServer(String ip, int port) throws PingException {
 		Socket socket = null;
 		try {
 			socket = new Socket(ip, port);
+			socket.setSoTimeout(500);
 
 			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 			DataInputStream in = new DataInputStream(socket.getInputStream());
@@ -42,7 +45,9 @@ public class ServerPinger {
 			return data;
 		} catch (UnknownHostException e) {
 			throw new PingException(e.getMessage());
-		} catch (IOException e) {
+		} catch (InterruptedIOException e){
+			return null;
+		} catch (IOException e){
 			throw new PingException(e.getMessage());
 		} finally {
 			try {

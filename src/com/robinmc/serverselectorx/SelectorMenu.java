@@ -16,6 +16,8 @@ import com.robinmc.serverselectorx.utils.IconMenu.OptionClickEvent;
 import com.robinmc.serverselectorx.utils.ServerPinger;
 import com.robinmc.serverselectorx.utils.ServerPinger.PingException;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class SelectorMenu {
 
 	private static IconMenu menu = null;
@@ -58,24 +60,26 @@ public class SelectorMenu {
 			List<String> lore = section.getStringList("lore");
 
 			if (section.getBoolean("show-player-count")) {
-				
-				String ip = section.getString("ip");
-				int port = section.getInt("port");
-				int onlinePlayers = 0;
-				int maxPlayers = 0;
-				
 				try {
+					String ip = section.getString("ip");
+					int port = section.getInt("port");
+
 					String[] result = ServerPinger.pingServer(ip, port);
-					onlinePlayers = Integer.parseInt(result[1]);
-					maxPlayers = Integer.parseInt(result[2]);
+					
+					if (result != null){
+						int onlinePlayers = Integer.parseInt(result[1]);
+						int maxPlayers = Integer.parseInt(result[2]);
+						String message = section.getString("player-count")
+								.replace("{x}", onlinePlayers + "")
+								.replace("{y}", maxPlayers + "");
+						lore.add(message);
+					} else {
+						lore.add(ChatColor.RED + "Server is not reachable");
+					}
 				} catch (PingException e) {
-					Main.getPlugin().getLogger().log(Level.SEVERE, "An error occured while trying to ping " + name + ". IP: " + ip + ":" + port);
+					Main.getPlugin().getLogger().log(Level.SEVERE, "An error occured while trying to ping " + name + ".");
+					lore.add(ChatColor.RED + "Server is not reachable");
 				}
-				
-				String message = section.getString("player-count")
-						.replace("{x}", onlinePlayers + "")
-						.replace("{y}", maxPlayers + "");
-				lore.add(message);
 			}
 
 			menu.setOption(slot, item, name, lore.toArray(new String[]{}));
