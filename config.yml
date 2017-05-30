@@ -29,6 +29,14 @@ no-permission-message: '&cYou do not have permission to use the server selector.
 # Automatically refresh player count in the server selector. This can cause lag if your servers are slow.
 auto-refresh: false
 
+# Latest sound names (currently for 1.12-pre5): https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+# 1.7.10 sound names: https://jd.bukkit.org/org/bukkit/Sound.html
+# 1.8 sound names: http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Sound.html
+
+# Most 1.8 sound names should work on 1.9-1.11 too. Please use sound names corresponding to your server version.
+# If you don't want any sound to play put 'NONE' without ''
+selector-open-sound: HORSE_ARMOR
+
 # This is where all menu entries go.
 # You only need to specify 'ip' and 'port' if 'show-player-count' is set to true.
 menu:
