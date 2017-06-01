@@ -6,9 +6,7 @@ import java.util.logging.Level;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import com.robinmc.serverselectorx.utils.Config;
 import com.robinmc.serverselectorx.utils.IconMenu;
@@ -85,7 +83,7 @@ public class SelectorMenu {
 			menu.setOption(slot, item, name, lore.toArray(new String[]{}));
 		}
 		
-		boolean autoRefresh = Config.getConfig().getBoolean("auto-refresh");
+		/*boolean autoRefresh = Config.getConfig().getBoolean("auto-refresh");
 		if (autoRefresh){
 			new BukkitRunnable(){
 				public void run(){
@@ -95,7 +93,7 @@ public class SelectorMenu {
 					} else open(player);
 				}
 			}.runTaskTimer(Main.getPlugin(), 50, 50);
-		}
+		}*/
 		
 	}
 
