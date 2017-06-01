@@ -21,11 +21,11 @@ public class ServerPinger {
 	 *         Or null if the server is not reachable within half a second.
 	 * @throws PingException 
 	 */
-	public static String[] pingServer(String ip, int port) throws PingException {
+	public static String[] pingServer(String ip, int port, int timeout) throws PingException {
 		Socket socket = null;
 		try {
 			socket = new Socket(ip, port);
-			socket.setSoTimeout(500);
+			socket.setSoTimeout(timeout);
 
 			DataOutputStream out = new DataOutputStream(socket.getOutputStream());
 			DataInputStream in = new DataInputStream(socket.getInputStream());

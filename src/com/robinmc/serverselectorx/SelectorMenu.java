@@ -58,11 +58,14 @@ public class SelectorMenu {
 			List<String> lore = section.getStringList("lore");
 
 			if (section.getBoolean("show-player-count")) {
+				
 				try {
 					String ip = section.getString("ip");
 					int port = section.getInt("port");
 
-					String[] result = ServerPinger.pingServer(ip, port);
+					int timeout = section.getInt("ping-timeout", 100);
+					
+					String[] result = ServerPinger.pingServer(ip, port, timeout);
 					
 					if (result != null){
 						int onlinePlayers = Integer.parseInt(result[1]);
@@ -75,7 +78,9 @@ public class SelectorMenu {
 						lore.add(ChatColor.RED + "Server is not reachable");
 					}
 				} catch (PingException e) {
-					Main.getPlugin().getLogger().log(Level.SEVERE, "An error occured while trying to ping " + name + ".");
+					boolean sendErrorMessage = section.getBoolean("ping-error-message", true);
+					if (sendErrorMessage) Main.getPlugin().getLogger().log(Level.SEVERE, "An error occured while trying to ping " + name + ".");
+					
 					lore.add(ChatColor.RED + "Server is not reachable");
 				}
 			}
