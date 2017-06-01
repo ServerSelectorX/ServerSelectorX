@@ -1,4 +1,4 @@
-package com.robinmc.serverselectorx.utils;
+package xyz.derkades.serverselectorx.utils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -17,9 +17,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.plugin.Plugin;
 
-import com.robinmc.serverselectorx.Main;
-
 import net.md_5.bungee.api.ChatColor;
+import xyz.derkades.serverselectorx.Main;
  
 public class IconMenu implements Listener {
 	

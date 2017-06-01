@@ -1,4 +1,4 @@
-package com.robinmc.serverselectorx;
+package xyz.derkades.serverselectorx;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -14,7 +14,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import com.robinmc.serverselectorx.utils.Config;
+import xyz.derkades.serverselectorx.utils.Config;
 
 public class Main extends JavaPlugin {
 	

@@ -1,8 +1,8 @@
-package com.robinmc.serverselectorx.utils;
+package xyz.derkades.serverselectorx.utils;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
-import com.robinmc.serverselectorx.Main;
+import xyz.derkades.serverselectorx.Main;
 
 public class Config {
 	

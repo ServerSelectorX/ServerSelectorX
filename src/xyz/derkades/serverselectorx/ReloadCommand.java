@@ -1,10 +1,10 @@
-package com.robinmc.serverselectorx;
+package xyz.derkades.serverselectorx;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import com.robinmc.serverselectorx.utils.Config;
+import xyz.derkades.serverselectorx.utils.Config;
 
 public class ReloadCommand implements CommandExecutor {
 	

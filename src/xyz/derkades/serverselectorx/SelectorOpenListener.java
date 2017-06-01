@@ -1,4 +1,4 @@
-package com.robinmc.serverselectorx;
+package xyz.derkades.serverselectorx;
 
 import java.util.logging.Level;
 
@@ -11,7 +11,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import com.robinmc.serverselectorx.utils.Config;
+import xyz.derkades.serverselectorx.utils.Config;
 
 public class SelectorOpenListener implements Listener {
 	

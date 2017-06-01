@@ -1,4 +1,4 @@
-package com.robinmc.serverselectorx;
+package xyz.derkades.serverselectorx;
 
 import static org.bukkit.ChatColor.AQUA;
 import static org.bukkit.ChatColor.DARK_AQUA;

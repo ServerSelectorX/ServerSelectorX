@@ -1,4 +1,4 @@
-package com.robinmc.serverselectorx;
+package xyz.derkades.serverselectorx;
 
 import java.util.List;
 import java.util.logging.Level;
@@ -8,13 +8,12 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import com.robinmc.serverselectorx.utils.Config;
-import com.robinmc.serverselectorx.utils.IconMenu;
-import com.robinmc.serverselectorx.utils.IconMenu.OptionClickEvent;
-import com.robinmc.serverselectorx.utils.ServerPinger;
-import com.robinmc.serverselectorx.utils.ServerPinger.PingException;
-
 import net.md_5.bungee.api.ChatColor;
+import xyz.derkades.serverselectorx.utils.Config;
+import xyz.derkades.serverselectorx.utils.IconMenu;
+import xyz.derkades.serverselectorx.utils.ServerPinger;
+import xyz.derkades.serverselectorx.utils.IconMenu.OptionClickEvent;
+import xyz.derkades.serverselectorx.utils.ServerPinger.PingException;
 
 public class SelectorMenu {
 

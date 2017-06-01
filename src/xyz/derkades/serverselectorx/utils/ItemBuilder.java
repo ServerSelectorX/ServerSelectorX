@@ -1,4 +1,4 @@
-package com.robinmc.serverselectorx.utils;
+package xyz.derkades.serverselectorx.utils;
 
 import java.util.Arrays;
 

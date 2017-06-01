@@ -1,4 +1,4 @@
-package com.robinmc.serverselectorx;
+package xyz.derkades.serverselectorx;
 
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
@@ -9,8 +9,8 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import com.robinmc.serverselectorx.utils.Config;
-import com.robinmc.serverselectorx.utils.ItemBuilder;
+import xyz.derkades.serverselectorx.utils.Config;
+import xyz.derkades.serverselectorx.utils.ItemBuilder;
 
 public class OnJoinListener implements Listener {
 	
