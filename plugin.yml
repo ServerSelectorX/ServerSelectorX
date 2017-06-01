@@ -1,8 +1,9 @@
 name: ServerSelectorX
 main: xyz.derkades.serverselectorx.Main
 version: 1.3.4
-author: RobinMC
+author: Derkades
 description: 'The best server selector plugin ever!'
+website: 'https://www.spigotmc.org/resources/serverselectorx.32853/'
 
 commands:
   serverselectorx:
