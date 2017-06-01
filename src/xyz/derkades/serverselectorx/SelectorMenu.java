@@ -9,10 +9,12 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
 import net.md_5.bungee.api.ChatColor;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import xyz.derkades.serverselectorx.utils.Config;
 import xyz.derkades.serverselectorx.utils.IconMenu;
-import xyz.derkades.serverselectorx.utils.ServerPinger;
 import xyz.derkades.serverselectorx.utils.IconMenu.OptionClickEvent;
+import xyz.derkades.serverselectorx.utils.ServerPinger;
 import xyz.derkades.serverselectorx.utils.ServerPinger.PingException;
 
 public class SelectorMenu {
@@ -27,6 +29,21 @@ public class SelectorMenu {
 				int slot = event.getPosition();
 				Player player = event.getPlayer();
 				String server = Config.getConfig().getString("menu." + slot + ".server");
+				
+				if (server.startsWith("url:")){
+					//It's a URL
+					String url = server.substring(4);
+					String message = ChatColor.translateAlternateColorCodes('&', Config.getConfig().getString("url-message", "&3&lClick here"));
+					
+					player.spigot().sendMessage(
+							new ComponentBuilder(message)
+							.event(new ClickEvent(
+									ClickEvent.Action.OPEN_URL,
+									url))
+							.create()
+							);
+				}
+				
 				Main.teleportPlayerToServer(player, server);
 			}
 

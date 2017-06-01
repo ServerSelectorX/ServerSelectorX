@@ -26,6 +26,9 @@ rows: 2
 # This will be displayed as the title of the menu.
 title: 'Server Selector'
 
+# URL clickable message
+url-message: '&3&lClick here'
+
 
 
 # -------------------- Permissions -------------------- #
@@ -69,6 +72,11 @@ ping-error-message-console: true
 # -------------------- Menu Entries -------------------- #
 
 # You only need to specify 'ip' and 'port' if 'show-player-count' is set to true.
+
+# If you wish to send a link to the player instead of teleporting them to a server, prefix the link with 'url:'
+# For example:
+# server: 'url:http://example.com/'
+
 menu:
   3:
     item: DIAMOND_SWORD
