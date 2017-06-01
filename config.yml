@@ -50,6 +50,8 @@ no-permission-message: '&cYou do not have permission to use the server selector.
 
 selector-open-sound: HORSE_ARMOR
 
+
+
 # -------------------- Server Pinging -------------------- #
 
 ping-error-message-selector: '&cServer is not reachable'
