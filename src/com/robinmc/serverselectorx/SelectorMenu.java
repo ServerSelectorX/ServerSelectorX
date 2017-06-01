@@ -58,7 +58,8 @@ public class SelectorMenu {
 			List<String> lore = section.getStringList("lore");
 
 			if (section.getBoolean("show-player-count")) {
-				
+				String errorMessage = ChatColor.translateAlternateColorCodes('&', 
+						Config.getConfig().getString("ping-error-message-selector", "&cServer is not reachable"));
 				try {
 					String ip = section.getString("ip");
 					int port = section.getInt("port");
@@ -75,13 +76,13 @@ public class SelectorMenu {
 								.replace("{y}", maxPlayers + "");
 						lore.add(message);
 					} else {
-						lore.add(ChatColor.RED + "Server is not reachable");
+						lore.add(errorMessage);
 					}
 				} catch (PingException e) {
-					boolean sendErrorMessage = section.getBoolean("ping-error-message", true);
+					boolean sendErrorMessage = Config.getConfig().getBoolean("ping-error-message-console", true);
 					if (sendErrorMessage) Main.getPlugin().getLogger().log(Level.SEVERE, "An error occured while trying to ping " + name + ".");
 					
-					lore.add(ChatColor.RED + "Server is not reachable");
+					lore.add(errorMessage);
 				}
 			}
 

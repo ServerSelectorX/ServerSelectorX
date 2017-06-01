@@ -34,13 +34,15 @@ no-permission-message: '&cYou do not have permission to use the server selector.
 # If you don't want any sound to play put 'NONE' without ''
 selector-open-sound: HORSE_ARMOR
 
+ping-error-message-selector: '&cServer is not reachable'
+
 # How long a server needs to be pinged for before giving up. (in milliseconds)
 # Set this to a higher value if your servers are very slow.
 # Warning: Increasing this value increases lag
 ping-timeout: 100
 
-# Enable error messages to console if the server is not reachable.
-ping-error-message: true
+# Enable error messages to console if the server is not reachable. (true or false)
+ping-error-message-console: true
 
 # This is where all menu entries go.
 # You only need to specify 'ip' and 'port' if 'show-player-count' is set to true.
