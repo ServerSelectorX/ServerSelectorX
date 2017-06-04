@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -17,6 +18,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import xyz.derkades.serverselectorx.utils.Config;
 
 public class Main extends JavaPlugin {
+	
+	private static final int CONFIG_VERSION = 4;
 	
 	private static final List<String> COOLDOWN = new ArrayList<String>();
 	
@@ -44,18 +47,15 @@ public class Main extends JavaPlugin {
 		getCommand("serverselectorx").setExecutor(new ReloadCommand());
 			
 		int version = Config.getConfig().getInt("version");
-		if (version != 4){
-			invalidConfigDisablePlugin();
+		if (version != CONFIG_VERSION){
+			Logger logger = super.getLogger();
+			logger.log(Level.SEVERE, "************** IMPORTANT **************");
+			logger.log(Level.SEVERE, "You updated the plugin without deleting the config.");
+			logger.log(Level.SEVERE, "Please rename config.yml to something else and restart your server.");
+			logger.log(Level.SEVERE, "If you don't want to redo your config, see resource updates on spigotmc.org for instructions.");
+			logger.log(Level.SEVERE, "***************************************");
+			getServer().getPluginManager().disablePlugin(getPlugin());
 		}
-	}
-	
-	private static void invalidConfigDisablePlugin(){
-		Bukkit.getLogger().log(Level.SEVERE, "************** IMPORTANT **************");
-		Bukkit.getLogger().log(Level.SEVERE, "ServerSelectorX: You updated the plugin without deleting the config.");
-		Bukkit.getLogger().log(Level.SEVERE, "Please rename config.yml to something else and restart your server.");
-		Bukkit.getLogger().log(Level.SEVERE, "If you don't want to redo your config, see resource updates on spigotmc.org for instructions.");
-		Bukkit.getLogger().log(Level.SEVERE, "***************************************");
-		Bukkit.getServer().getPluginManager().disablePlugin(getPlugin());
 	}
 	
 	public static void teleportPlayerToServer(final Player player, final String server){
