@@ -44,7 +44,7 @@ public class Main extends JavaPlugin {
 		getCommand("serverselectorx").setExecutor(new ReloadCommand());
 			
 		int version = Config.getConfig().getInt("version");
-		if (version != 3){
+		if (version != 4){
 			invalidConfigDisablePlugin();
 		}
 	}
