@@ -1,5 +1,8 @@
 package xyz.derkades.serverselectorx;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Material;
@@ -10,10 +13,13 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import xyz.derkades.serverselectorx.utils.Config;
 
 public class SelectorOpenListener implements Listener {
+	
+	private static final List<UUID> COOLDOWN = new ArrayList<>();
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onInteract(PlayerInteractEvent event){
@@ -23,6 +29,18 @@ public class SelectorOpenListener implements Listener {
 		}
 		
 		Player player = event.getPlayer();
+		
+		if (COOLDOWN.contains(player.getUniqueId())){
+			return;
+		}
+		
+		COOLDOWN.add(player.getUniqueId());
+		
+		new BukkitRunnable(){
+			public void run(){
+				COOLDOWN.remove(player.getUniqueId());
+			}
+		}.runTaskLater(Main.getPlugin(), 10);
 		
 		String string = Config.getConfig().getString("item");
 		Material material = Material.getMaterial(string);
