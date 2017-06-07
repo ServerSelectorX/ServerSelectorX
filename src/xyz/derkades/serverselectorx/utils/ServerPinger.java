@@ -18,7 +18,7 @@ public class ServerPinger {
 	 *         <li>Players online</li>
 	 *         <li>Max player count</li>
 	 *         </ul>
-	 *         Or null if the server is not reachable within half a second.
+	 *         Or null if the server is not reachable within timeout
 	 * @throws PingException 
 	 */
 	public static String[] pingServer(String ip, int port, int timeout) throws PingException {
@@ -42,11 +42,15 @@ public class ServerPinger {
 
 			String[] data = str.toString().split("§");
 
+			if (data == null){
+				throw new PingException("Data returned == null");
+			}
+			
 			return data;
 		} catch (UnknownHostException e) {
 			throw new PingException(e.getMessage());
 		} catch (InterruptedIOException e){
-			return null;
+			throw new PingException(e.getMessage());
 		} catch (IOException e){
 			throw new PingException(e.getMessage());
 		} finally {

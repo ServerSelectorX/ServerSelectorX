@@ -7,6 +7,7 @@ import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -14,15 +15,14 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import xyz.derkades.serverselectorx.utils.Config;
 import xyz.derkades.serverselectorx.utils.IconMenu;
 import xyz.derkades.serverselectorx.utils.IconMenu.OptionClickEvent;
+import xyz.derkades.serverselectorx.utils.ItemBuilder;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
 import xyz.derkades.serverselectorx.utils.ServerPinger.PingException;
 
 public class SelectorMenu {
 
-	private static IconMenu menu = null;
-
-	private static void createMenu(String title, int rows) {
-		menu = new IconMenu(title, rows * 9, new IconMenu.OptionClickEventHandler() {
+	private static IconMenu getMenu(String title, int rows) {
+		return new IconMenu(title, rows * 9, new IconMenu.OptionClickEventHandler() {
 
 			@Override
 			public void onOptionClick(OptionClickEvent event) {
@@ -33,7 +33,7 @@ public class SelectorMenu {
 				if (server.startsWith("url:")){
 					//It's a URL
 					String url = server.substring(4);
-					String message = ChatColor.translateAlternateColorCodes('&', Config.getConfig().getString("url-message", "&3&lClick here"));
+					String message = Main.parseColorCodes(Config.getConfig().getString("url-message", "&3&lClick here"));
 					
 					player.spigot().sendMessage(
 							new ComponentBuilder(message)
@@ -50,73 +50,72 @@ public class SelectorMenu {
 		});
 	}
 
-	static void open(Player player) {
-		int rows = Config.getConfig().getInt("rows");
-		String title = Config.getConfig().getString("title");
-		createMenu(Main.parseColorCodes(title), rows);
-		fillMenu(player);
-		menu.open(player);
-	}
+	static void open(final Player player) {
+		final int rows = Config.getConfig().getInt("rows");
+		final String title = Config.getConfig().getString("title");
+		final IconMenu menu = getMenu(Main.parseColorCodes(title), rows);
 
-	private static void fillMenu(Player player) {
+		for (final String key : Config.getConfig().getConfigurationSection("menu").getKeys(false)) {
+			final ConfigurationSection section = Config.getConfig().getConfigurationSection("menu." + key);
 
-		for (String key : Config.getConfig().getConfigurationSection("menu").getKeys(false)) {
-			ConfigurationSection section = Config.getConfig().getConfigurationSection("menu." + key);
-
-			int slot = Integer.parseInt(key);
+			final int slot = Integer.parseInt(key);
 			Material material = Material.getMaterial(section.getString("item"));
-			short data = (short) section.getInt("data");
-			ItemStack item = new ItemStack(Material.STONE);
-			item.setDurability(data);
-			if (material != null)
-				item.setType(material);
+			if (material == null) material = Material.STONE;
+			final int data = section.getInt("data");
+			final ItemStack item = new ItemBuilder(material).setDamage(data).create();
 			String name = section.getString("name");
-			List<String> lore = section.getStringList("lore");
+			final List<String> lore = section.getStringList("lore");
 
-			if (section.getBoolean("show-player-count")) {
-				String errorMessage = ChatColor.translateAlternateColorCodes('&', 
-						Config.getConfig().getString("ping-error-message-selector", "&cServer is not reachable"));
-				try {
-					String ip = section.getString("ip");
-					int port = section.getInt("port");
-
-					int timeout = section.getInt("ping-timeout", 100);
-					
-					String[] result = ServerPinger.pingServer(ip, port, timeout);
-					
-					if (result != null){
-						int onlinePlayers = Integer.parseInt(result[1]);
-						int maxPlayers = Integer.parseInt(result[2]);
-						String message = section.getString("player-count")
-								.replace("{x}", onlinePlayers + "")
-								.replace("{y}", maxPlayers + "");
-						lore.add(message);
-					} else {
-						lore.add(errorMessage);
-					}
-				} catch (PingException e) {
-					boolean sendErrorMessage = Config.getConfig().getBoolean("ping-error-message-console", true);
-					if (sendErrorMessage) Main.getPlugin().getLogger().log(Level.SEVERE, "An error occured while trying to ping " + name + ".");
-					
-					lore.add(errorMessage);
-				}
-			}
-
-			menu.setOption(slot, item, name, lore.toArray(new String[]{}));
-		}
-		
-		/*boolean autoRefresh = Config.getConfig().getBoolean("auto-refresh");
-		if (autoRefresh){
+			final boolean showPlayerCount = section.getBoolean("show-player-count", false);
+			
 			new BukkitRunnable(){
 				public void run(){
-					//Don't re-open the menu if the player has closed the menu.
-					if (player.getOpenInventory().getType() != InventoryType.CHEST){
-						this.cancel();
-					} else open(player);
+					if (showPlayerCount){
+						lore.add(getPlayerCountString(section));
+					}
+					
+					//Now go sync again because bukkit API should only be used in the main server thread
+					new BukkitRunnable(){
+						public void run(){
+							menu.setOption(slot, item, name, lore.toArray(new String[]{}));
+							menu.open(player);
+						}
+					}.runTask(Main.getPlugin());
 				}
-			}.runTaskTimer(Main.getPlugin(), 50, 50);
-		}*/
+			}.runTaskAsynchronously(Main.getPlugin());
+			
+		}
 		
+	}
+
+	private static String getPlayerCountString(ConfigurationSection serverSection){
+		String errorMessage = ChatColor.translateAlternateColorCodes('&', 
+				Config.getConfig().getString("ping-error-message-selector", "&cServer is not reachable"));
+		
+		try {
+			String ip = serverSection.getString("ip");
+			int port = serverSection.getInt("port");
+
+			int timeout = serverSection.getInt("ping-timeout", 100);
+			
+			String[] result = ServerPinger.pingServer(ip, port, timeout);
+			
+			if (result != null){
+				int onlinePlayers = Integer.parseInt(result[1]);
+				int maxPlayers = Integer.parseInt(result[2]);
+				String message = serverSection.getString("player-count")
+						.replace("{x}", onlinePlayers + "")
+						.replace("{y}", maxPlayers + "");
+				return message;
+			} else {
+				return errorMessage;
+			}
+		} catch (PingException e) {
+			boolean sendErrorMessage = Config.getConfig().getBoolean("ping-error-message-console", true);
+			if (sendErrorMessage) Main.getPlugin().getLogger().log(Level.SEVERE, "An error occured while trying to ping " + serverSection.getString("name") + ". (" + e.getMessage() + ")");
+			
+			return errorMessage;
+		}
 	}
 
 }
