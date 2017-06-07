@@ -1,4 +1,4 @@
-# Color codes are supported
+# Read this, it's important:
 
 # Please note that if you want to use color codes or special characters 
 # you have to enclose your string into quotation marks, for example:
@@ -6,6 +6,7 @@
 # name: '&aFancy &cColors!'
 
 # For a list of item names see https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
+
 
 
 
@@ -31,6 +32,7 @@ url-message: '&3&lClick here'
 
 
 
+
 # -------------------- Permissions -------------------- #
 
 # Require the permission 'ssx.use' to open the menu
@@ -42,16 +44,18 @@ no-permission-message: '&cYou do not have permission to use the server selector.
 
 
 
+
 # -------------------- Sounds -------------------- #
 
-# Latest sound names (currently for 1.12-pre5): https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+# Latest sound names (currently for 1.12-pre6): https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
 # 1.7.10 sound names: https://jd.bukkit.org/org/bukkit/Sound.html
 # 1.8 sound names: http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Sound.html
 
-# Most 1.8 sound names should work on 1.9-1.11 too. Please use sound names corresponding to your server version.
+# Please use sound names corresponding to your server version.
 # If you don't want any sound to play put 'NONE' without ''
 
 selector-open-sound: HORSE_ARMOR
+
 
 
 
@@ -60,12 +64,12 @@ selector-open-sound: HORSE_ARMOR
 ping-error-message-selector: '&cServer is not reachable'
 
 # How long a server needs to be pinged for before giving up. (in milliseconds)
-# Set this to a higher value if your servers are very slow.
-# Warning: Increasing this value increases lag
+# Set this to a higher value if your servers are not responding in time.
 ping-timeout: 100
 
 # Enable error messages to console if the server is not reachable. (true or false)
 ping-error-message-console: true
+
 
 
 
