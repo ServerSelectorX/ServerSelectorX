@@ -1,6 +1,6 @@
 name: ServerSelectorX
 main: xyz.derkades.serverselectorx.Main
-version: 1.4.0
+version: 1.4.1
 author: Derkades
 description: 'The best server selector plugin ever!'
 website: 'https://www.spigotmc.org/resources/serverselectorx.32853/'
