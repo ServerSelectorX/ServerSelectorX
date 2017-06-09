@@ -5,6 +5,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -12,7 +13,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import xyz.derkades.serverselectorx.utils.Config;
 import xyz.derkades.serverselectorx.utils.IconMenu;
 import xyz.derkades.serverselectorx.utils.IconMenu.OptionClickEvent;
 import xyz.derkades.serverselectorx.utils.ItemBuilder;
@@ -26,14 +26,17 @@ public class SelectorMenu {
 
 			@Override
 			public void onOptionClick(OptionClickEvent event) {
+				FileConfiguration config = Main.getPlugin().getConfig();
+				
 				int slot = event.getPosition();
 				Player player = event.getPlayer();
-				String server = Config.getConfig().getString("menu." + slot + ".server");
+				
+				String server = config.getString("menu." + slot + ".server");
 				
 				if (server.startsWith("url:")){
 					//It's a URL
 					String url = server.substring(4);
-					String message = Main.parseColorCodes(Config.getConfig().getString("url-message", "&3&lClick here"));
+					String message = Main.parseColorCodes(config.getString("url-message", "&3&lClick here"));
 					
 					player.spigot().sendMessage(
 							new ComponentBuilder(message)
@@ -51,12 +54,14 @@ public class SelectorMenu {
 	}
 
 	static void open(final Player player) {
-		final int rows = Config.getConfig().getInt("rows");
-		final String title = Config.getConfig().getString("title");
+		FileConfiguration config = Main.getPlugin().getConfig();
+		
+		final int rows = config.getInt("rows");
+		final String title = config.getString("title");
 		final IconMenu menu = getMenu(Main.parseColorCodes(title), rows);
 
-		for (final String key : Config.getConfig().getConfigurationSection("menu").getKeys(false)) {
-			final ConfigurationSection section = Config.getConfig().getConfigurationSection("menu." + key);
+		for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
+			final ConfigurationSection section = config.getConfigurationSection("menu." + key);
 
 			final int slot = Integer.parseInt(key);
 			Material material = Material.getMaterial(section.getString("item"));
@@ -90,7 +95,7 @@ public class SelectorMenu {
 
 	private static String getPlayerCountString(ConfigurationSection serverSection){
 		String errorMessage = ChatColor.translateAlternateColorCodes('&', 
-				Config.getConfig().getString("ping-error-message-selector", "&cServer is not reachable"));
+				Main.getPlugin().getConfig().getString("ping-error-message-selector", "&cServer is not reachable"));
 		
 		try {
 			String ip = serverSection.getString("ip");
@@ -111,7 +116,7 @@ public class SelectorMenu {
 				return errorMessage;
 			}
 		} catch (PingException e) {
-			boolean sendErrorMessage = Config.getConfig().getBoolean("ping-error-message-console", true);
+			boolean sendErrorMessage = Main.getPlugin().getConfig().getBoolean("ping-error-message-console", true);
 			if (sendErrorMessage) Main.getPlugin().getLogger().log(Level.SEVERE, "An error occured while trying to ping " + serverSection.getString("name") + ". (" + e.getMessage() + ")");
 			
 			return errorMessage;

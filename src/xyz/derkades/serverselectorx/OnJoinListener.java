@@ -1,6 +1,7 @@
 package xyz.derkades.serverselectorx;
 
 import org.bukkit.Material;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -9,19 +10,20 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import xyz.derkades.serverselectorx.utils.Config;
 import xyz.derkades.serverselectorx.utils.ItemBuilder;
 
 public class OnJoinListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onJoin(PlayerJoinEvent event){
-		boolean putItemInInventory = Config.getConfig().getBoolean("on-join");
+		FileConfiguration config = Main.getPlugin().getConfig();
+		
+		boolean putItemInInventory = config.getBoolean("on-join");
 		if (!putItemInInventory)
 			return;
 		
 		Player player = event.getPlayer();
-		Material material = Material.getMaterial(Config.getConfig().getString("item"));
+		Material material = Material.getMaterial(config.getString("item"));
 		
 		if (material == null){
 			player.sendMessage(Message.INVALID_ITEM_NAME.toString());
@@ -29,10 +31,10 @@ public class OnJoinListener implements Listener {
 		}
 		
 		ItemStack item = new ItemBuilder(material)
-				.setName(Main.parseColorCodes(Config.getConfig().getString("title")))
+				.setName(Main.parseColorCodes(config.getString("title")))
 				.create();
 		
-		int slot = Config.getConfig().getInt("inv-slot");
+		int slot = config.getInt("inv-slot");
 		PlayerInventory inv = player.getInventory();
 		
 		inv.setItem(slot, item);

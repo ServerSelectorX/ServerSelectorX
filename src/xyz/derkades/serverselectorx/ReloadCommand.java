@@ -4,8 +4,6 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
-import xyz.derkades.serverselectorx.utils.Config;
-
 public class ReloadCommand implements CommandExecutor {
 	
 	@Override
@@ -15,7 +13,8 @@ public class ReloadCommand implements CommandExecutor {
 		}
 		
 		if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl")){
-			Config.reloadConfig();
+			Main.getPlugin().saveDefaultConfig();
+			Main.getPlugin().reloadConfig();
 			sender.sendMessage(Message.CONFIG_RELOADED.toString());
 			return true;
 		}

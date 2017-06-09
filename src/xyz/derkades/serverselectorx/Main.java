@@ -15,8 +15,6 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import xyz.derkades.serverselectorx.utils.Config;
-
 public class Main extends JavaPlugin {
 	
 	private static final int CONFIG_VERSION = 4;
@@ -46,7 +44,7 @@ public class Main extends JavaPlugin {
 		//Register command
 		getCommand("serverselectorx").setExecutor(new ReloadCommand());
 			
-		int version = Config.getConfig().getInt("version");
+		int version = getConfig().getInt("version");
 		if (version != CONFIG_VERSION){
 			Logger logger = super.getLogger();
 			logger.log(Level.SEVERE, "************** IMPORTANT **************");

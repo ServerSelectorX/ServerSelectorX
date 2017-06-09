@@ -4,6 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 
 import xyz.derkades.serverselectorx.Main;
 
+@Deprecated
 public class Config {
 	
 	private static FileConfiguration config = null;

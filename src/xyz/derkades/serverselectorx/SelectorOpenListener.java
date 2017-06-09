@@ -7,6 +7,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -14,8 +15,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import xyz.derkades.serverselectorx.utils.Config;
 
 public class SelectorOpenListener implements Listener {
 	
@@ -42,7 +41,9 @@ public class SelectorOpenListener implements Listener {
 			}
 		}.runTaskLater(Main.getPlugin(), 10);
 		
-		String string = Config.getConfig().getString("item");
+		FileConfiguration config = Main.getPlugin().getConfig();
+		
+		String string = config.getString("item");
 		Material material = Material.getMaterial(string);
 		
 		if (material == null){
@@ -51,18 +52,18 @@ public class SelectorOpenListener implements Listener {
 		}
 		
 		if (player.getInventory().getItemInHand().getType() == material){
-			boolean permissionsEnabled = Config.getConfig().getBoolean("permissions-enabled");
+			boolean permissionsEnabled = config.getBoolean("permissions-enabled");
 			if (permissionsEnabled){
 				boolean hasPermission = player.hasPermission("ssx.use");
 				if (!hasPermission){
-					if (Config.getConfig().getBoolean("no-permission-message-enabled"))
-						player.sendMessage(Config.getConfig().getString("no-permission-message"));
+					if (config.getBoolean("no-permission-message-enabled"))
+						player.sendMessage(config.getString("no-permission-message"));
 					return;
 				}
 			}
 			
 			//Play sound
-			String soundString = Config.getConfig().getString("selector-open-sound");
+			String soundString = config.getString("selector-open-sound");
 			if (soundString != null && !soundString.equals("NONE")){
 				try {
 					Sound sound = Sound.valueOf(soundString);
