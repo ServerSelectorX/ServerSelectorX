@@ -39,8 +39,8 @@ public class SelectorMenu extends IconMenu {
 			if (material == null) material = Material.STONE;
 			final int data = section.getInt("data");
 			final ItemStack item = new ItemBuilder(material).setDamage(data).create();
-			String name = section.getString("name");
-			final List<String> lore = section.getStringList("lore");
+			final String name = Colors.parseColors(section.getString("name"));
+			final List<String> lore = Colors.parseColors(section.getStringList("lore"));
 
 			final boolean showPlayerCount = section.getBoolean("show-player-count", false);
 			
