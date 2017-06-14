@@ -1,5 +1,6 @@
 package xyz.derkades.serverselectorx;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -7,7 +8,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -43,46 +44,50 @@ public class SelectorOpenListener implements Listener {
 			}
 		}.runTaskLater(Main.getPlugin(), 10);
 		
-		FileConfiguration config = Main.getPlugin().getConfig();
 		
-		String string = config.getString("item");
-		Material material = Material.getMaterial(string);
-		
-		if (material == null){
-			player.sendMessage(Message.INVALID_ITEM_NAME.toString());
+		for (File serverSelectorFile : new File(Main.getPlugin().getDataFolder() + "/menu").listFiles()){
+			YamlConfiguration config = YamlConfiguration.loadConfiguration(serverSelectorFile);
+			
+			final String string = config.getString("item");
+			final Material material = Material.getMaterial(string);
+			
+			if (material == null){
+				player.sendMessage(Message.INVALID_ITEM_NAME.toString());
+				return;
+			}
+			
+			if (player.getInventory().getItemInHand().getType() != material){
+				continue;
+			}
+				
+				
+			final boolean permissionsEnabled = config.getBoolean("permissions-enabled");
+			final boolean hasPermission = player.hasPermission("ssx.use." + serverSelectorFile.getName().replace(".yml", ""));
+			if (!permissionsEnabled || hasPermission){
+				
+				//Play sound
+				String soundString = config.getString("selector-open-sound");
+				if (soundString != null && !soundString.equals("NONE")){
+					try {
+						Sound sound = Sound.valueOf(soundString);
+						player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
+					} catch (IllegalArgumentException e){
+						Main.getPlugin().getLogger().log(Level.WARNING, "A sound with the name " + soundString + " could not be found. Make sure that it is the right name for your server version.");
+					}
+				}
+				
+				new BukkitRunnable(){
+					public void run(){
+						final int rows = config.getInt("rows");
+						final String title = Colors.parseColors(config.getString("title"));
+						
+						new SelectorMenu(title, rows, player, config).open();
+					}
+				}.runTaskAsynchronously(Main.getPlugin());
+				
+		} else if (config.getBoolean("no-permission-message-enabled", false))
+			player.sendMessage(config.getString("no-permission-message"));
 			return;
-		}
-		
-		if (player.getInventory().getItemInHand().getType() == material){
-			boolean permissionsEnabled = config.getBoolean("permissions-enabled");
-			if (permissionsEnabled){
-				boolean hasPermission = player.hasPermission("ssx.use");
-				if (!hasPermission){
-					if (config.getBoolean("no-permission-message-enabled"))
-						player.sendMessage(config.getString("no-permission-message"));
-					return;
-				}
-			}
-			
-			//Play sound
-			String soundString = config.getString("selector-open-sound");
-			if (soundString != null && !soundString.equals("NONE")){
-				try {
-					Sound sound = Sound.valueOf(soundString);
-					player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
-				} catch (IllegalArgumentException e){
-					Main.getPlugin().getLogger().log(Level.WARNING, "A sound with the name " + soundString + " could not be found. Make sure that it is the right name for your server version.");
-				}
-			}
-			
-			new BukkitRunnable(){
-				public void run(){
-					final int rows = config.getInt("rows");
-					final String title = Colors.parseColors(config.getString("title"));
-					
-					new SelectorMenu(title, rows, player).open();
-				}
-			}.runTaskAsynchronously(Main.getPlugin());
 		}
 	}
 

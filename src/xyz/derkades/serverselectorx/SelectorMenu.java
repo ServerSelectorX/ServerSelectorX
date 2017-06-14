@@ -20,14 +20,16 @@ import xyz.derkades.serverselectorx.utils.ServerPinger.PingException;
 
 public class SelectorMenu extends IconMenu {
 
-	public SelectorMenu(String name, int size, Player player) {
+	private FileConfiguration config;
+	
+	public SelectorMenu(String name, int size, Player player, FileConfiguration config) {
 		super(Main.getPlugin(), name, size, player);
+		this.config = config;
 	}
 
 	@Override
 	public List<MenuItem> getMenuItems(Player player) {
 		final List<MenuItem> list = new ArrayList<>();
-		final FileConfiguration config = Main.getPlugin().getConfig();
 
 		for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
 			final ConfigurationSection section = config.getConfigurationSection("menu." + key);
@@ -53,9 +55,7 @@ public class SelectorMenu extends IconMenu {
 	}
 
 	@Override
-	public boolean onOptionClick(OptionClickEvent event) {
-		FileConfiguration config = Main.getPlugin().getConfig();
-		
+	public boolean onOptionClick(OptionClickEvent event) {		
 		int slot = event.getPosition();
 		Player player = event.getPlayer();
 		
