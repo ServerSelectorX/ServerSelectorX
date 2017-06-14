@@ -48,6 +48,10 @@ public class SelectorOpenListener implements Listener {
 		for (File serverSelectorFile : new File(Main.getPlugin().getDataFolder() + "/menu").listFiles()){
 			YamlConfiguration config = YamlConfiguration.loadConfiguration(serverSelectorFile);
 			
+			if (config.getString("item").equalsIgnoreCase("NONE")){
+				continue;
+			}
+			
 			final String string = config.getString("item");
 			final Material material = Material.getMaterial(string);
 			

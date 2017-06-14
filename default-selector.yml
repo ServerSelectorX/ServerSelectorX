@@ -10,7 +10,7 @@ rows: 2
 # This will be displayed as the title of the menu.
 title: 'Server Selector'
 
-# The name of the server selector item.
+# The name of the server selector item. Specify "NONE" for no item.
 item: COMPASS
 
 # Give the item when a player joins?
