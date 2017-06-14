@@ -10,6 +10,19 @@ rows: 2
 # This will be displayed as the title of the menu.
 title: 'Server Selector'
 
+# The name of the server selector item.
+item: COMPASS
+
+# Give the item when a player joins?
+on-join: true
+
+# What slot should the item be in?
+inv-slot: 0
+
+# URL clickable message
+url-message: '&3&lClick here'
+
+
 menu:
   3:
     item: DIAMOND_SWORD

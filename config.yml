@@ -9,26 +9,6 @@
 
 
 
-
-# -------------------- General -------------------- #
-
-# The name of the server selector item.
-item: COMPASS
-
-# Give the item when a player joins?
-on-join: true
-
-# What slot should the item be in?
-inv-slot: 0
-
-
-
-# URL clickable message
-url-message: '&3&lClick here'
-
-
-
-
 # -------------------- Permissions -------------------- #
 
 # Require the permission 'ssx.use.<selector name>' to open the menu
@@ -37,7 +17,6 @@ permissions-enabled: false
 # Send a message if the player does not have permission to use the server selector?
 no-permission-message-enabled: true
 no-permission-message: '&cYou do not have permission to use the server selector.'
-
 
 
 
@@ -54,7 +33,6 @@ selector-open-sound: HORSE_ARMOR
 
 
 
-
 # -------------------- Server Pinging -------------------- #
 
 ping-error-message-selector: '&cServer is not reachable'
@@ -65,7 +43,6 @@ ping-timeout: 100
 
 # Enable error messages to console if the server is not reachable. (true or false)
 ping-error-message-console: true
-
 
 
 
