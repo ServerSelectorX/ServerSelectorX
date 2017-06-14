@@ -27,7 +27,7 @@ import xyz.derkades.derkutils.bukkit.Colors;
 
 public class Main extends JavaPlugin {
 	
-	private static final int CONFIG_VERSION = 4;
+	private static final int CONFIG_VERSION = 5;
 	
 	private static final List<String> COOLDOWN = new ArrayList<String>();
 	
@@ -67,7 +67,7 @@ public class Main extends JavaPlugin {
 		
 		File file = new File(this.getDataFolder() + "/menu", "default.yml");
 		if (!file.exists()){
-			URL inputUrl = getClass().getResource("default-selector.yml");
+			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/default-selector.yml");
 			try {
 				FileUtils.copyURLToFile(inputUrl, file);
 			} catch (IOException e){
