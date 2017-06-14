@@ -2,12 +2,15 @@ package xyz.derkades.serverselectorx;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
@@ -53,6 +56,16 @@ public class Main extends JavaPlugin {
 			logger.log(Level.SEVERE, "If you don't want to redo your config, see resource updates on spigotmc.org for instructions.");
 			logger.log(Level.SEVERE, "***************************************");
 			getServer().getPluginManager().disablePlugin(getPlugin());
+		}
+		
+		File file = new File(this.getDataFolder() + "/menu", "default.yml");
+		if (!file.exists()){
+			URL inputUrl = getClass().getResource("default-selector.yml");
+			try{
+				FileUtils.copyURLToFile(inputUrl, file);
+			} catch (IOException e){
+				e.printStackTrace();
+			}
 		}
 	}
 	

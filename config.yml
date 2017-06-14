@@ -35,7 +35,7 @@ url-message: '&3&lClick here'
 
 # -------------------- Permissions -------------------- #
 
-# Require the permission 'ssx.use' to open the menu
+# Require the permission 'ssx.use.<selector name>' to open the menu
 permissions-enabled: false
 
 # Send a message if the player does not have permission to use the server selector?
@@ -73,40 +73,5 @@ ping-error-message-console: true
 
 
 
-# -------------------- Menu Entries -------------------- #
-
-# You only need to specify 'ip' and 'port' if 'show-player-count' is set to true.
-
-# If you wish to send a link to the player instead of teleporting them to a server, prefix the link with 'url:'
-# For example:
-# server: 'url:http://example.com/'
-
-menu:
-  3:
-    item: DIAMOND_SWORD
-    data: 0
-    server: kitpvp
-    name: KitPvP Server
-    lore:
-      - Lorem ipsum
-      - Dolor sit amet
-    show-player-count: false
-    player-count: 'There are {x} players online.' 
-    ip: play.example.com
-    port: 1234
-  5:
-    item: GRASS
-    data: 0
-    server: creative
-    name: '&aBuild!!!'
-    lore:
-      - '&bLine &c1'
-      - '&5Line 2'
-      - Line 3
-    show-player-count: false
-    player-count: 'There are {x} out of {y} players online.' 
-    ip: play.example.com
-    port: 54321
-    
 # Do not touch this
 version: 4
