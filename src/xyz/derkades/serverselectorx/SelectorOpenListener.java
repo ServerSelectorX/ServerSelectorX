@@ -16,6 +16,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import xyz.derkades.derkutils.bukkit.Colors;
+
 public class SelectorOpenListener implements Listener {
 	
 	private static final List<UUID> COOLDOWN = new ArrayList<>();
@@ -76,7 +78,7 @@ public class SelectorOpenListener implements Listener {
 			new BukkitRunnable(){
 				public void run(){
 					final int rows = config.getInt("rows");
-					final String title = config.getString("title");
+					final String title = Colors.parseColors(config.getString("title"));
 					
 					new SelectorMenu(title, rows, player).open();
 				}
