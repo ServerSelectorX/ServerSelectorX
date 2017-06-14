@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import xyz.derkades.derkutils.ListUtils;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.IconMenu;
 import xyz.derkades.serverselectorx.utils.ItemBuilder;
@@ -77,6 +78,17 @@ public class SelectorMenu extends IconMenu {
 							url))
 					.create()
 					);
+		}
+		
+		if (config.getBoolean("menu." + event.getPosition() + ".show-player-count", false) &&
+				Main.getPlugin().getConfig().getBoolean("server-offline-message-enabled", true)){
+			final String errorMessage = Colors.parseColors(Main.getPlugin().getConfig().getString("ping-error-message-selector", "&cServer is not reachable"));
+			if (ListUtils.stringListContainsString(event.getItemStack().getItemMeta().getLore(), errorMessage)){
+				//The server is offline
+				final String offlineMessage = Colors.parseColors(Main.getPlugin().getConfig().getString("server-offline-message", "server offline"));
+				player.sendMessage(offlineMessage);
+				return true;
+			}
 		}
 		
 		Main.teleportPlayerToServer(player, server);
