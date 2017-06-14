@@ -7,6 +7,8 @@ import java.io.InterruptedIOException;
 import java.net.Socket;
 import java.net.UnknownHostException;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class ServerPinger {
 	
 	/**
@@ -40,7 +42,7 @@ public class ServerPinger {
 				}
 			}
 
-			String[] data = str.toString().split("§");
+			String[] data = str.toString().split(ChatColor.COLOR_CHAR + "");
 
 			if (data == null){
 				throw new PingException("Data returned == null");
