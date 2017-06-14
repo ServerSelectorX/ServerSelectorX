@@ -45,6 +45,7 @@ ping-timeout: 100
 ping-error-message-console: true
 
 # Send a message to the player when they click on a server that's offline. This will only work if show-player-count is enabled for that server.
+# Warning: This feature is currently broken. I'll fix it soon :)
 server-offline-message-enabled: true
 server-offline-message: "&cThis server is offline."
 
