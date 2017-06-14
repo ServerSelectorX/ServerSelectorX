@@ -73,7 +73,14 @@ public class SelectorOpenListener implements Listener {
 				}
 			}
 			
-			SelectorMenu.open(player);
+			new BukkitRunnable(){
+				public void run(){
+					final int rows = config.getInt("rows");
+					final String title = config.getString("title");
+					
+					new SelectorMenu(title, rows, player).open();
+				}
+			}.runTaskAsynchronously(Main.getPlugin());
 		}
 	}
 

@@ -1,5 +1,6 @@
 package xyz.derkades.serverselectorx;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
@@ -8,57 +9,25 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
-import xyz.derkades.serverselectorx.utils.IconMenu;
-import xyz.derkades.serverselectorx.utils.IconMenu.OptionClickEvent;
+import xyz.derkades.derkutils.bukkit.IconMenu;
 import xyz.derkades.serverselectorx.utils.ItemBuilder;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
 import xyz.derkades.serverselectorx.utils.ServerPinger.PingException;
 
-public class SelectorMenu {
+public class SelectorMenu extends IconMenu {
 
-	private static IconMenu getMenu(String title, int rows) {
-		return new IconMenu(title, rows * 9, new IconMenu.OptionClickEventHandler() {
-
-			@Override
-			public void onOptionClick(OptionClickEvent event) {
-				FileConfiguration config = Main.getPlugin().getConfig();
-				
-				int slot = event.getPosition();
-				Player player = event.getPlayer();
-				
-				String server = config.getString("menu." + slot + ".server");
-				
-				if (server.startsWith("url:")){
-					//It's a URL
-					String url = server.substring(4);
-					String message = Main.parseColorCodes(config.getString("url-message", "&3&lClick here"));
-					
-					player.spigot().sendMessage(
-							new ComponentBuilder(message)
-							.event(new ClickEvent(
-									ClickEvent.Action.OPEN_URL,
-									url))
-							.create()
-							);
-				}
-				
-				Main.teleportPlayerToServer(player, server);
-			}
-
-		});
+	public SelectorMenu(String name, int size, Player player) {
+		super(Main.getPlugin(), name, size, player);
 	}
 
-	static void open(final Player player) {
-		FileConfiguration config = Main.getPlugin().getConfig();
-		
-		final int rows = config.getInt("rows");
-		final String title = config.getString("title");
-		final IconMenu menu = getMenu(Main.parseColorCodes(title), rows);
+	@Override
+	public List<MenuItem> getMenuItems(Player player) {
+		final List<MenuItem> list = new ArrayList<>();
+		final FileConfiguration config = Main.getPlugin().getConfig();
 
 		for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
 			final ConfigurationSection section = config.getConfigurationSection("menu." + key);
@@ -73,26 +42,44 @@ public class SelectorMenu {
 
 			final boolean showPlayerCount = section.getBoolean("show-player-count", false);
 			
-			new BukkitRunnable(){
-				public void run(){
-					if (showPlayerCount){
-						lore.add(getPlayerCountString(section));
-					}
-					
-					//Now go sync again because bukkit API should only be used in the main server thread
-					new BukkitRunnable(){
-						public void run(){
-							menu.setOption(slot, item, name, lore.toArray(new String[]{}));
-							menu.open(player);
-						}
-					}.runTask(Main.getPlugin());
-				}
-			}.runTaskAsynchronously(Main.getPlugin());
+			if (showPlayerCount){
+				lore.add(getPlayerCountString(section));
+			}
 			
+			list.add(new MenuItem(slot, item, name, lore.toArray(new String[]{})));			
 		}
 		
+		return list;
 	}
 
+	@Override
+	public boolean onOptionClick(OptionClickEvent event) {
+		FileConfiguration config = Main.getPlugin().getConfig();
+		
+		int slot = event.getPosition();
+		Player player = event.getPlayer();
+		
+		String server = config.getString("menu." + slot + ".server");
+		
+		if (server.startsWith("url:")){
+			//It's a URL
+			String url = server.substring(4);
+			String message = Main.parseColorCodes(config.getString("url-message", "&3&lClick here"));
+			
+			player.spigot().sendMessage(
+					new ComponentBuilder(message)
+					.event(new ClickEvent(
+							ClickEvent.Action.OPEN_URL,
+							url))
+					.create()
+					);
+		}
+		
+		Main.teleportPlayerToServer(player, server);
+		
+		return true;
+	}
+	
 	private static String getPlayerCountString(ConfigurationSection serverSection){
 		String errorMessage = ChatColor.translateAlternateColorCodes('&', 
 				Main.getPlugin().getConfig().getString("ping-error-message-selector", "&cServer is not reachable"));
