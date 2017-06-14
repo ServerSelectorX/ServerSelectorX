@@ -22,6 +22,7 @@ command: "menu"
 
 
 # You only need to specify 'ip' and 'port' if 'show-player-count' is set to true.
+# In order to show play count text you need to put {playercount} somewhere in your lore.
 
 # If you wish to send a link to the player instead of teleporting them to a server, prefix the link with 'url:'
 # For example:

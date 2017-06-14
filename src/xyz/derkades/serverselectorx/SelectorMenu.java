@@ -40,12 +40,16 @@ public class SelectorMenu extends IconMenu {
 			final int data = section.getInt("data");
 			final ItemStack item = new ItemBuilder(material).setDamage(data).create();
 			final String name = Colors.parseColors(section.getString("name"));
-			final List<String> lore = Colors.parseColors(section.getStringList("lore"));
-
-			final boolean showPlayerCount = section.getBoolean("show-player-count", false);
 			
-			if (showPlayerCount){
-				lore.add(getPlayerCountString(section));
+			List<String> lore = Colors.parseColors(section.getStringList("lore"));
+			
+			if (section.getBoolean("show-player-count", false)){
+				List<String> loreWithPlayerCount = new ArrayList<>();
+						
+				for (String loreString : lore)
+					loreWithPlayerCount.add(loreString.replace("{playercount}", getPlayerCountString(section)));
+				
+				lore = loreWithPlayerCount;
 			}
 			
 			list.add(new MenuItem(slot, item, name, lore.toArray(new String[]{})));			
