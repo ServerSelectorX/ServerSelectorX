@@ -15,7 +15,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import xyz.derkades.derkutils.ListUtils;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.IconMenu;
-import xyz.derkades.serverselectorx.utils.ItemBuilder;
+import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
 import xyz.derkades.serverselectorx.utils.ServerPinger.PingException;
 

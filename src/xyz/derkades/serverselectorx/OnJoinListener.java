@@ -13,7 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import xyz.derkades.derkutils.bukkit.Colors;
-import xyz.derkades.serverselectorx.utils.ItemBuilder;
+import xyz.derkades.derkutils.bukkit.ItemBuilder;
 
 public class OnJoinListener implements Listener {
 	
