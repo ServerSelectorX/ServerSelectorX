@@ -13,10 +13,17 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
+import org.bukkit.command.CommandSender;
+import org.bukkit.command.SimpleCommandMap;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
+
+import xyz.derkades.derkutils.bukkit.Colors;
 
 public class Main extends JavaPlugin {
 	
@@ -61,11 +68,34 @@ public class Main extends JavaPlugin {
 		File file = new File(this.getDataFolder() + "/menu", "default.yml");
 		if (!file.exists()){
 			URL inputUrl = getClass().getResource("default-selector.yml");
-			try{
+			try {
 				FileUtils.copyURLToFile(inputUrl, file);
 			} catch (IOException e){
 				e.printStackTrace();
 			}
+		}
+		
+		for (File serverSelectorFile : new File(Main.getPlugin().getDataFolder() + "/menu").listFiles()){
+			FileConfiguration config = YamlConfiguration.loadConfiguration(serverSelectorFile);
+			String commandName = config.getString("command");
+			if (commandName == null || commandName.equalsIgnoreCase("none"));
+			
+			Command command = new Command(commandName){
+
+				@Override
+				public boolean execute(CommandSender sender, String label, String[] args) {
+					if (sender instanceof Player){
+						Player player = (Player) sender;
+						final int rows = config.getInt("rows");
+						final String title = Colors.parseColors(config.getString("title"));
+						new SelectorMenu(title, rows * 9, player, config).open();
+					}
+					return true;
+				}
+				
+			};
+			
+			new SimpleCommandMap(Bukkit.getServer()).register("ssx", command);
 		}
 	}
 	
