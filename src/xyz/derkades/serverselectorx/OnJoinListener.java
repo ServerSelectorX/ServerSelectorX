@@ -10,6 +10,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.serverselectorx.utils.ItemBuilder;
 
 public class OnJoinListener implements Listener {
@@ -31,7 +32,7 @@ public class OnJoinListener implements Listener {
 		}
 		
 		ItemStack item = new ItemBuilder(material)
-				.setName(Main.parseColorCodes(config.getString("title")))
+				.setName(Colors.parseColors(config.getString("title")))
 				.create();
 		
 		int slot = config.getInt("inv-slot");

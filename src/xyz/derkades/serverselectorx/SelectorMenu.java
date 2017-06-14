@@ -10,9 +10,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
-import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.IconMenu;
 import xyz.derkades.serverselectorx.utils.ItemBuilder;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
@@ -64,7 +64,7 @@ public class SelectorMenu extends IconMenu {
 		if (server.startsWith("url:")){
 			//It's a URL
 			String url = server.substring(4);
-			String message = Main.parseColorCodes(config.getString("url-message", "&3&lClick here"));
+			String message = Colors.parseColors(config.getString("url-message", "&3&lClick here"));
 			
 			player.spigot().sendMessage(
 					new ComponentBuilder(message)
@@ -81,7 +81,7 @@ public class SelectorMenu extends IconMenu {
 	}
 	
 	private static String getPlayerCountString(ConfigurationSection serverSection){
-		String errorMessage = ChatColor.translateAlternateColorCodes('&', 
+		String errorMessage = Colors.parseColors( 
 				Main.getPlugin().getConfig().getString("ping-error-message-selector", "&cServer is not reachable"));
 		
 		try {

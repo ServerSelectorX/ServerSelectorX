@@ -83,6 +83,7 @@ public class Main extends JavaPlugin {
 		}
 	}
 	
+	@Deprecated
 	public static String parseColorCodes(String string){
 		return string.replace("&", ChatColor.COLOR_CHAR + "");
 	}
