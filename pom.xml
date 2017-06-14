@@ -1,0 +1,78 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>xyz.derkades</groupId>
+	<artifactId>ServerSelectorX</artifactId>
+	<version>1.4.1</version>
+
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jdk.version>1.8</jdk.version>
+		<spigot.version>1.8.8-R0.1-SNAPSHOT</spigot.version>
+	</properties>
+
+	<build>
+	  	<sourceDirectory>src</sourceDirectory>
+
+	  	<plugins>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-eclipse-plugin</artifactId>
+				<version>2.9</version>
+				<configuration>
+					<downloadSources>true</downloadSources>
+					<downloadJavadocs>false</downloadJavadocs>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<version>2.3.2</version>
+				<configuration>
+					<source>${jdk.version}</source>
+					<target>${jdk.version}</target>
+				</configuration>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<version>2.3</version>
+				<configuration>
+					<createDependencyReducedPom>false</createDependencyReducedPom>
+				</configuration>
+			</plugin>
+
+	  	</plugins>
+	</build>
+
+	<dependencies>
+
+		<dependency> <!-- Spigot (this includes Spigot API, Bukkit API, Craftbukkit and NMS) -->
+			<groupId>org.spigotmc</groupId>
+			<artifactId>spigot</artifactId>
+			<version>${spigot.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency> <!-- Derkutils -->
+			<groupId>xyz.derkades</groupId>
+			<artifactId>Derkutils</artifactId>
+			<version>1.1.1</version>
+		</dependency>
+
+	</dependencies>
+
+	<repositories>
+		<repository>
+			<id>spigot-repo</id>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+		</repository>
+		<repository>
+			<id>derkades</id>
+			<url>https://derkades.xyz/maven</url>
+		</repository>
+	</repositories>
+
+</project>
