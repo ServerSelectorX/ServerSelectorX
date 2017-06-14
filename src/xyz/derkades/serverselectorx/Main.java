@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,8 +15,8 @@ import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
+import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
-import org.bukkit.command.SimpleCommandMap;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
@@ -95,7 +96,16 @@ public class Main extends JavaPlugin {
 				
 			};
 			
-			new SimpleCommandMap(Bukkit.getServer()).register("ssx", command);
+			try {
+				final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+
+				bukkitCommandMap.setAccessible(true);
+				CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
+
+				commandMap.register("ssx-custom", command);
+			} catch (NoSuchFieldException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 	
