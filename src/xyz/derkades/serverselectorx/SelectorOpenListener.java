@@ -85,7 +85,7 @@ public class SelectorOpenListener implements Listener {
 						final int rows = config.getInt("rows");
 						final String title = Colors.parseColors(config.getString("title"));
 						
-						new SelectorMenu(title, rows, player, config).open();
+						new SelectorMenu(title, rows * 9, player, config).open();
 					}
 				}.runTaskAsynchronously(Main.getPlugin());
 				
