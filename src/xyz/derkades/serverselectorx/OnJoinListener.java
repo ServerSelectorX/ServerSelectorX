@@ -43,27 +43,6 @@ public class OnJoinListener implements Listener {
 			
 			inv.setItem(slot, item);
 		}
-		/*
-		boolean putItemInInventory = config.getBoolean("on-join");
-		if (!putItemInInventory)
-			return;
-		
-		Player player = event.getPlayer();
-		Material material = Material.getMaterial(config.getString("item"));
-		
-		if (material == null){
-			player.sendMessage(Message.INVALID_ITEM_NAME.toString());
-			return;
-		}
-		
-		ItemStack item = new ItemBuilder(material)
-				.setName(Colors.parseColors(config.getString("title")))
-				.create();
-		
-		int slot = config.getInt("inv-slot");
-		PlayerInventory inv = player.getInventory();
-		
-		inv.setItem(slot, item);*/
 	}
 
 }
