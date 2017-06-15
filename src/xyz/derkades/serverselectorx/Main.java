@@ -134,5 +134,5 @@ public class Main extends JavaPlugin {
 			e.printStackTrace();
 		}
 	}
-	
+
 }
