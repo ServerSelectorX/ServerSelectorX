@@ -13,7 +13,6 @@ import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
@@ -134,11 +133,6 @@ public class Main extends JavaPlugin {
 		} catch (IOException e){
 			e.printStackTrace();
 		}
-	}
-	
-	@Deprecated
-	public static String parseColorCodes(String string){
-		return string.replace("&", ChatColor.COLOR_CHAR + "");
 	}
 	
 }
