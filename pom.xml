@@ -51,7 +51,7 @@
 
 		<dependency> <!-- Spigot (this includes Spigot API, Bukkit API, Craftbukkit and NMS) -->
 			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot</artifactId>
+			<artifactId>spigot-api</artifactId>
 			<version>${spigot.version}</version>
 			<scope>provided</scope>
 		</dependency>
