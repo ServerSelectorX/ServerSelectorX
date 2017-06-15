@@ -121,7 +121,7 @@ public class Main extends JavaPlugin {
 				}
 			}.runTaskLater(Main.getPlugin(), 1*20);
 		}
-		
+
 		try {
 			ByteArrayOutputStream baos = new ByteArrayOutputStream();
 	        DataOutputStream dos = new DataOutputStream(baos);
