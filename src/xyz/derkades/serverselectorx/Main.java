@@ -109,6 +109,17 @@ public class Main extends JavaPlugin {
 	}
 	
 	public static void teleportPlayerToServer(final Player player, final String server){
+		if (Main.getPlugin().getConfig().getBoolean("server-teleport-message-enabled", false)){
+			if (Main.getPlugin().getConfig().getBoolean("chat-clear", false)){
+				for (int i = 0; i < 20; i++){ //Send just 20 lines, because clearing the complete chat is unnecessary.
+					player.sendMessage("");
+				}
+			}
+			
+			String message = Main.getPlugin().getConfig().getString("server-teleport-message", "error");
+			player.sendMessage(message);
+		}
+		
 		String playerName = player.getName();
 		if (COOLDOWN.contains(playerName)){
 			return;
