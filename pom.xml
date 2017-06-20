@@ -11,9 +11,17 @@
 	</properties>
 
 	<build>
-	  	<sourceDirectory>src</sourceDirectory>
+		<sourceDirectory>src</sourceDirectory>
+		
+		<resources>
+			<resource>
+				<includes>
+					<include>**/*.*</include>
+				</includes>
+			</resource>
+		</resources>
 
-	  	<plugins>
+		<plugins>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -44,7 +52,7 @@
 				</configuration>
 			</plugin>
 
-	  	</plugins>
+		</plugins>
 	</build>
 
 	<dependencies>
