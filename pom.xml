@@ -15,6 +15,7 @@
 		
 		<resources>
 			<resource>
+				<directory>src/</directory>
 				<includes>
 					<include>**/*.*</include>
 				</includes>
