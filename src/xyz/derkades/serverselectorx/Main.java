@@ -108,7 +108,7 @@ public class Main extends JavaPlugin {
 	}
 	
 	public static FileConfiguration getSelectorConfigurationFile(String name){
-		File file = new File(Main.getPlugin().getDataFolder() + "/menu", name);
+		File file = new File(Main.getPlugin().getDataFolder() + "/menu", name + ".yml");
 		if (file.exists()){
 			return YamlConfiguration.loadConfiguration(file);
 		} else {
