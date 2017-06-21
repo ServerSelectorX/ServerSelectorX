@@ -65,7 +65,7 @@ public class SelectorMenu extends IconMenu {
 				} else if (section.getBoolean("change-item-count", true)){
 					//Server is online so getting player count is safe
 					int amount = Integer.parseInt(playerCount[2]);
-					if (amount > 64) amount = 64;
+					if (amount > 64) amount = 1;
 					item.setAmount(amount);
 				}
 			}
