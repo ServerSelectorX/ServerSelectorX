@@ -75,8 +75,7 @@ public class Main extends JavaPlugin {
 			}
 		}
 		
-		for (File serverSelectorFile : new File(Main.getPlugin().getDataFolder() + "/menu").listFiles()){
-			FileConfiguration config = YamlConfiguration.loadConfiguration(serverSelectorFile);
+		for (FileConfiguration config : Main.getServerSelectorConfigurationFiles()){
 			String commandName = config.getString("command");
 			if (commandName == null || commandName.equalsIgnoreCase("none"));
 			
@@ -106,6 +105,23 @@ public class Main extends JavaPlugin {
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public static FileConfiguration getSelectorConfigurationFile(String name){
+		File file = new File(Main.getPlugin().getDataFolder() + "/menu", name);
+		if (file.exists()){
+			return YamlConfiguration.loadConfiguration(file);
+		} else {
+			return null;
+		}
+	}
+	
+	public static List<FileConfiguration> getServerSelectorConfigurationFiles(){
+		List<FileConfiguration> configs = new ArrayList<>();
+		for (File file : new File(Main.getPlugin().getDataFolder() + "/menu").listFiles()){
+			configs.add(YamlConfiguration.loadConfiguration(file));
+		}
+		return configs;
 	}
 	
 	public static void teleportPlayerToServer(final Player player, final String server){

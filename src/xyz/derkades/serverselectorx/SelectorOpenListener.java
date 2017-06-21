@@ -1,6 +1,5 @@
 package xyz.derkades.serverselectorx;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -8,7 +7,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -45,9 +44,7 @@ public class SelectorOpenListener implements Listener {
 		}.runTaskLater(Main.getPlugin(), 10);
 		
 		
-		for (File serverSelectorFile : new File(Main.getPlugin().getDataFolder() + "/menu").listFiles()){
-			YamlConfiguration config = YamlConfiguration.loadConfiguration(serverSelectorFile);
-			
+		for (FileConfiguration config : Main.getServerSelectorConfigurationFiles()){	
 			if (config.getString("item").equalsIgnoreCase("NONE")){
 				continue;
 			}
@@ -66,7 +63,7 @@ public class SelectorOpenListener implements Listener {
 				
 				
 			final boolean permissionsEnabled = config.getBoolean("permissions-enabled");
-			final boolean hasPermission = player.hasPermission("ssx.use." + serverSelectorFile.getName().replace(".yml", ""));
+			final boolean hasPermission = player.hasPermission("ssx.use." + config.getName().replace(".yml", ""));
 			if (!permissionsEnabled || hasPermission){
 				
 				//Play sound
