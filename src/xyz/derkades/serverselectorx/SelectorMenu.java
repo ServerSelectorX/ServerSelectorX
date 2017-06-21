@@ -47,11 +47,27 @@ public class SelectorMenu extends IconMenu {
 			
 			if (section.getBoolean("show-player-count", false)){
 				List<String> loreWithPlayerCount = new ArrayList<>();
-						
+				
+				//playerCount[0] is player count string, playerCount[1] is ping success state (true or false), playerCount[2] is actual player count 
+				String[] playerCount = getPlayerCountString(section);
+				
 				for (String loreString : lore)
-					loreWithPlayerCount.add(loreString.replace("{playercount}", getPlayerCountString(section)));
+					loreWithPlayerCount.add(loreString.replace("{playercount}", playerCount[0]));
 				
 				lore = loreWithPlayerCount;
+				
+				if (playerCount[1].equals("false")){ //If server is offline
+					Material offlineType = Material.getMaterial(section.getString("offline-item", "how are you doing today?"));
+					if (offlineType != null){
+						item.setType(offlineType);
+						item.setDurability((short) section.getInt("offline-data", 0));
+					}
+				} else if (section.getBoolean("change-item-count", true)){
+					//Server is online so getting player count is safe
+					int amount = Integer.parseInt(playerCount[2]);
+					if (amount > 64) amount = 64;
+					item.setAmount(amount);
+				}
 			}
 			
 			list.add(new MenuItem(slot, item, name, lore.toArray(new String[]{})));			
@@ -122,7 +138,11 @@ public class SelectorMenu extends IconMenu {
 		return true;
 	}
 	
-	private static String getPlayerCountString(ConfigurationSection serverSection){
+	/**
+	 * @param serverSection
+	 * @return first item in array is player count string, second item is ping success state ("true" or "false"), third player count
+	 */
+	private static String[] getPlayerCountString(ConfigurationSection serverSection){
 		String errorMessage = Colors.parseColors( 
 				Main.getPlugin().getConfig().getString("ping-error-message-selector", "&cServer is not reachable"));
 		
@@ -140,15 +160,15 @@ public class SelectorMenu extends IconMenu {
 				String message = serverSection.getString("player-count")
 						.replace("{x}", onlinePlayers + "")
 						.replace("{y}", maxPlayers + "");
-				return message;
+				return new String[]{message, "true", String.valueOf(onlinePlayers)};
 			} else {
-				return errorMessage;
+				return new String[]{errorMessage, "false", "how am i supposed to know if the server is offline"};
 			}
 		} catch (PingException e) {
 			boolean sendErrorMessage = Main.getPlugin().getConfig().getBoolean("ping-error-message-console", true);
 			if (sendErrorMessage) Main.getPlugin().getLogger().log(Level.SEVERE, "An error occured while trying to ping " + serverSection.getString("name") + ". (" + e.getMessage() + ")");
 			
-			return errorMessage;
+			return new String[]{errorMessage, "false", "idk"};
 		}
 	}
 

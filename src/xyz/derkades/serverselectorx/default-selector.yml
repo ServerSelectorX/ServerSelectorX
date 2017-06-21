@@ -47,12 +47,15 @@ menu:
       - Lorem ipsum
       - Dolor sit amet
     show-player-count: false
+    change-item-count: true
+    offline-item: IRON_SWORD
+    offline-data: 0
     player-count: 'There are {x} players online.' 
     ip: play.example.com
     port: 1234
   5:
-    item: GRASS
-    data: 0
+    item: WOOL
+    data: 2
     server: creative
     name: '&aBuild!!!'
     lore:
@@ -60,6 +63,9 @@ menu:
       - '&5Line 2'
       - Line 3
     show-player-count: false
+    change-item-count: true
+    offline-item: WOOL
+    offline-data: 
     player-count: 'There are {x} out of {y} players online.' 
     ip: play.example.com
     port: 54321
