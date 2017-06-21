@@ -132,7 +132,7 @@ public class Main extends JavaPlugin {
 				}
 			}
 			
-			String message = Main.getPlugin().getConfig().getString("server-teleport-message", "error");
+			String message = Colors.parseColors(Main.getPlugin().getConfig().getString("server-teleport-message", "error"));
 			player.sendMessage(message.replace("{x}", server));
 		}
 		
