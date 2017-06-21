@@ -32,6 +32,11 @@ command: "menu"
 # No / before the command. (so for worldedit commands just one)
 # Prefix the command with 'cmd:', for example:
 # server: 'cmd:gamemode 1'
+#
+# If that's not enough, you can even open a new server selector. This can be used for submenus.
+# You need to create a new server selector first, do that making a copy of this file in the same directory then modifying it.
+# Prefix the selector name with 'sel' for example:
+# server: 'sel:uhc-servers'
 menu:
   3:
     item: DIAMOND_SWORD

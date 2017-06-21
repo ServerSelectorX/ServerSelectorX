@@ -11,6 +11,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
+import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import xyz.derkades.derkutils.ListUtils;
@@ -87,6 +88,23 @@ public class SelectorMenu extends IconMenu {
 			String command = server.substring(4);
 			Bukkit.dispatchCommand(player, command);
 			return true;
+		}
+		
+		if (server.startsWith("sel:")){
+			//It's a server selector
+			String configName = server.substring(4);
+			FileConfiguration config = Main.getSelectorConfigurationFile(configName);
+			if (config == null){
+				player.sendMessage(ChatColor.RED + "This server selector does not exist.");
+				return true;
+			} else {
+				final int rows = config.getInt("rows");
+				final String title = Colors.parseColors(config.getString("title"));
+				
+				new SelectorMenu(title, rows, player, config).open();
+				
+				return false;
+			}
 		}
 		
 		if (config.getBoolean("menu." + event.getPosition() + ".show-player-count", false) &&
