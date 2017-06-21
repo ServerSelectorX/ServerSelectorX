@@ -27,6 +27,11 @@ command: "menu"
 # If you wish to send a link to the player instead of teleporting them to a server, prefix the link with 'url:'
 # For example:
 # server: 'url:http://example.com/'
+#
+# You can also force the player to send a command. The player will need permission for this command. 
+# No / before the command. (so for worldedit commands just one)
+# Prefix the command with 'cmd:', for example:
+# server: 'cmd:gamemode 1'
 menu:
   3:
     item: DIAMOND_SWORD

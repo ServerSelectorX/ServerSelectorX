@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -78,6 +79,13 @@ public class SelectorMenu extends IconMenu {
 							url))
 					.create()
 					);
+			return true;
+		}
+		
+		if (server.startsWith("cmd:")){
+			//It's a command
+			String command = server.substring(4);
+			Bukkit.dispatchCommand(player, command);
 			return true;
 		}
 		
