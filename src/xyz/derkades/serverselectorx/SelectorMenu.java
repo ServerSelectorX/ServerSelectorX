@@ -78,6 +78,7 @@ public class SelectorMenu extends IconMenu {
 							url))
 					.create()
 					);
+			return true;
 		}
 		
 		if (config.getBoolean("menu." + event.getPosition() + ".show-player-count", false) &&
