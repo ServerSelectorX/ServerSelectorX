@@ -1,9 +1,7 @@
 package xyz.derkades.serverselectorx;
 
-import java.io.File;
-
 import org.bukkit.Material;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -19,9 +17,7 @@ public class OnJoinListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onJoin(PlayerJoinEvent event){
-		for (File serverSelectorFile : new File(Main.getPlugin().getDataFolder() + "/menu").listFiles()){
-			YamlConfiguration config = YamlConfiguration.loadConfiguration(serverSelectorFile);
-			
+		for (FileConfiguration config : Main.getServerSelectorConfigurationFiles()){			
 			boolean putItemInInventory = config.getBoolean("on-join");
 			if (!putItemInInventory)
 				continue;
