@@ -4,6 +4,9 @@ rows: 2
 # This will be displayed as the title of the menu.
 title: 'Server Selector'
 
+# This will be the name of the server selector item
+item-name: 'Server Selector'
+
 # The name of the server selector item. Specify "NONE" for no item.
 item: COMPASS
 

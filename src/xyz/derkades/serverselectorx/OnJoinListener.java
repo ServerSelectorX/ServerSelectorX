@@ -31,7 +31,8 @@ public class OnJoinListener implements Listener {
 			}
 			
 			ItemStack item = new ItemBuilder(material)
-					.setName(Colors.parseColors(config.getString("title")))
+					// Get item name from 'item-name', if not exist then from 'title', if not exist then 'Error'
+					.setName(Colors.parseColors(config.getString("item-name", config.getString("title", "Error"))))
 					.create();
 			
 			int slot = config.getInt("inv-slot");
