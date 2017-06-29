@@ -20,6 +20,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.enchantments.Enchantment;
+import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -98,7 +99,7 @@ public class Main extends JavaPlugin {
 			f.setAccessible(true);
 			f.set(null, true);
 			
-			Enchantment.registerEnchantment(new GlowEnchantment());
+			EnchantmentWrapper.registerEnchantment(new GlowEnchantment());
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
