@@ -43,7 +43,7 @@ public class SelectorMenu extends IconMenu {
 			if (material == null) material = Material.STONE;
 			final int data = section.getInt("data");
 			final ItemStack item = new ItemBuilder(material).setDamage(data).create();
-			final String name = Colors.parseColors(section.getString("name"));
+			final String name = placeholders(player, Colors.parseColors(section.getString("name")));
 			
 			//Apply custom glowing enchantment
 			if (section.getBoolean("enchanted", false)){
@@ -87,7 +87,7 @@ public class SelectorMenu extends IconMenu {
 				consoleErrorMessage = e.getMessage();
 			}
 
-			List<String> lore;
+			List<String> lore = new ArrayList<>();;
 
 			if (serverOnline) {
 				if (section.getBoolean("change-item-count", true)) {
@@ -97,9 +97,8 @@ public class SelectorMenu extends IconMenu {
 					item.setAmount(amount);
 				}
 				
-				lore = new ArrayList<>();
 				for (String loreString : section.getStringList("lore")){
-					lore.add(Colors.parseColors(loreString)
+					lore.add(placeholders(player, Colors.parseColors(loreString))
 							.replace("{online}", String.valueOf(onlinePlayers))
 							.replace("{max}", String.valueOf(maxPlayers))
 							.replace("{motd}", motd));
@@ -115,7 +114,9 @@ public class SelectorMenu extends IconMenu {
 					item.setDurability((short) section.getInt("offline-data", 0));
 				}
 
-				lore = Colors.parseColors(section.getStringList("offline-lore"));
+				for (String loreString : section.getStringList("lore")){
+					lore.add(placeholders(player, Colors.parseColors(loreString)));
+				}
 			}
 			
 			list.add(new MenuItem(slot, item, name, lore.toArray(new String[]{})));
@@ -186,6 +187,10 @@ public class SelectorMenu extends IconMenu {
 			return false;
 		}
 	
+	}
+	
+	private static String placeholders(Player player, String text){
+		return Main.PLACEHOLDER_API.parsePlaceholders(player, text);
 	}
 
 }

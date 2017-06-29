@@ -26,6 +26,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import xyz.derkades.derkutils.bukkit.Colors;
+import xyz.derkades.serverselectorx.placeholders.Placeholders;
+import xyz.derkades.serverselectorx.placeholders.PlaceholdersDisabled;
+import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
 
 public class Main extends JavaPlugin {
 	
@@ -34,6 +37,8 @@ public class Main extends JavaPlugin {
 	private static final List<String> COOLDOWN = new ArrayList<String>();
 	
 	public static final int GLOWING_ENCHANTMENT_ID = 96;
+	
+	public static Placeholders PLACEHOLDER_API = null;
 	
 	private static Plugin plugin;
 	
@@ -96,6 +101,13 @@ public class Main extends JavaPlugin {
 			Enchantment.registerEnchantment(new GlowEnchantment());
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			e.printStackTrace();
+		}
+		
+		//Check if placeholderapi is installed
+		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")){
+			Main.PLACEHOLDER_API = new PlaceholdersEnabled();
+		} else {
+			Main.PLACEHOLDER_API = new PlaceholdersDisabled();
 		}
 	}
 	

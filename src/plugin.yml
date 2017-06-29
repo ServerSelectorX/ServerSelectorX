@@ -4,6 +4,7 @@ version: 3.0.0
 author: Derkades
 description: 'A modern server selector plugin with an advanced but simple config file.'
 website: 'https://www.spigotmc.org/resources/serverselectorx.32853/'
+softdepend: PlaceholderAPI
 
 commands:
   serverselectorx:
