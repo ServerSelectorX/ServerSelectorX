@@ -53,7 +53,7 @@
 					
 					<artifactSet>
 						<excludes>
-							<exclude>org.apache.commons.io.*</exclude>
+							<exclude>org.apache.commons.io:*</exclude>
 						</excludes>
 					</artifactSet>
 					
