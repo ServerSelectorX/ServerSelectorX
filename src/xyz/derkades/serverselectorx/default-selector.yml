@@ -31,6 +31,10 @@ command: "menu"
 # For example:
 # server: 'url:http://example.com/'
 #
+# If servers are too expensive for you and you want to teleport the player to a different world instead, prefix with 'world:'
+# For example:
+# server: 'world:skyblock'
+#
 # You can also force the player to send a command. The player will need permission for this command. 
 # No / before the command. (so for worldedit commands just one)
 # Prefix the command with 'cmd:', for example:

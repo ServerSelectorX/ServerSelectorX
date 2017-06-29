@@ -6,6 +6,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -119,6 +120,19 @@ public class SelectorMenu extends IconMenu {
 				new SelectorMenu(title, rows * 9, player, config).open();
 				
 				return false;
+			}
+		}
+		
+		if (server.startsWith("world:")){
+			//It's a world
+			String worldName = server.substring(6);
+			World world = Bukkit.getWorld(worldName);
+			if (world == null){
+				player.sendMessage(ChatColor.RED + "A world with the name " + worldName + " does not exist.");
+				return true;
+			} else {
+				player.teleport(world.getSpawnLocation());
+				return true;
 			}
 		}
 		
