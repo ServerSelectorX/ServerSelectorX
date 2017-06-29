@@ -64,6 +64,7 @@ menu:
   
     item: DIAMOND_SWORD
     data: 0
+    enchanted: true
     action: 'srv:kitpvp'
     name: KitPvP Server
     lore:
@@ -77,6 +78,7 @@ menu:
     change-item-count: true
     offline-item: IRON_SWORD
     offline-data: 0
+    offline-enchanted: false
     offline-lore:
       - Ipsum lorem
       - Amet sit dolor
@@ -85,6 +87,7 @@ menu:
   
     item: WOOL
     data: 2
+    enchanted: true
     action: 'srv:creative'
     name: '&aBuild!!!'
     lore:
@@ -99,5 +102,6 @@ menu:
     change-item-count: true
     offline-item: WOOL
     offline-data: 0
+    offline-enchanted: false
     offline-lore:
       - Server not online

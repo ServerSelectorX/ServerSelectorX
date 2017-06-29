@@ -19,6 +19,7 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -31,6 +32,8 @@ public class Main extends JavaPlugin {
 	private static final int CONFIG_VERSION = 6;
 	
 	private static final List<String> COOLDOWN = new ArrayList<String>();
+	
+	public static final int GLOWING_ENCHANTMENT_ID = 96;
 	
 	private static Plugin plugin;
 	
@@ -57,7 +60,8 @@ public class Main extends JavaPlugin {
 		
 		//Start bStats
 		new Metrics(this);
-			
+		
+		//Check if config is up to date
 		int version = getConfig().getInt("version");
 		if (version != CONFIG_VERSION){
 			Logger logger = super.getLogger();
@@ -69,6 +73,7 @@ public class Main extends JavaPlugin {
 			getServer().getPluginManager().disablePlugin(getPlugin());
 		}
 		
+		//Copy custom config
 		File file = new File(this.getDataFolder() + "/menu", "default.yml");
 		if (!file.exists()){
 			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/default-selector.yml");
@@ -79,6 +84,22 @@ public class Main extends JavaPlugin {
 			}
 		}
 		
+		//Register custom selector commands
+		registerCommands();
+		
+		//Register glowing enchantment
+		try {
+			Field f = Enchantment.class.getDeclaredField("acceptingNew");
+			f.setAccessible(true);
+			f.set(null, true);
+			
+			Enchantment.registerEnchantment(new GlowEnchantment());
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	private static void registerCommands(){
 		for (FileConfiguration config : Main.getServerSelectorConfigurationFiles()){
 			String commandName = config.getString("command");
 			if (commandName == null || commandName.equalsIgnoreCase("none"));

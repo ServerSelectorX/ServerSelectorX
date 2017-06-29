@@ -11,6 +11,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -43,6 +44,13 @@ public class SelectorMenu extends IconMenu {
 			final int data = section.getInt("data");
 			final ItemStack item = new ItemBuilder(material).setDamage(data).create();
 			final String name = Colors.parseColors(section.getString("name"));
+			
+			//Apply custom glowing enchantment
+			if (section.getBoolean("enchanted", false)){
+				ItemMeta meta = item.getItemMeta();
+				meta.addEnchant(new GlowEnchantment(), 1, true);
+				item.setItemMeta(meta);
+			}
 			
 			//If ping server is turned off just add item and continue to next server
 			if (!section.getBoolean("ping-server")){
