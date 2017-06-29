@@ -50,12 +50,8 @@
 				<version>2.3</version>
 				<configuration>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
-					
-					<artifactSet>
-						<excludes>
-							<exclude>org.apache.commons.io:*</exclude>
-						</excludes>
-					</artifactSet>
+
+					<minimizeJar>true</minimizeJar>
 					
 					<relocations>
 						<relocation>
