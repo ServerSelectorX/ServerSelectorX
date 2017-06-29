@@ -51,11 +51,11 @@
 				<configuration>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
 					
-					<artifactSet>
+					<!--<artifactSet>
 						<includes>
 							<include>org.bstats:*</include>
 						</includes>
-					</artifactSet>
+					</artifactSet>-->
 					
 					<relocations>
 						<relocation>
