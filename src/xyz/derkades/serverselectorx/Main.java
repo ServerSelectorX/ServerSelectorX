@@ -28,7 +28,7 @@ import xyz.derkades.derkutils.bukkit.Colors;
 
 public class Main extends JavaPlugin {
 	
-	private static final int CONFIG_VERSION = 5;
+	private static final int CONFIG_VERSION = 6;
 	
 	private static final List<String> COOLDOWN = new ArrayList<String>();
 	

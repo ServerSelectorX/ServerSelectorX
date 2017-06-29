@@ -44,34 +44,73 @@ public class SelectorMenu extends IconMenu {
 			final ItemStack item = new ItemBuilder(material).setDamage(data).create();
 			final String name = Colors.parseColors(section.getString("name"));
 			
-			List<String> lore = Colors.parseColors(section.getStringList("lore"));
-			
-			if (section.getBoolean("show-player-count", false)){
-				List<String> loreWithPlayerCount = new ArrayList<>();
-				
-				//playerCount[0] is player count string, playerCount[1] is ping success state (true or false), playerCount[2] is actual player count 
-				String[] playerCount = getPlayerCountString(section);
-				
-				for (String loreString : lore)
-					loreWithPlayerCount.add(loreString.replace("{playercount}", playerCount[0]));
-				
-				lore = loreWithPlayerCount;
-				
-				if (playerCount[1].equals("false")){ //If server is offline
-					Material offlineType = Material.getMaterial(section.getString("offline-item", "how are you doing today?"));
-					if (offlineType != null){
-						item.setType(offlineType);
-						item.setDurability((short) section.getInt("offline-data", 0));
-					}
-				} else if (section.getBoolean("change-item-count", true)){
-					//Server is online so getting player count is safe
-					int amount = Integer.parseInt(playerCount[2]);
-					if (amount > 64) amount = 1;
-					item.setAmount(amount);
-				}
+			//If ping server is turned off just add item and continue to next server
+			if (!section.getBoolean("ping-server")){
+				List<String> lore = Colors.parseColors(section.getStringList("lore"));
+				list.add(new MenuItem(slot, item, name, lore.toArray(new String[]{})));	
+				continue;
 			}
 			
-			list.add(new MenuItem(slot, item, name, lore.toArray(new String[]{})));			
+			boolean serverOnline;
+			String consoleErrorMessage = null;
+
+			String motd = "";
+			int onlinePlayers = 0;
+			int maxPlayers = 0;
+
+			try {
+				String ip = section.getString("ip");
+				int port = section.getInt("port");
+				int timeout = section.getInt("ping-timeout", 100);
+
+				String[] result = ServerPinger.pingServer(ip, port, timeout);
+
+				if (result == null) {
+					serverOnline = false;
+					consoleErrorMessage = "Server not reachable within set timeout";
+				} else {
+					motd = result[0];
+					onlinePlayers = Integer.parseInt(result[1]);
+					maxPlayers = Integer.parseInt(result[2]);
+					serverOnline = true;
+				}
+			} catch (PingException e) {
+				serverOnline = false;
+				consoleErrorMessage = e.getMessage();
+			}
+
+			List<String> lore;
+
+			if (serverOnline) {
+				if (section.getBoolean("change-item-count", true)) {
+					int amount = onlinePlayers;
+					if (amount > 64)
+						amount = 1;
+					item.setAmount(amount);
+				}
+				
+				lore = new ArrayList<>();
+				for (String loreString : section.getStringList("lore")){
+					lore.add(Colors.parseColors(loreString)
+							.replace("{online}", String.valueOf(onlinePlayers))
+							.replace("{max}", String.valueOf(maxPlayers))
+							.replace("{motd}", motd));
+				}
+			} else {
+				if (Main.getPlugin().getConfig().getBoolean("ping-error-message-console", true)) {
+					Main.getPlugin().getLogger().log(Level.SEVERE, String.format("An error occured while trying to ping %s. (%s)", name, consoleErrorMessage));
+				}
+
+				Material offlineType = Material.getMaterial(section.getString("offline-item", "error"));
+				if (offlineType != null) {
+					item.setType(offlineType);
+					item.setDurability((short) section.getInt("offline-data", 0));
+				}
+
+				lore = Colors.parseColors(section.getStringList("offline-lore"));
+			}
+			
+			list.add(new MenuItem(slot, item, name, lore.toArray(new String[]{})));
 		}
 		
 		return list;
@@ -82,33 +121,27 @@ public class SelectorMenu extends IconMenu {
 		int slot = event.getPosition();
 		Player player = event.getPlayer();
 		
-		String server = config.getString("menu." + slot + ".server");
+		String action = config.getString("menu." + slot + ".action");
 		
-		if (server.startsWith("url:")){
+		if (action.startsWith("url:")){ //Send url message
 			//It's a URL
-			String url = server.substring(4);
+			String url = action.substring(4);
 			String message = Colors.parseColors(config.getString("url-message", "&3&lClick here"));
 			
 			player.spigot().sendMessage(
 					new ComponentBuilder(message)
-					.event(new ClickEvent(
-							ClickEvent.Action.OPEN_URL,
-							url))
+					.event(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
 					.create()
 					);
 			return true;
-		}
-		
-		if (server.startsWith("cmd:")){
+		} else if (action.startsWith("cmd:")){ //Execute command
 			//It's a command
-			String command = server.substring(4);
+			String command = action.substring(4);
 			Bukkit.dispatchCommand(player, command);
 			return true;
-		}
-		
-		if (server.startsWith("sel:")){
+		} else if (action.startsWith("sel:")){ //Open selector
 			//It's a server selector
-			String configName = server.substring(4);
+			String configName = action.substring(4);
 			FileConfiguration config = Main.getSelectorConfigurationFile(configName);
 			if (config == null){
 				player.sendMessage(ChatColor.RED + "This server selector does not exist.");
@@ -121,11 +154,8 @@ public class SelectorMenu extends IconMenu {
 				
 				return false;
 			}
-		}
-		
-		if (server.startsWith("world:")){
-			//It's a world
-			String worldName = server.substring(6);
+		} else if (action.startsWith("world:")){ //Teleport to world
+			String worldName = action.substring(6);
 			World world = Bukkit.getWorld(worldName);
 			if (world == null){
 				player.sendMessage(ChatColor.RED + "A world with the name " + worldName + " does not exist.");
@@ -134,56 +164,20 @@ public class SelectorMenu extends IconMenu {
 				player.teleport(world.getSpawnLocation());
 				return true;
 			}
+		} else if (action.startsWith("srv:")){ //Teleport to server
+			String serverName = action.substring(4);
+			Main.teleportPlayerToServer(player, serverName);
+			return true;
+		} else if (action.startsWith("msg")){ //Send message
+			String message = action.substring(4);
+			player.sendMessage(Colors.parseColors(message));
+			return true;
+		} else if (action.equals("close")){ //Close selector
+			return true;
+		} else {
+			return false;
 		}
-		
-		/*if (config.getBoolean("menu." + event.getPosition() + ".show-player-count", false) &&
-				Main.getPlugin().getConfig().getBoolean("server-offline-message-enabled", true)){
-			final String errorMessage = Colors.parseColors(Main.getPlugin().getConfig().getString("ping-error-message-selector", "&cServer is not reachable"));
-			if (ListUtils.stringListContainsString(event.getItemStack().getItemMeta().getLore(), errorMessage)){
-				//The server is offline
-				final String offlineMessage = Colors.parseColors(Main.getPlugin().getConfig().getString("server-offline-message", "server offline"));
-				player.sendMessage(offlineMessage);
-				return true;
-			}
-		}*/
-		
-		Main.teleportPlayerToServer(player, server);
-		
-		return true;
-	}
 	
-	/**
-	 * @param serverSection
-	 * @return first item in array is player count string, second item is ping success state ("true" or "false"), third player count
-	 */
-	private static String[] getPlayerCountString(ConfigurationSection serverSection){
-		String errorMessage = Colors.parseColors( 
-				Main.getPlugin().getConfig().getString("ping-error-message-selector", "&cServer is not reachable"));
-		
-		try {
-			String ip = serverSection.getString("ip");
-			int port = serverSection.getInt("port");
-
-			int timeout = serverSection.getInt("ping-timeout", 100);
-			
-			String[] result = ServerPinger.pingServer(ip, port, timeout);
-			
-			if (result != null){
-				int onlinePlayers = Integer.parseInt(result[1]);
-				int maxPlayers = Integer.parseInt(result[2]);
-				String message = serverSection.getString("player-count")
-						.replace("{x}", onlinePlayers + "")
-						.replace("{y}", maxPlayers + "");
-				return new String[]{message, "true", String.valueOf(onlinePlayers)};
-			} else {
-				return new String[]{errorMessage, "false", "how am i supposed to know if the server is offline"};
-			}
-		} catch (PingException e) {
-			boolean sendErrorMessage = Main.getPlugin().getConfig().getBoolean("ping-error-message-console", true);
-			if (sendErrorMessage) Main.getPlugin().getLogger().log(Level.SEVERE, "An error occured while trying to ping " + serverSection.getString("name") + ". (" + e.getMessage() + ")");
-			
-			return new String[]{errorMessage, "false", "idk"};
-		}
 	}
 
 }

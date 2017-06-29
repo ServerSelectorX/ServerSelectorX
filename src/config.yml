@@ -1,17 +1,18 @@
-# Read this, it's important:
-
 # Please note that if you want to use color codes or special characters 
 # you have to enclose your string into quotation marks, for example:
 #
 # name: '&aFancy &cColors!'
 
-# For a list of item names see https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
+
+
+
+
 
 server-teleport-message-enabled: true
 server-teleport-message: '&7You are being connected to &7&l{x}&r&7.'
 
 # Clear chat before sending player to server? 
-# Note: the chat will be cleared before sending server teleport message, so it will still be visible.
+# Note: the chat will be cleared before sending server teleport message, so the server teleport message will still be visible.
 chat-clear: false
 
 
@@ -30,7 +31,7 @@ no-permission-message: '&cYou do not have permission to use the server selector.
 
 # -------------------- Sounds -------------------- #
 
-# Latest sound names (currently for 1.12-pre6): https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+# Latest sound names (currently for 1.12): https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
 # 1.7.10 sound names: https://jd.bukkit.org/org/bukkit/Sound.html
 # 1.8 sound names: http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Sound.html
 
@@ -42,8 +43,6 @@ selector-open-sound: HORSE_ARMOR
 
 
 # -------------------- Server Pinging -------------------- #
-
-ping-error-message-selector: '&cServer is not reachable'
 
 # How long a server needs to be pinged for before giving up. (in milliseconds)
 # Set this to a higher value if your servers are not responding in time.
@@ -58,4 +57,4 @@ ping-error-message-console: true
 
 
 # Do not touch this
-version: 5
+version: 6
