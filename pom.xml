@@ -50,6 +50,19 @@
 				<version>2.3</version>
 				<configuration>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
+					
+					<artifactSet>
+						<includes>
+							<include>org.bstats:*</include>
+						</includes>
+					</artifactSet>
+					
+					<relocations>
+						<relocation>
+							<pattern>org.bstats</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx</shadedPattern>
+						</relocation>
+					</relocations>
 				</configuration>
 			</plugin>
 
@@ -71,6 +84,12 @@
 			<version>1.1.2.2</version>
 		</dependency>
 
+		<dependency>
+			<groupId>org.bstats</groupId>
+			<artifactId>bstats-bukkit</artifactId>
+			<version>1.1</version>
+		</dependency>
+
 	</dependencies>
 
 	<repositories>
@@ -81,6 +100,10 @@
 		<repository>
 			<id>derkades</id>
 			<url>https://derkades.xyz/maven</url>
+		</repository>
+		<repository>
+			<id>bstats-repo</id>
+			<url>http://repo.bstats.org/content/repositories/releases/</url>
 		</repository>
 	</repositories>
 

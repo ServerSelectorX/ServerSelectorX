@@ -12,6 +12,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
+import org.bstats.Metrics;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -53,6 +54,9 @@ public class Main extends JavaPlugin {
 		
 		//Register command
 		getCommand("serverselectorx").setExecutor(new ReloadCommand());
+		
+		//Start bStats
+		new Metrics(this);
 			
 		int version = getConfig().getInt("version");
 		if (version != CONFIG_VERSION){
