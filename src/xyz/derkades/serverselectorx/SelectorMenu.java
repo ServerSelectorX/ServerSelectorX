@@ -57,7 +57,7 @@ public class SelectorMenu extends IconMenu {
 				//List<String> lore = Colors.parseColors(section.getStringList("lore"));
 				List<String> lore = new ArrayList<>();
 				for (String loreString : section.getStringList("lore")){
-					lore.add(placeholders(player, Colors.parseColors(loreString)));
+					lore.add(Colors.parseColors(placeholders(player, loreString)));
 				}
 				list.add(new MenuItem(slot, item, name, lore.toArray(new String[]{})));	
 				continue;
@@ -102,7 +102,7 @@ public class SelectorMenu extends IconMenu {
 				}
 				
 				for (String loreString : section.getStringList("lore")){
-					lore.add(placeholders(player, Colors.parseColors(loreString))
+					lore.add(Colors.parseColors(placeholders(player, loreString))
 							.replace("{online}", String.valueOf(onlinePlayers))
 							.replace("{max}", String.valueOf(maxPlayers))
 							.replace("{motd}", motd));
@@ -119,7 +119,7 @@ public class SelectorMenu extends IconMenu {
 				}
 
 				for (String loreString : section.getStringList("lore")){
-					lore.add(placeholders(player, Colors.parseColors(loreString)));
+					lore.add(Colors.parseColors(placeholders(player, loreString)));
 				}
 			}
 			
