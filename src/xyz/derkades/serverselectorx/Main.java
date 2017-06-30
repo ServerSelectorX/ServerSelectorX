@@ -76,7 +76,7 @@ public class Main extends JavaPlugin {
 			logger.log(Level.SEVERE, "Please rename config.yml to something else and restart your server.");
 			logger.log(Level.SEVERE, "If you don't want to redo your config, see resource updates on spigotmc.org for instructions.");
 			logger.log(Level.SEVERE, "***************************************");
-			getServer().getPluginManager().disablePlugin(getPlugin());
+			getServer().getPluginManager().disablePlugin(this);
 		}
 		
 		//Copy custom config
