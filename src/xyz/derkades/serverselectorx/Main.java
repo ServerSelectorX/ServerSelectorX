@@ -39,7 +39,7 @@ public class Main extends JavaPlugin {
 	
 	public static final int GLOWING_ENCHANTMENT_ID = 96;
 	
-	public static Placeholders PLACEHOLDER_API = null;
+	public static Placeholders PLACEHOLDER_API;
 	
 	private static Plugin plugin;
 	
