@@ -54,7 +54,11 @@ public class SelectorMenu extends IconMenu {
 			
 			//If ping server is turned off just add item and continue to next server
 			if (!section.getBoolean("ping-server")){
-				List<String> lore = Colors.parseColors(section.getStringList("lore"));
+				//List<String> lore = Colors.parseColors(section.getStringList("lore"));
+				List<String> lore = new ArrayList<>();
+				for (String loreString : section.getStringList("lore")){
+					lore.add(placeholders(player, Colors.parseColors(loreString)));
+				}
 				list.add(new MenuItem(slot, item, name, lore.toArray(new String[]{})));	
 				continue;
 			}
