@@ -43,7 +43,7 @@ public class SelectorMenu extends IconMenu {
 			if (material == null) material = Material.STONE;
 			final int data = section.getInt("data");
 			final ItemStack item = new ItemBuilder(material).setDamage(data).create();
-			final String name = placeholders(player, Colors.parseColors(section.getString("name")));
+			final String name = Main.PLACEHOLDER_API.parsePlaceholders(player, section.getString("name"));
 			
 			//Apply custom glowing enchantment
 			if (section.getBoolean("enchanted", false)){
@@ -54,11 +54,7 @@ public class SelectorMenu extends IconMenu {
 			
 			//If ping server is turned off just add item and continue to next server
 			if (!section.getBoolean("ping-server")){
-				//List<String> lore = Colors.parseColors(section.getStringList("lore"));
-				List<String> lore = new ArrayList<>();
-				for (String loreString : section.getStringList("lore")){
-					lore.add(Colors.parseColors(placeholders(player, loreString)));
-				}
+				List<String> lore = Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("lore"));
 				list.add(new MenuItem(slot, item, name, lore.toArray(new String[]{})));	
 				continue;
 			}
@@ -102,7 +98,7 @@ public class SelectorMenu extends IconMenu {
 				}
 				
 				for (String loreString : section.getStringList("lore")){
-					lore.add(Colors.parseColors(placeholders(player, loreString))
+					lore.add(Main.PLACEHOLDER_API.parsePlaceholders(player, loreString)
 							.replace("{online}", String.valueOf(onlinePlayers))
 							.replace("{max}", String.valueOf(maxPlayers))
 							.replace("{motd}", motd));
@@ -118,9 +114,7 @@ public class SelectorMenu extends IconMenu {
 					item.setDurability((short) section.getInt("offline-data", 0));
 				}
 
-				for (String loreString : section.getStringList("lore")){
-					lore.add(Colors.parseColors(placeholders(player, loreString)));
-				}
+				lore = Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("offline-lore"));
 			}
 			
 			list.add(new MenuItem(slot, item, name, lore.toArray(new String[]{})));
@@ -191,10 +185,6 @@ public class SelectorMenu extends IconMenu {
 			return false;
 		}
 	
-	}
-	
-	private static String placeholders(Player player, String text){
-		return Main.PLACEHOLDER_API.parsePlaceholders(player, text);
 	}
 
 }

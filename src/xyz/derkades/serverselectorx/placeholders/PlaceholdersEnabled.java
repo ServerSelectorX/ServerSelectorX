@@ -1,5 +1,7 @@
 package xyz.derkades.serverselectorx.placeholders;
 
+import java.util.List;
+
 import org.bukkit.entity.Player;
 
 import me.clip.placeholderapi.PlaceholderAPI;
@@ -13,6 +15,11 @@ public class PlaceholdersEnabled extends Placeholders {
 		System.out.println("[debug] in: " + string);
 		System.out.println("[debug] out: " + parsed);
 		return parsed;
+	}
+
+	@Override
+	public List<String> parsePlaceholders(Player player, List<String> text) {
+		return PlaceholderAPI.setPlaceholders(player, text);
 	}
 
 }
