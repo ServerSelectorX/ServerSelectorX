@@ -94,15 +94,7 @@ public class Main extends JavaPlugin {
 		registerCommands();
 		
 		//Register glowing enchantment
-		try {
-			Field f = Enchantment.class.getDeclaredField("acceptingNew");
-			f.setAccessible(true);
-			f.set(null, true);
-			
-			EnchantmentWrapper.registerEnchantment(new GlowEnchantment());
-		} catch (NoSuchFieldException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
+		registerEnchantment();
 		
 		//Check if placeholderapi is installed
 		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")){
@@ -144,6 +136,21 @@ public class Main extends JavaPlugin {
 			} catch (NoSuchFieldException | IllegalAccessException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	private static void registerEnchantment(){
+		if (Enchantment.getByName("ssx-glow") != null)
+			return;
+		
+		try {
+			Field f = Enchantment.class.getDeclaredField("acceptingNew");
+			f.setAccessible(true);
+			f.set(null, true);
+			
+			EnchantmentWrapper.registerEnchantment(new GlowEnchantment());
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			e.printStackTrace();
 		}
 	}
 	

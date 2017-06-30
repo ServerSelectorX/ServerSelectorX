@@ -32,7 +32,7 @@ public class GlowEnchantment extends Enchantment {
 
 	@Override
 	public String getName() {
-		return null;
+		return "ssx-glow";
 	}
 
 	@Override
