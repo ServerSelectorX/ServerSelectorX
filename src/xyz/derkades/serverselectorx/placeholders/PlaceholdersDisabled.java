@@ -10,7 +10,6 @@ public class PlaceholdersDisabled extends Placeholders {
 
 	@Override
 	public String parsePlaceholders(Player player, String string) {
-		System.out.println("[debug] placeholderapi not active");
 		return Colors.parseColors(string);
 	}
 
