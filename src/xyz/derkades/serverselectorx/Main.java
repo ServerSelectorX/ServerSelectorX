@@ -98,7 +98,7 @@ public class Main extends JavaPlugin {
 		super.saveDefaultConfig();
 		
 		//Reload config
-		Main.getPlugin().reloadConfig();
+		super.reloadConfig();
 	
 		//Copy custom config
 		File file = new File(this.getDataFolder() + "/menu", "default.yml");
