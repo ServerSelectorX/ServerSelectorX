@@ -53,6 +53,14 @@ ping-error-message-console: true
 
 
 
+# -------------------- Items -------------------- #
+
+# Cancel item dropping for players that do not have the permission ssx.drop
+cancel-item-drop: false
+
+# Cancel item move for players that do not have the permission ssx.move
+cancel-item-move: false
+
 
 
 
