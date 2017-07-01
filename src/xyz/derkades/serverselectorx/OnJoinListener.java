@@ -10,7 +10,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 
 public class OnJoinListener implements Listener {
@@ -31,8 +30,7 @@ public class OnJoinListener implements Listener {
 			}
 			
 			ItemStack item = new ItemBuilder(material)
-					// Get item name from 'item-name', if not exist then from 'title', if not exist then 'Error'
-					.setName(Colors.parseColors(config.getString("item-name", config.getString("title", "Error"))))
+					.coloredName(config.getString("item-name", "error"))
 					.create();
 			
 			int slot = config.getInt("inv-slot");

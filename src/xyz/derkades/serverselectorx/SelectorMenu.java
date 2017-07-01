@@ -10,8 +10,7 @@ import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -25,102 +24,128 @@ import xyz.derkades.serverselectorx.utils.ServerPinger.PingException;
 public class SelectorMenu extends IconMenu {
 
 	private FileConfiguration config;
+	private Player player;
 	
 	public SelectorMenu(String name, int size, Player player, FileConfiguration config) {
 		super(Main.getPlugin(), name, size, player);
 		this.config = config;
+		this.player = player;
 	}
 
 	@Override
-	public List<MenuItem> getMenuItems(Player player) {
-		final List<MenuItem> list = new ArrayList<>();
+	public void open() {
+		new BukkitRunnable(){
+			public void run(){
+				for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
+					final ConfigurationSection section = config.getConfigurationSection("menu." + key);
 
-		for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
-			final ConfigurationSection section = config.getConfigurationSection("menu." + key);
+					final int slot = Integer.parseInt(key);
+					Material material = Material.getMaterial(section.getString("item"));
+					if (material == null) material = Material.STONE;
+					final int data = section.getInt("data");
+					final String name = section.getString("name");
+					
+					final ItemBuilder builder = new ItemBuilder(material).data(data);
+					
+					//Apply custom glowing enchantment
+					if (section.getBoolean("enchanted", false)){
+						builder.unsafeEnchant(new GlowEnchantment(), 1);
+					}
+					
+					//If ping server is turned off just add item and continue to next server
+					if (!section.getBoolean("ping-server")){
+						//Run synchronously, because PlaceholderAPI uses the Bukkit API
+						new BukkitRunnable(){
+							public void run(){
+								List<String> lore = Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("lore"));
+								items.put(slot, builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name)).lore(lore).create());
+							}
+						}.runTask(Main.getPlugin());
+						continue;
+					}
+					
+					//Server pinging is turned on, continue to run stuff below async
+					
+					boolean serverOnline;
+					String consoleErrorMessage = "";
 
-			final int slot = Integer.parseInt(key);
-			Material material = Material.getMaterial(section.getString("item"));
-			if (material == null) material = Material.STONE;
-			final int data = section.getInt("data");
-			final ItemStack item = new ItemBuilder(material).setDamage(data).create();
-			final String name = Main.PLACEHOLDER_API.parsePlaceholders(player, section.getString("name"));
-			
-			//Apply custom glowing enchantment
-			if (section.getBoolean("enchanted", false)){
-				ItemMeta meta = item.getItemMeta();
-				meta.addEnchant(new GlowEnchantment(), 1, true);
-				item.setItemMeta(meta);
-			}
-			
-			//If ping server is turned off just add item and continue to next server
-			if (!section.getBoolean("ping-server")){
-				List<String> lore = Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("lore"));
-				list.add(new MenuItem(slot, item, name, lore.toArray(new String[]{})));	
-				continue;
-			}
-			
-			boolean serverOnline;
-			String consoleErrorMessage = null;
+					String motd = "";
+					int onlinePlayers = 0;
+					int maxPlayers = 0;
 
-			String motd = "";
-			int onlinePlayers = 0;
-			int maxPlayers = 0;
+					try {
+						String ip = section.getString("ip");
+						int port = section.getInt("port");
+						int timeout = section.getInt("ping-timeout", 100);
 
-			try {
-				String ip = section.getString("ip");
-				int port = section.getInt("port");
-				int timeout = section.getInt("ping-timeout", 100);
+						String[] result = ServerPinger.pingServer(ip, port, timeout);
 
-				String[] result = ServerPinger.pingServer(ip, port, timeout);
+						if (result == null) {
+							serverOnline = false;
+							consoleErrorMessage = "Server not reachable within set timeout";
+						} else {
+							motd = result[0];
+							onlinePlayers = Integer.parseInt(result[1]);
+							maxPlayers = Integer.parseInt(result[2]);
+							serverOnline = true;
+						}
+					} catch (PingException e) {
+						serverOnline = false;
+						consoleErrorMessage = e.getMessage();
+					}
+					
+					final boolean serverOnline_f = serverOnline;
+					final String consoleErrorMessage_f = consoleErrorMessage;
+					final String motd_f = motd;
+					final int onlinePlayers_f = onlinePlayers;
+					final int maxPlayers_f = maxPlayers;
+					
+					new BukkitRunnable(){
+						
+						public void run(){						
+							List<String> lore = new ArrayList<>();;
 
-				if (result == null) {
-					serverOnline = false;
-					consoleErrorMessage = "Server not reachable within set timeout";
-				} else {
-					motd = result[0];
-					onlinePlayers = Integer.parseInt(result[1]);
-					maxPlayers = Integer.parseInt(result[2]);
-					serverOnline = true;
-				}
-			} catch (PingException e) {
-				serverOnline = false;
-				consoleErrorMessage = e.getMessage();
-			}
+							if (serverOnline_f) {
+								if (section.getBoolean("change-item-count", true)) {
+									int amount = onlinePlayers_f;
+									if (amount > 64)
+										amount = 1;
+									builder.amount(amount);
+								}
 
-			List<String> lore = new ArrayList<>();;
+								for (String loreString : section.getStringList("lore")) {
+									lore.add(Main.PLACEHOLDER_API.parsePlaceholders(player, loreString)
+											.replace("{online}", String.valueOf(onlinePlayers_f))
+											.replace("{max}", String.valueOf(maxPlayers_f)).replace("{motd}", motd_f));
+								}
+							} else {
+								if (Main.getPlugin().getConfig().getBoolean("ping-error-message-console", true)) {
+									Main.getPlugin().getLogger().log(Level.SEVERE, String.format(
+											"An error occured while trying to ping %s. (%s)", name, consoleErrorMessage_f));
+								}
 
-			if (serverOnline) {
-				if (section.getBoolean("change-item-count", true)) {
-					int amount = onlinePlayers;
-					if (amount > 64)
-						amount = 1;
-					item.setAmount(amount);
+								Material offlineType = Material.getMaterial(section.getString("offline-item", "error"));
+								if (offlineType != null) {
+									builder.type(offlineType).data(section.getInt("offline-data", 0));
+								}
+
+								lore = Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("offline-lore"));
+							}
+
+							items.put(slot, builder.lore(lore).create());
+						}
+					}.runTask(Main.getPlugin());
 				}
 				
-				for (String loreString : section.getStringList("lore")){
-					lore.add(Main.PLACEHOLDER_API.parsePlaceholders(player, loreString)
-							.replace("{online}", String.valueOf(onlinePlayers))
-							.replace("{max}", String.valueOf(maxPlayers))
-							.replace("{motd}", motd));
-				}
-			} else {
-				if (Main.getPlugin().getConfig().getBoolean("ping-error-message-console", true)) {
-					Main.getPlugin().getLogger().log(Level.SEVERE, String.format("An error occured while trying to ping %s. (%s)", name, consoleErrorMessage));
-				}
-
-				Material offlineType = Material.getMaterial(section.getString("offline-item", "error"));
-				if (offlineType != null) {
-					item.setType(offlineType);
-					item.setDurability((short) section.getInt("offline-data", 0));
-				}
-
-				lore = Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("offline-lore"));
+				//After for loop has completed, open menu synchronously
+				new BukkitRunnable(){
+					public void run(){
+						
+					}
+				}.runTaskLater(Main.getPlugin(), 1); //Wait a tick for safety. It's unnoticeable anyways
 			}
-			
-			list.add(new MenuItem(slot, item, name, lore.toArray(new String[]{})));
-		}
+		}.runTaskAsynchronously(Main.getPlugin());
 		
-		return list;
 	}
 
 	@Override

@@ -77,15 +77,10 @@ public class SelectorOpenListener implements Listener {
 					}
 				}
 				
-				new BukkitRunnable(){
-					public void run(){
-						final int rows = config.getInt("rows");
-						final String title = Colors.parseColors(config.getString("title"));
-						
-						new SelectorMenu(title, rows * 9, player, config).open();
-					}
-				}.runTaskAsynchronously(Main.getPlugin());
+				final int rows = config.getInt("rows");
+				final String title = Colors.parseColors(config.getString("title"));
 				
+				new SelectorMenu(title, rows * 9, player, config).open();
 		} else if (config.getBoolean("no-permission-message-enabled", false))
 			player.sendMessage(config.getString("no-permission-message"));
 			return;
