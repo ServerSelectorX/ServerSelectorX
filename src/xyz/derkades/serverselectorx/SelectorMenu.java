@@ -94,6 +94,7 @@ public class SelectorMenu extends IconMenu {
 						consoleErrorMessage = e.getMessage();
 					}
 					
+					//This hurts my eyes :(
 					final boolean serverOnline_f = serverOnline;
 					final String consoleErrorMessage_f = consoleErrorMessage;
 					final String motd_f = motd;
@@ -140,12 +141,16 @@ public class SelectorMenu extends IconMenu {
 				//After for loop has completed, open menu synchronously
 				new BukkitRunnable(){
 					public void run(){
-						
+						callOriginalOpenMethod();
 					}
 				}.runTaskLater(Main.getPlugin(), 1); //Wait a tick for safety. It's unnoticeable anyways
 			}
 		}.runTaskAsynchronously(Main.getPlugin());
 		
+	}
+	
+	private void callOriginalOpenMethod(){
+		super.open();
 	}
 
 	@Override
