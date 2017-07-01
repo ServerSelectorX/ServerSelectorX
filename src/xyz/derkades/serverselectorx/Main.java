@@ -150,9 +150,6 @@ public class Main extends JavaPlugin {
 	}
 	
 	private static void registerEnchantment(){
-		if (Enchantment.getByName("ssx-glow") != null)
-			return;
-		
 		try {
 			Field f = Enchantment.class.getDeclaredField("acceptingNew");
 			f.setAccessible(true);
@@ -161,6 +158,8 @@ public class Main extends JavaPlugin {
 			EnchantmentWrapper.registerEnchantment(new GlowEnchantment());
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			e.printStackTrace();
+		} catch (IllegalArgumentException e){
+			//Already registered
 		}
 	}
 	
