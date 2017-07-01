@@ -50,13 +50,11 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable(){
 		plugin = this;
-		
-		//Setup config
-		super.saveDefaultConfig();
-		
+
 		//Register listeners
 		Bukkit.getPluginManager().registerEvents(new SelectorOpenListener(), this);
 		Bukkit.getPluginManager().registerEvents(new OnJoinListener(), this);
+		Bukkit.getPluginManager().registerEvents(new ItemMoveDropCancelListener(), this);
 		
 		//Register outgoing channel
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
@@ -79,17 +77,6 @@ public class Main extends JavaPlugin {
 			getServer().getPluginManager().disablePlugin(this);
 		}
 		
-		//Copy custom config
-		File file = new File(this.getDataFolder() + "/menu", "default.yml");
-		if (!file.exists()){
-			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/default-selector.yml");
-			try {
-				FileUtils.copyURLToFile(inputUrl, file);
-			} catch (IOException e){
-				e.printStackTrace();
-			}
-		}
-		
 		//Register custom selector commands
 		registerCommands();
 		
@@ -104,6 +91,29 @@ public class Main extends JavaPlugin {
 			Main.PLACEHOLDER_API = new PlaceholdersDisabled();
 			getLogger().log(Level.INFO, "PlaceholderAPI is not installed. The plugin will still work.");
 		}
+	}
+	
+	public void reloadConfig(){	
+		//Setup config
+		super.saveDefaultConfig();
+		
+		//Reload config
+		Main.getPlugin().reloadConfig();
+	
+		//Copy custom config
+		File file = new File(this.getDataFolder() + "/menu", "default.yml");
+		if (!file.exists()){
+			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/default-selector.yml");
+			try {
+				FileUtils.copyURLToFile(inputUrl, file);
+			} catch (IOException e){
+				e.printStackTrace();
+			}
+		}
+		
+		//Initialise variables
+		ItemMoveDropCancelListener.DROP_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-drop", false);
+		ItemMoveDropCancelListener.MOVE_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-move", false);
 	}
 	
 	private static void registerCommands(){

@@ -13,7 +13,6 @@ public class ReloadCommand implements CommandExecutor {
 		}
 		
 		if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl")){
-			Main.getPlugin().saveDefaultConfig();
 			Main.getPlugin().reloadConfig();
 			sender.sendMessage(Message.CONFIG_RELOADED.toString());
 			return true;
