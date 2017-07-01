@@ -133,7 +133,7 @@ public class SelectorMenu extends IconMenu {
 								lore = Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("offline-lore"));
 							}
 
-							items.put(slot, builder.lore(lore).create());
+							items.put(slot, builder.lore(lore).name(Main.PLACEHOLDER_API.parsePlaceholders(player, name)).create());
 						}
 					}.runTask(Main.getPlugin());
 				}
