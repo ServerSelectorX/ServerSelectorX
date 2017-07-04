@@ -30,6 +30,7 @@ import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.serverselectorx.placeholders.Placeholders;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersDisabled;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
+import xyz.derkades.serverselectorx.utils.Cache;
 
 public class Main extends JavaPlugin {
 	
@@ -91,6 +92,13 @@ public class Main extends JavaPlugin {
 			Main.PLACEHOLDER_API = new PlaceholdersDisabled();
 			getLogger().log(Level.INFO, "PlaceholderAPI is not installed. The plugin will still work.");
 		}
+		
+		//Periodically clean cache
+		new BukkitRunnable(){
+			public void run(){
+				Cache.cleanCache();
+			}
+		}.runTaskTimer(this, 60*20, 60*20);
 	}
 	
 	public void reloadConfig(){	
