@@ -18,6 +18,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.IconMenu;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
+import xyz.derkades.serverselectorx.utils.Cache;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
 import xyz.derkades.serverselectorx.utils.ServerPinger.PingException;
 
@@ -66,49 +67,63 @@ public class SelectorMenu extends IconMenu {
 					
 					//Server pinging is turned on, continue to run stuff below async
 					
-					boolean serverOnline;
-					String consoleErrorMessage = "";
+					if (Cache.getCachedObject(name + "serverOnline") == null || 
+							Cache.getCachedObject(name + "motd") == null || 
+							Cache.getCachedObject(name + "onlinePlayers") == null || 
+							Cache.getCachedObject(name + "maxPlayers") == null ||
+							Cache.getCachedObject(name + "consoleErrorMessage") == null){
+						//Not cached, ping server
+						boolean serverOnline;
+						String consoleErrorMessage = "";
 
-					String motd = "";
-					int onlinePlayers = 0;
-					int maxPlayers = 0;
+						String motd = "";
+						int onlinePlayers = 0;
+						int maxPlayers = 0;
 
-					try {
-						String ip = section.getString("ip");
-						int port = section.getInt("port");
-						int timeout = section.getInt("ping-timeout", 100);
+						try {
+							String ip = section.getString("ip");
+							int port = section.getInt("port");
+							int timeout = section.getInt("ping-timeout", 100);
 
-						String[] result = ServerPinger.pingServer(ip, port, timeout);
+							String[] result = ServerPinger.pingServer(ip, port, timeout);
 
-						if (result == null) {
+							if (result == null) {
+								serverOnline = false;
+								consoleErrorMessage = "Server not reachable within set timeout";
+							} else {
+								motd = result[0];
+								onlinePlayers = Integer.parseInt(result[1]);
+								maxPlayers = Integer.parseInt(result[2]);
+								serverOnline = true;
+							}
+						} catch (PingException e) {
 							serverOnline = false;
-							consoleErrorMessage = "Server not reachable within set timeout";
-						} else {
-							motd = result[0];
-							onlinePlayers = Integer.parseInt(result[1]);
-							maxPlayers = Integer.parseInt(result[2]);
-							serverOnline = true;
+							consoleErrorMessage = e.getMessage();
 						}
-					} catch (PingException e) {
-						serverOnline = false;
-						consoleErrorMessage = e.getMessage();
+						
+						//Cache objects with a timeout of 3,5 seconds
+						Cache.addCachedObject(name + "serverOnline", serverOnline, 3500);
+						Cache.addCachedObject(name + "consoleErrorMessage", consoleErrorMessage, 3500);
+						Cache.addCachedObject(name + "motd", motd, 3500);
+						Cache.addCachedObject(name + "onlinePlayers", onlinePlayers, 3500);
+						Cache.addCachedObject(name + "maxPlayers", maxPlayers, 3500);
 					}
 					
-					//This hurts my eyes :(
-					final boolean serverOnline_f = serverOnline;
-					final String consoleErrorMessage_f = consoleErrorMessage;
-					final String motd_f = motd;
-					final int onlinePlayers_f = onlinePlayers;
-					final int maxPlayers_f = maxPlayers;
+					final boolean serverOnline = (boolean) Cache.getCachedObject(name + "serverOnline");
+					final String consoleErrorMessage = (String) Cache.getCachedObject(name + "consoleErrorMessage");
+
+					final String motd = (String) Cache.getCachedObject(name + "motd");
+					final int onlinePlayers = (int) Cache.getCachedObject(name + "onlinePlayers");
+					final int maxPlayers = (int) Cache.getCachedObject(name + "maxPlayers");
 					
 					new BukkitRunnable(){
 						
 						public void run(){						
 							List<String> lore = new ArrayList<>();;
 
-							if (serverOnline_f) {
+							if (serverOnline) {
 								if (section.getBoolean("change-item-count", true)) {
-									int amount = onlinePlayers_f;
+									int amount = onlinePlayers;
 									if (amount > 64)
 										amount = 1;
 									builder.amount(amount);
@@ -116,13 +131,13 @@ public class SelectorMenu extends IconMenu {
 
 								for (String loreString : section.getStringList("lore")) {
 									lore.add(Main.PLACEHOLDER_API.parsePlaceholders(player, loreString)
-											.replace("{online}", String.valueOf(onlinePlayers_f))
-											.replace("{max}", String.valueOf(maxPlayers_f)).replace("{motd}", motd_f));
+											.replace("{online}", String.valueOf(onlinePlayers))
+											.replace("{max}", String.valueOf(maxPlayers)).replace("{motd}", motd));
 								}
 							} else {
 								if (Main.getPlugin().getConfig().getBoolean("ping-error-message-console", true)) {
 									Main.getPlugin().getLogger().log(Level.SEVERE, String.format(
-											"An error occured while trying to ping %s. (%s)", name, consoleErrorMessage_f));
+											"An error occured while trying to ping %s. (%s)", name, consoleErrorMessage));
 								}
 
 								Material offlineType = Material.getMaterial(section.getString("offline-item", "error"));
