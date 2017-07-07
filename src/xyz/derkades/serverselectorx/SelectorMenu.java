@@ -102,11 +102,11 @@ public class SelectorMenu extends IconMenu {
 						}
 						
 						//Cache objects with a timeout of 3,5 seconds
-						Cache.addCachedObject(name + "serverOnline", serverOnline, 3500);
-						Cache.addCachedObject(name + "consoleErrorMessage", consoleErrorMessage, 3500);
-						Cache.addCachedObject(name + "motd", motd, 3500);
-						Cache.addCachedObject(name + "onlinePlayers", onlinePlayers, 3500);
-						Cache.addCachedObject(name + "maxPlayers", maxPlayers, 3500);
+						Cache.addCachedObject(name + "serverOnline", serverOnline, 3);
+						Cache.addCachedObject(name + "consoleErrorMessage", consoleErrorMessage, 3);
+						Cache.addCachedObject(name + "motd", motd, 3);
+						Cache.addCachedObject(name + "onlinePlayers", onlinePlayers, 3);
+						Cache.addCachedObject(name + "maxPlayers", maxPlayers, 3);
 					}
 					
 					final boolean serverOnline = (boolean) Cache.getCachedObject(name + "serverOnline");
