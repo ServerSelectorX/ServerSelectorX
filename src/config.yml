@@ -51,6 +51,13 @@ ping-timeout: 100
 # Enable error messages to console if the server is not reachable. (true or false)
 ping-error-message-console: true
 
+# Cooldown for opening the selector menu in milliseconds.
+# This should be equal or greater than ping-timeout * servers
+# where servers = the number of servers that have server pinging enabled.
+selector-open-cooldown: 1000
+
+# Specify empty string for no message -> cooldown-message: ''
+cooldown-message: '&cYou cannot use this yet, please wait {x} seconds.'
 
 
 # -------------------- Items -------------------- #

@@ -14,6 +14,7 @@ import java.util.logging.Logger;
 import org.apache.commons.io.FileUtils;
 import org.bstats.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
@@ -26,6 +27,7 @@ import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.serverselectorx.placeholders.Placeholders;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersDisabled;
@@ -135,9 +137,7 @@ public class Main extends JavaPlugin {
 				public boolean execute(CommandSender sender, String label, String[] args) {
 					if (sender instanceof Player){
 						Player player = (Player) sender;
-						final int rows = config.getInt("rows");
-						final String title = Colors.parseColors(config.getString("title"));
-						new SelectorMenu(title, rows * 9, player, config).open();
+						Main.openSelector(player, config);
 					}
 					return true;
 				}
@@ -186,6 +186,45 @@ public class Main extends JavaPlugin {
 			configs.add(YamlConfiguration.loadConfiguration(file));
 		}
 		return configs;
+	}
+	
+	public static void openSelector(Player player, FileConfiguration config) {
+		if (Cooldown.getCooldown(config.getName() + player.getName()) > 0) {
+			String cooldownMessage = Main.getPlugin().getConfig().getString("cooldown-message", "&cYou cannot use this yet, please wait {x} seconds.");
+			cooldownMessage = Colors.parseColors(cooldownMessage);
+			if (!(cooldownMessage.equals("") || cooldownMessage.equals(" "))) { //Do not send message if message is an empty string
+				player.sendMessage(cooldownMessage);
+			}
+			
+			return;
+		}
+		
+		long cooldownDuration = Main.getPlugin().getConfig().getLong("selector-open-cooldown", 1000);		
+		Cooldown.addCooldown(config.getName() + player.getName(), cooldownDuration);
+		
+		final boolean permissionsEnabled = config.getBoolean("permissions-enabled");
+		final boolean hasPermission = player.hasPermission("ssx.use." + config.getName().replace(".yml", ""));
+		if (!permissionsEnabled || hasPermission){
+			
+			//Play sound
+			String soundString = config.getString("selector-open-sound");
+			if (soundString != null && !soundString.equals("NONE")){
+				try {
+					Sound sound = Sound.valueOf(soundString);
+					player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
+				} catch (IllegalArgumentException e){
+					Main.getPlugin().getLogger().log(Level.WARNING, "A sound with the name " + soundString + " could not be found. Make sure that it is the right name for your server version.");
+				}
+			}
+			
+			final int rows = config.getInt("rows");
+			final String title = Colors.parseColors(config.getString("title"));
+			
+			new SelectorMenu(title, rows * 9, player, config).open();
+		} else if (config.getBoolean("no-permission-message-enabled", false)) {
+			player.sendMessage(config.getString("no-permission-message"));
+			return;
+		}
 	}
 	
 	public static void teleportPlayerToServer(final Player player, final String server){
