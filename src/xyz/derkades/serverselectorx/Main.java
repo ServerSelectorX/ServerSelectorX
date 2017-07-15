@@ -189,8 +189,10 @@ public class Main extends JavaPlugin {
 	}
 	
 	public static void openSelector(Player player, FileConfiguration config) {
-		if (Cooldown.getCooldown(config.getName() + player.getName()) > 0) {
+		long cooldown = Cooldown.getCooldown(config.getName() + player.getName());
+		if (cooldown > 0) {
 			String cooldownMessage = Main.getPlugin().getConfig().getString("cooldown-message", "&cYou cannot use this yet, please wait {x} seconds.");
+			cooldownMessage.replace("{x}", String.valueOf(cooldown / 1000));
 			cooldownMessage = Colors.parseColors(cooldownMessage);
 			if (!(cooldownMessage.equals("") || cooldownMessage.equals(" "))) { //Do not send message if message is an empty string
 				player.sendMessage(cooldownMessage);
