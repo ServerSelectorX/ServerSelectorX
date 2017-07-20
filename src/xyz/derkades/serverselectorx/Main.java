@@ -209,7 +209,7 @@ public class Main extends JavaPlugin {
 		if (!permissionsEnabled || hasPermission){
 			
 			//Play sound
-			String soundString = config.getString("selector-open-sound");
+			String soundString = Main.getPlugin().getConfig().getString("selector-open-sound");
 			if (soundString != null && !soundString.equals("NONE")){
 				try {
 					Sound sound = Sound.valueOf(soundString);
