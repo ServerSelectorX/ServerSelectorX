@@ -204,7 +204,7 @@ public class Main extends JavaPlugin {
 		long cooldownDuration = Main.getPlugin().getConfig().getLong("selector-open-cooldown", 1000);		
 		Cooldown.addCooldown(config.getName() + player.getName(), cooldownDuration);
 		
-		final boolean permissionsEnabled = config.getBoolean("permissions-enabled");
+		final boolean permissionsEnabled = Main.getPlugin().getConfig().getBoolean("permissions-enabled");
 		final boolean hasPermission = player.hasPermission("ssx.use." + config.getName().replace(".yml", ""));
 		if (!permissionsEnabled || hasPermission){
 			
