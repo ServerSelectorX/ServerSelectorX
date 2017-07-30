@@ -228,6 +228,12 @@ public class Main extends JavaPlugin {
 	}
 	
 	public static void teleportPlayerToServer(final Player player, final String server){
+		if (Cooldown.getCooldown("servertp" + player.getName() + server) == 0) {
+			return;
+		}
+		
+		Cooldown.addCooldown("servertp" + player.getName() + server, 1000);
+		
 		if (Main.getPlugin().getConfig().getBoolean("server-teleport-message-enabled", false)){
 			if (Main.getPlugin().getConfig().getBoolean("chat-clear", false)){
 				for (int i = 0; i < 20; i++){ //Send just 20 lines, because clearing the complete chat is unnecessary.
@@ -237,19 +243,6 @@ public class Main extends JavaPlugin {
 			
 			String message = Colors.parseColors(Main.getPlugin().getConfig().getString("server-teleport-message", "error"));
 			player.sendMessage(message.replace("{x}", server));
-		}
-		
-		String playerName = player.getName();
-		if (COOLDOWN.contains(playerName)){
-			return;
-		} else {
-			COOLDOWN.add(playerName);
-			new BukkitRunnable(){
-				public void run(){
-					if (COOLDOWN.contains(playerName))
-						COOLDOWN.remove(playerName);
-				}
-			}.runTaskLater(Main.getPlugin(), 1*20);
 		}
 
 		try {
