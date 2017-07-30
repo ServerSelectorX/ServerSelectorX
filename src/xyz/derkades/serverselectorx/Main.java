@@ -38,8 +38,6 @@ public class Main extends JavaPlugin {
 	
 	private static final int CONFIG_VERSION = 6;
 	
-	private static final List<String> COOLDOWN = new ArrayList<String>();
-	
 	public static final int GLOWING_ENCHANTMENT_ID = 96;
 	
 	public static Placeholders PLACEHOLDER_API;
