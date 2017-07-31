@@ -228,7 +228,7 @@ public class Main extends JavaPlugin {
 	}
 	
 	public static void teleportPlayerToServer(final Player player, final String server){
-		if (Cooldown.getCooldown("servertp" + player.getName() + server) == 0) {
+		if (Cooldown.getCooldown("servertp" + player.getName() + server) > 0) {
 			return;
 		}
 		
