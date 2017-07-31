@@ -64,7 +64,7 @@ public class Main extends JavaPlugin {
 		getCommand("serverselectorx").setExecutor(new ReloadCommand());
 		
 		//Start bStats
-		new Metrics(this);
+		startMetrics();
 		
 		//Check if config is up to date
 		int version = getConfig().getInt("version");
@@ -99,6 +99,29 @@ public class Main extends JavaPlugin {
 				Cache.cleanCache();
 			}
 		}.runTaskTimer(this, 60*20, 60*20);
+	}
+	
+	private void startMetrics() {
+		Metrics metrics = new Metrics(this);
+		metrics.addCustomChart(new Metrics.SimplePie("placeholderapi") {
+			
+			@Override
+			public String getValue() {
+				if (Main.PLACEHOLDER_API instanceof PlaceholdersEnabled) {
+					return "yes";
+				} else {
+					return "no";
+				}
+			}
+		});
+		
+		metrics.addCustomChart(new Metrics.SimplePie("number_of_selectors") {
+			
+			@Override
+			public String getValue() {
+				return Main.getServerSelectorConfigurationFiles().size() + "";
+			}
+		});
 	}
 	
 	public void reloadConfig(){	
