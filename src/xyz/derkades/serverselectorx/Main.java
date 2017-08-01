@@ -336,7 +336,7 @@ public class Main extends JavaPlugin {
 				CURRENT_VERSION = Main.this.getDescription().getVersion();
 				DOWNLOAD_LINK = downloadUrl;
 				
-				getLogger().info(ChatColor.AQUA + "An update is available!");
+				getLogger().info("An update is available!");
 				getLogger().info("Your version: " + CURRENT_VERSION);
 				getLogger().info("Latest version: " + NEW_VERSION);
 			}
