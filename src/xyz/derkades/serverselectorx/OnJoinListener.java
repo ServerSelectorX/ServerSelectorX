@@ -39,5 +39,20 @@ public class OnJoinListener implements Listener {
 			inv.setItem(slot, item);
 		}
 	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void sendUpdateMessage(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
+		
+		if (!player.hasPermission("ssx.update")) {
+			return;
+		}
+		
+		if (Main.UPDATE_AVAILABLE) {
+			for (String line : Message.UPDATE_AVAILABLE.toString().split("|")) {
+				player.sendMessage(line);
+			}
+		}
+	}
 
 }
