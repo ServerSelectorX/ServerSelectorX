@@ -7,13 +7,16 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
-import org.bstats.Metrics;
+import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -102,26 +105,53 @@ public class Main extends JavaPlugin {
 	}
 	
 	private void startMetrics() {
-		Metrics metrics = new Metrics(this);
-		metrics.addCustomChart(new Metrics.SimplePie("placeholderapi") {
+		final Metrics metrics = new Metrics(this);
+		
+		metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", () -> {
+			if (Main.PLACEHOLDER_API instanceof PlaceholdersEnabled) {
+				return "yes";
+			} else {
+				return "no";
+			}
+		}));
+		
+		metrics.addCustomChart(new Metrics.SimplePie("number_of_selectors", () -> {
+			return Main.getServerSelectorConfigurationFiles().size() + "";
+		}));
+		
+		metrics.addCustomChart(new Metrics.AdvancedPie("number_of_selectors", () -> {
+			final Map<String, Integer> map = new HashMap<>();
 			
-			@Override
-			public String getValue() {
-				if (Main.PLACEHOLDER_API instanceof PlaceholdersEnabled) {
-					return "yes";
+			for (final FileConfiguration config : Main.getServerSelectorConfigurationFiles()) {
+				final Material material = Material.getMaterial(config.getString("item"));
+				if (material == null) continue; //Do not count invalid items
+				
+				if (map.containsKey(material.toString())) {
+					map.put(material.toString(), map.get(material.toString() + 1));
 				} else {
-					return "no";
+					map.put(material.toString(), 1);
 				}
 			}
-		});
-		
-		metrics.addCustomChart(new Metrics.SimplePie("number_of_selectors") {
 			
-			@Override
-			public String getValue() {
-				return Main.getServerSelectorConfigurationFiles().size() + "";
+			return map;
+		}));
+		
+		metrics.addCustomChart(new Metrics.AdvancedPie("item_type", () -> {
+			final Map<String, Integer> map = new HashMap<>();
+			
+			for (final FileConfiguration config : Main.getServerSelectorConfigurationFiles()) {
+				for (final String slot : config.getConfigurationSection("menu").getKeys(false)) {
+					String action = config.getString("menu." + slot + ".action");
+					if (map.containsKey(action)) {
+						map.put(action, map.get(action) + 1);
+					} else {
+						map.put(action, 1);
+					}
+				}
 			}
-		});
+			
+			return map;
+		}));
 	}
 	
 	public void reloadConfig(){	
