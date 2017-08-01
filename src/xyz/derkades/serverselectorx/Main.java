@@ -324,7 +324,7 @@ public class Main extends JavaPlugin {
 	public static String DOWNLOAD_LINK;
 	
 	private void checkForUpdates() {		
-		SpigetUpdate updater = new SpigetUpdate(this, 12345).setVersionComparator(VersionComparator.EQUAL);
+		SpigetUpdate updater = new SpigetUpdate(this, 32853).setVersionComparator(VersionComparator.EQUAL);
 		
 		updater.checkForUpdate(new UpdateCallback() {
 			
