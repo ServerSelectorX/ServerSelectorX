@@ -119,7 +119,7 @@ public class Main extends JavaPlugin {
 			return Main.getServerSelectorConfigurationFiles().size() + "";
 		}));
 		
-		metrics.addCustomChart(new Metrics.AdvancedPie("number_of_selectors", () -> {
+		metrics.addCustomChart(new Metrics.AdvancedPie("selector_item", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 			
 			for (final FileConfiguration config : Main.getServerSelectorConfigurationFiles()) {
@@ -136,7 +136,7 @@ public class Main extends JavaPlugin {
 			return map;
 		}));
 		
-		metrics.addCustomChart(new Metrics.AdvancedPie("item_type", () -> {
+		metrics.addCustomChart(new Metrics.AdvancedPie("type", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 			
 			for (final FileConfiguration config : Main.getServerSelectorConfigurationFiles()) {
