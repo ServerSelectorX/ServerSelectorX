@@ -33,7 +33,6 @@ import org.inventivetalent.update.spiget.SpigetUpdate;
 import org.inventivetalent.update.spiget.UpdateCallback;
 import org.inventivetalent.update.spiget.comparator.VersionComparator;
 
-import net.md_5.bungee.api.ChatColor;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.serverselectorx.placeholders.Placeholders;
