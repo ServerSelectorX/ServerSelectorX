@@ -1,5 +1,8 @@
 package xyz.derkades.serverselectorx;
 
+import static org.bukkit.ChatColor.AQUA;
+import static org.bukkit.ChatColor.GRAY;
+
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -49,9 +52,9 @@ public class OnJoinListener implements Listener {
 		}
 		
 		if (Main.UPDATE_AVAILABLE) {
-			for (String line : Message.UPDATE_AVAILABLE.toString().split("|")) {
-				player.sendMessage(line);
-			}
+			player.sendMessage(AQUA + "An update is available.");
+			player.sendMessage(String.format(AQUA + "Latest version: %s " + GRAY + "(you are now using version %s)", Main.NEW_VERSION, Main.CURRENT_VERSION)); 
+			player.sendMessage(AQUA + "Download here: " + GRAY + Main.DOWNLOAD_LINK);
 		}
 	}
 
