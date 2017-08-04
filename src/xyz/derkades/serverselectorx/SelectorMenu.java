@@ -189,7 +189,11 @@ public class SelectorMenu extends IconMenu {
 		} else if (action.startsWith("cmd:")){ //Execute command
 			//It's a command
 			String command = action.substring(4);
-			Bukkit.dispatchCommand(player, command);
+			
+			//Send command 1 tick later to let the GUI close first (for commands that open a GUI)
+			Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), () -> {
+				Bukkit.dispatchCommand(player, command);
+			}, 1);
 			return true;
 		} else if (action.startsWith("sel:")){ //Open selector
 			//It's a server selector
