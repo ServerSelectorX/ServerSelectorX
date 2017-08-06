@@ -124,7 +124,7 @@ public class SelectorMenu extends IconMenu {
 							if (serverOnline) {
 								if (section.getBoolean("change-item-count", true)) {
 									int amount = onlinePlayers;
-									if (amount > 64)
+									if (amount > 64 || amount < 1)
 										amount = 1;
 									builder.amount(amount);
 								}
