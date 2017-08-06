@@ -1,3 +1,11 @@
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
+#                                                                                                        #
+#    For a list of item names see https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html      #
+#                                                                                                        #
+# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
+
+
+
 # Number of rows of slots of your server selector menu. For example '2' will mean 2*9 = 18 slots. Max value is 6.
 rows: 2
 
@@ -6,6 +14,11 @@ title: 'Server Selector'
 
 # This will be the name of the server selector item
 item-name: 'Server Selector'
+
+# Item lore. For no lore, put 'none' in the first line.
+item-lore:
+- 'Line 1'
+- 'Line 2'
 
 # The name of the server selector item. Specify "NONE" for no item.
 item: COMPASS
@@ -21,16 +34,6 @@ url-message: '&3&lClick here'
 
 # Command to open the menu. Specify "none" for no command. (without /)
 command: "menu"
-
-# --------- PLEASE READ THE INSTRUCTIONS BELOW --------- #
-
-# If ping-server is turned off, only these options will work: item, data, action, name, lore
-# If you want to use any other features you need to set server-pinging to true and enter the IP and port of the server.
-# You can use the placeholders {online}, {max} and {motd} in lore, but only if server pinging is turned on.
-# lore is used if the server is online, offline-lore is used when the server is offline. If server pinging is turned off, lore is used.
-# The first item in the selector is item 0. The fifth item is item 4.
-# change-item-count will only work for servers with less than 64 players. If there are more than 64 players, item count will be 1.
-# For a list of item names see https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
 
 # Possible values for action:
 #
@@ -60,48 +63,53 @@ command: "menu"
 
 menu:
 
-  3:
-  
-    item: DIAMOND_SWORD
-    data: 0
-    enchanted: true
-    action: 'srv:kitpvp'
-    name: KitPvP Server
-    lore:
-      - Lorem ipsum
-      - Dolor sit amet
+  3: # Item in 4th slot (use 0 for first item). Add as many items as you want by copying this section and giving it a new number. This number must not be greater than (rows*9)-1
 
     ping-server: false
     ip: play.example.com
     port: 1234
     
+    action: 'srv:kitpvp'
+
+    # Change item count based on number of players online. Only works if ping-server is turned on. If there are more than 64 players online, the item count will be 1
     change-item-count: true
-    offline-item: IRON_SWORD
-    offline-data: 0
-    offline-enchanted: false
-    offline-lore:
-      - Ipsum lorem
-      - Amet sit dolor
+
+    # Online is used when ping-server is turned off, or ping-server is turned on and the server is online.
+    online:
+      item: DIAMOND_SWORD
+      data: 0
+      enchanted: true
+      name: '&aKitPvP Server'
+      lore:
+       - Lorem ipsum
+       - Dolor sit amet
+       - There are {online} out of {max} players online. #These placeholders will only work if ping-server is enabled
+       - 'Message of the day: {motd}'
       
-  5:
-  
-    item: WOOL
-    data: 2
-    enchanted: true
-    action: 'srv:creative'
-    name: '&aBuild!!!'
-    lore:
-      - '&bLine &c1'
-      - '&5Line 2'
-      - Line 3
-      
-    ping-server: false
-    ip: play.example.com
-    port: 54321
+    # Offline is used when ping-server is turned on and the server is offline.
+    offline:
+      item: WOODEN_SWORD
+      data: 0
+      enchanted: false
+      name: '&cKitPvP Server'
+      lore:
+       - Ipsum lorem
+       - Amet sit dolor
+       - The server is offline
     
-    change-item-count: true
-    offline-item: WOOL
-    offline-data: 0
-    offline-enchanted: false
-    offline-lore:
-      - Server not online
+    # Change item based on server motd. If the server has an motd that is not listed below, settings above will be used.
+    dynamic:
+      "Lore example":
+        item: IRON_SWORD
+        data: 0
+        enchanted: false
+        name: '&cKitPvP Server'
+        lore:
+         - The game has not started
+      "Other lore":
+        item: WOODEN_SWORD
+        data: 0
+        enchanted: false
+        name: '&cKitPvP Server'
+        lore:
+         - The game is in progress
