@@ -48,6 +48,8 @@ command: "menu"
 #
 # Execute a command. The player will need permission for this command. No / before the command.
 # action: 'cmd:gamemode 1'
+# For bungeecord commands, add a bungee: prefix. This requires https://www.spigotmc.org/resources/commandsync.115/ to be installed.
+# action: 'bungeecmd:glist'
 #
 # Open another selector (for submenus for example)
 # action: 'sel:uhc-servers'

@@ -195,6 +195,10 @@ public class SelectorMenu extends IconMenu {
 				Bukkit.dispatchCommand(player, command);
 			}, 1);
 			return true;
+		} else if (action.startsWith("bungeecmd:")) { //BungeeCord command
+			String command = action.split(":")[0];
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("sync player %s %s", player.getName(), command));
+			return true;
 		} else if (action.startsWith("sel:")){ //Open selector
 			//It's a server selector
 			String configName = action.substring(4);
