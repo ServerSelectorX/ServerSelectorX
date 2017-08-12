@@ -60,7 +60,7 @@ ping-error-message-console: true
 # This should be equal or greater than ping-timeout * servers
 # where servers = the number of servers that have server pinging enabled.
 # This is a temporary solution for a complicated problem, which should be fixed soon.
-selector-open-cooldown: 1000
+selector-open-cooldown: 5000
 
 # Specify empty string for no message -> cooldown-message: ''
 cooldown-message: '&cYou cannot use this yet, please wait {x} seconds.'
