@@ -15,6 +15,7 @@ import org.bukkit.scheduler.BukkitRunnable;
 import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.IconMenu;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
@@ -164,7 +165,8 @@ public class SelectorMenu extends IconMenu {
 				
 				//After for loop has completed, open menu synchronously
 				new BukkitRunnable(){
-					public void run(){
+					public void run() {
+						Cooldown.addCooldown(config.getName() + player.getName(), 0); //Remove cooldown if menu opened successfully
 						callOriginalOpenMethod();
 					}
 				}.runTaskLater(Main.getPlugin(), 1); //Wait a tick for safety. It's unnoticeable anyways
