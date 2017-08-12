@@ -21,6 +21,7 @@ import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.serverselectorx.utils.Cache;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
 import xyz.derkades.serverselectorx.utils.ServerPinger.PingException;
+import xyz.derkades.serverselectorx.utils.ServerPinger.Server;
 
 public class SelectorMenu extends IconMenu {
 
@@ -84,17 +85,25 @@ public class SelectorMenu extends IconMenu {
 							String ip = section.getString("ip");
 							int port = section.getInt("port");
 							int timeout = section.getInt("ping-timeout", 100);
-
-							String[] result = ServerPinger.pingServer(ip, port, timeout);
-
-							if (result == null) {
-								serverOnline = false;
-								consoleErrorMessage = "Server not reachable within set timeout";
+							
+							if (Main.getPlugin().getConfig().getBoolean("external-query", true)) {
+								Server server = new Server(ip, port);
+								serverOnline = server.isOnline();
+								motd = server.getMotd();
+								onlinePlayers = server.getOnlinePlayers();
+								maxPlayers = server.getMaximumPlayers();
 							} else {
-								motd = result[0];
-								onlinePlayers = Integer.parseInt(result[1]);
-								maxPlayers = Integer.parseInt(result[2]);
-								serverOnline = true;
+								String[] result = ServerPinger.pingServer(ip, port, timeout);
+	
+								if (result == null) {
+									serverOnline = false;
+									consoleErrorMessage = "Server not reachable within set timeout";
+								} else {
+									motd = result[0];
+									onlinePlayers = Integer.parseInt(result[1]);
+									maxPlayers = Integer.parseInt(result[2]);
+									serverOnline = true;
+								}
 							}
 						} catch (PingException e) {
 							serverOnline = false;

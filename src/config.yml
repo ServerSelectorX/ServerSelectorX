@@ -44,8 +44,13 @@ selector-open-sound: HORSE_ARMOR
 
 # -------------------- Server Pinging -------------------- #
 
+# Use an external query API for pinging servers. This is recommended.
+# Only use the internal query if your servers are behind a firewall and not publicly accessible, or the external query API is down.
+external-query: true
+
 # How long a server needs to be pinged for before giving up. (in milliseconds)
 # Set this to a higher value if your servers are not responding in time.
+# This setting has effect on the internal query only.
 ping-timeout: 100
 
 # Enable error messages to console if the server is not reachable. (true or false)
@@ -54,6 +59,7 @@ ping-error-message-console: true
 # Cooldown for opening the selector menu in milliseconds.
 # This should be equal or greater than ping-timeout * servers
 # where servers = the number of servers that have server pinging enabled.
+# This is a temporary solution for a complicated problem, which should be fixed soon.
 selector-open-cooldown: 1000
 
 # Specify empty string for no message -> cooldown-message: ''
