@@ -133,9 +133,21 @@ public class SelectorMenu extends IconMenu {
 
 							if (serverOnline) {
 								if (section.getBoolean("change-item-count", true)) {
-									int amount = onlinePlayers;
+									String mode = Main.getPlugin().getConfig().getString("item-count-mode", "absolute");
+									int amount;
+									
+									if (mode.equals("absolute")) {
+										amount = onlinePlayers;
+									} else if (mode.equals("relative")) {
+										amount = (onlinePlayers / maxPlayers) * 100;
+									} else {
+										amount = 1;
+										Main.getPlugin().getLogger().warning("item-count-mode setting is invalid");
+									}
+									
 									if (amount > 64 || amount < 1)
 										amount = 1;
+									
 									builder.amount(amount);
 								}
 

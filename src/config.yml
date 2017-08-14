@@ -15,6 +15,11 @@ server-teleport-message: '&7You are being connected to &7&l{x}&r&7.'
 # Note: the chat will be cleared before sending server teleport message, so the server teleport message will still be visible.
 chat-clear: false
 
+# Can be either 'relative' or 'absolute'. This only affects change-item-count
+# Relative: Show player count as percentage, for example '20' if 15 people of max 75 people are online.
+# Absolute: Show actual player count, '15' if 15 of max 75 people are online.
+item-count-mode: absolute
+
 
 
 
