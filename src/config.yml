@@ -25,7 +25,7 @@ item-count-mode: absolute
 
 # -------------------- Permissions -------------------- #
 
-# Require the permission 'ssx.use.<selector name>' to open the menu
+# Require the permission 'ssx.use.<selector name>' to open the menu and ssx.join.<selector name> to get the item on join
 permissions-enabled: false
 
 # Send a message if the player does not have permission to use the server selector?
