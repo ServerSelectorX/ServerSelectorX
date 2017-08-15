@@ -241,6 +241,9 @@ public class Main extends JavaPlugin {
 	public static List<FileConfiguration> getServerSelectorConfigurationFiles(){
 		List<FileConfiguration> configs = new ArrayList<>();
 		for (File file : new File(Main.getPlugin().getDataFolder() + "/menu").listFiles()){
+			if (!file.getName().endsWith(".yml"))
+				continue;
+
 			configs.add(YamlConfiguration.loadConfiguration(file));
 		}
 		return configs;
