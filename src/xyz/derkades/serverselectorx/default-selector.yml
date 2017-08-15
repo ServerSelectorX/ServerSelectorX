@@ -40,7 +40,7 @@ command: "menu"
 # Teleport player to server
 # action: 'srv:skywars'
 #
-# Send player a clickable message to open a URL
+# Send player a clickable message to open a URL. Only works on spigot, not bukkit.
 # action: 'url:http://example.com/'
 #
 # Teleport player to world

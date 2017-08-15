@@ -9,12 +9,12 @@ import java.net.UnknownHostException;
 
 import javax.ws.rs.core.MultivaluedMap;
 
+import org.bukkit.ChatColor;
+
 import com.sun.jersey.api.client.Client;
 import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
-
-import net.md_5.bungee.api.ChatColor;
 
 public class ServerPinger {
 	
