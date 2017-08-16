@@ -51,6 +51,7 @@ selector-open-sound: HORSE_ARMOR
 
 # Use an external query API for pinging servers. This is recommended.
 # Only use the internal query if your servers are behind a firewall and not publicly accessible, or the external query API is down.
+# The internal query has a lot of problems, one of which is that it doesn't work when there are color codes anywhere in the lore.
 external-query: true
 
 # How long a server needs to be pinged for before giving up. (in milliseconds)
