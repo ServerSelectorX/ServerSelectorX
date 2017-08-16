@@ -67,6 +67,7 @@ menu:
 
   3: # Item in 4th slot (use 0 for first item). Add as many items as you want by copying this section and giving it a new number. This number must not be greater than (rows*9)-1
 
+    # Whether the server should be pinged for information. Enables placeholders in lore.
     ping-server: false
     ip: play.example.com
     port: 1234
@@ -85,8 +86,9 @@ menu:
       lore:
        - Lorem ipsum
        - Dolor sit amet
-       - There are {online} out of {max} players online. #These placeholders will only work if ping-server is enabled
+       - There are {online} out of {max} players online. # These placeholders will only work if ping-server is enabled
        - 'Message of the day: {motd}'
+       - 'Ping: {ping}' # Ping only works with external query
       
     # Offline is used when ping-server is turned on and the server is offline.
     offline:
@@ -99,7 +101,7 @@ menu:
        - Amet sit dolor
        - The server is offline
     
-    # Change item based on server motd. If the server has an motd that is not listed below, settings above will be used.
+    # Change item based on server motd. If the server has an motd that is not listed below, settings above will be used as fallback.
     dynamic:
       "Lore example":
         item: IRON_SWORD

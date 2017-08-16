@@ -57,10 +57,7 @@ external-query: true
 # How long a server needs to be pinged for before giving up. (in milliseconds)
 # Set this to a higher value if your servers are not responding in time.
 # This setting has effect on the internal query only.
-ping-timeout: 100
-
-# Enable error messages to console if the server is not reachable. (true or false)
-ping-error-message-console: true
+ping-timeout: 500
 
 # Cooldown for opening the selector menu in milliseconds.
 # This should be equal or greater than ping-timeout * servers

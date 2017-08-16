@@ -2,7 +2,6 @@ package xyz.derkades.serverselectorx;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,9 +18,7 @@ import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.IconMenu;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
-import xyz.derkades.serverselectorx.utils.Cache;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
-import xyz.derkades.serverselectorx.utils.ServerPinger.PingException;
 import xyz.derkades.serverselectorx.utils.ServerPinger.Server;
 
 public class SelectorMenu extends IconMenu {
@@ -69,110 +66,67 @@ public class SelectorMenu extends IconMenu {
 					
 					//Server pinging is turned on, continue to run stuff below async
 					
-					if (Cache.getCachedObject(name + "serverOnline") == null || 
-							Cache.getCachedObject(name + "motd") == null || 
-							Cache.getCachedObject(name + "onlinePlayers") == null || 
-							Cache.getCachedObject(name + "maxPlayers") == null ||
-							Cache.getCachedObject(name + "consoleErrorMessage") == null){
-						//Not cached, ping server
-						boolean serverOnline;
-						String consoleErrorMessage = "";
-
-						String motd = "";
-						int onlinePlayers = 0;
-						int maxPlayers = 0;
-
-						try {
-							String ip = section.getString("ip");
-							int port = section.getInt("port");
-							int timeout = section.getInt("ping-timeout", 100);
-							
-							if (Main.getPlugin().getConfig().getBoolean("external-query", true)) {
-								Server server = new Server(ip, port);
-								serverOnline = server.isOnline();
-								motd = server.getMotd();
-								onlinePlayers = server.getOnlinePlayers();
-								maxPlayers = server.getMaximumPlayers();
-							} else {
-								String[] result = ServerPinger.pingServer(ip, port, timeout);
-	
-								if (result == null) {
-									serverOnline = false;
-									consoleErrorMessage = "Server not reachable within set timeout";
-								} else {
-									motd = result[0];
-									onlinePlayers = Integer.parseInt(result[1]);
-									maxPlayers = Integer.parseInt(result[2]);
-									serverOnline = true;
-								}
-							}
-						} catch (PingException e) {
-							serverOnline = false;
-							consoleErrorMessage = e.getMessage();
-						}
-						
-						//Cache objects with a timeout of 3,5 seconds
-						Cache.addCachedObject(name + "serverOnline", serverOnline, 3);
-						Cache.addCachedObject(name + "consoleErrorMessage", consoleErrorMessage, 3);
-						Cache.addCachedObject(name + "motd", motd, 3);
-						Cache.addCachedObject(name + "onlinePlayers", onlinePlayers, 3);
-						Cache.addCachedObject(name + "maxPlayers", maxPlayers, 3);
+					String ip = section.getString("ip");
+					int port = section.getInt("port");
+					
+					Server server;
+					
+					if (Main.getPlugin().getConfig().getBoolean("external-query", true)){
+						server = new ServerPinger.ExternalServer(ip, port);
+					} else {
+						int timeout = section.getInt("ping-timeout", 100);
+						server = new ServerPinger.InternalServer(ip, port, timeout);
 					}
 					
-					final boolean serverOnline = (boolean) Cache.getCachedObject(name + "serverOnline");
-					final String consoleErrorMessage = (String) Cache.getCachedObject(name + "consoleErrorMessage");
-
-					final String motd = (String) Cache.getCachedObject(name + "motd");
-					final int onlinePlayers = (int) Cache.getCachedObject(name + "onlinePlayers");
-					final int maxPlayers = (int) Cache.getCachedObject(name + "maxPlayers");
+					boolean online = server.isOnline();
+					String motd = server.getMotd();
+					int onlinePlayers = server.getOnlinePlayers();
+					int maxPlayers = server.getMaximumPlayers();
+					int ping = server.getResponseTimeMillis();
 					
-					new BukkitRunnable(){
+					//No need to run async anymore
+					
+					Bukkit.getScheduler().runTask(Main.getPlugin(), () -> {					
+						List<String> lore = new ArrayList<>();
 						
-						public void run(){						
-							List<String> lore = new ArrayList<>();;
-
-							if (serverOnline) {
-								if (section.getBoolean("change-item-count", true)) {
-									String mode = Main.getPlugin().getConfig().getString("item-count-mode", "absolute");
-									int amount;
+						if (online) {
+							if (section.getBoolean("change-item-count", true)) {
+								String mode = Main.getPlugin().getConfig().getString("item-count-mode", "absolute");
+								int amount;
+								
+								if (mode.equals("absolute")) {
+									amount = onlinePlayers;
+								} else if (mode.equals("relative")) {
+									amount = (onlinePlayers / maxPlayers) * 100;
+								} else {
+									amount = 1;
+									Main.getPlugin().getLogger().warning("item-count-mode setting is invalid");
+								}
 									
-									if (mode.equals("absolute")) {
-										amount = onlinePlayers;
-									} else if (mode.equals("relative")) {
-										amount = (onlinePlayers / maxPlayers) * 100;
-									} else {
-										amount = 1;
-										Main.getPlugin().getLogger().warning("item-count-mode setting is invalid");
-									}
+								if (amount > 64 || amount < 1)
+									amount = 1;
 									
-									if (amount > 64 || amount < 1)
-										amount = 1;
-									
-									builder.amount(amount);
-								}
-
-								for (String loreString : section.getStringList("lore")) {
-									lore.add(Main.PLACEHOLDER_API.parsePlaceholders(player, loreString)
-											.replace("{online}", String.valueOf(onlinePlayers))
-											.replace("{max}", String.valueOf(maxPlayers)).replace("{motd}", motd));
-								}
-							} else {
-								if (Main.getPlugin().getConfig().getBoolean("ping-error-message-console", true)) {
-									Main.getPlugin().getLogger().log(Level.SEVERE, String.format(
-											"An error occured while trying to ping %s. (%s)", name, consoleErrorMessage));
-								}
-
-								Material offlineType = Material.getMaterial(section.getString("offline-item", "error"));
-								if (offlineType != null) {
-									builder.type(offlineType).data(section.getInt("offline-data", 0));
-								}
-
-								lore = Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("offline-lore"));
+								builder.amount(amount);
 							}
 
-							items.put(slot, builder.lore(lore).name(Main.PLACEHOLDER_API.parsePlaceholders(player, name)).create());
+							for (String loreString : section.getStringList("lore")) {
+								lore.add(Main.PLACEHOLDER_API.parsePlaceholders(player, loreString)
+										.replace("{online}", String.valueOf(onlinePlayers))
+										.replace("{max}", String.valueOf(maxPlayers))
+										.replace("{motd}", motd)
+										.replace("{ping}", String.valueOf(ping)));
+							}
+						} else {
+							Material offlineType = Material.getMaterial(section.getString("offline-item", "error"));
+							if (offlineType != null) {
+								builder.type(offlineType).data(section.getInt("offline-data", 0));
+							}
+
+							lore = Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("offline-lore"));
 						}
-					}.runTask(Main.getPlugin());
+
+						items.put(slot, builder.lore(lore).name(Main.PLACEHOLDER_API.parsePlaceholders(player, name)).create());
+					});
 				}
 				
 				//After for loop has completed, open menu synchronously
