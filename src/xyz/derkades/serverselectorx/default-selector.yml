@@ -26,7 +26,7 @@ item: COMPASS
 # Give the item when a player joins?
 on-join: true
 
-# What slot should the item be in?
+# What slot should the item be in? Specify -1 to automatically put it in the first available slot.
 inv-slot: 0
 
 # URL clickable message
