@@ -102,6 +102,7 @@ menu:
        - The server is offline
     
     # Change item based on server motd. If the server has an motd that is not listed below, settings above will be used as fallback.
+    # If you do not need to use this you can just delete this entire section
     dynamic:
       "Lore example":
         item: IRON_SWORD

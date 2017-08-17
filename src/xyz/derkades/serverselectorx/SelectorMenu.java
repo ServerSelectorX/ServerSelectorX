@@ -39,96 +39,133 @@ public class SelectorMenu extends IconMenu {
 			public void run(){
 				for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
 					final ConfigurationSection section = config.getConfigurationSection("menu." + key);
-
-					final int slot = Integer.parseInt(key);
-					Material material = Material.getMaterial(section.getString("item"));
-					if (material == null) material = Material.STONE;
-					final int data = section.getInt("data");
-					final String name = section.getString("name");
 					
-					final ItemBuilder builder = new ItemBuilder(material).data(data);
+					final ItemBuilder builder = new ItemBuilder(Material.STONE);
 					
-					//Apply custom glowing enchantment
-					if (section.getBoolean("enchanted", false)){
-						builder.unsafeEnchant(new GlowEnchantment(), 1);
-					}
-					
-					//If ping server is turned off just add item and continue to next server
 					if (!section.getBoolean("ping-server")){
-						//Run synchronously, because PlaceholderAPI uses the Bukkit API
-						Bukkit.getScheduler().runTask(Main.getPlugin(), () -> {
-							List<String> lore = Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("lore"));
-							items.put(slot, builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name)).lore(lore).create());
+						//Server pinging is turned off, get item info from 'online' section
+						Bukkit.getScheduler().runTask(Main.getPlugin(), () -> { //Go back to main thread
+							Material material = Material.getMaterial(section.getString("online.item"));
+							if (material == null) material = Material.STONE;
+							builder.type(material);
+							builder.data(section.getInt("online.data", 0));
+							builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, section.getString("online.name", "error")));
+							builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("lore")));
+							
+							//Apply custom glowing enchantment
+							if (section.getBoolean("online.enchanted", false))
+								builder.unsafeEnchant(new GlowEnchantment(), 1);
+							
+							//Add item
+							items.put(Integer.valueOf(key), builder.create());
 						});
 						continue;
-					}
-					
-					//Server pinging is turned on, continue to run stuff below async
-					
-					String ip = section.getString("ip");
-					int port = section.getInt("port");
-					
-					Server server;
-					
-					if (Main.getPlugin().getConfig().getBoolean("external-query", true)){
-						server = new ServerPinger.ExternalServer(ip, port);
 					} else {
-						int timeout = section.getInt("ping-timeout", 100);
-						server = new ServerPinger.InternalServer(ip, port, timeout);
-					}
-					
-					boolean online = server.isOnline();
-					String motd = server.getMotd();
-					int onlinePlayers = server.getOnlinePlayers();
-					int maxPlayers = server.getMaximumPlayers();
-					int ping = server.getResponseTimeMillis();
-					
-					//No need to run async anymore
-					
-					Bukkit.getScheduler().runTask(Main.getPlugin(), () -> {					
-						List<String> lore = new ArrayList<>();
+						//Server pinging is turned on, ping server asynchronously
+						String ip = section.getString("ip");
+						int port = section.getInt("port");
 						
-						if (online) {
-							if (section.getBoolean("change-item-count", true)) {
-								String mode = Main.getPlugin().getConfig().getString("item-count-mode", "absolute");
-								int amount;
-								
-								if (mode.equals("absolute")) {
-									amount = onlinePlayers;
-								} else if (mode.equals("relative")) {
-									amount = (onlinePlayers / maxPlayers) * 100;
-								} else {
-									amount = 1;
-									Main.getPlugin().getLogger().warning("item-count-mode setting is invalid");
-								}
-									
-								if (amount > 64 || amount < 1)
-									amount = 1;
-									
-								builder.amount(amount);
-							}
-
-							for (String loreString : section.getStringList("lore")) {
-								lore.add(Main.PLACEHOLDER_API.parsePlaceholders(player, loreString)
-										.replace("{online}", String.valueOf(onlinePlayers))
-										.replace("{max}", String.valueOf(maxPlayers))
-										.replace("{motd}", motd)
-										.replace("{ping}", String.valueOf(ping)));
-							}
+						Server server;
+						
+						if (Main.getPlugin().getConfig().getBoolean("external-query", true)){
+							server = new ServerPinger.ExternalServer(ip, port);
 						} else {
-							Material offlineType = Material.getMaterial(section.getString("offline-item", "error"));
-							if (offlineType != null) {
-								builder.type(offlineType).data(section.getInt("offline-data", 0));
-							}
-
-							lore = Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("offline-lore"));
+							int timeout = section.getInt("ping-timeout", 100);
+							server = new ServerPinger.InternalServer(ip, port, timeout);
 						}
-
-						items.put(slot, builder.lore(lore).name(Main.PLACEHOLDER_API.parsePlaceholders(player, name)).create());
-					});
+						
+						boolean online = server.isOnline();
+						String motd = server.getMotd();
+						int onlinePlayers = server.getOnlinePlayers();
+						int maxPlayers = server.getMaximumPlayers();
+						int ping = server.getResponseTimeMillis();
+						
+						//No need to run async anymore
+						
+						Bukkit.getScheduler().runTask(Main.getPlugin(), () -> {
+							Material material = Material.STONE;
+							int data = 0;
+							String name = "";
+							List<String> lore = new ArrayList<>();
+							int amount = 1;
+							boolean enchanted = false;
+							
+							if (online) {
+								//Server is online, try dynamic motd items first 
+								boolean motdMatch = false;
+								if (section.contains("dynamic")) {
+									for (String dynamicMotd : section.getConfigurationSection("dynamic").getKeys(false)) {
+										if (motd.equals(dynamicMotd)) {
+											//Motd matches, use this section for getting item data
+											motdMatch = true;
+											ConfigurationSection motdSection = section.getConfigurationSection("dynamic." + dynamicMotd);
+											
+											material = Material.getMaterial(motdSection.getString("item"));
+											data = motdSection.getInt("data", 0);
+											name = motdSection.getString("name");
+											lore = motdSection.getStringList("lore");
+											enchanted = motdSection.getBoolean("enchanted", false);
+										} else {
+											continue; //No match, check next motd in this section
+										}
+									}
+								}
+								
+								if (!motdMatch) {
+									//If no motd matched, fall back to online
+									material = Material.getMaterial(section.getString("online.item"));
+									data = section.getInt("online.data", 0);
+									name = section.getString("online.name", "error");
+									lore = section.getStringList("online.lore");
+									enchanted = section.getBoolean("online.enchanted", false);
+								}
+								
+								//Replace placeholders in lore
+								lore = replaceInStringList(lore, 
+										new Object[] {"{online}", "{max}", "{motd}", "{ping}"},
+										new Object[] {onlinePlayers, maxPlayers, motd, ping});
+								
+								if (section.getBoolean("change-item-count", true)) {
+									String mode = Main.getPlugin().getConfig().getString("item-count-mode", "absolute");									
+									if (mode.equals("absolute")) {
+										amount = onlinePlayers;
+									} else if (mode.equals("relative")) {
+										amount = (onlinePlayers / maxPlayers) * 100;
+									} else {
+										amount = 1;
+										Main.getPlugin().getLogger().warning("item-count-mode setting is invalid");
+									}
+										
+									if (amount > 64 || amount < 1)
+										amount = 1;
+								}
+							} else {
+								//Server is offline
+								ConfigurationSection offlineSection = section.getConfigurationSection("offline");
+								
+								material = Material.getMaterial(offlineSection.getString("item"));
+								data = offlineSection.getInt("data", 0);
+								name = offlineSection.getString("name");
+								lore = offlineSection.getStringList("lore");
+								enchanted = offlineSection.getBoolean("enchanted", false);
+							}
+							
+							if (material == null) material = Material.STONE;
+							builder.type(material);
+							builder.data(data);
+							builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
+							builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
+							
+							//Apply custom glowing enchantment
+							if (enchanted) builder.unsafeEnchant(new GlowEnchantment(), 1);
+							
+							//Add item to menu
+							items.put(Integer.valueOf(key), builder.create());
+						});
+					}
 				}
 				
-				//After for loop has completed, open menu synchronously
+				//After everything has completed, open menu synchronously
 				Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
 					Cooldown.addCooldown(config.getName() + player.getName(), 0); //Remove cooldown if menu opened successfully
 					callOriginalOpenMethod();
@@ -209,6 +246,23 @@ public class SelectorMenu extends IconMenu {
 			return false; //Return false = stay open
 		}
 	
+	}
+	
+	private List<String> replaceInStringList(List<String> list, Object[] before, Object[] after) {
+		if (before.length != after.length) {
+			throw new IllegalArgumentException("before[] length must be equal to after[] length");
+		}
+		
+		List<String> newList = new ArrayList<>();
+		
+		for (String string : list) {
+			for (int i = 0; i < before.length; i++) {
+				string = string.replace(before[i].toString(), after[i].toString());
+			}
+			newList.add(string);
+		}
+		
+		return newList;
 	}
 
 }
