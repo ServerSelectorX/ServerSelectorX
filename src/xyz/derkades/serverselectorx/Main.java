@@ -42,7 +42,7 @@ import xyz.derkades.serverselectorx.utils.Cache;
 
 public class Main extends JavaPlugin {
 	
-	private static final int CONFIG_VERSION = 6;
+	private static final int CONFIG_VERSION = 7;
 	
 	public static final int GLOWING_ENCHANTMENT_ID = 96;
 	
