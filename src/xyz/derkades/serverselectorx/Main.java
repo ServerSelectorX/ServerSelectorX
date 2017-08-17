@@ -34,10 +34,10 @@ import org.inventivetalent.update.spiget.comparator.VersionComparator;
 
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
+import xyz.derkades.derkutils.caching.Cache;
 import xyz.derkades.serverselectorx.placeholders.Placeholders;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersDisabled;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
-import xyz.derkades.serverselectorx.utils.Cache;
 
 public class Main extends JavaPlugin {
 	

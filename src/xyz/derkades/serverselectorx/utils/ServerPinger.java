@@ -16,6 +16,8 @@ import com.sun.jersey.api.client.ClientResponse;
 import com.sun.jersey.api.client.WebResource;
 import com.sun.jersey.core.util.MultivaluedMapImpl;
 
+import xyz.derkades.derkutils.caching.Cache;
+
 public class ServerPinger {
 	
 	private static String API_URL = "https://minecraft-api.com/api/ping/";
