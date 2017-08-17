@@ -81,7 +81,7 @@ menu:
     online:
       item: DIAMOND_SWORD
       data: 0
-      enchanted: true
+      enchanted: true # Only works on 1.9+ at the moment
       name: '&aKitPvP Server'
       lore:
        - Lorem ipsum
@@ -94,7 +94,7 @@ menu:
     offline:
       item: WOODEN_SWORD
       data: 0
-      enchanted: false
+      enchanted: false # Only works on 1.9+ at the moment
       name: '&cKitPvP Server'
       lore:
        - Ipsum lorem
@@ -106,14 +106,25 @@ menu:
       "Lore example":
         item: IRON_SWORD
         data: 0
-        enchanted: false
+        enchanted: false # Only works on 1.9+ at the moment
         name: '&cKitPvP Server'
         lore:
          - The game has not started
       "Other lore":
         item: WOODEN_SWORD
         data: 0
-        enchanted: false
+        enchanted: false # Only works on 1.9+ at the moment
         name: '&cKitPvP Server'
         lore:
          - The game is in progress
+         
+  5: # Item in 6th slot   
+    action: 'none'
+    online:
+      item: GRASS
+      data: 0
+      enchanted: false # Only works on 1.9+ at the moment
+      name: 'Placeholder block'
+      lore:
+       - THis item does nothing
+  
