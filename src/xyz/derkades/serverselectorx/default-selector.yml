@@ -22,6 +22,7 @@ item-lore:
 
 # The name of the server selector item. Specify "NONE" for no item.
 item: COMPASS
+data: 0
 
 # Give the item when a player joins?
 on-join: true
