@@ -26,8 +26,9 @@ public class SelectorMenu extends IconMenu {
 	private FileConfiguration config;
 	private Player player;
 	
-	public SelectorMenu(String name, int size, Player player, FileConfiguration config) {
-		super(Main.getPlugin(), name, size, player);
+	public SelectorMenu(Player player, FileConfiguration config) {
+		super(Main.getPlugin(), Colors.parseColors(config.getString("title", "no title")), config.getInt("rows", 6) * 9, player);
+		
 		this.config = config;
 		this.player = player;
 	}
@@ -55,12 +56,10 @@ public class SelectorMenu extends IconMenu {
 					//If ping server is turned off just add item and continue to next server
 					if (!section.getBoolean("ping-server")){
 						//Run synchronously, because PlaceholderAPI uses the Bukkit API
-						new BukkitRunnable(){
-							public void run(){
-								List<String> lore = Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("lore"));
-								items.put(slot, builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name)).lore(lore).create());
-							}
-						}.runTask(Main.getPlugin());
+						Bukkit.getScheduler().runTask(Main.getPlugin(), () -> {
+							List<String> lore = Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("lore"));
+							items.put(slot, builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name)).lore(lore).create());
+						});
 						continue;
 					}
 					
@@ -130,12 +129,10 @@ public class SelectorMenu extends IconMenu {
 				}
 				
 				//After for loop has completed, open menu synchronously
-				new BukkitRunnable(){
-					public void run() {
-						Cooldown.addCooldown(config.getName() + player.getName(), 0); //Remove cooldown if menu opened successfully
-						callOriginalOpenMethod();
-					}
-				}.runTaskLater(Main.getPlugin(), 1); //Wait a tick for safety. It's unnoticeable anyways
+				Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
+					Cooldown.addCooldown(config.getName() + player.getName(), 0); //Remove cooldown if menu opened successfully
+					callOriginalOpenMethod();
+				}, 1); //Wait a tick just in case. It's unnoticeable anyways
 			}
 		}.runTaskAsynchronously(Main.getPlugin());
 		
@@ -183,11 +180,8 @@ public class SelectorMenu extends IconMenu {
 			if (config == null){
 				player.sendMessage(ChatColor.RED + "This server selector does not exist.");
 				return true;
-			} else {
-				final int rows = config.getInt("rows");
-				final String title = Colors.parseColors(config.getString("title"));
-				
-				new SelectorMenu(title, rows * 9, player, config).open();
+			} else {				
+				new SelectorMenu(player, config).open();
 				
 				return false;
 			}
@@ -210,9 +204,9 @@ public class SelectorMenu extends IconMenu {
 			player.sendMessage(Colors.parseColors(message));
 			return true;
 		} else if (action.equals("close")){ //Close selector
-			return true;
+			return true; //Return true = close
 		} else {
-			return false;
+			return false; //Return false = stay open
 		}
 	
 	}

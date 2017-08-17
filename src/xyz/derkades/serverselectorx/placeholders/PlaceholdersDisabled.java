@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 import xyz.derkades.derkutils.bukkit.Colors;
 
-public class PlaceholdersDisabled extends Placeholders {
+public class PlaceholdersDisabled implements Placeholders {
 
 	@Override
 	public String parsePlaceholders(Player player, String string) {

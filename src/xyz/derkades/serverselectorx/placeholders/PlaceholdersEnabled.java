@@ -6,7 +6,7 @@ import org.bukkit.entity.Player;
 
 import me.clip.placeholderapi.PlaceholderAPI;
 
-public class PlaceholdersEnabled extends Placeholders {
+public class PlaceholdersEnabled implements Placeholders {
 
 	@Override
 	public String parsePlaceholders(Player player, String string) {

@@ -28,7 +28,6 @@ import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.inventivetalent.update.spiget.SpigetUpdate;
 import org.inventivetalent.update.spiget.UpdateCallback;
 import org.inventivetalent.update.spiget.comparator.VersionComparator;
@@ -90,7 +89,7 @@ public class Main extends JavaPlugin {
 		//Register glowing enchantment
 		registerEnchantment();
 		
-		//Check if placeholderapi is installed
+		//Check if PlaceHolderAPI is installed
 		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")){
 			Main.PLACEHOLDER_API = new PlaceholdersEnabled();
 			getLogger().log(Level.INFO, "PlaceholderAPI is found. Placeholders will work!");
@@ -100,12 +99,11 @@ public class Main extends JavaPlugin {
 		}
 		
 		//Periodically clean cache
-		new BukkitRunnable(){
-			public void run(){
-				Cache.cleanCache();
-			}
-		}.runTaskTimer(this, 60*20, 60*20);
+		getServer().getScheduler().runTaskTimer(this, () -> {
+			Cache.cleanCache();
+		}, 30*60*20, 30*60*20);
 		
+		//Check for updates asynchronously
 		getServer().getScheduler().runTaskAsynchronously(this, () -> {
 			checkForUpdates();
 		});
@@ -162,13 +160,13 @@ public class Main extends JavaPlugin {
 	}
 	
 	public void reloadConfig(){	
-		//Setup config
+		//Load default config if it has been deleted
 		super.saveDefaultConfig();
 		
 		//Reload config
 		super.reloadConfig();
 	
-		//Copy custom config
+		//Copy custom config if it does not exist
 		File file = new File(this.getDataFolder() + "/menu", "default.yml");
 		if (!file.exists()){
 			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/default-selector.yml");
@@ -179,43 +177,48 @@ public class Main extends JavaPlugin {
 			}
 		}
 		
-		//Initialise variables
+		//Initialize variables
 		ItemMoveDropCancelListener.DROP_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-drop", false);
 		ItemMoveDropCancelListener.MOVE_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-move", false);
 	}
 	
-	private static void registerCommands(){
-		for (FileConfiguration config : Main.getServerSelectorConfigurationFiles()){
-			String commandName = config.getString("command");
-			if (commandName == null || commandName.equalsIgnoreCase("none"));
+	/**
+	 * Registers all custom commands by going through all menu files and adding commands
+	 */
+	private void registerCommands(){
+		try {
+			final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
+	
+			bukkitCommandMap.setAccessible(true);
+			CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
 			
-			Command command = new Command(commandName){
-
-				@Override
-				public boolean execute(CommandSender sender, String label, String[] args) {
-					if (sender instanceof Player){
-						Player player = (Player) sender;
-						Main.openSelector(player, config);
-					}
-					return true;
+			for (FileConfiguration config : Main.getServerSelectorConfigurationFiles()){
+				String commandName = config.getString("command");
+				
+				if (commandName == null || commandName.equalsIgnoreCase("none")) {
+					continue;
 				}
 				
-			};
-			
-			try {
-				final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-
-				bukkitCommandMap.setAccessible(true);
-				CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
-
-				commandMap.register("ssx-custom", command);
-			} catch (NoSuchFieldException | IllegalAccessException e) {
-				e.printStackTrace();
+				commandMap.register("ssx-custom", new Command(commandName){
+	
+					@Override
+					public boolean execute(CommandSender sender, String label, String[] args) {
+						if (sender instanceof Player){
+							Player player = (Player) sender;
+							Main.openSelector(player, config);
+						}
+						return true;
+					}
+					
+				});
+	
 			}
+		} catch (NoSuchFieldException | IllegalAccessException e) {
+			e.printStackTrace();
 		}
 	}
 	
-	private static void registerEnchantment(){
+	private void registerEnchantment(){
 		try {
 			Field f = Enchantment.class.getDeclaredField("acceptingNew");
 			f.setAccessible(true);
@@ -225,7 +228,9 @@ public class Main extends JavaPlugin {
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			e.printStackTrace();
 		} catch (IllegalArgumentException e){
-			//Already registered
+			//Already registered (or another enchantment exists with this id?)
+			getLogger().warning("Error registering enchantment. If this is not caused by /reload, please report this problem.");
+			e.printStackTrace();
 		}
 	}
 	
@@ -280,10 +285,7 @@ public class Main extends JavaPlugin {
 				}
 			}
 			
-			final int rows = config.getInt("rows");
-			final String title = Colors.parseColors(config.getString("title"));
-			
-			new SelectorMenu(title, rows * 9, player, config).open();
+			new SelectorMenu(player, config).open();
 		} else if (config.getBoolean("no-permission-message-enabled", false)) {
 			player.sendMessage(config.getString("no-permission-message"));
 			return;
@@ -299,7 +301,7 @@ public class Main extends JavaPlugin {
 		
 		if (Main.getPlugin().getConfig().getBoolean("server-teleport-message-enabled", false)){
 			if (Main.getPlugin().getConfig().getBoolean("chat-clear", false)){
-				for (int i = 0; i < 20; i++){ //Send just 20 lines, because clearing the complete chat is unnecessary.
+				for (int i = 0; i < 20; i++){ //Send just 20 lines, because clearing the entire chat is unnecessary.
 					player.sendMessage("");
 				}
 			}
@@ -308,14 +310,14 @@ public class Main extends JavaPlugin {
 			player.sendMessage(message.replace("{x}", server));
 		}
 
-		try {
-			ByteArrayOutputStream baos = new ByteArrayOutputStream();
-	        DataOutputStream dos = new DataOutputStream(baos);
+		try (
+				ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
+				DataOutputStream dos = new DataOutputStream(baos)
+			){
+			
 	        dos.writeUTF("Connect");
 	        dos.writeUTF(server);
 	        player.sendPluginMessage(getPlugin(), "BungeeCord", baos.toByteArray());
-	        baos.close();
-	        dos.close();
 		} catch (IOException e){
 			e.printStackTrace();
 		}
