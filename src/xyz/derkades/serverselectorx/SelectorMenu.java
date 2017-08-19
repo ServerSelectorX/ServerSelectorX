@@ -50,7 +50,7 @@ public class SelectorMenu extends IconMenu {
 							builder.type(material);
 							builder.data(section.getInt("online.data", 0));
 							builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, section.getString("online.name", "error")));
-							builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("lore")));
+							builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("online.lore")));
 							
 							//Apply custom glowing enchantment
 							if (section.getBoolean("online.enchanted", false))
