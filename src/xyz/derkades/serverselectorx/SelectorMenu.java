@@ -75,10 +75,6 @@ public class SelectorMenu extends IconMenu {
 						}
 						
 						boolean online = server.isOnline();
-						String motd = server.getMotd();
-						int onlinePlayers = server.getOnlinePlayers();
-						int maxPlayers = server.getMaximumPlayers();
-						int ping = server.getResponseTimeMillis();
 						
 						//No need to run async anymore
 						
@@ -91,6 +87,11 @@ public class SelectorMenu extends IconMenu {
 							boolean enchanted = false;
 							
 							if (online) {
+								String motd = server.getMotd();
+								int onlinePlayers = server.getOnlinePlayers();
+								int maxPlayers = server.getMaximumPlayers();
+								int ping = server.getResponseTimeMillis();
+								
 								//Server is online, try dynamic motd items first 
 								boolean motdMatch = false;
 								if (section.contains("dynamic")) {
