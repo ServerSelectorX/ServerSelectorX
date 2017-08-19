@@ -51,8 +51,6 @@
 				<version>2.3</version>
 				<configuration>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
-
-					<minimizeJar>true</minimizeJar>
 					
 					<relocations>
 						<relocation>
@@ -103,7 +101,7 @@
 		<dependency>
 			<groupId>com.sun.jersey</groupId>
 			<artifactId>jersey-client</artifactId>
-			<version>1.8</version>
+			<version>1.12</version>
 		</dependency>
 
 	</dependencies>
