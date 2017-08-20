@@ -175,7 +175,7 @@ public class ServerPinger {
 			Object cache = Cache.getCachedObject(id + "online");
 			
 			if (cache == null) {
-				WebResource resource = client.resource(API_URL + "ping.php");
+				WebResource resource = client.resource(API_URL + "ping.php").queryParams(params);
 				ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
 				System.out.println("[ssx debug] " + resource.getURI());
 				int status = response.getStatus();
@@ -202,7 +202,7 @@ public class ServerPinger {
 			Object cache = Cache.getCachedObject(id + "onlinePlayers");
 			
 			if (cache == null) {
-				WebResource resource = client.resource(API_URL + "playeronline.php");
+				WebResource resource = client.resource(API_URL + "playeronline.php").queryParams(params);
 				ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
 				int status = response.getStatus();
 				if (status == 200) {
@@ -226,7 +226,7 @@ public class ServerPinger {
 			Object cache = Cache.getCachedObject(id + "maxPlayers");
 			
 			if (cache == null) {
-				WebResource resource = client.resource(API_URL + "maxplayer.php");
+				WebResource resource = client.resource(API_URL + "maxplayer.php").queryParams(params);
 				ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
 				int status = response.getStatus();
 				if (status == 200) {
@@ -251,7 +251,7 @@ public class ServerPinger {
 			Object cache = Cache.getCachedObject(id + "motd");
 			
 			if (cache == null) {
-				WebResource resource = client.resource(API_URL + "motd.php");
+				WebResource resource = client.resource(API_URL + "motd.php").queryParams(params);
 				ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
 				int status = response.getStatus();
 				if (status == 200) {
@@ -277,7 +277,7 @@ public class ServerPinger {
 			Object cache = Cache.getCachedObject(id + "ping");
 			
 			if (cache == null) {
-				WebResource resource = client.resource(API_URL + "ping.php");
+				WebResource resource = client.resource(API_URL + "ping.php").queryParams(params);
 				ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
 				int status = response.getStatus();
 				if (status == 200) {
