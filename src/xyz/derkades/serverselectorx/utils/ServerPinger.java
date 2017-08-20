@@ -206,7 +206,7 @@ public class ServerPinger {
 				ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
 				int status = response.getStatus();
 				if (status == 200) {
-					int onlinePlayers = response.getEntity(Integer.class);
+					int onlinePlayers = Integer.parseInt(response.getEntity(String.class));
 					Cache.addCachedObject(id + "onlinePlayers", onlinePlayers, CACHE_TIME);
 					return onlinePlayers;
 				} else {
@@ -230,7 +230,7 @@ public class ServerPinger {
 				ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
 				int status = response.getStatus();
 				if (status == 200) {
-					int maxPlayers = response.getEntity(Integer.class);
+					int maxPlayers = Integer.parseInt(response.getEntity(String.class));
 					Cache.addCachedObject(id + "maxPlayers", maxPlayers, CACHE_TIME);
 					return maxPlayers;
 				} else {
@@ -281,7 +281,7 @@ public class ServerPinger {
 				ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
 				int status = response.getStatus();
 				if (status == 200) {
-					int ping = response.getEntity(Integer.class);
+					int ping = Integer.parseInt(response.getEntity(String.class));
 					Cache.addCachedObject(id + "ping", ping, CACHE_TIME);
 					return ping;
 				} else {
