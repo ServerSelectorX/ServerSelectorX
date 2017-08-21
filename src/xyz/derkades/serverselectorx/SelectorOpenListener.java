@@ -18,7 +18,7 @@ public class SelectorOpenListener implements Listener {
 	
 	private static final List<UUID> COOLDOWN = new ArrayList<>();
 	
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGH)
 	public void onInteract(PlayerInteractEvent event){
 		if (!(event.getAction() == Action.RIGHT_CLICK_AIR ||
 				event.getAction() == Action.RIGHT_CLICK_BLOCK)){
