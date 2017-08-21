@@ -177,7 +177,6 @@ public class ServerPinger {
 			if (cache == null) {
 				WebResource resource = client.resource(API_URL + "ping.php").queryParams(params);
 				ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
-				System.out.println("[ssx debug] " + resource.getURI());
 				int status = response.getStatus();
 				if (status == 200) {
 					Cache.addCachedObject(id + "online", true, CACHE_TIME);
