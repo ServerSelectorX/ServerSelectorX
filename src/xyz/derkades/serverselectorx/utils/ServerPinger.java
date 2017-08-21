@@ -1,26 +1,27 @@
 package xyz.derkades.serverselectorx.utils;
 
+import java.io.BufferedReader;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.io.InterruptedIOException;
 import java.net.Socket;
+import java.net.URL;
 import java.net.UnknownHostException;
 
-import javax.ws.rs.core.MultivaluedMap;
+import javax.net.ssl.HttpsURLConnection;
 
 import org.bukkit.ChatColor;
 
-import com.sun.jersey.api.client.Client;
-import com.sun.jersey.api.client.ClientResponse;
-import com.sun.jersey.api.client.WebResource;
-import com.sun.jersey.core.util.MultivaluedMapImpl;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import xyz.derkades.derkutils.caching.Cache;
 
 public class ServerPinger {
 	
-	private static String API_URL = "https://minecraft-api.com/api/ping/";
+	//private static String API_URL = "https://minecraft-api.com/api/ping";
 	private static int CACHE_TIME = 5;
 	
 	public static interface Server {
@@ -142,22 +143,76 @@ public class ServerPinger {
 		private String ip;
 		private int port;
 		
-		private String id; //Used for caching
+		//private String id; //Used for caching
 		
-		private Client client;
-		private MultivaluedMap<String, String> params;
+		//private Client client;
+		//private MultivaluedMap<String, String> params;
+		
+		private boolean online;
+		
+		private int onlinePlayers;
+		private int maximumPlayers;
+		private String motd;
+		private int responseTimeMillis;
 		
 		public ExternalServer(String ip, int port) throws PingException {
 			this.ip = ip;
 			this.port = port;
 			
-			this.id = ip + port;
+			//this.id = ip + port;
 			
-			params = new MultivaluedMapImpl();
-			params.add("ip", ip); 
-			params.add("port", port + "");
+			//params = new MultivaluedMapImpl();
+			//params.add("ip", ip); 
+			//params.add("port", port + "");
 			
-			client = Client.create();	
+			//client = Client.create();	
+
+			String jsonString;
+			Object cache = Cache.getCachedObject(ip + port + "json");
+			
+			if (cache != null) {
+				jsonString = (String) cache;
+			} else {
+				try {
+					String url = String.format("https://api.minetools.eu/ping/%s/%s", ip, port);
+		
+					HttpsURLConnection connection = (HttpsURLConnection) new URL(url).openConnection();
+		
+					connection.setRequestProperty("User-Agent", "Mozilla/5.0");
+		
+					BufferedReader in = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+					String inputLine;
+					StringBuffer response = new StringBuffer();
+		
+					while ((inputLine = in.readLine()) != null) {
+						response.append(inputLine);
+					}
+					
+					in.close();
+					
+					if (connection.getResponseCode() != 200) {
+						throw new PingException("Error while pinging API, HTTP error code " + connection.getResponseCode());
+					}
+					
+					jsonString = response.toString();
+					Cache.addCachedObject(ip + port + "json", jsonString, CACHE_TIME);
+				} catch (IOException e) {
+					throw new PingException(e);
+				}
+			}
+			
+			JsonParser parser = new JsonParser();
+			JsonObject json = parser.parse(jsonString).getAsJsonObject();
+			
+			if (json.has("error")) {
+				online = false;
+			} else {
+				JsonObject players = json.get("players").getAsJsonObject();
+				onlinePlayers = players.get("online").getAsInt();
+				maximumPlayers = players.get("max").getAsInt();
+				motd = json.get("description").getAsString();
+				responseTimeMillis = (int) json.get("latency").getAsDouble();
+			}
 		}
 		
 		@Override
@@ -169,8 +224,49 @@ public class ServerPinger {
 		public int getPort() {
 			return port;
 		}
-		
+
 		@Override
+		public boolean isOnline() {
+			return online;
+		}
+
+		@Override
+		public int getOnlinePlayers() {
+			if (!online) {
+				throw new UnsupportedOperationException("Can't get online players of a server that is offline.");
+			}
+			
+			return onlinePlayers;
+		}
+
+		@Override
+		public int getMaximumPlayers() {
+			if (!online) {
+				throw new UnsupportedOperationException("Can't get maximum players of a server that is offline.");
+			}
+			
+			return maximumPlayers;
+		}
+
+		@Override
+		public String getMotd() {
+			if (!online) {
+				throw new UnsupportedOperationException("Can't get motd of a server that is offline.");
+			}
+			
+			return motd;
+		}
+
+		@Override
+		public int getResponseTimeMillis() {
+			if (!online) {
+				throw new UnsupportedOperationException("Can't get response time of a server that is offline.");
+			}
+			
+			return responseTimeMillis;
+		}
+		
+		/*@Override
 		public boolean isOnline() {
 			Object cache = Cache.getCachedObject(id + "online");
 			
@@ -250,11 +346,9 @@ public class ServerPinger {
 			Object cache = Cache.getCachedObject(id + "motd");
 			
 			if (cache == null) {
-				WebResource resource = client.resource(API_URL + "motd.php").queryParams(params);
-				ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
-				int status = response.getStatus();
-				if (status == 200) {
-					String motd = response.getEntity(String.class);
+				Request request = sendRequest("motd");
+				if (request.getStatus() == 200) {
+					String motd = request.getResponse();
 					Cache.addCachedObject(id + "motd", motd, CACHE_TIME);
 					return motd;
 				} else {
@@ -276,9 +370,8 @@ public class ServerPinger {
 			Object cache = Cache.getCachedObject(id + "ping");
 			
 			if (cache == null) {
-				WebResource resource = client.resource(API_URL + "ping.php").queryParams(params);
-				ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
-				int status = response.getStatus();
+				//WebResource resource = client.resource(API_URL + "ping.php").queryParams(params);
+				//ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
 				if (status == 200) {
 					double pingSeconds = Double.parseDouble(response.getEntity(String.class));
 					int ping = (int) (pingSeconds / 1000);
@@ -292,12 +385,36 @@ public class ServerPinger {
 			}
 		}
 		
+		private class Request {
+			
+			private String response;
+			private int status;
+			
+			Request(String response, int status){
+				this.response = response;
+				this.status = status;
+			}
+			
+			public String getResponse() {
+				return response;
+			}
+			
+			public int getStatus() {
+				return status;
+			}
+			
+		}*/
+		
 	}
 	
 	public static class PingException extends RuntimeException {
 
 		public PingException(String message) {
 			super(message);
+		}
+		
+		public PingException(Exception exception) {
+			super(exception);
 		}
 
 		private static final long serialVersionUID = 5694501675795361821L;

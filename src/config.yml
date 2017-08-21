@@ -50,8 +50,8 @@ selector-open-sound: HORSE_ARMOR
 # -------------------- Server Pinging -------------------- #
 
 # Use an external query API for pinging servers. This is recommended.
-# Only use the internal query if your servers are behind a firewall and not publicly accessible, or the external query API is down.
-# The internal query has a lot of problems, one of which is that it doesn't work when there are color codes anywhere in the lore.
+# The internal query has a lot of problems, one of which is that it doesn't work when there are color codes anywhere in the lore. Version support is terrible as well.
+# If you have your spigot servers behind a firewall (which you should) allow the domain api.minetools.eu to ping your server.
 external-query: true
 
 # How long a server needs to be pinged for before giving up. (in milliseconds)
