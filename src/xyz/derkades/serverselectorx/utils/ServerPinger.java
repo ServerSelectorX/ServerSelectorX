@@ -281,7 +281,8 @@ public class ServerPinger {
 				ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
 				int status = response.getStatus();
 				if (status == 200) {
-					int ping = Integer.parseInt(response.getEntity(String.class));
+					double pingSeconds = Double.parseDouble(response.getEntity(String.class));
+					int ping = (int) (pingSeconds / 1000);
 					Cache.addCachedObject(id + "ping", ping, CACHE_TIME);
 					return ping;
 				} else {
