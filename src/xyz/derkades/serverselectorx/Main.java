@@ -7,6 +7,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -61,6 +62,13 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new SelectorOpenListener(), this);
 		Bukkit.getPluginManager().registerEvents(new OnJoinListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemMoveDropCancelListener(), this);
+		
+		List<String> offHandVersions = Arrays.asList("1.9", "1.10", "1.11", "1.12");
+		for (String version : offHandVersions) {
+			if (Bukkit.getBukkitVersion().contains(version)) {
+				Bukkit.getPluginManager().registerEvents(new OffHandMoveCancel(), this);
+			}
+		}
 		
 		//Register outgoing channel
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
