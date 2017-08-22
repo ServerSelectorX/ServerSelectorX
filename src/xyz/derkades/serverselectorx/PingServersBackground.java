@@ -24,7 +24,6 @@ public class PingServersBackground extends BukkitRunnable {
 			for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
 				final ConfigurationSection section = config.getConfigurationSection("menu." + key);
 				if (section.getBoolean("ping-server", false)) { //If server pinging is enabled for this slot
-					System.out.println("[ssx debug] Pinging slot " + key);
 					String ip = section.getString("ip");
 					int port = section.getInt("port");
 					
