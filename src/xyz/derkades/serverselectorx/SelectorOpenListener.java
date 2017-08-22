@@ -22,12 +22,17 @@ public class SelectorOpenListener implements Listener {
 		
 		Player player = event.getPlayer();
 		
+		System.out.println("[ssx debug] Player clicked");
+		
 		//Small cooldown because on 1.9+ interact event is called twice.
 		if (Cooldown.getCooldown(player.getUniqueId() + "doubleopen") > 0) {
+			System.out.println("[ssx debug] On cooldown, " + Cooldown.getCooldown(player.getUniqueId() + "doubleopen") + " milliseconds left.");
 			return;
-		} else {
-			Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 100); //Add cooldown for 0.1 seconds
 		}
+		
+		System.out.println("[ssx debug] not on cooldown");
+		
+		Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 200); //Add cooldown for 0.2 seconds
 		
 		for (FileConfiguration config : Main.getServerSelectorConfigurationFiles()){	
 			if (config.getString("item").equalsIgnoreCase("NONE")){
