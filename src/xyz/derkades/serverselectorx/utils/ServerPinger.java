@@ -21,7 +21,7 @@ import xyz.derkades.derkutils.caching.Cache;
 
 public class ServerPinger {
 	
-	private static int CACHE_TIME = 5;
+	private static int CACHE_TIME = 10;
 	
 	public static interface Server {
 		
