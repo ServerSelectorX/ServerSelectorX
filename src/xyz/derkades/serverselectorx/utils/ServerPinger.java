@@ -21,7 +21,6 @@ import xyz.derkades.derkutils.caching.Cache;
 
 public class ServerPinger {
 	
-	//private static String API_URL = "https://minecraft-api.com/api/ping";
 	private static int CACHE_TIME = 5;
 	
 	public static interface Server {
@@ -143,11 +142,6 @@ public class ServerPinger {
 		private String ip;
 		private int port;
 		
-		//private String id; //Used for caching
-		
-		//private Client client;
-		//private MultivaluedMap<String, String> params;
-		
 		private boolean online;
 		
 		private int onlinePlayers;
@@ -158,14 +152,6 @@ public class ServerPinger {
 		public ExternalServer(String ip, int port) throws PingException {
 			this.ip = ip;
 			this.port = port;
-			
-			//this.id = ip + port;
-			
-			//params = new MultivaluedMapImpl();
-			//params.add("ip", ip); 
-			//params.add("port", port + "");
-			
-			//client = Client.create();	
 
 			String jsonString;
 			Object cache = Cache.getCachedObject(ip + port + "json");
@@ -266,146 +252,7 @@ public class ServerPinger {
 			
 			return responseTimeMillis;
 		}
-		
-		/*@Override
-		public boolean isOnline() {
-			Object cache = Cache.getCachedObject(id + "online");
-			
-			if (cache == null) {
-				WebResource resource = client.resource(API_URL + "ping.php").queryParams(params);
-				ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
-				int status = response.getStatus();
-				if (status == 200) {
-					Cache.addCachedObject(id + "online", true, CACHE_TIME);
-					return true;
-				} else if (status == 500) {
-					Cache.addCachedObject(id + "online", false, CACHE_TIME);
-					return false;
-				} else {
-					throw new PingException(String.format("Unexpected error while pinging [%s:%s]. HTTP error code %s", ip, port, status));
-				}
-			} else {
-				return (boolean) cache;
-			}
-		}
-		
-		@Override
-		public int getOnlinePlayers() {
-			if (!this.isOnline()) {
-				throw new AssertionError("Tried to get online players of a server that is offline.");
-			}
-			
-			Object cache = Cache.getCachedObject(id + "onlinePlayers");
-			
-			if (cache == null) {
-				WebResource resource = client.resource(API_URL + "playeronline.php").queryParams(params);
-				ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
-				int status = response.getStatus();
-				if (status == 200) {
-					int onlinePlayers = Integer.parseInt(response.getEntity(String.class));
-					Cache.addCachedObject(id + "onlinePlayers", onlinePlayers, CACHE_TIME);
-					return onlinePlayers;
-				} else {
-					throw new PingException(String.format("Unexpected error while pinging [%s:%s]. HTTP error code %s", ip, port, status));
-				}
-			} else {
-				return (int) cache;
-			}
-		}
-		
-		@Override
-		public int getMaximumPlayers() {
-			if (!this.isOnline()) {
-				throw new AssertionError("Tried to get maximum players of a server that is offline.");
-			}
-			
-			Object cache = Cache.getCachedObject(id + "maxPlayers");
-			
-			if (cache == null) {
-				WebResource resource = client.resource(API_URL + "maxplayer.php").queryParams(params);
-				ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
-				int status = response.getStatus();
-				if (status == 200) {
-					int maxPlayers = Integer.parseInt(response.getEntity(String.class));
-					Cache.addCachedObject(id + "maxPlayers", maxPlayers, CACHE_TIME);
-					return maxPlayers;
-				} else {
-					throw new PingException(String.format("Unexpected error while pinging [%s:%s]. HTTP error code %s", ip, port, status));
-				}
-			} else {
-				return (int) cache;
-			}
-		}
-		
-		@Override
-		public String getMotd() {
-			
-			if (!this.isOnline()) {
-				throw new AssertionError("Tried to get motd of a server that is offline.");
-			}
-			
-			Object cache = Cache.getCachedObject(id + "motd");
-			
-			if (cache == null) {
-				Request request = sendRequest("motd");
-				if (request.getStatus() == 200) {
-					String motd = request.getResponse();
-					Cache.addCachedObject(id + "motd", motd, CACHE_TIME);
-					return motd;
-				} else {
-					//throw new AssertionError("Tried to get motd of server that is offline. Error code " + status);
-					throw new PingException(String.format("Unexpected error while pinging [%s:%s]. HTTP error code %s", ip, port, status));
-				}
-			} else {
-				return (String) cache;
-			}
-		}
-		
-		@Override
-		public int getResponseTimeMillis() {
-			
-			if (!this.isOnline()) {
-				throw new AssertionError("Tried to get response time of a server that is offline.");
-			}
-			
-			Object cache = Cache.getCachedObject(id + "ping");
-			
-			if (cache == null) {
-				//WebResource resource = client.resource(API_URL + "ping.php").queryParams(params);
-				//ClientResponse response = resource.accept("application/json").get(ClientResponse.class);
-				if (status == 200) {
-					double pingSeconds = Double.parseDouble(response.getEntity(String.class));
-					int ping = (int) (pingSeconds / 1000);
-					Cache.addCachedObject(id + "ping", ping, CACHE_TIME);
-					return ping;
-				} else {
-					throw new PingException(String.format("Unexpected error while pinging [%s:%s]. HTTP error code %s", ip, port, status));
-				}
-			} else {
-				return (int) cache;
-			}
-		}
-		
-		private class Request {
-			
-			private String response;
-			private int status;
-			
-			Request(String response, int status){
-				this.response = response;
-				this.status = status;
-			}
-			
-			public String getResponse() {
-				return response;
-			}
-			
-			public int getStatus() {
-				return status;
-			}
-			
-		}*/
-		
+
 	}
 	
 	public static class PingException extends RuntimeException {
