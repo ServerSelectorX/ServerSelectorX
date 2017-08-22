@@ -67,7 +67,7 @@
 
 	<dependencies>
 
-		<dependency
+		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
 			<version>${spigot.version}</version>
