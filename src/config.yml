@@ -54,6 +54,11 @@ selector-open-sound: HORSE_ARMOR
 # If you have your spigot servers behind a firewall (which you should) allow the domain api.minetools.eu to ping your server.
 external-query: true
 
+# Whether servers should be pinged in the background.
+# When disabled, all servers are pinged when the server selector opens. This can cause delays of several seconds.
+# Only turn this off if it is causing lag or your internet can't handle it.
+background-pinging: true
+
 # How long a server needs to be pinged for before giving up. (in milliseconds)
 # Set this to a higher value if your servers are not responding in time.
 # This setting has effect on the internal query only.

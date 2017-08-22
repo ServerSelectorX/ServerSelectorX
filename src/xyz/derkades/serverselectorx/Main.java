@@ -115,6 +115,10 @@ public class Main extends JavaPlugin {
 		getServer().getScheduler().runTaskAsynchronously(this, () -> {
 			checkForUpdates();
 		});
+		
+		if (getConfig().getBoolean("background-pinging", true)) {
+			new PingServersBackground().runTaskTimerAsynchronously(this, 50, 5);
+		}
 	}
 	
 	private void startMetrics() {
