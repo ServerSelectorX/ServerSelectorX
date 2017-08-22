@@ -207,6 +207,7 @@ public class ServerPinger {
 			if (json.has("error")) {
 				online = false;
 			} else {
+				online = true;
 				JsonObject players = json.get("players").getAsJsonObject();
 				onlinePlayers = players.get("online").getAsInt();
 				maximumPlayers = players.get("max").getAsInt();
