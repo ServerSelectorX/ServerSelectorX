@@ -334,7 +334,7 @@ public class Main extends JavaPlugin {
 	public static boolean UPDATE_AVAILABLE;
 	public static String NEW_VERSION;
 	public static String CURRENT_VERSION;
-	public static String DOWNLOAD_LINK;
+	public static String DOWNLOAD_LINK = "https://www.spigotmc.org/resources/serverselectorx.32853/updates";
 	
 	private void checkForUpdates() {		
 		SpigetUpdate updater = new SpigetUpdate(this, 32853).setVersionComparator(VersionComparator.EQUAL);
@@ -346,7 +346,7 @@ public class Main extends JavaPlugin {
 				UPDATE_AVAILABLE = true;
 				NEW_VERSION = newVersion;
 				CURRENT_VERSION = Main.this.getDescription().getVersion();
-				DOWNLOAD_LINK = downloadUrl;
+				//DOWNLOAD_LINK = downloadUrl;
 				
 				getLogger().info("An update is available!");
 				getLogger().info("Your version: " + CURRENT_VERSION);

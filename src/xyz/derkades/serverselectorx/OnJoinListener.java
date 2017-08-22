@@ -71,9 +71,9 @@ public class OnJoinListener implements Listener {
 		}
 		
 		if (Main.UPDATE_AVAILABLE) {
-			player.sendMessage(AQUA + "An update is available.");
+			player.sendMessage(AQUA + "An update is available for ServerSelectorX.");
 			player.sendMessage(String.format(AQUA + "Latest version: %s " + GRAY + "(you are now using version %s)", Main.NEW_VERSION, Main.CURRENT_VERSION)); 
-			player.sendMessage(AQUA + "Download here: " + GRAY + Main.DOWNLOAD_LINK);
+			player.sendMessage(AQUA + "Read the changelog here: " + GRAY + Main.DOWNLOAD_LINK);
 		}
 	}
 
