@@ -67,14 +67,14 @@
 
 	<dependencies>
 
-		<dependency> <!-- Spigot (this includes Spigot API, Bukkit API, Craftbukkit and NMS) -->
+		<dependency
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot-api</artifactId>
 			<version>${spigot.version}</version>
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency> <!-- Derkutils -->
+		<dependency>
 			<groupId>xyz.derkades</groupId>
 			<artifactId>Derkutils</artifactId>
 			<version>1.3.0</version>
