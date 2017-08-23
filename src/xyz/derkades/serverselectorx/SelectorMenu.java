@@ -188,7 +188,6 @@ public class SelectorMenu extends IconMenu {
 		String action = config.getString("menu." + slot + ".action");
 		
 		if (action.startsWith("url:")){ //Send url message
-			//It's a URL
 			String url = action.substring(4);
 			String message = Colors.parseColors(config.getString("url-message", "&3&lClick here"));
 			
@@ -199,7 +198,6 @@ public class SelectorMenu extends IconMenu {
 					);
 			return true;
 		} else if (action.startsWith("cmd:")){ //Execute command
-			//It's a command
 			String command = action.substring(4);
 			
 			//Send command 1 tick later to let the GUI close first (for commands that open a GUI)
@@ -212,7 +210,6 @@ public class SelectorMenu extends IconMenu {
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("sync player %s %s", player.getName(), command));
 			return true;
 		} else if (action.startsWith("sel:")){ //Open selector
-			//It's a server selector
 			String configName = action.substring(4);
 			FileConfiguration config = Main.getSelectorConfigurationFile(configName);
 			if (config == null){

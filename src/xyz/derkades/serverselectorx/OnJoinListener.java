@@ -51,7 +51,7 @@ public class OnJoinListener implements Listener {
 				builder.coloredLore(lore);
 			}
 			
-			int slot = config.getInt("inv-slot");
+			int slot = config.getInt("inv-slot", 0);
 			PlayerInventory inv = player.getInventory();
 			if (slot < 0) {
 				if (!inv.containsAtLeast(builder.create(), 1)) {
@@ -68,11 +68,7 @@ public class OnJoinListener implements Listener {
 	public void sendUpdateMessage(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		
-		if (!player.hasPermission("ssx.update")) {
-			return;
-		}
-		
-		if (Main.UPDATE_AVAILABLE) {
+		if (Main.UPDATE_AVAILABLE && player.hasPermission("ssx.update")) {
 			player.sendMessage(AQUA + "An update is available for ServerSelectorX.");
 			player.sendMessage(String.format(AQUA + "Latest version: %s " + GRAY + "(you are now using version %s)", Main.NEW_VERSION, Main.CURRENT_VERSION)); 
 			player.sendMessage(AQUA + "Read the changelog here: " + GRAY + Main.DOWNLOAD_LINK);
