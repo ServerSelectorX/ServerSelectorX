@@ -54,7 +54,9 @@ public class OnJoinListener implements Listener {
 			int slot = config.getInt("inv-slot");
 			PlayerInventory inv = player.getInventory();
 			if (slot < 0) {
-				inv.addItem(builder.create());
+				if (!inv.containsAtLeast(builder.create(), 1)) {
+					inv.addItem(builder.create());
+				}
 			} else {
 				inv.setItem(slot, builder.create());
 			}
