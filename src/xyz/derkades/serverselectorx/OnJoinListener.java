@@ -27,7 +27,7 @@ public class OnJoinListener implements Listener {
 			
 			Player player = event.getPlayer();
 			
-			if (Main.getPlugin().getConfig().getBoolean("permissins-enabled")) {
+			if (Main.getPlugin().getConfig().getBoolean("permissions-enabled")) {
 				if (!player.hasPermission("ssx.join." + config.getName().replace(".yml", ""))) {
 					continue;
 				}
