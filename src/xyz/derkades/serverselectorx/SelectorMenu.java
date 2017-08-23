@@ -208,7 +208,7 @@ public class SelectorMenu extends IconMenu {
 			}, 1);
 			return true;
 		} else if (action.startsWith("bungeecmd:")) { //BungeeCord command
-			String command = action.split(":")[0];
+			String command = action.substring(10);
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("sync player %s %s", player.getName(), command));
 			return true;
 		} else if (action.startsWith("sel:")){ //Open selector
