@@ -70,7 +70,7 @@ menu:
 
     # Whether the server should be pinged for information. Enables placeholders in lore.
     ping-server: false
-    ip: play.example.com
+    ip: play.example.com # Note that you can't use localhost because the plugin uses an external API by default. For more info see config.yml
     port: 1234
     
     action: 'srv:kitpvp'

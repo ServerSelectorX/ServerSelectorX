@@ -56,7 +56,7 @@ external-query: true
 
 # Whether servers should be pinged in the background.
 # When disabled, all servers are pinged when the server selector opens. This can cause delays of several seconds.
-# Only turn this off if it is causing lag or your internet can't handle it.
+# Only turn this off if it is causing lag or your internet connection can't handle it.
 background-pinging: true
 
 # How long a server needs to be pinged for before giving up. (in milliseconds)
@@ -65,10 +65,11 @@ background-pinging: true
 ping-timeout: 500
 
 # Cooldown for opening the selector menu in milliseconds.
-# This should be equal or greater than ping-timeout * servers
-# where servers = the number of servers that have server pinging enabled.
-# This is a temporary solution for a complicated problem, which should be fixed soon.
-selector-open-cooldown: 5000
+# This can be used as workaround for a bug where players are able to take out items if they
+# click the selector again while it is still waiting for servers to be pinged from the first time they clicked.
+# You will probably only need this if you have background-pinging set to off.
+# This value is in milliseconds. Any value less than 1000 = cooldown off.
+selector-open-cooldown: 0
 
 # Specify empty string for no message -> cooldown-message: ''
 cooldown-message: '&cYou cannot use this yet, please wait {x} seconds.'
@@ -79,7 +80,7 @@ cooldown-message: '&cYou cannot use this yet, please wait {x} seconds.'
 # Cancel item dropping for players that do not have the permission ssx.drop
 cancel-item-drop: false
 
-# Cancel item move for players that do not have the permission ssx.move
+# Cancel item move for players that do not have the permission ssx.move (this includes swapping items between hands for 1.9+)
 cancel-item-move: false
 
 
