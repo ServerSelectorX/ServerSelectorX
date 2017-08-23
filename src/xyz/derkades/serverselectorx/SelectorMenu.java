@@ -202,12 +202,12 @@ public class SelectorMenu extends IconMenu {
 			
 			//Send command 1 tick later to let the GUI close first (for commands that open a GUI)
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), () -> {
-				Bukkit.dispatchCommand(player, command);
+				Bukkit.dispatchCommand(player, Main.PLACEHOLDER_API.parsePlaceholders(player, command));
 			}, 1);
 			return true;
 		} else if (action.startsWith("bungeecmd:")) { //BungeeCord command
 			String command = action.substring(10);
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("sync player %s %s", player.getName(), command));
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("sync player %s %s", player.getName(), Main.PLACEHOLDER_API.parsePlaceholders(player, command)));
 			return true;
 		} else if (action.startsWith("sel:")){ //Open selector
 			String configName = action.substring(4);
@@ -236,7 +236,7 @@ public class SelectorMenu extends IconMenu {
 			return true;
 		} else if (action.startsWith("msg:")){ //Send message
 			String message = action.substring(4);
-			player.sendMessage(Colors.parseColors(message));
+			player.sendMessage(Main.PLACEHOLDER_API.parsePlaceholders(player, message));
 			return true;
 		} else if (action.equals("close:")){ //Close selector
 			return true; //Return true = close
