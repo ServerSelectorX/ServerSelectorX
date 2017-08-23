@@ -234,11 +234,11 @@ public class SelectorMenu extends IconMenu {
 			String serverName = action.substring(4);
 			Main.teleportPlayerToServer(player, serverName);
 			return true;
-		} else if (action.startsWith("msg")){ //Send message
+		} else if (action.startsWith("msg:")){ //Send message
 			String message = action.substring(4);
 			player.sendMessage(Colors.parseColors(message));
 			return true;
-		} else if (action.equals("close")){ //Close selector
+		} else if (action.equals("close:")){ //Close selector
 			return true; //Return true = close
 		} else {
 			return false; //Return false = stay open
