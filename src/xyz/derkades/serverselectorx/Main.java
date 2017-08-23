@@ -342,7 +342,11 @@ public class Main extends JavaPlugin {
 	public static String CURRENT_VERSION;
 	public static String DOWNLOAD_LINK = "https://www.spigotmc.org/resources/serverselectorx.32853/updates";
 	
-	private void checkForUpdates() {		
+	private void checkForUpdates() {
+		if (!getConfig().getBoolean("updater")) {
+			getLogger().info("The update checker is disabled.");
+		}
+		
 		SpigetUpdate updater = new SpigetUpdate(this, 32853).setVersionComparator(VersionComparator.EQUAL);
 		
 		updater.checkForUpdate(new UpdateCallback() {

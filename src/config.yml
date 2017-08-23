@@ -84,7 +84,9 @@ cancel-item-drop: false
 cancel-item-move: false
 
 
-
+# Please only disable the updater if it is causing issues or you cannot use a newer version of the plugin.
+# New versions will not be downloaded or installed automatically, it just checks if a new version is available.
+updater: true
 
 # Do not touch this
 version: 7
