@@ -158,7 +158,7 @@ public class Main extends JavaPlugin {
 			
 			for (final FileConfiguration config : Main.getServerSelectorConfigurationFiles()) {
 				for (final String slot : config.getConfigurationSection("menu").getKeys(false)) {
-					String action = config.getString("menu." + slot + ".action").split(":")[0];
+					String action = config.getString("menu." + slot + ".action").split(":")[0].toLowerCase();
 					if (map.containsKey(action)) {
 						map.put(action, map.get(action) + 1);
 					} else {
