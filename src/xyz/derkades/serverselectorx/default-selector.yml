@@ -128,5 +128,5 @@ menu:
       enchanted: false # Only works on 1.9+ at the moment
       name: 'Placeholder block'
       lore:
-       - THis item does nothing
+       - This item does nothing
   
