@@ -47,7 +47,7 @@ public class OnJoinListener implements Listener {
 			List<String> lore = config.getStringList("item-lore");
 			
 			//Don't add lore if it's null or if the first line is equal to 'none'
-			if (!(lore == null || lore.get(0).equalsIgnoreCase("none"))) {
+			if (!(lore == null || lore.isEmpty() || lore.get(0).equalsIgnoreCase("none"))) {
 				builder.coloredLore(lore);
 			}
 			
