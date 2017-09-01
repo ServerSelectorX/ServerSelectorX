@@ -36,8 +36,7 @@ public class OnJoinListener implements Listener {
 			Material material = Material.getMaterial(config.getString("item"));
 			
 			if (material == null) {
-				player.sendMessage(Message.INVALID_ITEM_NAME.toString());
-				return;
+				material = Material.STONE;
 			}
 			
 			ItemBuilder builder = new ItemBuilder(material)

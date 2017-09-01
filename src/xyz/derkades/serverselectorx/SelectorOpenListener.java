@@ -35,11 +35,10 @@ public class SelectorOpenListener implements Listener {
 			}
 			
 			final String string = config.getString("item");
-			final Material material = Material.getMaterial(string);
+			Material material = Material.getMaterial(string);
 			
 			if (material == null){
-				player.sendMessage(Message.INVALID_ITEM_NAME.toString());
-				return;
+				material = Material.STONE;
 			}
 			
 			if (player.getInventory().getItemInHand().getType() != material){
