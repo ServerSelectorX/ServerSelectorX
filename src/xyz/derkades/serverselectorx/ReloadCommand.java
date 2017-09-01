@@ -1,5 +1,7 @@
 package xyz.derkades.serverselectorx;
 
+import static org.bukkit.ChatColor.AQUA;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -14,7 +16,7 @@ public class ReloadCommand implements CommandExecutor {
 		
 		if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl")){
 			Main.getPlugin().reloadConfig();
-			sender.sendMessage(Message.CONFIG_RELOADED.toString());
+			sender.sendMessage(AQUA + "The configuration file has been reloaded.");
 			return true;
 		}
 		

@@ -1,5 +1,8 @@
 package xyz.derkades.serverselectorx;
 
+import static org.bukkit.ChatColor.DARK_AQUA;
+import static org.bukkit.ChatColor.DARK_GRAY;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -48,6 +51,8 @@ public class Main extends JavaPlugin {
 	
 	public static Placeholders PLACEHOLDER_API;
 	
+	public static final String PREFIX = DARK_GRAY + "[" + DARK_AQUA + "ServerSelectorX" + DARK_GRAY + "]";
+
 	private static Plugin plugin;
 	
 	public static Plugin getPlugin(){
