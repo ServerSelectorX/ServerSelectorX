@@ -7,7 +7,6 @@
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<jdk.version>1.8</jdk.version>
-		<spigot.version>1.8.8-R0.1-SNAPSHOT</spigot.version>
 	</properties>
 
 	<build>
@@ -69,8 +68,8 @@
 
 		<dependency>
 			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot-api</artifactId>
-			<version>${spigot.version}</version>
+			<artifactId>spigot</artifactId>
+			<version>1.8.8-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 

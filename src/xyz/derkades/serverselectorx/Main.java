@@ -8,6 +8,7 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,9 +28,8 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.enchantments.EnchantmentWrapper;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.inventivetalent.update.spiget.SpigetUpdate;
@@ -94,13 +94,11 @@ public class Main extends JavaPlugin {
 			logger.log(Level.SEVERE, "If you don't want to redo your config, see resource updates on spigotmc.org for instructions.");
 			logger.log(Level.SEVERE, "***************************************");
 			getServer().getPluginManager().disablePlugin(this);
+			return;
 		}
 		
 		//Register custom selector commands
 		registerCommands();
-		
-		//Register glowing enchantment
-		registerEnchantment();
 		
 		//Check if PlaceHolderAPI is installed
 		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")){
@@ -235,22 +233,6 @@ public class Main extends JavaPlugin {
 		}
 	}
 	
-	private void registerEnchantment(){
-		try {
-			Field f = Enchantment.class.getDeclaredField("acceptingNew");
-			f.setAccessible(true);
-			f.set(null, true);
-			
-			EnchantmentWrapper.registerEnchantment(new GlowEnchantment());
-		} catch (NoSuchFieldException | IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (IllegalArgumentException e){
-			//Already registered (or another enchantment exists with this id?)
-			getLogger().warning("Error registering enchantment. If this is not caused by /reload, please report this problem.");
-			e.printStackTrace();
-		}
-	}
-	
 	public static FileConfiguration getSelectorConfigurationFile(String name){
 		File file = new File(Main.getPlugin().getDataFolder() + "/menu", name + ".yml");
 		if (file.exists()){
@@ -375,6 +357,32 @@ public class Main extends JavaPlugin {
 				getLogger().info("You are running the latest version.");
 			}
 		});
+	}
+	
+	public static ItemStack addHideFlags(ItemStack item) {
+		try {
+			String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+			
+			Class<?> craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
+			Class<?> nmsItemStackClass = Class.forName("net.minecraft.server." + version + ".ItemStack");
+			Class<?> nbtTagCompoundClass = Class.forName("net.minecraft.server." + version + ".NBTTagCompound");
+			
+			Object nmsItemStack = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(null, item);
+			
+			Object nbtTagCompound = nmsItemStackClass.getMethod("getTag").invoke(nmsItemStack);
+			if (nbtTagCompound == null) {
+				nbtTagCompound = nbtTagCompoundClass.getConstructor().newInstance();
+			}
+			
+			nbtTagCompoundClass.getMethod("setInt", String.class, int.class).invoke(nbtTagCompound, "HideFlags", 63);
+			
+			nmsItemStackClass.getMethod("setTag", nbtTagCompoundClass).invoke(nmsItemStack, nbtTagCompound);
+			
+			return (ItemStack) craftItemStackClass.getMethod("asBukkitCopy", nmsItemStackClass).invoke(null, nmsItemStack);
+		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException |
+				NoSuchMethodException | SecurityException | InstantiationException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 }

@@ -129,4 +129,12 @@ menu:
       name: 'Placeholder block'
       lore:
        - This item does nothing
-  
+       
+  -1: # -1 means everything else
+    action: 'none'
+    online:
+      item: STAINED_GLASS_PANE
+      data: 0
+      enchanted: false # Only works on 1.9+ at the moment
+      name: ''
+      lore:

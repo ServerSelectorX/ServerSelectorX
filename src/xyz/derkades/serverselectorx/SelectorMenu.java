@@ -9,7 +9,9 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -25,12 +27,14 @@ public class SelectorMenu extends IconMenu {
 
 	private FileConfiguration config;
 	private Player player;
+	private int slots;
 	
 	public SelectorMenu(Player player, FileConfiguration config) {
 		super(Main.getPlugin(), Colors.parseColors(config.getString("title", "no title")), config.getInt("rows", 6) * 9, player);
 		
 		this.config = config;
 		this.player = player;
+		this.slots = config.getInt("rows", 6) * 9;
 	}
 
 	@Override
@@ -52,12 +56,9 @@ public class SelectorMenu extends IconMenu {
 							builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, section.getString("online.name", "error")));
 							builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("online.lore")));
 							
-							//Apply custom glowing enchantment
-							if (section.getBoolean("online.enchanted", false))
-								builder.unsafeEnchant(new GlowEnchantment(), 1);
+							if (section.getBoolean("online.enchanted", false)) builder.enchant(Enchantment.KNOCKBACK, 1);
 							
-							//Add item
-							items.put(Integer.valueOf(key), builder.create());
+							addToMenu(Integer.valueOf(key), Main.addHideFlags(builder.create()));
 						});
 						continue;
 					} else {
@@ -157,11 +158,9 @@ public class SelectorMenu extends IconMenu {
 							builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
 							builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
 							
-							//Apply custom glowing enchantment
-							if (enchanted) builder.unsafeEnchant(new GlowEnchantment(), 1);
+							if (enchanted) builder.enchant(Enchantment.KNOCKBACK, 1);
 							
-							//Add item to menu
-							items.put(Integer.valueOf(key), builder.create());
+							addToMenu(Integer.valueOf(key), Main.addHideFlags(builder.create()));
 						});
 					}
 				}
@@ -179,6 +178,18 @@ public class SelectorMenu extends IconMenu {
 	private void callOriginalOpenMethod(){
 		super.open();
 	}
+	
+	private void addToMenu(int slot, ItemStack item) {
+		if (slot < 0) {
+			for (int i = 0; i < slots; i++) {
+				if (!items.containsKey(i)) {
+					items.put(i, item);
+				}
+			}
+		} else {
+			items.put(slot, item);
+		}
+	}
 
 	@Override
 	public boolean onOptionClick(OptionClickEvent event) {		
@@ -186,6 +197,15 @@ public class SelectorMenu extends IconMenu {
 		Player player = event.getPlayer();
 		
 		String action = config.getString("menu." + slot + ".action");
+		
+		if (action == null) {
+			//If the action is null (so 'slot' is not found in the config) it is probably a wildcard
+			action = config.getString("menu.-1.action");
+			
+			if (action == null) { //If it is still null it must be missing
+				action = "msg:Action missing";
+			}
+		}
 		
 		if (action.startsWith("url:")){ //Send url message
 			String url = action.substring(4);
