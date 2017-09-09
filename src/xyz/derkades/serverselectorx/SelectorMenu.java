@@ -261,7 +261,7 @@ public class SelectorMenu extends IconMenu {
 			String message = action.substring(4);
 			player.sendMessage(Main.PLACEHOLDER_API.parsePlaceholders(player, message));
 			return true;
-		} else if (action.equals("close:")){ //Close selector
+		} else if (action.equals("close")){ //Close selector
 			return true; //Return true = close
 		} else {
 			return false; //Return false = stay open
