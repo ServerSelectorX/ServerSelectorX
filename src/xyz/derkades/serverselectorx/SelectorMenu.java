@@ -223,10 +223,10 @@ public class SelectorMenu extends IconMenu {
 		} else if (action.startsWith("cmd:")){ //Execute command
 			String command = action.substring(4);
 			
-			//Send command 1 tick later to let the GUI close first (for commands that open a GUI)
+			//Send command 2 ticks later to let the GUI close first (for commands that open a GUI)
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), () -> {
 				Bukkit.dispatchCommand(player, Main.PLACEHOLDER_API.parsePlaceholders(player, command));
-			}, 1);
+			}, 2);
 			return true;
 		} else if (action.startsWith("bungeecmd:")) { //BungeeCord command
 			String command = action.substring(10);
