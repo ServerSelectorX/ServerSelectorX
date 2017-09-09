@@ -54,10 +54,27 @@
 					
 					<relocations>
 						<relocation>
-							<pattern>org.bstats</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx</shadedPattern>
+							<pattern>org.bstats.bukkit</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.ext.bstats</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.inventivetalent.update.spiget</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.ext.spiget_update</shadedPattern>
 						</relocation>
 					</relocations>
+
+					<artifactSet>
+						<excludes>
+							<exclude>commons-io:commons-io</exclude>.
+							<exclude>org.apache.commons:commons-lang3</exclude>
+							<exclude>org.bukkit:bukkit</exclude>
+							<exclude>org.yaml:snakeyaml</exclude>
+							<exclude>com.google.code.gson:gson</exclude>
+							<exclude>com.googlecode.json-simple:json-simple</exclude>
+							<exclude>com.google.guava:guava</exclude>
+							<exclude>commons-lang:commons-lang</exclude>
+						</excludes>
+					  </artifactSet>
 				</configuration>
 			</plugin>
 
