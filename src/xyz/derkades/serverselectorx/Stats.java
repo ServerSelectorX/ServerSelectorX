@@ -123,14 +123,6 @@ public class Stats {
 			}
 		}));
 		
-		metrics.addCustomChart(new Metrics.SimplePie("permissions", () -> {
-			if (Main.getPlugin().getConfig().getBoolean("permissions-enabled", false)) {
-				return "Enabled";
-			} else {
-				return "Disabled";
-			}
-		}));
-		
 		metrics.addCustomChart(new Metrics.SimplePie("item_drop", () -> {
 			if (Main.getPlugin().getConfig().getBoolean("cancel-item-drop", false)) {
 				return "Cancel";
