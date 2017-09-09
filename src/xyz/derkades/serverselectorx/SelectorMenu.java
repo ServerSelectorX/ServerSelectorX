@@ -73,8 +73,9 @@ public class SelectorMenu extends IconMenu {
 							int totalPlayers = 0;
 							int totalMaxPlayers = 0;
 							
-							for (final String subKey : Main.getSelectorConfigurationFile(action.substring(4)).getConfigurationSection("").getKeys(false)){
-								final ConfigurationSection subSection = config.getConfigurationSection("menu." + subKey);
+							FileConfiguration subConfig = Main.getSelectorConfigurationFile(action.substring(4));
+							for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
+								final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
 								if (subSection.getBoolean("ping-server", false)) {
 									Server server;
 									
