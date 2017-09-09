@@ -54,6 +54,8 @@ command: "menu"
 #
 # Open another selector (for submenus for example)
 # action: 'sel:uhc-servers'
+# SUPER VALUABLE TIP:
+# If you set the ip to 'submenu' and ping-server to true, {online} and {max} will be the combined number of players of all servers in the submenu.
 #
 # Send message
 # action: 'msg:&1This &2is &3a &4message'

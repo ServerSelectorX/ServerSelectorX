@@ -46,49 +46,67 @@ public class SelectorMenu extends IconMenu {
 					
 					final ItemBuilder builder = new ItemBuilder(Material.STONE);
 					
+					Material material = Material.STONE;
+					int data = 0;
+					String name = "";
+					List<String> lore = new ArrayList<>();
+					int amount = 1;
+					boolean enchanted = false;
+					
 					if (!section.getBoolean("ping-server")){
 						//Server pinging is turned off, get item info from 'online' section
-						Bukkit.getScheduler().runTask(Main.getPlugin(), () -> { //Go back to main thread
-							Material material = Material.getMaterial(section.getString("online.item"));
-							if (material == null) material = Material.STONE;
-							builder.type(material);
-							builder.data(section.getInt("online.data", 0));
-							builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, section.getString("online.name", "error")));
-							builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("online.lore")));
-							builder.amount(section.getInt("item-count", 1));
-							
-							if (section.getBoolean("online.enchanted", false)) builder.unsafeEnchant(Enchantment.KNOCKBACK, 1);
-							
-							addToMenu(Integer.valueOf(key), Main.addHideFlags(builder.create()));
-						});
-						continue;
+						material = Material.getMaterial(section.getString("online.item"));
+						data = section.getInt("online.data", 0);
+						name = section.getString("online.name", "");
+						lore = section.getStringList("online.lore");
+						amount = section.getInt("item-count", 1);
+						enchanted = section.getBoolean("enchanted");
 					} else {
-						//Server pinging is turned on, ping server asynchronously
+						//Server pinging is turned on, ping server(s)
 						String ip = section.getString("ip");
 						int port = section.getInt("port");
 						
-						Server server;
-						
-						if (Main.getPlugin().getConfig().getBoolean("external-query", true)){
-							server = new ServerPinger.ExternalServer(ip, port);
-						} else {
-							int timeout = section.getInt("ping-timeout", 100);
-							server = new ServerPinger.InternalServer(ip, port, timeout);
-						}
-						
-						boolean online = server.isOnline();
-						
-						//No need to run async anymore
-						
-						Bukkit.getScheduler().runTask(Main.getPlugin(), () -> {
-							Material material = Material.STONE;
-							int data = 0;
-							String name = "";
-							List<String> lore = new ArrayList<>();
-							int amount = 1;
-							boolean enchanted = false;
+						String action = section.getString("action");
+						if (ip.equalsIgnoreCase("submenu") && action.startsWith("sel")) {
+							//Ping all servers in menu
 							
-							if (online) {
+							int totalPlayers = 0;
+							int totalMaxPlayers = 0;
+							
+							for (final String subKey : Main.getSelectorConfigurationFile(action.substring(4)).getConfigurationSection("").getKeys(false)){
+								final ConfigurationSection subSection = config.getConfigurationSection("menu." + subKey);
+								if (subSection.getBoolean("ping-server", false)) {
+									Server server;
+									
+									if (Main.getPlugin().getConfig().getBoolean("external-query", true)){
+										server = new ServerPinger.ExternalServer(ip, port);
+									} else {
+										int timeout = Main.getPlugin().getConfig().getInt("ping-timeout", 100);
+										server = new ServerPinger.InternalServer(ip, port, timeout);
+									}
+									
+									totalPlayers += server.getOnlinePlayers();
+									totalMaxPlayers += server.getMaximumPlayers();
+								}
+							}
+							
+							//Replace placeholders in lore
+							lore = replaceInStringList(lore, 
+									new Object[] {"{online}", "{max}"},
+									new Object[] {totalPlayers, totalMaxPlayers});
+						} else {
+							//Ping single server
+							
+							Server server;
+							
+							if (Main.getPlugin().getConfig().getBoolean("external-query", true)){
+								server = new ServerPinger.ExternalServer(ip, port);
+							} else {
+								int timeout = section.getInt("ping-timeout", 100);
+								server = new ServerPinger.InternalServer(ip, port, timeout);
+							}
+						
+							if (server.isOnline()) {
 								String motd = server.getMotd();
 								int onlinePlayers = server.getOnlinePlayers();
 								int maxPlayers = server.getMaximumPlayers();
@@ -136,36 +154,36 @@ public class SelectorMenu extends IconMenu {
 										amount = onlinePlayers;
 									} else if (mode.equals("relative")) {
 										amount = (onlinePlayers / maxPlayers) * 100;
-									} else {
-										amount = 1;
-										Main.getPlugin().getLogger().warning("item-count-mode setting is invalid");
-									}
-										
-									if (amount > 64 || amount < 1)
-										amount = 1;
+								} else {
+									amount = 1;
+									Main.getPlugin().getLogger().warning("item-count-mode setting is invalid");
 								}
+										
+								if (amount > 64 || amount < 1)
+									amount = 1;
+								
 							} else {
 								//Server is offline
 								ConfigurationSection offlineSection = section.getConfigurationSection("offline");
-								
+									
 								material = Material.getMaterial(offlineSection.getString("item"));
 								data = offlineSection.getInt("data", 0);
 								name = offlineSection.getString("name");
 								lore = offlineSection.getStringList("lore");
 								enchanted = offlineSection.getBoolean("enchanted", false);
 							}
-							
-							if (material == null) material = Material.STONE;
-							builder.type(material);
-							builder.data(data);
-							builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
-							builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
-							
-							if (enchanted) builder.unsafeEnchant(Enchantment.KNOCKBACK, 1);
-							
-							addToMenu(Integer.valueOf(key), Main.addHideFlags(builder.create()));
-						});
+							}
+						}
 					}
+					if (material == null) material = Material.STONE;
+					builder.type(material);
+					builder.data(data);
+					builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
+					builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
+						
+					if (enchanted) builder.unsafeEnchant(Enchantment.KNOCKBACK, 1);
+						
+					addToMenu(Integer.valueOf(key), Main.addHideFlags(builder.create()));
 				}
 				
 				//After everything has completed, open menu synchronously
