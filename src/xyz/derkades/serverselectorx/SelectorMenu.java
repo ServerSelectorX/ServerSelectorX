@@ -56,7 +56,7 @@ public class SelectorMenu extends IconMenu {
 							builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, section.getString("online.name", "error")));
 							builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("online.lore")));
 							
-							if (section.getBoolean("online.enchanted", false)) builder.enchant(Enchantment.KNOCKBACK, 1);
+							if (section.getBoolean("online.enchanted", false)) builder.unsafeEnchant(Enchantment.KNOCKBACK, 1);
 							
 							addToMenu(Integer.valueOf(key), Main.addHideFlags(builder.create()));
 						});
@@ -158,7 +158,7 @@ public class SelectorMenu extends IconMenu {
 							builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
 							builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
 							
-							if (enchanted) builder.enchant(Enchantment.KNOCKBACK, 1);
+							if (enchanted) builder.unsafeEnchant(Enchantment.KNOCKBACK, 1);
 							
 							addToMenu(Integer.valueOf(key), Main.addHideFlags(builder.create()));
 						});
