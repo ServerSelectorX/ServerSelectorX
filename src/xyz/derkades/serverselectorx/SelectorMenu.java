@@ -86,10 +86,20 @@ public class SelectorMenu extends IconMenu {
 										server = new ServerPinger.InternalServer(ip, port, timeout);
 									}
 									
-									totalPlayers += server.getOnlinePlayers();
-									totalMaxPlayers += server.getMaximumPlayers();
+									if (server.isOnline()) {
+										totalPlayers += server.getOnlinePlayers();
+										totalMaxPlayers += server.getMaximumPlayers();
+									}
 								}
 							}
+							
+							//Get item info from 'online' section
+							material = Material.getMaterial(section.getString("online.item"));
+							data = section.getInt("online.data", 0);
+							name = section.getString("online.name", "");
+							lore = section.getStringList("online.lore");
+							amount = section.getInt("item-count", 1);
+							enchanted = section.getBoolean("enchanted");
 							
 							//Replace placeholders in lore
 							lore = replaceInStringList(lore, 
@@ -155,6 +165,7 @@ public class SelectorMenu extends IconMenu {
 										amount = onlinePlayers;
 									} else if (mode.equals("relative")) {
 										amount = (onlinePlayers / maxPlayers) * 100;
+									}
 								} else {
 									amount = 1;
 									Main.getPlugin().getLogger().warning("item-count-mode setting is invalid");
@@ -173,9 +184,9 @@ public class SelectorMenu extends IconMenu {
 								lore = offlineSection.getStringList("lore");
 								enchanted = offlineSection.getBoolean("enchanted", false);
 							}
-							}
 						}
 					}
+					
 					if (material == null) material = Material.STONE;
 					builder.type(material);
 					builder.data(data);
