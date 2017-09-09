@@ -12,16 +12,12 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
-import org.bstats.bukkit.Metrics;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -30,7 +26,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.plugin.Plugin;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.inventivetalent.update.spiget.SpigetUpdate;
 import org.inventivetalent.update.spiget.UpdateCallback;
@@ -53,9 +48,9 @@ public class Main extends JavaPlugin {
 	
 	public static final String PREFIX = DARK_GRAY + "[" + DARK_AQUA + "ServerSelectorX" + DARK_GRAY + "]";
 
-	private static Plugin plugin;
+	private static JavaPlugin plugin;
 	
-	public static Plugin getPlugin(){
+	public static JavaPlugin getPlugin(){
 		return plugin;
 	}
 	
@@ -82,7 +77,7 @@ public class Main extends JavaPlugin {
 		getCommand("serverselectorx").setExecutor(new ReloadCommand());
 		
 		//Start bStats
-		startMetrics();
+		Stats.initialize();
 		
 		//Check if config is up to date
 		int version = getConfig().getInt("version");
@@ -122,56 +117,6 @@ public class Main extends JavaPlugin {
 		if (getConfig().getBoolean("background-pinging", true)) {
 			new PingServersBackground().runTaskTimerAsynchronously(this, 50, 5);
 		}
-	}
-	
-	private void startMetrics() {
-		final Metrics metrics = new Metrics(this);
-		
-		metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", () -> {
-			if (Main.PLACEHOLDER_API instanceof PlaceholdersEnabled) {
-				return "yes";
-			} else {
-				return "no";
-			}
-		}));
-		
-		metrics.addCustomChart(new Metrics.SimplePie("number_of_selectors", () -> {
-			return Main.getServerSelectorConfigurationFiles().size() + "";
-		}));
-		
-		metrics.addCustomChart(new Metrics.AdvancedPie("selector_item", () -> {
-			final Map<String, Integer> map = new HashMap<>();
-			
-			for (final FileConfiguration config : Main.getServerSelectorConfigurationFiles()) {
-				final Material material = Material.getMaterial(config.getString("item"));
-				if (material == null) continue; //Do not count invalid items
-				
-				if (map.containsKey(material.toString())) {
-					map.put(material.toString(), map.get(material.toString() + 1));
-				} else {
-					map.put(material.toString(), 1);
-				}
-			}
-			
-			return map;
-		}));
-		
-		metrics.addCustomChart(new Metrics.AdvancedPie("type", () -> {
-			final Map<String, Integer> map = new HashMap<>();
-			
-			for (final FileConfiguration config : Main.getServerSelectorConfigurationFiles()) {
-				for (final String slot : config.getConfigurationSection("menu").getKeys(false)) {
-					String action = config.getString("menu." + slot + ".action").split(":")[0].toLowerCase();
-					if (map.containsKey(action)) {
-						map.put(action, map.get(action) + 1);
-					} else {
-						map.put(action, 1);
-					}
-				}
-			}
-			
-			return map;
-		}));
 	}
 	
 	public void reloadConfig(){	
