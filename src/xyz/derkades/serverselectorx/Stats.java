@@ -6,7 +6,6 @@ import java.util.Map;
 import org.bstats.bukkit.Metrics;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.inventory.PlayerInventory;
 
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
 
