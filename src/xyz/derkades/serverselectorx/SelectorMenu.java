@@ -55,6 +55,7 @@ public class SelectorMenu extends IconMenu {
 							builder.data(section.getInt("online.data", 0));
 							builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, section.getString("online.name", "error")));
 							builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, section.getStringList("online.lore")));
+							builder.amount(section.getInt("item-count", 1));
 							
 							if (section.getBoolean("online.enchanted", false)) builder.unsafeEnchant(Enchantment.KNOCKBACK, 1);
 							
@@ -126,6 +127,8 @@ public class SelectorMenu extends IconMenu {
 								lore = replaceInStringList(lore, 
 										new Object[] {"{online}", "{max}", "{motd}", "{ping}"},
 										new Object[] {onlinePlayers, maxPlayers, motd, ping});
+								
+								amount = section.getInt("item-count", 1);
 								
 								if (section.getBoolean("change-item-count", true)) {
 									String mode = Main.getPlugin().getConfig().getString("item-count-mode", "absolute");									

@@ -76,7 +76,11 @@ menu:
     action: 'srv:kitpvp'
 
     # Change item count based on number of players online. Only works if ping-server is turned on. If there are more than 64 players online, the item count will be 1
+    # Change how this works in config.yml.
     change-item-count: true
+    
+    # This value is ignored when change-item-count is turned on.
+    item-count: 1
 
     # Online is used when ping-server is turned off, or ping-server is turned on and the server is online.
     online:
