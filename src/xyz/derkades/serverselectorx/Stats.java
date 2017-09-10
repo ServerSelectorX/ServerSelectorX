@@ -77,7 +77,7 @@ public class Stats {
 		}));
 		
 		metrics.addCustomChart(new Metrics.SimplePie("player_count_mode", () -> {
-			return Main.getPlugin().getConfig().getString("item-count-mode", "absolute");
+			return Main.getPlugin().getConfig().getString("item-count-mode", "absolute").toLowerCase();
 		}));
 		
 		metrics.addCustomChart(new Metrics.SimplePie("background_pinging", () -> {
