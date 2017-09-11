@@ -247,7 +247,7 @@ public class Main extends JavaPlugin {
 		
 		if (Main.getPlugin().getConfig().getBoolean("server-teleport-message-enabled", false)){
 			if (Main.getPlugin().getConfig().getBoolean("chat-clear", false)){
-				for (int i = 0; i < 20; i++){ //Send just 20 lines, because clearing the entire chat is unnecessary.
+				for (int i = 0; i < 150; i++) {
 					player.sendMessage("");
 				}
 			}
