@@ -77,13 +77,14 @@ public class SelectorMenu extends IconMenu {
 							for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
 								final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
 								if (subSection.getBoolean("ping-server", false)) {
+									String subIp = subSection.getString("ip");
+									int subPort = subSection.getInt("port");
 									Server server;
 									
 									if (Main.getPlugin().getConfig().getBoolean("external-query", true)){
-										server = new ServerPinger.ExternalServer(ip, port);
+										server = new ServerPinger.ExternalServer(subIp, subPort);
 									} else {
-										int timeout = Main.getPlugin().getConfig().getInt("ping-timeout", 100);
-										server = new ServerPinger.InternalServer(ip, port, timeout);
+										server = new ServerPinger.InternalServer(subIp, subPort, subSection.getInt("ping-timeout", 100));
 									}
 									
 									if (server.isOnline()) {
