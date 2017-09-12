@@ -165,10 +165,11 @@ public class SelectorMenu extends IconMenu {
 										amount = onlinePlayers;
 									} else if (mode.equals("relative")) {
 										amount = (onlinePlayers / maxPlayers) * 100;
+									} else {
+										Main.getPlugin().getLogger().warning("item-count-mode setting is invalid");
 									}
 								} else {
 									amount = 1;
-									Main.getPlugin().getLogger().warning("item-count-mode setting is invalid");
 								}
 										
 								if (amount > 64 || amount < 1)
