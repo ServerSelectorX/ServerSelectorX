@@ -129,7 +129,7 @@ menu:
   5: # Item in 6th slot   
     action: 'none'
     online:
-      item: GRASS
+      item: 'head:auto' # You can use head:auto to get the head of the player opening the menu, or head:SomethingElse to get the head of a specific player.
       data: 0
       enchanted: false
       name: 'Placeholder block'

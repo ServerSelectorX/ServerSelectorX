@@ -44,9 +44,7 @@ public class SelectorMenu extends IconMenu {
 				for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
 					final ConfigurationSection section = config.getConfigurationSection("menu." + key);
 					
-					final ItemBuilder builder = new ItemBuilder(Material.STONE);
-					
-					Material material = Material.STONE;
+					String materialString = "STONE";
 					int data = 0;
 					String name = "";
 					List<String> lore = new ArrayList<>();
@@ -55,7 +53,7 @@ public class SelectorMenu extends IconMenu {
 					
 					if (!section.getBoolean("ping-server")){
 						//Server pinging is turned off, get item info from 'online' section
-						material = Material.getMaterial(section.getString("online.item"));
+						materialString = section.getString("online.item");
 						data = section.getInt("online.data", 0);
 						name = section.getString("online.name", "");
 						lore = section.getStringList("online.lore");
@@ -95,7 +93,7 @@ public class SelectorMenu extends IconMenu {
 							}
 							
 							//Get item info from 'online' section
-							material = Material.getMaterial(section.getString("online.item"));
+							materialString = section.getString("online.item");
 							data = section.getInt("online.data", 0);
 							name = section.getString("online.name", "");
 							lore = section.getStringList("online.lore");
@@ -133,7 +131,7 @@ public class SelectorMenu extends IconMenu {
 											motdMatch = true;
 											ConfigurationSection motdSection = section.getConfigurationSection("dynamic." + dynamicMotd);
 											
-											material = Material.getMaterial(motdSection.getString("item"));
+											materialString = motdSection.getString("item");
 											data = motdSection.getInt("data", 0);
 											name = motdSection.getString("name");
 											lore = motdSection.getStringList("lore");
@@ -146,7 +144,7 @@ public class SelectorMenu extends IconMenu {
 								
 								if (!motdMatch) {
 									//If no motd matched, fall back to online
-									material = Material.getMaterial(section.getString("online.item"));
+									materialString = section.getString("online.item");
 									data = section.getInt("online.data", 0);
 									name = section.getString("online.name", "error");
 									lore = section.getStringList("online.lore");
@@ -180,7 +178,7 @@ public class SelectorMenu extends IconMenu {
 								//Server is offline
 								ConfigurationSection offlineSection = section.getConfigurationSection("offline");
 									
-								material = Material.getMaterial(offlineSection.getString("item"));
+								materialString = offlineSection.getString("item");
 								data = offlineSection.getInt("data", 0);
 								name = offlineSection.getString("name");
 								lore = offlineSection.getStringList("lore");
@@ -189,9 +187,23 @@ public class SelectorMenu extends IconMenu {
 						}
 					}
 					
-					if (material == null) material = Material.STONE;
-					builder.type(material);
-					builder.data(data);
+					final ItemBuilder builder;
+					
+					if (materialString.startsWith("head:")) {
+						String owner = materialString.split(":")[1];
+						if (owner.equals("auto")) {
+							builder = new ItemBuilder(player.getName());
+						} else {
+							builder = new ItemBuilder(owner);
+						}
+					} else {
+						Material material = Material.valueOf(materialString);
+						if (material == null) material = Material.STONE;
+						
+						builder = new ItemBuilder(material);
+						builder.data(data);
+					}					
+
 					builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
 					builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
 						
