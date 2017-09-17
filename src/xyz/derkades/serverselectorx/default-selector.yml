@@ -132,7 +132,7 @@ menu:
       item: 'head:auto' # You can use head:auto to get the head of the player opening the menu, or head:SomethingElse to get the head of a specific player.
       data: 0
       enchanted: false
-      name: 'Placeholder block'
+      name: 'This is you!'
       lore:
        - This item does nothing
        
