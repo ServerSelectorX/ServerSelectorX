@@ -37,6 +37,7 @@ import xyz.derkades.derkutils.caching.Cache;
 import xyz.derkades.serverselectorx.placeholders.Placeholders;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersDisabled;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
+import xyz.derkades.serverselectorx.utils.ServerPinger;
 
 public class Main extends JavaPlugin {
 	
@@ -117,6 +118,8 @@ public class Main extends JavaPlugin {
 		if (getConfig().getBoolean("background-pinging", true)) {
 			new PingServersBackground().runTaskTimerAsynchronously(this, 50, 5);
 		}
+		
+		ServerPinger.CACHE_TIME = getConfig().getInt("cache-time", 60);
 	}
 	
 	public void reloadConfig(){	
