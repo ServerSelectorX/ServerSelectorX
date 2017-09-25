@@ -280,6 +280,14 @@ public class Main extends JavaPlugin {
 	private void checkForUpdates() {
 		if (!getConfig().getBoolean("updater")) {
 			getLogger().info("The update checker is disabled.");
+			return;
+		}
+		
+		CURRENT_VERSION = Main.this.getDescription().getVersion();
+		
+		if (CURRENT_VERSION.equals("custom")) {
+			getLogger().info("You are using a custom version so the update checker is disabled.");
+			return;
 		}
 		
 		SpigetUpdate updater = new SpigetUpdate(this, 32853).setVersionComparator(VersionComparator.EQUAL);
@@ -290,8 +298,6 @@ public class Main extends JavaPlugin {
 			public void updateAvailable(String newVersion, String downloadUrl, boolean hasDirectDownload) {
 				UPDATE_AVAILABLE = true;
 				NEW_VERSION = newVersion;
-				CURRENT_VERSION = Main.this.getDescription().getVersion();
-				//DOWNLOAD_LINK = downloadUrl;
 				
 				getLogger().info("An update is available!");
 				getLogger().info("Your version: " + CURRENT_VERSION);
