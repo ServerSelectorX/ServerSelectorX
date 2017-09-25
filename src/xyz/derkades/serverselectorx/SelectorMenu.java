@@ -65,6 +65,7 @@ public class SelectorMenu extends IconMenu {
 						int port = section.getInt("port");
 						
 						String action = section.getString("action");
+						
 						if (ip.equalsIgnoreCase("submenu") && action.startsWith("sel")) {
 							//Ping all servers in menu
 							
