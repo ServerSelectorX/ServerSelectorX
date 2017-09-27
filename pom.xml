@@ -65,7 +65,7 @@
 
 					<artifactSet>
 						<excludes>
-							<exclude>commons-io:commons-io</exclude>.
+							<!--<exclude>commons-io:commons-io</exclude>-->
 							<exclude>org.apache.commons:commons-lang3</exclude>
 							<exclude>org.bukkit:bukkit</exclude>
 							<exclude>org.yaml:snakeyaml</exclude>
