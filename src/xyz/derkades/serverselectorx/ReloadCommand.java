@@ -6,6 +6,8 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
+import net.md_5.bungee.api.ChatColor;
+
 public class ReloadCommand implements CommandExecutor {
 	
 	@Override
@@ -15,6 +17,11 @@ public class ReloadCommand implements CommandExecutor {
 		}
 		
 		if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl")){
+			if (!sender.hasPermission("ssx.reload")) {
+				sender.sendMessage(ChatColor.RED + "You need the permission 'ssx.reload' to execute this command.");
+				return true;
+			}
+			
 			Main.getPlugin().reloadConfig();
 			sender.sendMessage(AQUA + "The configuration file has been reloaded.");
 			return true;
