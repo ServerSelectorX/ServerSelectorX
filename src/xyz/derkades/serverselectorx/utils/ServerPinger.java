@@ -28,7 +28,6 @@ public class ServerPinger {
 		public String getIp();
 		public int getPort();
 		public boolean isOnline();
-		public int getOnlinePlayers();
 		public int getMaximumPlayers();
 		public String getMotd();
 		public int getResponseTimeMillis();
@@ -43,7 +42,6 @@ public class ServerPinger {
 		private boolean online;
 		
 		private String motd;
-		private int onlinePlayers;
 		private int maxPlayers;
 		
 		public InternalServer(String ip, int port, int timeout) {
@@ -55,7 +53,6 @@ public class ServerPinger {
 			//Ping server if not cached
 			if (Cache.getCachedObject(id + "online") == null ||
 					Cache.getCachedObject(id + "motd") == null ||
-					Cache.getCachedObject(id + "onlinePlayers") == null ||
 					Cache.getCachedObject(id + "maxPlayers") == null){
 			
 				try (Socket socket = new Socket(ip, port)){
@@ -77,7 +74,6 @@ public class ServerPinger {
 					String[] data = str.toString().split(ChatColor.COLOR_CHAR + "");
 	
 					this.motd = data[0];
-					this.onlinePlayers = Integer.parseInt(data[1]);
 					this.maxPlayers = Integer.parseInt(data[2]);
 				} catch (UnknownHostException e) {
 					online = false;
@@ -89,13 +85,11 @@ public class ServerPinger {
 				
 				Cache.addCachedObject(id + "online", online, CACHE_TIME);
 				Cache.addCachedObject(id + "motd", motd, CACHE_TIME);
-				Cache.addCachedObject(id + "onlinePlayers", onlinePlayers, CACHE_TIME);
 				Cache.addCachedObject(id + "maxPlayers", maxPlayers, CACHE_TIME);
 			} else {
 				online = (boolean) Cache.getCachedObject(id + "online");
 
 				motd = (String) Cache.getCachedObject(id + "motd");
-				onlinePlayers = (int) Cache.getCachedObject(id + "onlinePlayers");
 				maxPlayers = (int) Cache.getCachedObject(id + "maxPlayers");
 			}
 		}
@@ -113,11 +107,6 @@ public class ServerPinger {
 		@Override
 		public boolean isOnline() {
 			return online;
-		}
-
-		@Override
-		public int getOnlinePlayers() {
-			return onlinePlayers;
 		}
 
 		@Override
@@ -144,7 +133,6 @@ public class ServerPinger {
 		
 		private boolean online;
 		
-		private int onlinePlayers;
 		private int maximumPlayers;
 		private String motd;
 		private int responseTimeMillis;
@@ -195,7 +183,6 @@ public class ServerPinger {
 			} else {
 				online = true;
 				JsonObject players = json.get("players").getAsJsonObject();
-				onlinePlayers = players.get("online").getAsInt();
 				maximumPlayers = players.get("max").getAsInt();
 				motd = json.get("description").getAsString();
 				responseTimeMillis = (int) json.get("latency").getAsDouble();
@@ -215,15 +202,6 @@ public class ServerPinger {
 		@Override
 		public boolean isOnline() {
 			return online;
-		}
-
-		@Override
-		public int getOnlinePlayers() {
-			if (!online) {
-				throw new UnsupportedOperationException("Can't get online players of a server that is offline.");
-			}
-			
-			return onlinePlayers;
 		}
 
 		@Override

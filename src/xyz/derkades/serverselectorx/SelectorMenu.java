@@ -51,6 +51,10 @@ public class SelectorMenu extends IconMenu {
 					int amount = 1;
 					boolean enchanted = false;
 					
+					String action = section.getString("action");
+					
+					int maxPlayers = 0;
+					
 					if (!section.getBoolean("ping-server")){
 						//Server pinging is turned off, get item info from 'online' section
 						materialString = section.getString("online.item");
@@ -63,9 +67,7 @@ public class SelectorMenu extends IconMenu {
 						//Server pinging is turned on, ping server(s)
 						String ip = section.getString("ip");
 						int port = section.getInt("port");
-						
-						String action = section.getString("action");
-						
+
 						if (ip.equalsIgnoreCase("submenu") && action.startsWith("sel")) {
 							//Ping all servers in menu
 							
@@ -75,6 +77,13 @@ public class SelectorMenu extends IconMenu {
 							FileConfiguration subConfig = Main.getSelectorConfigurationFile(action.substring(4));
 							for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
 								final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
+								
+								String subAction = subSection.getString("action");
+								if (subAction.startsWith("srv:")) {
+									String serverName = subAction.substring(4);
+									totalPlayers += Main.getOnlinePlayers(serverName);
+								}
+								
 								if (subSection.getBoolean("ping-server", false)) {
 									String subIp = subSection.getString("ip");
 									int subPort = subSection.getInt("port");
@@ -87,7 +96,6 @@ public class SelectorMenu extends IconMenu {
 									}
 									
 									if (server.isOnline()) {
-										totalPlayers += server.getOnlinePlayers();
 										totalMaxPlayers += server.getMaximumPlayers();
 									}
 								}
@@ -119,8 +127,7 @@ public class SelectorMenu extends IconMenu {
 						
 							if (server.isOnline()) {
 								String motd = server.getMotd();
-								int onlinePlayers = server.getOnlinePlayers();
-								int maxPlayers = server.getMaximumPlayers();
+								maxPlayers = server.getMaximumPlayers();
 								int ping = server.getResponseTimeMillis();
 								
 								//Server is online, try dynamic motd items first 
@@ -154,26 +161,12 @@ public class SelectorMenu extends IconMenu {
 								
 								//Replace placeholders in lore
 								lore = replaceInStringList(lore, 
-										new Object[] {"{online}", "{max}", "{motd}", "{ping}"},
-										new Object[] {onlinePlayers, maxPlayers, motd, ping});
+										new Object[] {"{max}", "{motd}", "{ping}"},
+										new Object[] {maxPlayers, motd, ping});
 								
 								amount = section.getInt("item-count", 1);
 								
-								if (section.getBoolean("change-item-count", true)) {
-									String mode = Main.getPlugin().getConfig().getString("item-count-mode", "absolute");									
-									if (mode.equals("absolute")) {
-										amount = onlinePlayers;
-									} else if (mode.equals("relative")) {
-										amount = (onlinePlayers / maxPlayers) * 100;
-									} else {
-										Main.getPlugin().getLogger().warning("item-count-mode setting is invalid");
-									}
-								} else {
-									amount = 1;
-								}
-										
-								if (amount > 64 || amount < 1)
-									amount = 1;
+
 								
 							} else {
 								//Server is offline
@@ -185,7 +178,33 @@ public class SelectorMenu extends IconMenu {
 								lore = offlineSection.getStringList("lore");
 								enchanted = offlineSection.getBoolean("enchanted", false);
 							}
+							
+
 						}
+					}
+					
+					if (action.startsWith("srv:")) {
+						String serverName = action.substring(4);
+						
+						int onlinePlayers = Main.getOnlinePlayers(serverName);
+						
+						lore = replaceInStringList(lore, new Object[] { "{online}" }, new Object[] { onlinePlayers });
+						
+						if (section.getBoolean("change-item-count", true)) {
+							String mode = Main.getPlugin().getConfig().getString("item-count-mode", "absolute");									
+							if (mode.equals("absolute")) {
+								amount = onlinePlayers;
+							} else if (mode.equals("relative")) {
+								amount = (onlinePlayers / maxPlayers) * 100;
+							} else {
+								Main.getPlugin().getLogger().warning("item-count-mode setting is invalid");
+							}
+						} else {
+							amount = 1;
+						}
+								
+						if (amount > 64 || amount < 1)
+							amount = 1;
 					}
 					
 					final ItemBuilder builder;

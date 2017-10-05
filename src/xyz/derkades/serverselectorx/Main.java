@@ -64,6 +64,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new OnJoinListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemMoveDropCancelListener(), this);
 		
+		
 		List<String> offHandVersions = Arrays.asList("1.9", "1.10", "1.11", "1.12");
 		for (String version : offHandVersions) {
 			if (Bukkit.getBukkitVersion().contains(version)) {
@@ -71,8 +72,12 @@ public class Main extends JavaPlugin {
 			}
 		}
 		
-		//Register outgoing channel
+		//Register messaging channels
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+		
+		PingServersBackground backgroundPinging = new PingServersBackground();
+		backgroundPinging.runTaskTimerAsynchronously(this, 50, 5);
+		this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", backgroundPinging);
 		
 		//Register command
 		getCommand("serverselectorx").setExecutor(new ReloadCommand());
@@ -114,11 +119,7 @@ public class Main extends JavaPlugin {
 		getServer().getScheduler().runTaskAsynchronously(this, () -> {
 			checkForUpdates();
 		});
-		
-		if (getConfig().getBoolean("background-pinging", true)) {
-			new PingServersBackground().runTaskTimerAsynchronously(this, 50, 5);
-		}
-		
+
 		ServerPinger.CACHE_TIME = getConfig().getInt("cache-time", 60);
 	}
 	
@@ -336,6 +337,17 @@ public class Main extends JavaPlugin {
 		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException |
 				NoSuchMethodException | SecurityException | InstantiationException e) {
 			throw new RuntimeException(e);
+		}
+	}
+	
+	public static int getOnlinePlayers(String serverName) {
+		//Player count is put in cache by code in PingServersBackground class
+		Object cache = Cache.getCachedObject("playersonline" + serverName);
+		
+		if (cache == null) {
+			return 0;
+		} else {
+			return (int) cache;
 		}
 	}
 
