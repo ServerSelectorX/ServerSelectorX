@@ -130,9 +130,10 @@ public class Main extends JavaPlugin {
 		//Reload config
 		super.reloadConfig();
 	
-		//Copy custom config if it does not exist
+		//Copy default selector if directory is empty
+		boolean createFile = new File(this.getDataFolder() + "/menu").listFiles().length == 0;
 		File file = new File(this.getDataFolder() + "/menu", "default.yml");
-		if (!file.exists()){
+		if (createFile){
 			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/default-selector.yml");
 			try {
 				FileUtils.copyURLToFile(inputUrl, file);
