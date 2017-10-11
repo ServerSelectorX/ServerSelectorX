@@ -74,12 +74,9 @@ public class PingServersBackground extends BukkitRunnable implements PluginMessa
 		
 		ByteArrayDataInput in = ByteStreams.newDataInput(message);
 		String subchannel = in.readUTF();
-		debug("Recieved message");
 		if (subchannel.equals("PlayerCount")) {
-			debug("Received player count");
 			String server = in.readUTF();
 			int playercount = in.readInt();
-			debug("Server: " + server + " | Count: " + playercount);
 			
 			Cache.addCachedObject("playersonline" + server, playercount);
 		}
