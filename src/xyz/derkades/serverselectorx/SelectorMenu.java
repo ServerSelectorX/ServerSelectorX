@@ -25,6 +25,12 @@ import xyz.derkades.serverselectorx.utils.ServerPinger.Server;
 
 public class SelectorMenu extends IconMenu {
 
+	/*
+	 * This code is very messy. I am sorry :(
+	 * I keep adding new stuff quickly without thinking about code design.
+	 * I promise, I'll fix it soon(tm)!
+	 */
+	
 	private FileConfiguration config;
 	private Player player;
 	private int slots;

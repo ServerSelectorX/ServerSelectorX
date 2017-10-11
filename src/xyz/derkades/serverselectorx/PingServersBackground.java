@@ -82,8 +82,4 @@ public class PingServersBackground extends BukkitRunnable implements PluginMessa
 		}
 	}
 	
-	private void debug(String msg) {
-		Main.getPlugin().getLogger().info("[debug] " + msg);
-	}
-
 }
