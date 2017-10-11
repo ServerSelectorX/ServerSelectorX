@@ -5,9 +5,6 @@
 
 
 
-
-
-
 server-teleport-message-enabled: true
 server-teleport-message: '&7You are being connected to &7&l{x}&r&7.'
 
@@ -21,8 +18,6 @@ chat-clear: false
 item-count-mode: absolute
 
 
-
-
 # -------------------- Permissions -------------------- #
 
 # Require the permission 'ssx.use.<selector name>' to open the menu and ssx.join.<selector name> to get the item on join
@@ -31,7 +26,6 @@ permissions-enabled: false
 # Send a message if the player does not have permission to use the server selector?
 no-permission-message-enabled: true
 no-permission-message: '&cYou do not have permission to use the server selector.'
-
 
 
 # -------------------- Sounds -------------------- #
@@ -44,7 +38,6 @@ no-permission-message: '&cYou do not have permission to use the server selector.
 # If you don't want any sound to play put 'NONE' without ''
 
 selector-open-sound: HORSE_ARMOR
-
 
 
 # -------------------- Server Pinging -------------------- #
