@@ -29,7 +29,7 @@ public class PingServersBackground extends BukkitRunnable implements PluginMessa
 		
 		//Start pinging all servers
 		
-		for (FileConfiguration config : Main.getServerSelectorConfigurationFiles()) {
+		for (FileConfiguration config : Main.getConfigurationManager().getAll()) {
 			for (final String key : config.getConfigurationSection("menu").getKeys(false)) {				
 				final ConfigurationSection section = config.getConfigurationSection("menu." + key);
 				

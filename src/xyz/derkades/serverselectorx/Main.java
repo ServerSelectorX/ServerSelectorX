@@ -49,6 +49,8 @@ public class Main extends JavaPlugin {
 	
 	public static final String PREFIX = DARK_GRAY + "[" + DARK_AQUA + "ServerSelectorX" + DARK_GRAY + "]";
 
+	private static ConfigurationManager configurationManager;
+	
 	private static JavaPlugin plugin;
 	
 	public static JavaPlugin getPlugin(){
@@ -58,6 +60,9 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable(){
 		plugin = this;
+		
+		configurationManager = new ConfigurationManager();
+		configurationManager.loadFiles();
 
 		//Register listeners
 		Bukkit.getPluginManager().registerEvents(new SelectorOpenListener(), this);
@@ -183,6 +188,7 @@ public class Main extends JavaPlugin {
 		}
 	}
 	
+	@Deprecated
 	public static FileConfiguration getSelectorConfigurationFile(String name){
 		File file = new File(Main.getPlugin().getDataFolder() + "/menu", name + ".yml");
 		if (file.exists()){
@@ -192,6 +198,7 @@ public class Main extends JavaPlugin {
 		}
 	}
 	
+	@Deprecated
 	public static List<FileConfiguration> getServerSelectorConfigurationFiles(){
 		List<FileConfiguration> configs = new ArrayList<>();
 		for (File file : new File(Main.getPlugin().getDataFolder() + "/menu").listFiles()){
@@ -201,6 +208,10 @@ public class Main extends JavaPlugin {
 			configs.add(YamlConfiguration.loadConfiguration(file));
 		}
 		return configs;
+	}
+	
+	public static ConfigurationManager getConfigurationManager() {
+		return configurationManager;
 	}
 	
 	public static void openSelector(Player player, FileConfiguration config) {

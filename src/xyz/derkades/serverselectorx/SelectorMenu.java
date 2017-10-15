@@ -80,7 +80,7 @@ public class SelectorMenu extends IconMenu {
 							int totalPlayers = 0;
 							int totalMaxPlayers = 0;
 							
-							FileConfiguration subConfig = Main.getSelectorConfigurationFile(action.substring(4));
+							FileConfiguration subConfig = Main.getConfigurationManager().getByName(action.substring(4));
 							for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
 								final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
 								
@@ -184,8 +184,6 @@ public class SelectorMenu extends IconMenu {
 								lore = offlineSection.getStringList("lore");
 								enchanted = offlineSection.getBoolean("enchanted", false);
 							}
-							
-
 						}
 					}
 					
@@ -304,7 +302,7 @@ public class SelectorMenu extends IconMenu {
 			return true;
 		} else if (action.startsWith("sel:")){ //Open selector
 			String configName = action.substring(4);
-			FileConfiguration config = Main.getSelectorConfigurationFile(configName);
+			FileConfiguration config = Main.getConfigurationManager().getByName(configName);
 			if (config == null){
 				player.sendMessage(ChatColor.RED + "This server selector does not exist.");
 				return true;
