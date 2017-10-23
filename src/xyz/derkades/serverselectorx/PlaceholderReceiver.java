@@ -18,7 +18,7 @@ public class PlaceholderReceiver implements PluginMessageListener {
 	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
 		System.out.println("Recieved message with channel: " + channel);
 		
-		if (!channel.equals("ServerSelectorX-Placeholders")) return;
+		if (!channel.equals("ServerSelectorX-Placeholder")) return;
 		
 		ByteArrayDataInput in = ByteStreams.newDataInput(message);
 		String subchannel = in.readUTF();
