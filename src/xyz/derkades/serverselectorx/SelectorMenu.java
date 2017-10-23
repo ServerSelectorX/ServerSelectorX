@@ -2,6 +2,7 @@ package xyz.derkades.serverselectorx;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -20,16 +21,8 @@ import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.IconMenu;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
-import xyz.derkades.serverselectorx.utils.ServerPinger;
-import xyz.derkades.serverselectorx.utils.ServerPinger.Server;
 
 public class SelectorMenu extends IconMenu {
-
-	/*
-	 * This code is very messy. I am sorry :(
-	 * I keep adding new stuff quickly without thinking about code design.
-	 * I promise, I'll fix it soon(tm)!
-	 */
 	
 	private FileConfiguration config;
 	private Player player;
@@ -42,6 +35,8 @@ public class SelectorMenu extends IconMenu {
 		this.player = player;
 		this.slots = config.getInt("rows", 6) * 9;
 	}
+	
+	// TODO Re-implement submenu pinging
 
 	@Override
 	public void open() {
@@ -59,156 +54,78 @@ public class SelectorMenu extends IconMenu {
 					
 					String action = section.getString("action");
 					
-					int maxPlayers = 0;
-					
-					if (!section.getBoolean("ping-server")){
-						//Server pinging is turned off, get item info from 'online' section
-						materialString = section.getString("online.item");
-						data = section.getInt("online.data", 0);
-						name = section.getString("online.name", "");
-						lore = section.getStringList("online.lore");
-						amount = section.getInt("item-count", 1);
-						enchanted = section.getBoolean("enchanted");
-					} else {
-						//Server pinging is turned on, ping server(s)
-						String ip = section.getString("ip");
-						int port = section.getInt("port");
-
-						if (ip.equalsIgnoreCase("submenu") && action.startsWith("sel")) {
-							//Ping all servers in menu
-							
-							int totalPlayers = 0;
-							int totalMaxPlayers = 0;
-							
-							FileConfiguration subConfig = Main.getConfigurationManager().getByName(action.substring(4));
-							for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
-								final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
-								
-								String subAction = subSection.getString("action");
-								if (subAction.startsWith("srv:")) {
-									String serverName = subAction.substring(4);
-									totalPlayers += Main.getOnlinePlayers(serverName);
-								}
-								
-								if (subSection.getBoolean("ping-server", false)) {
-									String subIp = subSection.getString("ip");
-									int subPort = subSection.getInt("port");
-									Server server;
-									
-									if (Main.getPlugin().getConfig().getBoolean("external-query", true)){
-										server = new ServerPinger.ExternalServer(subIp, subPort);
-									} else {
-										server = new ServerPinger.InternalServer(subIp, subPort, subSection.getInt("ping-timeout", 100));
-									}
-									
-									if (server.isOnline()) {
-										totalMaxPlayers += server.getMaximumPlayers();
-									}
-								}
-							}
-							
-							//Get item info from 'online' section
-							materialString = section.getString("online.item");
-							data = section.getInt("online.data", 0);
-							name = section.getString("online.name", "");
-							lore = section.getStringList("online.lore");
-							amount = section.getInt("item-count", 1);
-							enchanted = section.getBoolean("enchanted");
-							
-							//Replace placeholders in lore
-							lore = replaceInStringList(lore, 
-									new Object[] {"{online}", "{max}"},
-									new Object[] {totalPlayers, totalMaxPlayers});
-						} else {
-							//Ping single server
-							
-							Server server;
-							
-							if (Main.getPlugin().getConfig().getBoolean("external-query", true)){
-								server = new ServerPinger.ExternalServer(ip, port);
-							} else {
-								int timeout = section.getInt("ping-timeout", 100);
-								server = new ServerPinger.InternalServer(ip, port, timeout);
-							}
-						
-							if (server.isOnline()) {
-								String motd = server.getMotd();
-								maxPlayers = server.getMaximumPlayers();
-								int ping = server.getResponseTimeMillis();
-								
-								//Server is online, try dynamic motd items first 
-								boolean motdMatch = false;
-								if (section.contains("dynamic")) {
-									for (String dynamicMotd : section.getConfigurationSection("dynamic").getKeys(false)) {
-										if (motd.equals(dynamicMotd)) {
-											//Motd matches, use this section for getting item data
-											motdMatch = true;
-											ConfigurationSection motdSection = section.getConfigurationSection("dynamic." + dynamicMotd);
-											
-											materialString = motdSection.getString("item");
-											data = motdSection.getInt("data", 0);
-											name = motdSection.getString("name");
-											lore = motdSection.getStringList("lore");
-											enchanted = motdSection.getBoolean("enchanted", false);
-										} else {
-											continue; //No match, check next motd in this section
-										}
-									}
-								}
-								
-								if (!motdMatch) {
-									//If no motd matched, fall back to online
-									materialString = section.getString("online.item");
-									data = section.getInt("online.data", 0);
-									name = section.getString("online.name", "error");
-									lore = section.getStringList("online.lore");
-									enchanted = section.getBoolean("online.enchanted", false);
-								}
-								
-								//Replace placeholders in lore
-								lore = replaceInStringList(lore, 
-										new Object[] {"{max}", "{motd}", "{ping}"},
-										new Object[] {maxPlayers, motd, ping});
-								
-								amount = section.getInt("item-count", 1);
-								
-
-								
-							} else {
-								//Server is offline
-								ConfigurationSection offlineSection = section.getConfigurationSection("offline");
-									
-								materialString = offlineSection.getString("item");
-								data = offlineSection.getInt("data", 0);
-								name = offlineSection.getString("name");
-								lore = offlineSection.getStringList("lore");
-								enchanted = offlineSection.getBoolean("enchanted", false);
-							}
-						}
-					}
-					
-					if (action.startsWith("srv:")) {
+					if (action.startsWith("srv")) {
 						String serverName = action.substring(4);
+
+						boolean online;
+						if (Main.LAST_INFO_TIME.containsKey(serverName)) {
+							// If the server has not sent a message for 2 seconds (usually the server sends a message every second)
+							online = Main.LAST_INFO_TIME.get(serverName) + 2000 < System.currentTimeMillis();
+						} else {
+							//If the server has not sent a message at all it is offline
+							online = false;
+						}
 						
-						int onlinePlayers = Main.getOnlinePlayers(serverName);
-						
-						lore = replaceInStringList(lore, new Object[] { "{online}" }, new Object[] { onlinePlayers });
-						
-						if (section.getBoolean("change-item-count", true)) {
-							String mode = Main.getPlugin().getConfig().getString("item-count-mode", "absolute");									
-							if (mode.equals("absolute")) {
-								amount = onlinePlayers;
-							} else if (mode.equals("relative")) {
-								amount = (onlinePlayers / maxPlayers) * 100;
-							} else {
-								Main.getPlugin().getLogger().warning("item-count-mode setting is invalid");
+						if (online) {
+							Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
+							
+							boolean dynamicMatchFound = false;
+							
+							if (section.contains("dynamic")) {
+								for (String dynamic : section.getConfigurationSection("dynamic").getKeys(false)) {
+									String placeholder = dynamic.split(":")[0];
+									String result = dynamic.split(":")[1];
+									
+									if (!placeholders.containsKey(placeholder)) {
+										Main.getPlugin().getLogger().warning("Dynamic feature contains rule with placeholder " + placeholder + " which has not been received from the server.");
+										continue;
+									}
+									
+									if (placeholders.get(placeholder).equals(result)) {
+										//Placeholder result matches with placeholder result in rule
+										dynamicMatchFound = true;
+										ConfigurationSection motdSection = section.getConfigurationSection("dynamic." + dynamic);
+										
+										materialString = motdSection.getString("item");
+										data = motdSection.getInt("data", 0);
+										name = motdSection.getString("name");
+										lore = motdSection.getStringList("lore");
+										enchanted = motdSection.getBoolean("enchanted", false);
+									}
+								}
+							}
+							
+							if (!dynamicMatchFound) {
+								//No dynamic rule matched, fall back to online
+								materialString = section.getString("online.item");
+								data = section.getInt("online.data", 0);
+								name = section.getString("online.name", "error");
+								lore = section.getStringList("online.lore");
+								enchanted = section.getBoolean("online.enchanted", false);
+							}
+							
+							for (Map.Entry<String, String> placeholder : placeholders.entrySet()) {
+								List<String> newLore = lore;
+								for (String string : lore) {
+									newLore.add(string.replace("{" + placeholder.getKey() + "}", placeholder.getValue()));
+								}
+								lore = newLore;
+								
+								name = name.replace(placeholder.getKey(), placeholder.getValue());
 							}
 						} else {
-							amount = 1;
+							//Server is offline
+							ConfigurationSection offlineSection = section.getConfigurationSection("offline");
+							
+							materialString = offlineSection.getString("item");
+							data = offlineSection.getInt("data", 0);
+							name = offlineSection.getString("name");
+							lore = offlineSection.getStringList("lore");
+							enchanted = offlineSection.getBoolean("enchanted", false);
 						}
-								
-						if (amount > 64 || amount < 1)
-							amount = 1;
+						
+						// TODO Bring back dynamic item count feature
+						amount = section.getInt("item-count", 1);
 					}
 					
 					final ItemBuilder builder;
@@ -226,8 +143,9 @@ public class SelectorMenu extends IconMenu {
 						
 						builder = new ItemBuilder(material);
 						builder.data(data);
-					}					
-
+					}
+					
+					builder.amount(amount);
 					builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
 					builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
 						
@@ -337,7 +255,7 @@ public class SelectorMenu extends IconMenu {
 	
 	}
 	
-	private List<String> replaceInStringList(List<String> list, Object[] before, Object[] after) {
+	/*private List<String> replaceInStringList(List<String> list, Object[] before, Object[] after) {
 		if (before.length != after.length) {
 			throw new IllegalArgumentException("before[] length must be equal to after[] length");
 		}
@@ -352,6 +270,6 @@ public class SelectorMenu extends IconMenu {
 		}
 		
 		return newList;
-	}
+	}*/
 
 }

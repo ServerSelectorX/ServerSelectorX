@@ -12,7 +12,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,17 +39,21 @@ import xyz.derkades.derkutils.caching.Cache;
 import xyz.derkades.serverselectorx.placeholders.Placeholders;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersDisabled;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
-import xyz.derkades.serverselectorx.utils.ServerPinger;
 
 public class Main extends JavaPlugin {
 	
 	private static final int CONFIG_VERSION = 7;
 	
+	@Deprecated
 	public static final int GLOWING_ENCHANTMENT_ID = 96;
 	
 	public static Placeholders PLACEHOLDER_API;
 	
 	public static final String PREFIX = DARK_GRAY + "[" + DARK_AQUA + "ServerSelectorX" + DARK_GRAY + "]";
+	
+	/** <server, <placeholder, result>> */
+	public static final Map<String, Map<String, String>> PLACEHOLDERS = new HashMap<>();
+	public static final Map<String, Long> LAST_INFO_TIME = new HashMap<>();
 
 	private static ConfigurationManager configurationManager;
 	
@@ -69,7 +75,6 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new OnJoinListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemMoveDropCancelListener(), this);
 		
-		
 		List<String> offHandVersions = Arrays.asList("1.9", "1.10", "1.11", "1.12");
 		for (String version : offHandVersions) {
 			if (Bukkit.getBukkitVersion().contains(version)) {
@@ -80,9 +85,7 @@ public class Main extends JavaPlugin {
 		//Register messaging channels
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		
-		PingServersBackground backgroundPinging = new PingServersBackground();
-		backgroundPinging.runTaskTimerAsynchronously(this, 50, 5);
-		this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", backgroundPinging);
+		this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new PlaceholderReceiver());
 		
 		//Register command
 		getCommand("serverselectorx").setExecutor(new ReloadCommand());
@@ -125,7 +128,7 @@ public class Main extends JavaPlugin {
 			checkForUpdates();
 		});
 
-		ServerPinger.CACHE_TIME = getConfig().getInt("cache-time", 60);
+		//ServerPinger.CACHE_TIME = getConfig().getInt("cache-time", 60);
 	}
 	
 	public void reloadConfig(){	
@@ -352,6 +355,7 @@ public class Main extends JavaPlugin {
 		}
 	}
 	
+	@Deprecated
 	public static int getOnlinePlayers(String serverName) {
 		//Player count is put in cache by code in PingServersBackground class
 		Object cache = Cache.getCachedObject("playersonline" + serverName);

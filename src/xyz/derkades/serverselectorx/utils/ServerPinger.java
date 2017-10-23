@@ -19,6 +19,7 @@ import com.google.gson.JsonParser;
 
 import xyz.derkades.derkutils.caching.Cache;
 
+@Deprecated
 public class ServerPinger {
 	
 	public static int CACHE_TIME;
