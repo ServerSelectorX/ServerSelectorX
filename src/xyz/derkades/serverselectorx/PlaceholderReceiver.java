@@ -16,20 +16,28 @@ public class PlaceholderReceiver implements PluginMessageListener {
 
 	@Override
 	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-		if (!channel.equals("BungeeCord")) return;
+		System.out.println("Recieved message with channel: " + channel);
+		
+		if (!channel.equals("ServerSelectorX-Placeholders")) return;
 		
 		ByteArrayDataInput in = ByteStreams.newDataInput(message);
 		String subchannel = in.readUTF();
 		short len = in.readShort();
 		byte[] msgbytes = new byte[len];
 		in.readFully(msgbytes);
-
+		
+		System.out.println("Subchannel: " + subchannel);
+		
 		if (subchannel.equals("PlayerCount")) {
 			DataInputStream msgin = new DataInputStream(new ByteArrayInputStream(msgbytes));
 			try {
 				String serverName = msgin.readUTF();
 				String placeholder = msgin.readUTF();
 				String output = msgin.readUTF();
+				
+				System.out.println("serverName: " + serverName);
+				System.out.println("placeholder: " + placeholder);
+				System.out.println("output: " + output);
 				
 				Map<String, String> placeholders;
 				
