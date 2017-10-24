@@ -19,19 +19,6 @@ public class ConfigurationManager {
 	private final Map<String, FileConfiguration> files = new ConcurrentHashMap<>();
 	private FileConfiguration serverConfig;
 	
-	private void loadFiles() {
-		files.clear();
-		
-		for (File file : new File(Main.getPlugin().getDataFolder() + File.separator + "menu").listFiles()){
-			if (!file.getName().endsWith(".yml"))
-				continue;
-
-			String name = file.getName().replace(".yml", "");
-			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-			files.put(name, config);
-		}
-	}
-	
 	public Collection<FileConfiguration> getAll() {
 		return files.values();
 	}
@@ -56,31 +43,48 @@ public class ConfigurationManager {
 	}
 	
 	public void reloadAll() {
+		System.out.println("[debug] " + Main.getPlugin().getDataFolder().getAbsolutePath());
+		
+		//Create default configuration files
+		
 		Main.getPlugin().saveDefaultConfig();
-		Main.getPlugin().reloadConfig();
-
-		//Copy default selector if directory is empty
+		
 		File dir = new File(Main.getPlugin().getDataFolder() + File.separator + "menu");
 		dir.mkdirs();
-		boolean isEmpty = dir.listFiles().length == 0;
-		File file = new File(Main.getPlugin() + File.separator + "menu", "default.yml");
-		if (isEmpty){
+		if (dir.listFiles().length == 0){
 			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/default-selector.yml");
 			try {
-				FileUtils.copyURLToFile(inputUrl, file);
+				File defaultConfig = new File(Main.getPlugin() + File.separator + "menu", "default.yml");
+				FileUtils.copyURLToFile(inputUrl, defaultConfig);
 			} catch (IOException e){
 				e.printStackTrace();
 			}
 		}
 		
-		Main.getConfigurationManager().loadFiles(); //Load server selector files
+		
+		//Reload configuration files
+		
+		Main.getPlugin().reloadConfig();
+		
+		loadServerConfig();
+
+		files.clear();
+		for (File file : new File(Main.getPlugin().getDataFolder() + File.separator + "menu").listFiles()){
+			if (!file.getName().endsWith(".yml"))
+				continue;
+
+			String name = file.getName().replace(".yml", "");
+			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+			files.put(name, config);
+		}
+		
+		
 		
 		//Initialize variables
 		ItemMoveDropCancelListener.DROP_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-drop", false);
 		ItemMoveDropCancelListener.MOVE_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-move", false);
 		
-		//Load config for server
-		loadServerConfig();
+
 	}
 
 }
