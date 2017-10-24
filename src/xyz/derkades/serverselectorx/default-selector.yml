@@ -89,7 +89,7 @@ menu:
       
     # Settings in this section are used when the server is offline
     offline:
-      item: WOODEN_SWORD
+      item: WOOD_SWORD
       data: 0
       enchanted: false
       name: '&cKitPvP Server'
