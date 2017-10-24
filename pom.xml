@@ -115,6 +115,13 @@
 			<version>1.4.0</version>
 		</dependency>
 
+		<dependency>
+			<!-- Modified version of sockets https://github.com/ServerSelectorX/BukkitSockets -->
+			<groupId>com.mitch528.sockets</groupId>
+			<artifactId>Sockets</artifactId>
+			<version>1.0</version>
+		</dependency>
+
 	</dependencies>
 
 	<repositories>
