@@ -69,12 +69,9 @@
 
 					<artifactSet>
 						<excludes>
-							<!--<exclude>commons-io:commons-io</exclude>-->
 							<exclude>org.apache.commons:commons-lang3</exclude>
 							<exclude>org.bukkit:bukkit</exclude>
 							<exclude>org.yaml:snakeyaml</exclude>
-							<!--<exclude>com.google.code.gson:gson</exclude>
-							<exclude>com.googlecode.json-simple:json-simple</exclude>-->
 							<exclude>com.google.guava:guava</exclude>
 							<exclude>commons-lang:commons-lang</exclude>
 						</excludes>
