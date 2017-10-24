@@ -59,8 +59,8 @@ public class SelectorMenu extends IconMenu {
 
 						boolean online;
 						if (Main.LAST_INFO_TIME.containsKey(serverName)) {
-							// If the server has not sent a message for 2 seconds (usually the server sends a message every second)
-							online = Main.LAST_INFO_TIME.get(serverName) + 2000 < System.currentTimeMillis();
+							// If the server has not sent a message for 7 seconds (usually the server sends a message every 5 seconds)
+							online = Main.LAST_INFO_TIME.get(serverName) + 7000 < System.currentTimeMillis();
 							System.out.println("[debug] LAST_INFO_TIME containsKey " + Main.LAST_INFO_TIME.get(serverName));
 							System.out.println("[debug] current time " + System.currentTimeMillis());
 						} else {
