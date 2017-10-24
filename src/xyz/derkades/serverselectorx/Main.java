@@ -125,46 +125,48 @@ public class Main extends JavaPlugin {
 			checkForUpdates();
 		});
 
-		try {
-			startServer();
-			getLogger().info("Server started!");
-		} catch (IOException e) {
-			getLogger().warning("An error occured while trying to start server");
-			e.printStackTrace();
-		}
+		startServer();
 	}
 	
 	private static Server server;
 	
-	private void startServer() throws IOException {
+	private void startServer() {
 		FileConfiguration serverConfig = getConfigurationManager().getServerConfig();
 		
 		boolean enabled = serverConfig.getBoolean("enabled", true);
 		if (!enabled) return;
 		
 		int port = serverConfig.getInt("port", 9876);
-		server = new Server(port);
 		
-		server.getSocketAccepted().addServerSocketAcceptedEventListener(new ServerSocketAcceptedEventListener() {
-			public void socketAccepted(ServerSocketAcceptedEvent event){
-				
-				getLogger().info("Server - Client has connected");
-				
-				final SocketHandler handler = event.getHandler();
-				
-				handler.getMessage().addMessageReceivedEventListener(new PlaceholderReceiver());
-				
-				handler.getDisconnected().addSocketDisconnectedEventListener(new SocketDisconnectedEventListener(){
-					public void socketDisconnected(SocketDisconnectedEvent evt){
-						getLogger().info("Client " + evt.getID() + " disconnected");
-					}
-				});
-				
+		Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+			server = new Server(port);
+			
+			server.getSocketAccepted().addServerSocketAcceptedEventListener(new ServerSocketAcceptedEventListener() {
+				public void socketAccepted(ServerSocketAcceptedEvent event){
+					
+					getLogger().info("Server - Client has connected");
+					
+					final SocketHandler handler = event.getHandler();
+					
+					handler.getMessage().addMessageReceivedEventListener(new PlaceholderReceiver());
+					
+					handler.getDisconnected().addSocketDisconnectedEventListener(new SocketDisconnectedEventListener(){
+						public void socketDisconnected(SocketDisconnectedEvent evt){
+							getLogger().info("Client " + evt.getID() + " disconnected");
+						}
+					});
+					
+				}
+			});
+			
+			try {
+				getLogger().info("Listening on port " + port);
+				server.startListening();
+			} catch (IOException e) {
+				e.printStackTrace();
+				getLogger().warning("An error occured while trying to start server");
 			}
 		});
-		
-		server.startListening();
-		getLogger().info("Server has been started on port " + port);
 	}
 	
 	public void restartServer() throws IOException {
