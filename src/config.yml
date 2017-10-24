@@ -25,7 +25,7 @@ no-permission-message: '&cYou do not have permission to use the server selector.
 
 # -------------------- Sounds -------------------- #
 
-# Latest sound names (currently for 1.12.1): https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+# Latest sound names (currently for 1.12.2): https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
 # 1.7.10 sound names: https://jd.bukkit.org/org/bukkit/Sound.html or http://docs.codelanx.com/Bukkit/1.7.10/org/bukkit/Sound.html
 # 1.8 sound names: http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Sound.html
 
@@ -51,4 +51,4 @@ cancel-item-move: false
 updater: true
 
 # Do not touch this
-version: 7
+version: 8

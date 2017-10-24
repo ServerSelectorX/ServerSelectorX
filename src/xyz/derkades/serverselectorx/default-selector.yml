@@ -75,6 +75,7 @@ menu:
     action: 'srv:kitpvp'
 
     # Settings in this section are used when the server is online
+    # Placeholders not working and/or server always offline? See this: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Installation-Instructions
     online:
       item: DIAMOND_SWORD
       data: 0
@@ -83,9 +84,9 @@ menu:
       lore:
        - Lorem ipsum
        - Dolor sit amet
-       - There are {online} out of {max} players online. # These placeholders will only work if ping-server is enabled
+       - There are {online} out of {max} players online.
        - 'Message of the day: {motd}'
-       - 'Ping: {ping}' # Ping only works with external query
+       - 'Game status: {status}'
       
     # Settings in this section are used when the server is offline
     offline:
