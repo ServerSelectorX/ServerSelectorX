@@ -70,21 +70,11 @@ menu:
 
   3: # Item in 4th slot (use 0 for first item). Add as many items as you want by copying this section and giving it a new number. This number must not be greater than (rows*9)-1
 
-    # Whether the server should be pinged for information. Enables placeholders in lore.
-    ping-server: false
-    ip: play.example.com # Note that you can't use localhost because the plugin uses an external API by default. For more info see config.yml
-    port: 1234
+    item-count: 1
     
     action: 'srv:kitpvp'
 
-    # Change item count based on number of players online. Only works if ping-server is turned on. If there are more than 64 players online, the item count will be 1
-    # Change how this works in config.yml.
-    change-item-count: true
-    
-    # This value is ignored when change-item-count is turned on.
-    item-count: 1
-
-    # Online is used when ping-server is turned off, or ping-server is turned on and the server is online.
+    # Settings in this section are used when the server is online
     online:
       item: DIAMOND_SWORD
       data: 0
@@ -97,7 +87,7 @@ menu:
        - 'Message of the day: {motd}'
        - 'Ping: {ping}' # Ping only works with external query
       
-    # Offline is used when ping-server is turned on and the server is offline.
+    # Settings in this section are used when the server is offline
     offline:
       item: WOODEN_SWORD
       data: 0
@@ -108,17 +98,18 @@ menu:
        - Amet sit dolor
        - The server is offline
     
-    # Change item based on server motd. If the server has an motd that is not listed below, settings above will be used as fallback.
-    # If you do not need to use this you can just delete this entire section
+    # Change the item based on different placeholders.
     dynamic:
-      "Lore example":
+      # If the placeholder {test} is equal to 'Hello!'
+      "test:Hello!":
         item: IRON_SWORD
         data: 0
         enchanted: false
         name: '&cKitPvP Server'
         lore:
          - The game has not started
-      "Other lore":
+      # If the placeholder {online} is equal to '1'
+      "online:2":
         item: WOODEN_SWORD
         data: 0
         enchanted: false

@@ -12,11 +12,6 @@ server-teleport-message: '&7You are being connected to &7&l{x}&r&7.'
 # Note: the chat will be cleared before sending server teleport message, so the server teleport message will still be visible.
 chat-clear: false
 
-# Can be either 'relative' or 'absolute'. This only affects change-item-count
-# Relative: Show player count as percentage, for example '20' if 15 people of max 75 people are online.
-# Absolute: Show actual player count, '15' if 15 of max 75 people are online.
-item-count-mode: absolute
-
 
 # -------------------- Permissions -------------------- #
 
@@ -39,34 +34,6 @@ no-permission-message: '&cYou do not have permission to use the server selector.
 
 selector-open-sound: HORSE_ARMOR
 
-
-# -------------------- Server Pinging -------------------- #
-
-# Use an external query API for pinging servers. This is recommended.
-# The internal query has a lot of problems, one of which is that it doesn't work when there are color codes anywhere in the lore. Version support is terrible as well.
-# If you have your spigot servers behind a firewall (which you should) allow the domain api.minetools.eu to ping your server.
-external-query: true
-
-# How long a server needs to be pinged for before giving up. (in milliseconds)
-# Set this to a higher value if your servers are not responding in time.
-# This setting has effect on the internal query only.
-ping-timeout: 500
-
-# Cooldown for opening the selector menu in milliseconds.
-# This can be used as workaround for a bug where players are able to take out items if they
-# click the selector again while it is still waiting for servers to be pinged from the first time they clicked.
-# You will probably only need this if you have background-pinging set to off.
-# This value is in milliseconds. Any value less than 1000 = cooldown off.
-selector-open-cooldown: 0
-
-# Specify empty string for no message -> cooldown-message: ''
-cooldown-message: '&cYou cannot use this yet, please wait {x} seconds.'
-
-# Defines for how long server information should be cached, in seconds.
-# Increase this if it takes a long time to open the server selector.
-# Note that the server pinger keeps pinging all servers even though their information has already been cached.
-# This means that if you lower this, information will not update faster. You generally do not want to set this lower than default.
-cache-time: 60
 
 
 # -------------------- Items -------------------- #
