@@ -61,6 +61,10 @@
 							<pattern>org.inventivetalent.update.spiget</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.ext.spiget_update</shadedPattern>
 						</relocation>
+						<relocation>
+							<pattern>com.mitch528.sockets</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.ext.sockets</shadedPattern>
+						</relocation>
 					</relocations>
 
 					<artifactSet>
