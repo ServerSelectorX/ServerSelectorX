@@ -21,6 +21,8 @@ public class PlaceholderReceiver implements MessageReceivedEventListener {
 		
 		String server = placeholders.remove("server");
 		Main.PLACEHOLDERS.put(server, placeholders);
+		
+		Main.LAST_INFO_TIME.put(server, System.currentTimeMillis());
 	}
 
 }
