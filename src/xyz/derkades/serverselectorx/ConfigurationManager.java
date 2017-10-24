@@ -60,7 +60,9 @@ public class ConfigurationManager {
 		Main.getPlugin().reloadConfig();
 
 		//Copy default selector if directory is empty
-		boolean isEmpty = new File(Main.getPlugin().getDataFolder() + File.separator + "menu").listFiles().length == 0;
+		File dir = new File(Main.getPlugin().getDataFolder() + File.separator + "menu");
+		dir.mkdirs();
+		boolean isEmpty = dir.listFiles().length == 0;
 		File file = new File(Main.getPlugin() + File.separator + "menu", "default.yml");
 		if (isEmpty){
 			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/default-selector.yml");
