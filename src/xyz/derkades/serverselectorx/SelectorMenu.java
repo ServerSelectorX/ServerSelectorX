@@ -3,6 +3,7 @@ package xyz.derkades.serverselectorx;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -29,7 +30,7 @@ public class SelectorMenu extends IconMenu {
 	private int slots;
 	
 	public SelectorMenu(Player player, FileConfiguration config) {
-		super(Main.getPlugin(), Colors.parseColors(config.getString("title", "no title")), config.getInt("rows", 6) * 9, player);
+		super(Main.getPlugin(), Colors.parseColors(config.getString("title", UUID.randomUUID().toString())), config.getInt("rows", 6) * 9, player);
 		
 		this.config = config;
 		this.player = player;
