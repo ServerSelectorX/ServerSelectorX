@@ -125,12 +125,18 @@ public class Main extends JavaPlugin {
 			checkForUpdates();
 		});
 
-		startServer();
+		try {
+			startServer();
+			getLogger().info("Server started!");
+		} catch (IOException e) {
+			getLogger().warning("An error occured while trying to start server");
+			e.printStackTrace();
+		}
 	}
 	
 	private static Server server;
 	
-	private void startServer() {
+	private void startServer() throws IOException {
 		FileConfiguration serverConfig = getConfigurationManager().getServerConfig();
 		
 		boolean enabled = serverConfig.getBoolean("enabled", true);
@@ -142,7 +148,7 @@ public class Main extends JavaPlugin {
 		server.getSocketAccepted().addServerSocketAcceptedEventListener(new ServerSocketAcceptedEventListener() {
 			public void socketAccepted(ServerSocketAcceptedEvent event){
 				
-				getLogger().info("Server - Client has connected (ID: " + event.getHandler().getId() + ")");
+				getLogger().info("Server - Client has connected");
 				
 				final SocketHandler handler = event.getHandler();
 				
@@ -157,11 +163,11 @@ public class Main extends JavaPlugin {
 			}
 		});
 		
-		server.start();
+		server.startListening();
 		getLogger().info("Server has been started on port " + port);
 	}
 	
-	public void restartServer() {
+	public void restartServer() throws IOException {
 		if (server != null) server.stopServer();
 		startServer();
 	}
