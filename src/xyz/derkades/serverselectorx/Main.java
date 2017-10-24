@@ -162,7 +162,7 @@ public class Main extends JavaPlugin {
 			bukkitCommandMap.setAccessible(true);
 			CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
 			
-			for (FileConfiguration config : Main.getServerSelectorConfigurationFiles()){
+			for (FileConfiguration config : Main.getConfigurationManager().getAll()){
 				String commandName = config.getString("command");
 				
 				if (commandName == null || commandName.equalsIgnoreCase("none")) {
