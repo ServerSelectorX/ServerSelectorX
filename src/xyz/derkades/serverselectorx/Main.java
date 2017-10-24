@@ -32,6 +32,8 @@ import com.mitch528.sockets.Sockets.Server;
 import com.mitch528.sockets.Sockets.SocketHandler;
 import com.mitch528.sockets.events.ServerSocketAcceptedEvent;
 import com.mitch528.sockets.events.ServerSocketAcceptedEventListener;
+import com.mitch528.sockets.events.SocketConnectedEvent;
+import com.mitch528.sockets.events.SocketConnectedEventListener;
 import com.mitch528.sockets.events.SocketDisconnectedEvent;
 import com.mitch528.sockets.events.SocketDisconnectedEventListener;
 
@@ -143,19 +145,21 @@ public class Main extends JavaPlugin {
 			
 			server.getSocketAccepted().addServerSocketAcceptedEventListener(new ServerSocketAcceptedEventListener() {
 				public void socketAccepted(ServerSocketAcceptedEvent event){
-					
-					getLogger().info("Server - Client has connected");
-					
 					final SocketHandler handler = event.getHandler();
 					
 					handler.getMessage().addMessageReceivedEventListener(new PlaceholderReceiver());
 					
-					handler.getDisconnected().addSocketDisconnectedEventListener(new SocketDisconnectedEventListener(){
-						public void socketDisconnected(SocketDisconnectedEvent evt){
-							getLogger().info("Client " + evt.getID() + " disconnected");
+					handler.getConnected().addSocketConnectedEventListener(new SocketConnectedEventListener() {
+						public void socketConnected(SocketConnectedEvent event){
+							getLogger().info("Client " + event.getID() + " connected");
 						}
 					});
 					
+					handler.getDisconnected().addSocketDisconnectedEventListener(new SocketDisconnectedEventListener(){
+						public void socketDisconnected(SocketDisconnectedEvent event){
+							getLogger().info("Client " + event.getID() + " disconnected");
+						}
+					});
 				}
 			});
 			
