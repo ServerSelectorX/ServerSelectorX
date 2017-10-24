@@ -99,23 +99,23 @@ menu:
        - The server is offline
     
     # Change the item based on different placeholders.
-    dynamic:
-      # If the placeholder {test} is equal to 'Hello!'
-      "test:Hello!":
-        item: IRON_SWORD
-        data: 0
-        enchanted: false
-        name: '&cKitPvP Server'
-        lore:
-         - The game has not started
-      # If the placeholder {online} is equal to '1'
-      "online:2":
-        item: WOODEN_SWORD
-        data: 0
-        enchanted: false
-        name: '&cKitPvP Server'
-        lore:
-         - The game is in progress
+  #  dynamic:
+  #    # If the placeholder {test} is equal to 'Hello!'
+  #    "test:Hello!":
+  #      item: IRON_SWORD
+  #      data: 0
+  #      enchanted: false
+  #      name: '&cKitPvP Server'
+  #      lore:
+  #       - The game has not started
+  #    # If the placeholder {online} is equal to '1'
+  #    "online:2":
+  #      item: WOODEN_SWORD
+  #      data: 0
+  #      enchanted: false
+  #      name: '&cKitPvP Server'
+  #      lore:
+  #       - The game is in progress
          
   5: # Item in 6th slot   
     action: 'none'
