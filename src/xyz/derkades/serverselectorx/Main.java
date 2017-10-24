@@ -156,6 +156,9 @@ public class Main extends JavaPlugin {
 				
 			}
 		});
+		
+		server.start();
+		getLogger().info("Server has been started on port " + port);
 	}
 	
 	public void restartServer() {
