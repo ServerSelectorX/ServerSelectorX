@@ -120,19 +120,17 @@ menu:
          
   5: # Item in 6th slot   
     action: 'none'
-    online:
-      item: 'head:auto' # You can use head:auto to get the head of the player opening the menu, or head:SomethingElse to get the head of a specific player.
-      data: 0
-      enchanted: false
-      name: 'This is you!'
-      lore:
-       - This item does nothing
+    item: 'head:auto' # You can use head:auto to get the head of the player opening the menu, or head:SomethingElse to get the head of a specific player.
+    data: 0
+    enchanted: false
+    name: 'This is you!'
+    lore:
+     - This item does nothing
        
   -1: # -1 means everything else
     action: 'none'
-    online:
-      item: STAINED_GLASS_PANE
-      data: 0
-      enchanted: false
-      name: ''
-      lore:
+    item: STAINED_GLASS_PANE
+    data: 0
+    enchanted: false
+    name: ''
+    lore:
