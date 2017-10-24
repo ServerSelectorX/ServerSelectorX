@@ -44,9 +44,6 @@ public class Main extends JavaPlugin {
 	
 	private static final int CONFIG_VERSION = 7;
 	
-	@Deprecated
-	public static final int GLOWING_ENCHANTMENT_ID = 96;
-	
 	public static Placeholders PLACEHOLDER_API;
 	
 	public static final String PREFIX = DARK_GRAY + "[" + DARK_AQUA + "ServerSelectorX" + DARK_GRAY + "]";
@@ -191,28 +188,6 @@ public class Main extends JavaPlugin {
 		}
 	}
 	
-	@Deprecated
-	public static FileConfiguration getSelectorConfigurationFile(String name){
-		File file = new File(Main.getPlugin().getDataFolder() + "/menu", name + ".yml");
-		if (file.exists()){
-			return YamlConfiguration.loadConfiguration(file);
-		} else {
-			return null;
-		}
-	}
-	
-	@Deprecated
-	public static List<FileConfiguration> getServerSelectorConfigurationFiles(){
-		List<FileConfiguration> configs = new ArrayList<>();
-		for (File file : new File(Main.getPlugin().getDataFolder() + "/menu").listFiles()){
-			if (!file.getName().endsWith(".yml"))
-				continue;
-
-			configs.add(YamlConfiguration.loadConfiguration(file));
-		}
-		return configs;
-	}
-	
 	public static ConfigurationManager getConfigurationManager() {
 		return configurationManager;
 	}
@@ -352,18 +327,6 @@ public class Main extends JavaPlugin {
 		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException |
 				NoSuchMethodException | SecurityException | InstantiationException e) {
 			throw new RuntimeException(e);
-		}
-	}
-	
-	@Deprecated
-	public static int getOnlinePlayers(String serverName) {
-		//Player count is put in cache by code in PingServersBackground class
-		Object cache = Cache.getCachedObject("playersonline" + serverName);
-		
-		if (cache == null) {
-			return 0;
-		} else {
-			return (int) cache;
 		}
 	}
 
