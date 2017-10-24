@@ -108,7 +108,7 @@ public class SelectorMenu extends IconMenu {
 							}
 							
 							for (Map.Entry<String, String> placeholder : placeholders.entrySet()) {
-								List<String> newLore = lore;
+								List<String> newLore = new ArrayList<>();
 								for (String string : lore) {
 									newLore.add(string.replace("{" + placeholder.getKey() + "}", placeholder.getValue()));
 								}
