@@ -1,20 +1,16 @@
 package xyz.derkades.serverselectorx;
 
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
+import com.mitch528.sockets.events.MessageReceivedEvent;
+import com.mitch528.sockets.events.MessageReceivedEventListener;
 
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageListener;
-
-import com.google.common.io.ByteArrayDataInput;
-import com.google.common.io.ByteStreams;
-
-public class PlaceholderReceiver implements PluginMessageListener {
+public class PlaceholderReceiver /*implements PluginMessageListener*/ implements MessageReceivedEventListener {
 
 	@Override
+	public void messageReceived(MessageReceivedEvent event) {
+		Main.getPlugin().getLogger().info("Recieved message: " + event.getMessage());
+	}
+	
+	/*@Override
 	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
 		System.out.println("Recieved message with channel: " + channel);
 		
@@ -55,6 +51,6 @@ public class PlaceholderReceiver implements PluginMessageListener {
 				e.printStackTrace();
 			}
 		}
-	}
+	}*/
 
 }

@@ -5,12 +5,9 @@ import static org.bukkit.ChatColor.DARK_GRAY;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -18,20 +15,25 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.inventivetalent.update.spiget.SpigetUpdate;
 import org.inventivetalent.update.spiget.UpdateCallback;
 import org.inventivetalent.update.spiget.comparator.VersionComparator;
+
+import com.mitch528.sockets.Sockets.Server;
+import com.mitch528.sockets.Sockets.SocketHandler;
+import com.mitch528.sockets.events.ServerSocketAcceptedEvent;
+import com.mitch528.sockets.events.ServerSocketAcceptedEventListener;
+import com.mitch528.sockets.events.SocketDisconnectedEvent;
+import com.mitch528.sockets.events.SocketDisconnectedEventListener;
 
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
@@ -54,9 +56,9 @@ public class Main extends JavaPlugin {
 
 	private static ConfigurationManager configurationManager;
 	
-	private static JavaPlugin plugin;
+	private static Main plugin;
 	
-	public static JavaPlugin getPlugin(){
+	public static Main getPlugin(){
 		return plugin;
 	}
 	
@@ -65,7 +67,7 @@ public class Main extends JavaPlugin {
 		plugin = this;
 		
 		configurationManager = new ConfigurationManager();
-		configurationManager.loadFiles();
+		configurationManager.reloadAll();
 
 		//Register listeners
 		Bukkit.getPluginManager().registerEvents(new SelectorOpenListener(), this);
@@ -81,8 +83,6 @@ public class Main extends JavaPlugin {
 		
 		//Register messaging channels
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-		
-		this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", new PlaceholderReceiver());
 		
 		//Register command
 		getCommand("serverselectorx").setExecutor(new ReloadCommand());
@@ -125,31 +125,42 @@ public class Main extends JavaPlugin {
 			checkForUpdates();
 		});
 
-		//ServerPinger.CACHE_TIME = getConfig().getInt("cache-time", 60);
+		startServer();
 	}
 	
-	public void reloadConfig(){	
-		//Load default config if it has been deleted
-		super.saveDefaultConfig();
-		
-		//Reload config
-		super.reloadConfig();
+	private static Server server;
 	
-		//Copy default selector if directory is empty
-		boolean createFile = new File(this.getDataFolder() + "/menu").listFiles().length == 0;
-		File file = new File(this.getDataFolder() + "/menu", "default.yml");
-		if (createFile){
-			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/default-selector.yml");
-			try {
-				FileUtils.copyURLToFile(inputUrl, file);
-			} catch (IOException e){
-				e.printStackTrace();
-			}
-		}
+	private void startServer() {
+		FileConfiguration serverConfig = getConfigurationManager().getServerConfig();
 		
-		//Initialize variables
-		ItemMoveDropCancelListener.DROP_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-drop", false);
-		ItemMoveDropCancelListener.MOVE_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-move", false);
+		boolean enabled = serverConfig.getBoolean("enabled", true);
+		if (!enabled) return;
+		
+		int port = serverConfig.getInt("port", 9876);
+		server = new Server(port);
+		
+		server.getSocketAccepted().addServerSocketAcceptedEventListener(new ServerSocketAcceptedEventListener() {
+			public void socketAccepted(ServerSocketAcceptedEvent event){
+				
+				getLogger().info("Server - Client has connected (ID: " + event.getHandler().getId() + ")");
+				
+				final SocketHandler handler = event.getHandler();
+				
+				handler.getMessage().addMessageReceivedEventListener(new PlaceholderReceiver());
+				
+				handler.getDisconnected().addSocketDisconnectedEventListener(new SocketDisconnectedEventListener(){
+					public void socketDisconnected(SocketDisconnectedEvent evt){
+						getLogger().info("Client " + evt.getID() + " disconnected");
+					}
+				});
+				
+			}
+		});
+	}
+	
+	public void restartServer() {
+		if (server != null) server.stopServer();
+		startServer();
 	}
 	
 	/**

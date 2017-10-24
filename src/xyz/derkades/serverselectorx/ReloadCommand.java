@@ -22,8 +22,8 @@ public class ReloadCommand implements CommandExecutor {
 				return true;
 			}
 			
-			Main.getPlugin().reloadConfig(); //Reload config.yml
-			Main.getConfigurationManager().loadFiles(); //Reload menu files
+			Main.getConfigurationManager().reloadAll();
+			Main.getPlugin().restartServer();
 			sender.sendMessage(AQUA + "The configuration file has been reloaded.");
 			return true;
 		}
