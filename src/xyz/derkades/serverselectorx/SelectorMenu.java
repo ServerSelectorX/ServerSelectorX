@@ -87,13 +87,13 @@ public class SelectorMenu extends IconMenu {
 									if (placeholders.get(placeholder).equals(result)) {
 										//Placeholder result matches with placeholder result in rule
 										dynamicMatchFound = true;
-										ConfigurationSection motdSection = section.getConfigurationSection("dynamic." + dynamic);
+										ConfigurationSection dynamicSection = section.getConfigurationSection("dynamic." + dynamic);
 										
-										materialString = motdSection.getString("item");
-										data = motdSection.getInt("data", 0);
-										name = motdSection.getString("name");
-										lore = motdSection.getStringList("lore");
-										enchanted = motdSection.getBoolean("enchanted", false);
+										materialString = dynamicSection.getString("item");
+										data = dynamicSection.getInt("data", 0);
+										name = dynamicSection.getString("name");
+										lore = dynamicSection.getStringList("lore");
+										enchanted = dynamicSection.getBoolean("enchanted", false);
 									}
 								}
 							}
@@ -129,6 +129,13 @@ public class SelectorMenu extends IconMenu {
 						
 						// TODO Bring back dynamic item count feature
 						amount = section.getInt("item-count", 1);
+					} else {
+						//Not a server
+						materialString = section.getString("item");
+						data = section.getInt("data", 0);
+						name = section.getString("name", "error");
+						lore = section.getStringList("lore");
+						enchanted = section.getBoolean("enchanted", false);
 					}
 					
 					final ItemBuilder builder;
