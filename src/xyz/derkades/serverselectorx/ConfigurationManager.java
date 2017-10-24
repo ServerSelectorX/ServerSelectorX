@@ -12,7 +12,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
 /**
- * Manages configuration files for server selectors
+ * Manages configuration files
  */
 public class ConfigurationManager {
 
@@ -22,7 +22,7 @@ public class ConfigurationManager {
 	private void loadFiles() {
 		files.clear();
 		
-		for (File file : new File(Main.getPlugin().getDataFolder() + "/menu").listFiles()){
+		for (File file : new File(Main.getPlugin().getDataFolder() + File.separator + "menu").listFiles()){
 			if (!file.getName().endsWith(".yml"))
 				continue;
 
@@ -60,9 +60,9 @@ public class ConfigurationManager {
 		Main.getPlugin().reloadConfig();
 
 		//Copy default selector if directory is empty
-		boolean createFile = new File(Main.getPlugin().getDataFolder() + "/menu").listFiles().length == 0;
-		File file = new File(Main.getPlugin() + "/menu", "default.yml");
-		if (createFile){
+		boolean isEmpty = new File(Main.getPlugin().getDataFolder() + File.separator + "menu").listFiles().length == 0;
+		File file = new File(Main.getPlugin() + File.separator + "menu", "default.yml");
+		if (isEmpty){
 			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/default-selector.yml");
 			try {
 				FileUtils.copyURLToFile(inputUrl, file);
