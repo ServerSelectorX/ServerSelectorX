@@ -51,10 +51,12 @@ public class ConfigurationManager {
 		
 		File dir = new File(Main.getPlugin().getDataFolder() + File.separator + "menu");
 		dir.mkdirs();
+		System.out.println("[debug] number of files: " + dir.listFiles().length);
+		System.out.println("[debug] file names: " + String.join(" - ", dir.list()));
 		if (dir.listFiles().length == 0){
 			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/default-selector.yml");
 			try {
-				File defaultConfig = new File(Main.getPlugin().getDataFolder() + File.separator + "menu", "default.yml");
+				File defaultConfig = dir;
 				FileUtils.copyURLToFile(inputUrl, defaultConfig);
 			} catch (IOException e){
 				e.printStackTrace();
