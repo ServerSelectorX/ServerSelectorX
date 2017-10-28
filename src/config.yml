@@ -15,8 +15,13 @@ chat-clear: false
 
 # -------------------- Permissions -------------------- #
 
-# Require the permission 'ssx.use.<selector name>' to open the menu and ssx.join.<selector name> to get the item on join
+# Require the permission 'ssx.use.<menu name>' to open the menu and ssx.join.<menu name> to get the item on join
 permissions-enabled: false
+
+# Require permissions per icon.
+# ssx.icon.<menu name>.<slot> e.g. ssx.icon.default.3
+# Wildcards are allowed for slots e.g. ssx.icon.default.*
+per-icon-permissions: false
 
 # Send a message if the player does not have permission to use the server selector?
 no-permission-message-enabled: true

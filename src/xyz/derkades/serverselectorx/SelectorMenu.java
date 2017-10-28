@@ -196,6 +196,14 @@ public class SelectorMenu extends IconMenu {
 		int slot = event.getPosition();
 		Player player = event.getPlayer();
 		
+		final boolean permissionsEnabled = Main.getPlugin().getConfig().getBoolean("per-icon-permissions");
+		final boolean hasPermission = player.hasPermission("ssx.icon." + config.getName().replace(".yml", "") + "." + slot);
+		final boolean hasWildcardPermission = player.hasPermission("ssx.icon." + config.getName().replace(".yml", "") + ".*");
+		
+		if (permissionsEnabled && !hasPermission && !hasWildcardPermission) {
+			return true;
+		}
+		
 		String action = config.getString("menu." + slot + ".action");
 		
 		if (action == null) {
