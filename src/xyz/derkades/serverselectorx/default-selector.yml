@@ -10,6 +10,7 @@
 rows: 2
 
 # This will be displayed as the title of the menu. YOU CANNOT HAVE MULTIPLE MENUS WITH THE SAME TITLE!
+# The title cannot be longer than 32 characters due to a vanilla minecraft limitation.
 title: 'Server Selector'
 
 # This will be the name of the server selector item
