@@ -56,7 +56,7 @@ public class ConfigurationManager {
 		if (dir.listFiles().length == 0){
 			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/default-selector.yml");
 			try {
-				File defaultConfig = dir;
+				File defaultConfig = new File(dir, "default.yml");
 				FileUtils.copyURLToFile(inputUrl, defaultConfig);
 			} catch (IOException e){
 				e.printStackTrace();
