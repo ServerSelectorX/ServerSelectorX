@@ -62,7 +62,7 @@ public class Main extends JavaPlugin {
 		plugin = this;
 		
 		configurationManager = new ConfigurationManager();
-		configurationManager.loadFiles();
+		configurationManager.reloadAll();
 
 		//Register listeners
 		Bukkit.getPluginManager().registerEvents(new SelectorOpenListener(), this);
