@@ -33,7 +33,13 @@ public class OnJoinListener implements Listener {
 				}
 			}
 			
-			Material material = Material.getMaterial(config.getString("item"));
+			String itemName = config.getString("item");
+			
+			if (itemName.equalsIgnoreCase("none")) {
+				continue;
+			}
+			
+			Material material = Material.getMaterial(itemName);			
 			
 			if (material == null) {
 				material = Material.STONE;
