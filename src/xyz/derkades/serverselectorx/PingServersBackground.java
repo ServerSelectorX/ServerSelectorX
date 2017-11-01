@@ -21,7 +21,7 @@ public class PingServersBackground extends BukkitRunnable implements PluginMessa
 	
 	@Override
 	public void run() { //Called every 5 ticks
-		if (pinging) {
+		if (pinging != null && pinging) {
 			/* If servers are still being pinged, just */ return;
 		}
 		
