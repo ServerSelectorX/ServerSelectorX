@@ -17,7 +17,7 @@ import xyz.derkades.serverselectorx.utils.ServerPinger;
 
 public class PingServersBackground extends BukkitRunnable implements PluginMessageListener {
 
-	private boolean pinging = false;
+	private Boolean pinging = false;
 	
 	@Override
 	public void run() { //Called every 5 ticks
