@@ -24,9 +24,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.inventivetalent.update.spiget.SpigetUpdate;
-import org.inventivetalent.update.spiget.UpdateCallback;
-import org.inventivetalent.update.spiget.comparator.VersionComparator;
 
 import com.mitch528.sockets.Sockets.Server;
 import com.mitch528.sockets.Sockets.SocketHandler;
@@ -121,11 +118,6 @@ public class Main extends JavaPlugin {
 		getServer().getScheduler().runTaskTimer(this, () -> {
 			Cache.cleanCache();
 		}, 30*60*20, 30*60*20);
-		
-		//Check for updates asynchronously
-		getServer().getScheduler().runTaskAsynchronously(this, () -> {
-			checkForUpdates();
-		});
 
 		startServer();
 	}
@@ -287,48 +279,7 @@ public class Main extends JavaPlugin {
 		} catch (IOException e){
 			e.printStackTrace();
 		}
-	}
-	
-	public static boolean UPDATE_AVAILABLE;
-	public static String NEW_VERSION;
-	public static String CURRENT_VERSION;
-	public static String DOWNLOAD_LINK = "https://www.spigotmc.org/resources/serverselectorx.32853/updates";
-	
-	private void checkForUpdates() {
-		if (!getConfig().getBoolean("updater")) {
-			getLogger().info("The update checker is disabled.");
-			return;
-		}
-		
-		CURRENT_VERSION = Main.this.getDescription().getVersion();
-		
-		if (CURRENT_VERSION.equals("custom")) {
-			getLogger().info("You are using a custom version so the update checker is disabled.");
-			return;
-		}
-		
-		SpigetUpdate updater = new SpigetUpdate(this, 32853).setVersionComparator(VersionComparator.EQUAL);
-		
-		updater.checkForUpdate(new UpdateCallback() {
-			
-			@Override
-			public void updateAvailable(String newVersion, String downloadUrl, boolean hasDirectDownload) {
-				UPDATE_AVAILABLE = true;
-				NEW_VERSION = newVersion;
-				
-				getLogger().info("An update is available!");
-				getLogger().info("Your version: " + CURRENT_VERSION);
-				getLogger().info("Latest version: " + NEW_VERSION);
-			}
-
-			@Override
-			public void upToDate() {
-				UPDATE_AVAILABLE = false;
-				
-				getLogger().info("You are running the latest version.");
-			}
-		});
-	}
+	}	
 	
 	public static ItemStack addHideFlags(ItemStack item) {
 		try {

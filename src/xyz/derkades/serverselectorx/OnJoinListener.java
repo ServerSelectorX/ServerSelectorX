@@ -1,8 +1,5 @@
 package xyz.derkades.serverselectorx;
 
-import static org.bukkit.ChatColor.AQUA;
-import static org.bukkit.ChatColor.GRAY;
-
 import java.util.List;
 
 import org.bukkit.Material;
@@ -60,17 +57,6 @@ public class OnJoinListener implements Listener {
 				inv.setItem(slot, builder.create());
 			}
 			
-		}
-	}
-	
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void sendUpdateMessage(PlayerJoinEvent event) {
-		Player player = event.getPlayer();
-		
-		if (Main.UPDATE_AVAILABLE && player.hasPermission("ssx.update")) {
-			player.sendMessage(AQUA + "An update is available for ServerSelectorX.");
-			player.sendMessage(String.format(AQUA + "Latest version: %s " + GRAY + "(you are now using version %s)", Main.NEW_VERSION, Main.CURRENT_VERSION)); 
-			player.sendMessage(AQUA + "Read the changelog here: " + GRAY + Main.DOWNLOAD_LINK);
 		}
 	}
 
