@@ -13,6 +13,7 @@ import xyz.derkades.derkutils.Cooldown;
 
 public class SelectorOpenListener implements Listener {
 	
+	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onInteract(PlayerInteractEvent event){
 		if (!(event.getAction() == Action.RIGHT_CLICK_AIR ||
@@ -41,6 +42,7 @@ public class SelectorOpenListener implements Listener {
 				material = Material.STONE;
 			}
 			
+			//Use deprecated method to still support 1.8.8
 			if (player.getInventory().getItemInHand().getType() != material){
 				continue;
 			}
