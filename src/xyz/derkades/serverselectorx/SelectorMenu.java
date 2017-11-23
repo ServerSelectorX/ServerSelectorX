@@ -273,22 +273,5 @@ public class SelectorMenu extends IconMenu {
 		}
 	
 	}
-	
-	/*private List<String> replaceInStringList(List<String> list, Object[] before, Object[] after) {
-		if (before.length != after.length) {
-			throw new IllegalArgumentException("before[] length must be equal to after[] length");
-		}
-		
-		List<String> newList = new ArrayList<>();
-		
-		for (String string : list) {
-			for (int i = 0; i < before.length; i++) {
-				string = string.replace(before[i].toString(), after[i].toString());
-			}
-			newList.add(string);
-		}
-		
-		return newList;
-	}*/
 
 }
