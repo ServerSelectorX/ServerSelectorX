@@ -15,6 +15,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.scheduler.BukkitTask;
 
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -29,36 +30,34 @@ public class SelectorMenu extends IconMenu {
 	private Player player;
 	private int slots;
 	
+	private BukkitTask refreshTimer;
+	
 	public SelectorMenu(Player player, FileConfiguration config) {
-		super(Main.getPlugin(), Colors.parseColors(config.getString("title", UUID.randomUUID().toString())), config.getInt("rows", 6) * 9, player);
+		super(Main.getPlugin(), Colors.parseColors(config.getString("title", UUID.randomUUID().toString())), 9, player);
 		
 		this.config = config;
 		this.player = player;
+		
 		this.slots = config.getInt("rows", 6) * 9;
+		setSize(slots);
 	}
 	
 	// TODO Re-implement submenu pinging
 
 	@Override
 	public void open() {
-		getItems().entrySet().forEach((entry) -> {
-			int slot = entry.getKey();
-			ItemStack item = entry.getValue();
-			if (slot < 0) {
-				for (int i = 0; i < slots; i++) {
-					if (!items.containsKey(i)) {
-						items.put(i, item);
-					}
-				}
-			} else {
-				items.put(slot, item);
-			}
-		});
+		addItems();
+		
 		Cooldown.addCooldown(config.getName() + player.getName(), 0); //Remove cooldown if menu opened successfully
 		super.open();
+		
+		refreshTimer = Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), () -> {
+			addItems();
+			super.refreshItems();
+		}, 1*20, 1*20);
 	}
 
-	private Map<Integer, ItemStack> getItems() {
+	private void addItems() {
 		Map<Integer, ItemStack> items = new HashMap<>();
 		
 		for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
@@ -183,7 +182,19 @@ public class SelectorMenu extends IconMenu {
 			items.put(Integer.valueOf(key), Main.addHideFlags(builder.create()));
 		}
 		
-		return items;
+		items.entrySet().forEach((entry) -> {
+			int slot = entry.getKey();
+			ItemStack item = entry.getValue();
+			if (slot < 0) {
+				for (int i = 0; i < slots; i++) {
+					if (!items.containsKey(i)) {
+						items.put(i, item);
+					}
+				}
+			} else {
+				items.put(slot, item);
+			}
+		});
 	}
 
 	@Override
@@ -267,6 +278,11 @@ public class SelectorMenu extends IconMenu {
 			return false; //Return false = stay open
 		}
 	
+	}
+	
+	@Override
+	public void onClose(MenuCloseEvent event) {
+		refreshTimer.cancel();
 	}
 
 }
