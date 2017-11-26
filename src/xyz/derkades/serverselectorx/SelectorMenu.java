@@ -1,6 +1,7 @@
 package xyz.derkades.serverselectorx;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -14,7 +15,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
@@ -41,154 +41,149 @@ public class SelectorMenu extends IconMenu {
 
 	@Override
 	public void open() {
-		new BukkitRunnable(){
-			public void run(){
-				for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
-					final ConfigurationSection section = config.getConfigurationSection("menu." + key);
-					
-					String materialString = "STONE";
-					int data = 0;
-					String name = "";
-					List<String> lore = new ArrayList<>();
-					int amount = 1;
-					boolean enchanted = false;
-					
-					String action = section.getString("action");
-					
-					if (action.startsWith("srv")) {
-						String serverName = action.substring(4);
-
-						boolean online;
-						if (Main.LAST_INFO_TIME.containsKey(serverName)) {
-							// If the server has not sent a message for 7 seconds (usually the server sends a message every 5 seconds)
-							long timeSinceLastPing = System.currentTimeMillis() - Main.LAST_INFO_TIME.get(serverName);
-							System.out.println("[debug] time since last ping " + timeSinceLastPing);
-							online = timeSinceLastPing < 7000;
-						} else {
-							//If the server has not sent a message at all it is offline
-							System.out.println("[debug] no ping");
-							online = false;
-						}
-						
-						if (online) {
-							Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
-							
-							boolean dynamicMatchFound = false;
-							
-							if (section.contains("dynamic")) {
-								for (String dynamic : section.getConfigurationSection("dynamic").getKeys(false)) {
-									String placeholder = dynamic.split(":")[0];
-									String result = dynamic.split(":")[1];
-									
-									if (!placeholders.containsKey(placeholder)) {
-										Main.getPlugin().getLogger().warning("Dynamic feature contains rule with placeholder " + placeholder + " which has not been received from the server.");
-										continue;
-									}
-									
-									if (placeholders.get(placeholder).equals(result)) {
-										//Placeholder result matches with placeholder result in rule
-										dynamicMatchFound = true;
-										ConfigurationSection dynamicSection = section.getConfigurationSection("dynamic." + dynamic);
-										
-										materialString = dynamicSection.getString("item");
-										data = dynamicSection.getInt("data", 0);
-										name = dynamicSection.getString("name");
-										lore = dynamicSection.getStringList("lore");
-										enchanted = dynamicSection.getBoolean("enchanted", false);
-									}
-								}
-							}
-							
-							if (!dynamicMatchFound) {
-								//No dynamic rule matched, fall back to online
-								materialString = section.getString("online.item");
-								data = section.getInt("online.data", 0);
-								name = section.getString("online.name", "error");
-								lore = section.getStringList("online.lore");
-								enchanted = section.getBoolean("online.enchanted", false);
-							}
-							
-							for (Map.Entry<String, String> placeholder : placeholders.entrySet()) {
-								List<String> newLore = new ArrayList<>();
-								for (String string : lore) {
-									newLore.add(string.replace("{" + placeholder.getKey() + "}", placeholder.getValue()));
-								}
-								lore = newLore;
-								
-								name = name.replace(placeholder.getKey(), placeholder.getValue());
-							}
-						} else {
-							//Server is offline
-							ConfigurationSection offlineSection = section.getConfigurationSection("offline");
-							
-							materialString = offlineSection.getString("item");
-							data = offlineSection.getInt("data", 0);
-							name = offlineSection.getString("name");
-							lore = offlineSection.getStringList("lore");
-							enchanted = offlineSection.getBoolean("enchanted", false);
-						}
-						
-						// TODO Bring back dynamic item count feature
-						amount = section.getInt("item-count", 1);
-					} else {
-						//Not a server
-						materialString = section.getString("item");
-						data = section.getInt("data", 0);
-						name = section.getString("name", "error");
-						lore = section.getStringList("lore");
-						enchanted = section.getBoolean("enchanted", false);
+		getItems().entrySet().forEach((entry) -> {
+			int slot = entry.getKey();
+			ItemStack item = entry.getValue();
+			if (slot < 0) {
+				for (int i = 0; i < slots; i++) {
+					if (!items.containsKey(i)) {
+						items.put(i, item);
 					}
-					
-					final ItemBuilder builder;
-					
-					if (materialString.startsWith("head:")) {
-						String owner = materialString.split(":")[1];
-						if (owner.equals("auto")) {
-							builder = new ItemBuilder(player.getName());
-						} else {
-							builder = new ItemBuilder(owner);
-						}
-					} else {
-						Material material = Material.valueOf(materialString);
-						if (material == null) material = Material.STONE;
-						
-						builder = new ItemBuilder(material);
-						builder.data(data);
-					}
-					
-					builder.amount(amount);
-					builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
-					builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
-						
-					if (enchanted) builder.unsafeEnchant(Enchantment.KNOCKBACK, 1);
-						
-					addToMenu(Integer.valueOf(key), Main.addHideFlags(builder.create()));
 				}
-				
-				//After everything has completed, open menu synchronously
-				Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-					Cooldown.addCooldown(config.getName() + player.getName(), 0); //Remove cooldown if menu opened successfully
-					callOriginalOpenMethod();
-				}, 1); //Wait a tick just in case. It's unnoticeable anyways
+			} else {
+				items.put(slot, item);
 			}
-		}.runTaskAsynchronously(Main.getPlugin());
-		
-	}
-	
-	private void callOriginalOpenMethod(){
+		});
+		Cooldown.addCooldown(config.getName() + player.getName(), 0); //Remove cooldown if menu opened successfully
 		super.open();
 	}
-	
-	private void addToMenu(int slot, ItemStack item) {
-		if (slot < 0) {
-			for (int i = 0; i < slots; i++) {
-				if (!items.containsKey(i)) {
-					items.put(i, item);
+
+	private Map<Integer, ItemStack> getItems() {
+		Map<Integer, ItemStack> items = new HashMap<>();
+		
+		for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
+			final ConfigurationSection section = config.getConfigurationSection("menu." + key);
+			
+			String materialString = "STONE";
+			int data = 0;
+			String name = "";
+			List<String> lore = new ArrayList<>();
+			int amount = 1;
+			boolean enchanted = false;
+			
+			String action = section.getString("action");
+			
+			if (action.startsWith("srv")) {
+				String serverName = action.substring(4);
+
+				boolean online;
+				if (Main.LAST_INFO_TIME.containsKey(serverName)) {
+					// If the server has not sent a message for 7 seconds (usually the server sends a message every 5 seconds)
+					long timeSinceLastPing = System.currentTimeMillis() - Main.LAST_INFO_TIME.get(serverName);
+					System.out.println("[debug] time since last ping " + timeSinceLastPing);
+					online = timeSinceLastPing < 7000;
+				} else {
+					//If the server has not sent a message at all it is offline
+					System.out.println("[debug] no ping");
+					online = false;
 				}
+				
+				if (online) {
+					Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
+					
+					boolean dynamicMatchFound = false;
+					
+					if (section.contains("dynamic")) {
+						for (String dynamic : section.getConfigurationSection("dynamic").getKeys(false)) {
+							String placeholder = dynamic.split(":")[0];
+							String result = dynamic.split(":")[1];
+							
+							if (!placeholders.containsKey(placeholder)) {
+								Main.getPlugin().getLogger().warning("Dynamic feature contains rule with placeholder " + placeholder + " which has not been received from the server.");
+								continue;
+							}
+							
+							if (placeholders.get(placeholder).equals(result)) {
+								//Placeholder result matches with placeholder result in rule
+								dynamicMatchFound = true;
+								ConfigurationSection dynamicSection = section.getConfigurationSection("dynamic." + dynamic);
+								
+								materialString = dynamicSection.getString("item");
+								data = dynamicSection.getInt("data", 0);
+								name = dynamicSection.getString("name");
+								lore = dynamicSection.getStringList("lore");
+								enchanted = dynamicSection.getBoolean("enchanted", false);
+							}
+						}
+					}
+					
+					if (!dynamicMatchFound) {
+						//No dynamic rule matched, fall back to online
+						materialString = section.getString("online.item");
+						data = section.getInt("online.data", 0);
+						name = section.getString("online.name", "error");
+						lore = section.getStringList("online.lore");
+						enchanted = section.getBoolean("online.enchanted", false);
+					}
+					
+					for (Map.Entry<String, String> placeholder : placeholders.entrySet()) {
+						List<String> newLore = new ArrayList<>();
+						for (String string : lore) {
+							newLore.add(string.replace("{" + placeholder.getKey() + "}", placeholder.getValue()));
+						}
+						lore = newLore;
+						
+						name = name.replace(placeholder.getKey(), placeholder.getValue());
+					}
+				} else {
+					//Server is offline
+					ConfigurationSection offlineSection = section.getConfigurationSection("offline");
+					
+					materialString = offlineSection.getString("item");
+					data = offlineSection.getInt("data", 0);
+					name = offlineSection.getString("name");
+					lore = offlineSection.getStringList("lore");
+					enchanted = offlineSection.getBoolean("enchanted", false);
+				}
+				
+				// TODO Bring back dynamic item count feature
+				amount = section.getInt("item-count", 1);
+			} else {
+				//Not a server
+				materialString = section.getString("item");
+				data = section.getInt("data", 0);
+				name = section.getString("name", "error");
+				lore = section.getStringList("lore");
+				enchanted = section.getBoolean("enchanted", false);
 			}
-		} else {
-			items.put(slot, item);
+			
+			final ItemBuilder builder;
+			
+			if (materialString.startsWith("head:")) {
+				String owner = materialString.split(":")[1];
+				if (owner.equals("auto")) {
+					builder = new ItemBuilder(player.getName());
+				} else {
+					builder = new ItemBuilder(owner);
+				}
+			} else {
+				Material material = Material.valueOf(materialString);
+				if (material == null) material = Material.STONE;
+				
+				builder = new ItemBuilder(material);
+				builder.data(data);
+			}
+			
+			builder.amount(amount);
+			builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
+			builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
+				
+			if (enchanted) builder.unsafeEnchant(Enchantment.KNOCKBACK, 1);
+				
+			items.put(Integer.valueOf(key), Main.addHideFlags(builder.create()));
 		}
+		
+		return items;
 	}
 
 	@Override
