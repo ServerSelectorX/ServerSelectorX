@@ -33,6 +33,16 @@ public class ConfigurationManager {
 	
 	private void loadServerConfig() {
 		File file = new File(Main.getPlugin().getDataFolder(), "server.yml");
+		
+		if (!file.exists()) {
+			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/server.yml");
+			try {
+				FileUtils.copyURLToFile(inputUrl, file);
+			} catch (IOException e){
+				e.printStackTrace();
+			}
+		}
+		
 		serverConfig = YamlConfiguration.loadConfiguration(file);
 	}
 	
