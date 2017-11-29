@@ -1,7 +1,6 @@
 package xyz.derkades.serverselectorx;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -57,9 +56,7 @@ public class SelectorMenu extends IconMenu {
 		}, 1*20, 1*20);
 	}
 
-	private void addItems() {
-		Map<Integer, ItemStack> items = new HashMap<>();
-		
+	private void addItems() {		
 		for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
 			final ConfigurationSection section = config.getConfigurationSection("menu." + key);
 			
@@ -178,13 +175,9 @@ public class SelectorMenu extends IconMenu {
 			builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
 				
 			if (enchanted) builder.unsafeEnchant(Enchantment.KNOCKBACK, 1);
-				
-			items.put(Integer.valueOf(key), Main.addHideFlags(builder.create()));
-		}
-		
-		items.entrySet().forEach((entry) -> {
-			int slot = entry.getKey();
-			ItemStack item = entry.getValue();
+
+			int slot = Integer.valueOf(key);
+			ItemStack item = Main.addHideFlags(builder.create());
 			if (slot < 0) {
 				for (int i = 0; i < slots; i++) {
 					if (!items.containsKey(i)) {
@@ -194,7 +187,7 @@ public class SelectorMenu extends IconMenu {
 			} else {
 				items.put(slot, item);
 			}
-		});
+		}
 	}
 
 	@Override
