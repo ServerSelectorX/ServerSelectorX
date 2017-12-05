@@ -12,6 +12,9 @@ server-teleport-message: '&7You are being connected to &7&l{x}&r&7.'
 # Note: the chat will be cleared before sending server teleport message, so the server teleport message will still be visible.
 chat-clear: false
 
+# Log information recieved from the connector plugin
+log-pinger: true
+
 
 # -------------------- Permissions -------------------- #
 

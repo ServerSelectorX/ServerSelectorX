@@ -17,7 +17,10 @@ public class PlaceholderReceiver implements MessageReceivedEventListener {
 	
 	@Override
 	public void messageReceived(MessageReceivedEvent event) {
-		Main.getPlugin().getLogger().info("Recieved message: " + event.getMessage());
+		if (Main.getConfigurationManager().getConfig().getBoolean("log-pinger", true)) {
+			Main.getPlugin().getLogger().info("Recieved message from " + serverName + ": " + event.getMessage());
+		}
+		
 		Gson gson = new Gson();
 		
 		Map<String, String> genericSample = new HashMap<>();
