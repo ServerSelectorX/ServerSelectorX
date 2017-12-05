@@ -27,7 +27,7 @@ public class ReloadCommand implements CommandExecutor {
 			Main.getConfigurationManager().reloadAll();
 			
 			try {
-				Main.getPlugin().restartServer();
+				Main.getPlugin().restartServers();
 				Main.getPlugin().getLogger().info("Server restarted!");
 			} catch (IOException e) {
 				Main.getPlugin().getLogger().warning("An error occured while trying to restart server");

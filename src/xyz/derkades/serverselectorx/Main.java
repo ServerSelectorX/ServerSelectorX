@@ -8,6 +8,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -119,55 +120,67 @@ public class Main extends JavaPlugin {
 			Cache.cleanCache();
 		}, 30*60*20, 30*60*20);
 
-		startServer();
+		startServers();
 	}
 	
-	private static Server server;
+	private static List<Server> servers;
 	
-	private void startServer() {
-		FileConfiguration serverConfig = getConfigurationManager().getServerConfig();
+	private void startServers() {
+		if (servers == null) {
+			servers = new ArrayList<>();
+		} else {
+			servers.clear();
+		}
 		
-		boolean enabled = serverConfig.getBoolean("enabled", true);
-		if (!enabled) return;
+		FileConfiguration serverConfig = getConfigurationManager().getPingersConfig();
 		
-		int port = serverConfig.getInt("port", 9876);
-		
-		Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
-			server = new Server(port);
+		for (String port : serverConfig.getKeys(false)) {
+			String serverName = serverConfig.getString(port);
 			
-			server.getSocketAccepted().addServerSocketAcceptedEventListener(new ServerSocketAcceptedEventListener() {
-				public void socketAccepted(ServerSocketAcceptedEvent event){
-					final SocketHandler handler = event.getHandler();
-					
-					handler.getMessage().addMessageReceivedEventListener(new PlaceholderReceiver());
-					
-					handler.getConnected().addSocketConnectedEventListener(new SocketConnectedEventListener() {
-						public void socketConnected(SocketConnectedEvent event){
-							getLogger().info("Client " + event.getID() + " connected");
-						}
-					});
-					
-					handler.getDisconnected().addSocketDisconnectedEventListener(new SocketDisconnectedEventListener(){
-						public void socketDisconnected(SocketDisconnectedEvent event){
-							getLogger().info("Client " + event.getID() + " disconnected");
-						}
-					});
+			Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
+				Server server = new Server(Integer.parseInt(port));
+				
+				server.getSocketAccepted().addServerSocketAcceptedEventListener(new ServerSocketAcceptedEventListener() {
+					public void socketAccepted(ServerSocketAcceptedEvent event){
+						final SocketHandler handler = event.getHandler();
+						
+						handler.getMessage().addMessageReceivedEventListener(new PlaceholderReceiver(serverName));
+						
+						handler.getConnected().addSocketConnectedEventListener(new SocketConnectedEventListener() {
+							public void socketConnected(SocketConnectedEvent event){
+								getLogger().info(serverName + " connected");
+							}
+						});
+						
+						handler.getDisconnected().addSocketDisconnectedEventListener(new SocketDisconnectedEventListener(){
+							public void socketDisconnected(SocketDisconnectedEvent event){
+								getLogger().info(serverName + " disconnected");
+							}
+						});
+					}
+				});
+				
+				servers.add(server);
+				
+				try {
+					getLogger().info("Listening on port " + port);
+					server.startListening();
+				} catch (IOException e) {
+					e.printStackTrace();
+					getLogger().warning("An error occured while trying to start server");
 				}
 			});
-			
-			try {
-				getLogger().info("Listening on port " + port);
-				server.startListening();
-			} catch (IOException e) {
-				e.printStackTrace();
-				getLogger().warning("An error occured while trying to start server");
-			}
-		});
+		}
 	}
 	
-	public void restartServer() throws IOException {
-		if (server != null) server.stopServer();
-		startServer();
+	public void restartServers() throws IOException {
+		if (servers != null) {
+			for (Server server : servers) {
+				server.stopServer();
+			}
+		}
+		
+		startServers();
 	}
 	
 	/**

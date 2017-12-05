@@ -9,6 +9,12 @@ import com.mitch528.sockets.events.MessageReceivedEventListener;
 
 public class PlaceholderReceiver implements MessageReceivedEventListener {
 
+	private String serverName;
+	
+	public PlaceholderReceiver(String serverName) {
+		this.serverName = serverName;
+	}
+	
 	@Override
 	public void messageReceived(MessageReceivedEvent event) {
 		Main.getPlugin().getLogger().info("Recieved message: " + event.getMessage());
@@ -19,10 +25,9 @@ public class PlaceholderReceiver implements MessageReceivedEventListener {
 		@SuppressWarnings("unchecked")
 		Map<String, String> placeholders = gson.fromJson(event.getMessage(), genericSample.getClass());
 		
-		String server = placeholders.remove("server");
-		Main.PLACEHOLDERS.put(server, placeholders);
+		Main.PLACEHOLDERS.put(serverName, placeholders);
 		
-		Main.LAST_INFO_TIME.put(server, System.currentTimeMillis());
+		Main.LAST_INFO_TIME.put(serverName, System.currentTimeMillis());
 	}
 
 }

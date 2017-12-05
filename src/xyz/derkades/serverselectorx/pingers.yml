@@ -1,0 +1,11 @@
+# Create new server pingers here.
+#
+# port: server name
+#
+# Port - Any free port on your system
+# Server name - The name of the server as set in bungeecord
+
+6987: kitpvp
+6988: creative
+6989: minigames-1
+6990: minigames-2
