@@ -36,45 +36,17 @@ url-message: '&3&lClick here'
 # Command to open the menu. Specify "none" for no command. (without /)
 command: "menu"
 
-# Possible values for action:
-#
-# Teleport player to server
-# action: 'srv:skywars'
-#
-# Send player a clickable message to open a URL. Only works on spigot, not bukkit.
-# action: 'url:http://example.com/'
-#
-# Teleport player to world
-# action: 'world:skyblock'
-#
-# Execute a command. The player will need permission for this command. No / before the command.
-# action: 'cmd:gamemode 1'
-# For bungeecord commands, add a bungee: prefix. This requires https://www.spigotmc.org/resources/commandsync.115/ to be installed.
-# action: 'bungeecmd:glist'
-#
-# Open another selector (for submenus for example)
-# action: 'sel:uhc-servers'
-# SUPER VALUABLE TIP:
-# If you set the ip to 'submenu' and ping-server to true, {online} and {max} will be the combined number of players of all servers in the submenu.
-#
-# Send message
-# action: 'msg:&1This &2is &3a &4message'
-#
-# Close selector
-# action: 'close'
-#
-# Do nothing (selector stays open)
-# action: 'none'
-
 menu:
 
-  3: # Item in 4th slot (use 0 for first item). Add as many items as you want by copying this section and giving it a new number. This number must not be greater than (rows*9)-1
+  # Item in 4th slot (use 0 for first item). Add as many items as you want by copying this section and giving it a new number.
+  3:
 
-    # Whether the server should be pinged for information. Enables placeholders in lore.
+    # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Server-Pinging
     ping-server: false
-    ip: play.example.com # Note that you can't use localhost because the plugin uses an external API by default. For more info see config.yml
+    ip: play.example.com
     port: 1234
     
+    # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Actions
     action: 'srv:kitpvp'
 
     # Change item count based on number of players online. Only works if ping-server is turned on. If there are more than 64 players online, the item count will be 1
@@ -91,11 +63,10 @@ menu:
       enchanted: true
       name: '&aKitPvP Server'
       lore:
-       - Lorem ipsum
-       - Dolor sit amet
-       - There are {online} out of {max} players online. # These placeholders will only work if ping-server is enabled
+      # Placeholders not working? https://github.com/ServerSelectorX/ServerSelectorX/wiki/Server-Pinging
+       - 'There are {online} out of {max} players online.'
        - 'Message of the day: {motd}'
-       - 'Ping: {ping}' # Ping only works with external query
+       - 'Ping: {ping}'
       
     # Offline is used when ping-server is turned on and the server is offline.
     offline:
@@ -119,7 +90,7 @@ menu:
         lore:
          - The game has not started
       "Other lore":
-        item: WOODEN_SWORD
+        item: WOOD_SWORD
         data: 0
         enchanted: false
         name: '&cKitPvP Server'
