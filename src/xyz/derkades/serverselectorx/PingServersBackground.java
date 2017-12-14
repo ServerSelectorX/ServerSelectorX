@@ -4,18 +4,15 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.messaging.PluginMessageListener;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import com.google.common.collect.Iterables;
-import com.google.common.io.ByteArrayDataInput;
 import com.google.common.io.ByteArrayDataOutput;
 import com.google.common.io.ByteStreams;
 
-import xyz.derkades.derkutils.caching.Cache;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
 
-public class PingServersBackground extends BukkitRunnable implements PluginMessageListener {
+public class PingServersBackground extends BukkitRunnable {
 
 	private Boolean pinging = false;
 	
@@ -64,22 +61,6 @@ public class PingServersBackground extends BukkitRunnable implements PluginMessa
 		
 		//Done pinging servers
 		pinging = false;
-	}
-	
-	@Override
-	public void onPluginMessageReceived(String channel, Player player, byte[] message) {
-		if (!channel.equals("BungeeCord")) {
-			return;
-		}
-		
-		ByteArrayDataInput in = ByteStreams.newDataInput(message);
-		String subchannel = in.readUTF();
-		if (subchannel.equals("PlayerCount")) {
-			String server = in.readUTF();
-			int playercount = in.readInt();
-			
-			Cache.addCachedObject("playersonline" + server, playercount);
-		}
 	}
 	
 }
