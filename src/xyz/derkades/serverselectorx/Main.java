@@ -82,7 +82,6 @@ public class Main extends JavaPlugin {
 		
 		PingServersBackground backgroundPinging = new PingServersBackground();
 		backgroundPinging.runTaskTimerAsynchronously(this, 50, 5);
-		this.getServer().getMessenger().registerIncomingPluginChannel(this, "BungeeCord", backgroundPinging);
 		
 		//Register command
 		getCommand("serverselectorx").setExecutor(new ReloadCommand());
