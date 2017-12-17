@@ -178,11 +178,12 @@ public class SelectorMenu extends IconMenu {
 			builder.amount(amount);
 			builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
 			builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
-				
-			if (enchanted) builder.unsafeEnchant(Enchantment.KNOCKBACK, 1);
 
 			int slot = Integer.valueOf(key);
 			ItemStack item = Main.addHideFlags(builder.create());
+			
+			if (enchanted) item.addUnsafeEnchantment(Enchantment.KNOCKBACK, 1);
+			
 			if (slot < 0) {
 				for (int i = 0; i < slots; i++) {
 					if (!items.containsKey(i)) {
