@@ -120,10 +120,12 @@ public class Main extends JavaPlugin {
 			Cache.cleanCache();
 		}, 30*60*20, 30*60*20);
 
-		startServers();
+		//startServers();
+		
+		new WebServer().start();
 	}
 	
-	private static List<Server> servers;
+	/*private static List<Server> servers;
 	
 	private void startServers() {
 		if (servers == null) {
@@ -181,7 +183,7 @@ public class Main extends JavaPlugin {
 		}
 		
 		startServers();
-	}
+	}*/
 	
 	/**
 	 * Registers all custom commands by going through all menu files and adding commands

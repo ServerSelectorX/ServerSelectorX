@@ -1,9 +1,7 @@
-# Create new server pingers here.
+# Add new servers here
 #
-# port: server name
-#
-# Port - Any free port on your system
 # Server name - The name of the server as set in bungeecord
+# Key - A password for this server. https://derkades.xyz/ssx/key-generator.html
 
 6987: kitpvp
 6988: creative
