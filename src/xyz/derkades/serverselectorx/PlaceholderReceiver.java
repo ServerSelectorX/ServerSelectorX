@@ -3,17 +3,18 @@ package xyz.derkades.serverselectorx;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.codec.digest.DigestUtils;
+
 import com.google.gson.Gson;
 
 public class PlaceholderReceiver /*implements MessageReceivedEventListener*/ extends HttpServlet {
-	
-	
 
 	/*private String serverName;
 	
@@ -45,18 +46,39 @@ public class PlaceholderReceiver /*implements MessageReceivedEventListener*/ ext
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 		
+		String key = request.getParameter("key");
 		String serverName = request.getParameter("server");
 		String placeholdersJsonString = request.getParameter("data");
 		
-		if (serverName == null || placeholdersJsonString == null) {
-			Main.getPlugin().getLogger().warning("Recieved invalid request from " + request.getRemoteAddr());
+		Logger logger = Main.getPlugin().getLogger();
+		
+		if (key == null || serverName == null || placeholdersJsonString == null) {
+			logger.warning("Received invalid request from " + request.getRemoteAddr() + ". This may be a hacking attempt.");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
-		} else {
-			response.setStatus(HttpServletResponse.SC_OK);
-			if (Main.getConfigurationManager().getConfig().getBoolean("log-pinger", true)) {
-				Main.getPlugin().getLogger().info("Recieved message from " + serverName + ": " + placeholdersJsonString);
-			}
+		}
+		
+		String correctKey = Main.getConfigurationManager().getPingersConfig().getString("serverName", "none");
+		
+		if (correctKey.equals("none")) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			logger.severe("No key has been set for a server with the name " + serverName);
+			logger.severe("Please check /plugins/ServerSelectorX/pingers.yml");
+			return;
+		}
+		
+		if (!key.equals(correctKey)) {
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			logger.warning("Received request with invalid key from " + request.getRemoteAddr());
+			logger.warning("This may be a hacking attempt.");
+			logger.warning("Provided key: " + key);
+			logger.warning("Correct key: " + correctKey);
+			return;
+		}
+		
+		response.setStatus(HttpServletResponse.SC_OK);
+		if (Main.getConfigurationManager().getConfig().getBoolean("log-pinger", true)) {
+			logger.info("Recieved message from " + serverName + ": " + placeholdersJsonString);
 		}
 
 		Gson gson = new Gson();

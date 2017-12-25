@@ -8,7 +8,6 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -25,15 +24,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.mitch528.sockets.Sockets.Server;
-import com.mitch528.sockets.Sockets.SocketHandler;
-import com.mitch528.sockets.events.ServerSocketAcceptedEvent;
-import com.mitch528.sockets.events.ServerSocketAcceptedEventListener;
-import com.mitch528.sockets.events.SocketConnectedEvent;
-import com.mitch528.sockets.events.SocketConnectedEventListener;
-import com.mitch528.sockets.events.SocketDisconnectedEvent;
-import com.mitch528.sockets.events.SocketDisconnectedEventListener;
 
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
@@ -57,6 +47,8 @@ public class Main extends JavaPlugin {
 	private static ConfigurationManager configurationManager;
 	
 	private static Main plugin;
+	
+	public static WebServer server;
 	
 	public static Main getPlugin(){
 		return plugin;
@@ -121,8 +113,9 @@ public class Main extends JavaPlugin {
 		}, 30*60*20, 30*60*20);
 
 		//startServers();
-		
-		new WebServer().start();
+		int port = configurationManager.getConfig().getInt("port");
+		server = new WebServer(port);
+		server.stop();
 	}
 	
 	/*private static List<Server> servers;

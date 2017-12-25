@@ -2,8 +2,6 @@ package xyz.derkades.serverselectorx;
 
 import static org.bukkit.ChatColor.AQUA;
 
-import java.io.IOException;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -26,14 +24,10 @@ public class ReloadCommand implements CommandExecutor {
 			
 			Main.getConfigurationManager().reloadAll();
 			
-			try {
-				Main.getPlugin().restartServers();
-				Main.getPlugin().getLogger().info("Server restarted!");
-			} catch (IOException e) {
-				Main.getPlugin().getLogger().warning("An error occured while trying to restart server");
-				e.printStackTrace();
-			}
-			
+			Main.server.stop();
+			Main.server.start();
+			Main.getPlugin().getLogger().info("Server restarted!");
+					
 			sender.sendMessage(AQUA + "The configuration file has been reloaded.");
 			return true;
 		}
