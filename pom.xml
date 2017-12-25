@@ -111,13 +111,6 @@
 		</dependency>
 
 		<dependency>
-			<!-- Modified version of sockets https://github.com/ServerSelectorX/BukkitSockets -->
-			<groupId>com.mitch528.sockets</groupId>
-			<artifactId>Sockets</artifactId>
-			<version>1.0</version>
-		</dependency>
-
-		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
 			<version>8.1.21.v20160908</version>
