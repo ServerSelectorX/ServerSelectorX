@@ -91,8 +91,6 @@ public class ConfigurationManager {
 		//Initialize variables
 		ItemMoveDropCancelListener.DROP_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-drop", false);
 		ItemMoveDropCancelListener.MOVE_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-move", false);
-		
-
 	}
 
 }
