@@ -52,17 +52,13 @@ public class ConfigurationManager {
 		return serverConfig;
 	}
 	
-	public void reloadAll() {
-		System.out.println("[debug] " + Main.getPlugin().getDataFolder().getAbsolutePath());
-		
+	public void reloadAll() {		
 		//Create default configuration files
 		
 		Main.getPlugin().saveDefaultConfig();
 		
 		File dir = new File(Main.getPlugin().getDataFolder() + File.separator + "menu");
 		dir.mkdirs();
-		System.out.println("[debug] number of files: " + dir.listFiles().length);
-		System.out.println("[debug] file names: " + String.join(" - ", dir.list()));
 		if (dir.listFiles().length == 0){
 			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/default-selector.yml");
 			try {
