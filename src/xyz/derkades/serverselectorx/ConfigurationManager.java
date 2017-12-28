@@ -69,7 +69,6 @@ public class ConfigurationManager {
 			}
 		}
 		
-		
 		//Reload configuration files
 		
 		Main.getPlugin().reloadConfig();
@@ -85,8 +84,6 @@ public class ConfigurationManager {
 			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
 			files.put(name, config);
 		}
-		
-		
 		
 		//Initialize variables
 		ItemMoveDropCancelListener.DROP_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-drop", false);
