@@ -31,11 +31,11 @@ public class ConfigurationManager {
 		return Main.getPlugin().getConfig();
 	}
 	
-	private void loadPingersConfig() {
+	private void loadServersConfig() {
 		File file = new File(Main.getPlugin().getDataFolder(), "pingers.yml");
 		
 		if (!file.exists()) {
-			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/pingers.yml");
+			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/servers.yml");
 			try {
 				FileUtils.copyURLToFile(inputUrl, file);
 			} catch (IOException e){
@@ -46,8 +46,8 @@ public class ConfigurationManager {
 		serverConfig = YamlConfiguration.loadConfiguration(file);
 	}
 	
-	public FileConfiguration getPingersConfig() {
-		if (serverConfig == null) loadPingersConfig();
+	public FileConfiguration getServersConfig() {
+		if (serverConfig == null) loadServersConfig();
 		
 		return serverConfig;
 	}
@@ -78,7 +78,7 @@ public class ConfigurationManager {
 		
 		Main.getPlugin().reloadConfig();
 		
-		loadPingersConfig();
+		loadSeversConfig();
 
 		files.clear();
 		for (File file : new File(Main.getPlugin().getDataFolder() + File.separator + "menu").listFiles()){
