@@ -74,7 +74,7 @@ public class ConfigurationManager {
 		
 		Main.getPlugin().reloadConfig();
 		
-		loadSeversConfig();
+		loadServersConfig();
 
 		files.clear();
 		for (File file : new File(Main.getPlugin().getDataFolder() + File.separator + "menu").listFiles()){
