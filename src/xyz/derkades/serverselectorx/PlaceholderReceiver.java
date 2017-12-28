@@ -93,5 +93,11 @@ public class PlaceholderReceiver /*implements MessageReceivedEventListener*/ ext
 		
 		Main.LAST_INFO_TIME.put(serverName, System.currentTimeMillis());
 	}
+	
+	@Override
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+		response.setContentType("text/html");
+		response.getWriter().print("Congratulations, you typed an address into your browser. Go tell your mom, she'll be proud of you.");
+	}
 
 }
