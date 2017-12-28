@@ -10,6 +10,8 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.bukkit.configuration.file.FileConfiguration;
+
 import com.google.gson.Gson;
 
 public class PlaceholderReceiver /*implements MessageReceivedEventListener*/ extends HttpServlet {
@@ -45,32 +47,33 @@ public class PlaceholderReceiver /*implements MessageReceivedEventListener*/ ext
 		response.setContentType("text/html");
 		
 		String key = request.getParameter("key");
-		String serverName = request.getParameter("server");
 		String placeholdersJsonString = request.getParameter("data");
 		
 		Logger logger = Main.getPlugin().getLogger();
 		
-		if (key == null || serverName == null || placeholdersJsonString == null) {
+		if (key == null || placeholdersJsonString == null) {
 			logger.warning("Received invalid request from " + request.getRemoteAddr() + ". This may be a hacking attempt.");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
 		
-		String correctKey = Main.getConfigurationManager().getPingersConfig().getString("serverName", "none");
+		FileConfiguration config = Main.getConfigurationManager().getServersConfig();
 		
-		if (correctKey.equals("none")) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			logger.severe("No key has been set for a server with the name " + serverName);
-			logger.severe("Please check /plugins/ServerSelectorX/pingers.yml");
-			return;
+		String serverName = null;
+		
+		for (String server : config.getKeys(false)) {
+			String correctKey = config.getString(server);
+			if (key.equals(correctKey)) {
+				serverName = server;
+			}
 		}
 		
-		if (!key.equals(correctKey)) {
+		// If key matched with no servers it is incorrect
+		if (serverName == null) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			logger.warning("Received request with invalid key from " + request.getRemoteAddr());
-			logger.warning("This may be a hacking attempt.");
+			logger.warning("If you configured everything correctly, this may be a hacking attempt.");
 			logger.warning("Provided key: " + key);
-			logger.warning("Correct key: " + correctKey);
 			return;
 		}
 		
