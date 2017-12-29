@@ -19,6 +19,7 @@ import org.bukkit.scheduler.BukkitTask;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import xyz.derkades.derkutils.Cooldown;
+import xyz.derkades.derkutils.ListUtils;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.IconMenu;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
@@ -40,8 +41,6 @@ public class SelectorMenu extends IconMenu {
 		this.slots = config.getInt("rows", 6) * 9;
 		setSize(slots);
 	}
-	
-	// TODO Re-implement submenu pinging
 
 	@Override
 	public void open() {
@@ -149,6 +148,30 @@ public class SelectorMenu extends IconMenu {
 				
 				// TODO Bring back dynamic item count feature
 				amount = section.getInt("item-count", 1);
+			} else if (action.startsWith("sel:")) {
+				//Add all online counts of servers in the submenu
+				int totalOnline = 0;
+				
+				FileConfiguration subConfig = Main.getConfigurationManager().getByName(action.substring(4));
+				for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
+					final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
+					String subAction = subSection.getString("action");
+					if (!subAction.startsWith("srv:")) {
+						return;
+					}
+					
+					String serverName = subAction.substring(4);
+					Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
+					if (placeholders.containsKey("online")) {
+						totalOnline += Integer.parseInt("online");
+					}
+				}
+				
+				materialString = section.getString("item");
+				data = section.getInt("data", 0);
+				name = section.getString("name", "error");
+				lore = ListUtils.replaceInStringList(section.getStringList("lore"), new Object[] {"{total}"}, new Object[] {totalOnline});
+				enchanted = section.getBoolean("enchanted", false);
 			} else {
 				//Not a server
 				materialString = section.getString("item");
