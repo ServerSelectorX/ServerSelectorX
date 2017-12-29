@@ -32,7 +32,7 @@ public class ConfigurationManager {
 	}
 	
 	private void loadServersConfig() {
-		File file = new File(Main.getPlugin().getDataFolder(), "pingers.yml");
+		File file = new File(Main.getPlugin().getDataFolder(), "servers.yml");
 		
 		if (!file.exists()) {
 			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/servers.yml");
