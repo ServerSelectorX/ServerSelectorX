@@ -112,10 +112,9 @@ public class Main extends JavaPlugin {
 			Cache.cleanCache();
 		}, 30*60*20, 30*60*20);
 
-		//startServers();
 		int port = configurationManager.getConfig().getInt("port");
 		server = new WebServer(port);
-		server.stop();
+		server.start();
 	}
 	
 	/*private static List<Server> servers;
