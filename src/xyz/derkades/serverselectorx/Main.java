@@ -117,66 +117,6 @@ public class Main extends JavaPlugin {
 		server.start();
 	}
 	
-	/*private static List<Server> servers;
-	
-	private void startServers() {
-		if (servers == null) {
-			servers = new ArrayList<>();
-		} else {
-			servers.clear();
-		}
-		
-		FileConfiguration serverConfig = getConfigurationManager().getPingersConfig();
-		
-		for (String port : serverConfig.getKeys(false)) {
-			String serverName = serverConfig.getString(port);
-			
-			Bukkit.getScheduler().runTaskAsynchronously(this, () -> {
-				Server server = new Server(Integer.parseInt(port));
-				
-				server.getSocketAccepted().addServerSocketAcceptedEventListener(new ServerSocketAcceptedEventListener() {
-					public void socketAccepted(ServerSocketAcceptedEvent event){
-						final SocketHandler handler = event.getHandler();
-						
-						handler.getMessage().addMessageReceivedEventListener(new PlaceholderReceiver(serverName));
-						
-						handler.getConnected().addSocketConnectedEventListener(new SocketConnectedEventListener() {
-							public void socketConnected(SocketConnectedEvent event){
-								getLogger().info(serverName + " connected");
-							}
-						});
-						
-						handler.getDisconnected().addSocketDisconnectedEventListener(new SocketDisconnectedEventListener(){
-							public void socketDisconnected(SocketDisconnectedEvent event){
-								getLogger().info(serverName + " disconnected");
-							}
-						});
-					}
-				});
-				
-				servers.add(server);
-				
-				try {
-					getLogger().info("Listening on port " + port);
-					server.startListening();
-				} catch (IOException e) {
-					e.printStackTrace();
-					getLogger().warning("An error occured while trying to start server");
-				}
-			});
-		}
-	}
-	
-	public void restartServers() throws IOException {
-		if (servers != null) {
-			for (Server server : servers) {
-				server.stopServer();
-			}
-		}
-		
-		startServers();
-	}*/
-	
 	/**
 	 * Registers all custom commands by going through all menu files and adding commands
 	 */
