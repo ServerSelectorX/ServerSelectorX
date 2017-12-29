@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>xyz.derkades</groupId>
 	<artifactId>ServerSelectorX</artifactId>
-	<version>Premium-beta</version>
+	<version>Premium-1.2.0</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -76,7 +76,7 @@
 							<exclude>commons-lang:commons-lang</exclude>
 						</excludes>
 					</artifactSet>
-					
+
 					<filters>
 						<filter>
 							<artifact>*:*</artifact>
