@@ -156,14 +156,18 @@ public class SelectorMenu extends IconMenu {
 				for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
 					final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
 					String subAction = subSection.getString("action");
-					if (!subAction.startsWith("srv:")) {
+					if (!subAction.startsWith("srv:")) 
+						return;
+					
+					String serverName = subAction.substring(4);
+					
+					if (!Main.PLACEHOLDERS.containsKey(serverName)) {
 						return;
 					}
 					
-					String serverName = subAction.substring(4);
 					Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
 					if (placeholders.containsKey("online")) {
-						totalOnline += Integer.parseInt("online");
+						totalOnline += Integer.parseInt(placeholders.get("online"));
 					}
 				}
 				
