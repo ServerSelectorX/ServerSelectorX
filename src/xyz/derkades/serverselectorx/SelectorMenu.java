@@ -308,7 +308,7 @@ public class SelectorMenu extends IconMenu {
 	
 	@Override
 	public void onClose(MenuCloseEvent event) {
-		refreshTimer.cancel();
+		if (refreshTimer != null) refreshTimer.cancel();
 	}
 
 }
