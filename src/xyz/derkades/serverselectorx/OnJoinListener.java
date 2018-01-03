@@ -30,6 +30,10 @@ public class OnJoinListener implements Listener {
 				}
 			}
 			
+			if (config.getString("item").equals("NONE")) { 
+				continue;
+			}
+			
 			Material material = Material.getMaterial(config.getString("item"));
 			
 			if (material == null) {
