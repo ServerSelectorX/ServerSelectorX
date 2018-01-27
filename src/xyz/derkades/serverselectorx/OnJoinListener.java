@@ -15,8 +15,12 @@ import xyz.derkades.derkutils.bukkit.ItemBuilder;
 
 public class OnJoinListener implements Listener {
 	
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.LOW)
 	public void onJoin(PlayerJoinEvent event) {
+		if (Main.getConfigurationManager().getConfig().getBoolean("clear-inv", false)) {
+			event.getPlayer().getInventory().clear();
+		}
+		
 		for (FileConfiguration config : Main.getConfigurationManager().getAll()) {			
 			boolean putItemInInventory = config.getBoolean("on-join");
 			if (!putItemInInventory)

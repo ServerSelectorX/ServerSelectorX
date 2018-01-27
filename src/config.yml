@@ -16,6 +16,10 @@ offline-cancel-connect-message: "&cThis server is currently offline."
 right-click-open: true
 left-click-open: false
 
+# Clear inventory before adding items on join? 
+# This may not work with other plugins that also add items on join.
+clear-inv: false
+
 # Clear chat before sending player to server? 
 # Note: the chat will be cleared before sending server teleport message, so the server teleport message will still be visible.
 chat-clear: false
