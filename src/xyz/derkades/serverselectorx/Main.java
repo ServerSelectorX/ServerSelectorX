@@ -281,9 +281,22 @@ public class Main extends JavaPlugin {
 		} catch (IOException e){
 			e.printStackTrace();
 		}
-	}	
+	}
 	
-	public static ItemStack addHideFlags(ItemStack item) {
+	public static boolean isOnline(String serverName) {
+		if (Main.LAST_INFO_TIME.containsKey(serverName)) {
+			// If the server has not sent a message for 7 seconds (usually the server sends a message every 5 seconds)
+			
+			long timeSinceLastPing = System.currentTimeMillis() - Main.LAST_INFO_TIME.get(serverName);
+			
+			return timeSinceLastPing < 7000;
+		} else {
+			//If the server has not sent a message at all it is offline
+			return false;
+		}
+	}
+	
+	/*public static ItemStack addHideFlags(ItemStack item) {
 		try {
 			String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
 			
@@ -307,6 +320,34 @@ public class Main extends JavaPlugin {
 				NoSuchMethodException | SecurityException | InstantiationException e) {
 			throw new RuntimeException(e);
 		}
-	}
+	}*/
+	
+    public static ItemStack addGlow(ItemStack item) {
+    	try {
+    		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+    		
+    		Class<?> craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
+    		Class<?> nmsItemStackClass = Class.forName("net.minecraft.server." + version + ".ItemStack");
+    		Class<?> nbtTagCompoundClass = Class.forName("net.minecraft.server." + version + ".NBTTagCompound");
+    		Class<?> nbtTagListClass = Class.forName("net.minecraft.server." + version + ".NBTTagList");
+    		Class<?> nbtBaseClass = Class.forName("net.minecraft.server." + version + ".NBTBase");
+    		
+        	Object nmsItemStack = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(null, item);
+
+    		Object nbtTagCompound = nmsItemStackClass.getMethod("getTag").invoke(nmsItemStack);
+    		if (nbtTagCompound == null) {
+    			nbtTagCompound = nbtTagCompoundClass.getConstructor().newInstance();
+    		}
+    		
+    		Object enchantments = nbtTagListClass.getConstructor().newInstance();
+    		nbtTagCompoundClass.getMethod("set", String.class, nbtBaseClass).invoke(nbtTagCompound, "ench", enchantments);
+            nmsItemStackClass.getMethod("setTag", nbtTagCompoundClass).invoke(nmsItemStack, nbtTagCompound);
+            Object bukkitStack = craftItemStackClass.getMethod("asBukkitCopy", nmsItemStackClass).invoke(null, nmsItemStack);
+            return (ItemStack) bukkitStack;
+		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException |
+				NoSuchMethodException | SecurityException | InstantiationException e) {
+			throw new RuntimeException(e);
+		}
+    }
 
 }

@@ -70,20 +70,8 @@ public class SelectorMenu extends IconMenu {
 			
 			if (action.startsWith("srv")) {
 				String serverName = action.substring(4);
-
-				boolean online;
-				if (Main.LAST_INFO_TIME.containsKey(serverName)) {
-					// If the server has not sent a message for 7 seconds (usually the server sends a message every 5 seconds)
-					
-					long timeSinceLastPing = System.currentTimeMillis() - Main.LAST_INFO_TIME.get(serverName);
-					
-					online = timeSinceLastPing < 7000;
-				} else {
-					//If the server has not sent a message at all it is offline
-					online = false;
-				}
 				
-				if (online) {
+				if (Main.isOnline(serverName)) {
 					Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
 					
 					boolean dynamicMatchFound = false;
@@ -202,9 +190,10 @@ public class SelectorMenu extends IconMenu {
 			builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
 
 			int slot = Integer.valueOf(key);
-			ItemStack item = Main.addHideFlags(builder.create());
 			
-			if (enchanted) item.addUnsafeEnchantment(Enchantment.KNOCKBACK, 1);
+			ItemStack item = builder.create();
+			
+			if (enchanted) item = Main.addGlow(item);
 			
 			if (slot < 0) {
 				for (int i = 0; i < slots; i++) {
