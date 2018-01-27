@@ -1,9 +1,4 @@
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
-#                                                                                                        #
-#    For a list of item names see https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html      #
-#                                                                                                        #
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
-
+# For a list of item names see https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
 
 
 # Number of rows of slots of your server selector menu. For example '2' will mean 2*9 = 18 slots. Max value is 6.
@@ -31,40 +26,14 @@ on-join: true
 # What slot should the item be in? Specify -1 to automatically put it in the first available slot.
 inv-slot: 0
 
-# URL clickable message
+# URL clickable message. If you don't know what this does you don't need to change it.
 url-message: '&3&lClick here'
 
-# Command to open the menu. Specify "none" for no command. (without /)
+# Command to open the menu. Specify "none" for no command. (without /).
+# You need to fully restart your server for commands to work, /ssx reload is not enough!
 command: "menu"
 
-# Possible values for action:
-#
-# Teleport player to server
-# action: 'srv:skywars'
-#
-# Send player a clickable message to open a URL. Only works on spigot, not bukkit.
-# action: 'url:http://example.com/'
-#
-# Teleport player to world
-# action: 'world:skyblock'
-#
-# Execute a command. The player will need permission for this command. No / before the command.
-# action: 'cmd:gamemode 1'
-# For bungeecord commands, add a bungee: prefix. This requires https://www.spigotmc.org/resources/commandsync.115/ to be installed.
-# action: 'bungeecmd:glist'
-#
-# Open another selector (for submenus for example)
-# action: 'sel:uhc-servers'
-# You can use the placeholder {total} to get the total player count of all servers in the submenu
-#
-# Send message
-# action: 'msg:&1This &2is &3a &4message'
-#
-# Close selector
-# action: 'close'
-#
-# Do nothing (selector stays open)
-# action: 'none'
+# Possible values for action: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Actions
 
 menu:
 
@@ -72,11 +41,14 @@ menu:
 
     item-count: 1
     
+    # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Actions
     action: 'srv:kitpvp'
 
     # Settings in this section are used when the server is online
-    # Placeholders not working and/or server always offline? See this: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Installation-Instructions
+    # Placeholders not working and/or server always offline? See this:
+    # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium-%7C-Installation-Instructions#enabling-custom-placeholders-and-onlineoffline-status
     online:
+      # For a list of item names see https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
       item: DIAMOND_SWORD
       data: 0
       enchanted: true
@@ -126,11 +98,12 @@ menu:
     name: 'This is you!'
     lore:
      - This item does nothing
-       
+  
+  # If you want blank slots instead of glass panes, simply remove this -1 item.     
   -1: # -1 means everything else
     action: 'none'
     item: STAINED_GLASS_PANE
     data: 0
     enchanted: false
     name: ''
-    lore:
+    lore: []
