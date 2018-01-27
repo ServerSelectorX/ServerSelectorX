@@ -8,6 +8,11 @@
 server-teleport-message-enabled: true
 server-teleport-message: '&7You are being connected to &7&l{x}&r&7.'
 
+# Cancel connecting if the server appears to be offline
+# Warning: if ServerSelectorX breaks this will stop your players from connecting even though servers are online
+offline-cancel-connect: false
+offline-cancel-connect-message: "&cThis server is currently offline."
+
 # Clear chat before sending player to server? 
 # Note: the chat will be cleared before sending server teleport message, so the server teleport message will still be visible.
 chat-clear: false

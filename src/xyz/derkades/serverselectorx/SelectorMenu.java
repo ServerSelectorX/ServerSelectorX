@@ -276,6 +276,13 @@ public class SelectorMenu extends IconMenu {
 			}
 		} else if (action.startsWith("srv:")){ //Teleport to server
 			String serverName = action.substring(4);
+			
+			// If offline-cancel-connect is turned on and the server is offline, send message and cancel connecting
+			if (Main.getConfigurationManager().getConfig().getBoolean("offline-cancel-connect", false) && !Main.isOnline(serverName)) {
+				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("offline-cancel-connect-message", "error")));
+				return true;
+			}
+			
 			Main.teleportPlayerToServer(player, serverName);
 			return true;
 		} else if (action.startsWith("msg:")){ //Send message
