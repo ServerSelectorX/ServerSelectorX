@@ -16,8 +16,8 @@ public class SelectorOpenListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onInteract(PlayerInteractEvent event){
-		boolean openOnRightClick = Main.getConfigurationManager().getConfig().getBoolean("right-click-open");
-		boolean openOnLeftClick = Main.getConfigurationManager().getConfig().getBoolean("right-click-open");
+		boolean openOnRightClick = Main.getConfigurationManager().getConfig().getBoolean("right-click-open", true);
+		boolean openOnLeftClick = Main.getConfigurationManager().getConfig().getBoolean("left-click-open", false);
 		
 		if (!(
 				openOnRightClick && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) ||
