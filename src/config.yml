@@ -27,6 +27,7 @@ chat-clear: false
 port: 9782
 
 # Log information recieved from the connector plugin
+# "Recevied message from <server>: { <data> }"
 log-pinger: true
 
 
@@ -48,6 +49,7 @@ no-permission-message: '&cYou do not have permission to use the server selector.
 # -------------------- Sounds -------------------- #
 
 # Latest sound names (currently for 1.12.2): https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
+# Most 1.12.2 sound names should work for 1.9-1.11.2 as well
 # 1.7.10 sound names: https://jd.bukkit.org/org/bukkit/Sound.html or http://docs.codelanx.com/Bukkit/1.7.10/org/bukkit/Sound.html
 # 1.8 sound names: http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Sound.html
 
@@ -67,10 +69,7 @@ cancel-item-drop: false
 cancel-item-move: false
 
 
-# Please only disable the updater if it is causing issues or you cannot use a newer version of the plugin.
-# New versions will not be downloaded or installed automatically, it just checks if a new version is available.
-# Keep in mind that you will get limited or no support for older versions.
-updater: true
+
 
 # Do not touch this
 version: 8
