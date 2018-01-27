@@ -76,15 +76,10 @@ public class SelectorMenu extends IconMenu {
 					// If the server has not sent a message for 7 seconds (usually the server sends a message every 5 seconds)
 					
 					long timeSinceLastPing = System.currentTimeMillis() - Main.LAST_INFO_TIME.get(serverName);
-					//System.out.println("[debug] [" + serverName + "] Current time: " + System.currentTimeMillis());
-					//System.out.println("[debug] [" + serverName + "] Last ping time: " + Main.LAST_INFO_TIME.get(serverName));
-					//System.out.println("[debug] [" + serverName + "] Time since last ping: " + timeSinceLastPing);
-					//System.out.println("[debug] [" + serverName + "] Online?: " + (timeSinceLastPing < 7000));
 					
 					online = timeSinceLastPing < 7000;
 				} else {
 					//If the server has not sent a message at all it is offline
-					//System.out.println("[debug] [" + serverName + "] No ping");
 					online = false;
 				}
 				
