@@ -16,10 +16,13 @@ public class SelectorOpenListener implements Listener {
 	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onInteract(PlayerInteractEvent event){
-		if (!(event.getAction() == Action.RIGHT_CLICK_AIR ||
-				event.getAction() == Action.RIGHT_CLICK_BLOCK)){
-			return;
-		}
+		boolean openOnRightClick = Main.getConfigurationManager().getConfig().getBoolean("right-click-open");
+		boolean openOnLeftClick = Main.getConfigurationManager().getConfig().getBoolean("right-click-open");
+		
+		if (!(
+				openOnRightClick && (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) ||
+				openOnLeftClick && (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)
+				)) return;
 		
 		Player player = event.getPlayer();
 		
