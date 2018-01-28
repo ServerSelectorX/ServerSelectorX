@@ -225,6 +225,8 @@ public class Main extends JavaPlugin {
 			return;
 		}
 		
+		
+		
 		long cooldownDuration = Main.getPlugin().getConfig().getLong("selector-open-cooldown", 0);	
 		if (cooldownDuration >= 1000) {
 			Cooldown.addCooldown(config.getName() + player.getName(), cooldownDuration);
@@ -323,6 +325,7 @@ public class Main extends JavaPlugin {
 	}*/
 	
     public static ItemStack addGlow(ItemStack item) {
+    	//return item;
     	try {
     		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
     		

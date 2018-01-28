@@ -33,7 +33,7 @@ public class SelectorOpenListener implements Listener {
 		
 		Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 200); //Add cooldown for 0.2 seconds
 		
-		for (FileConfiguration config : Main.getConfigurationManager().getAll()){	
+		for (FileConfiguration config : Main.getConfigurationManager().getAll()){
 			if (config.getString("item").equalsIgnoreCase("NONE")){
 				continue;
 			}

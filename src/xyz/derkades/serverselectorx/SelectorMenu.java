@@ -11,7 +11,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
@@ -34,7 +33,6 @@ public class SelectorMenu extends IconMenu {
 	
 	public SelectorMenu(Player player, FileConfiguration config) {
 		super(Main.getPlugin(), Colors.parseColors(config.getString("title", UUID.randomUUID().toString())), 9, player);
-		
 		this.config = config;
 		this.player = player;
 		
@@ -55,7 +53,7 @@ public class SelectorMenu extends IconMenu {
 		}, 1*20, 1*20);
 	}
 
-	private void addItems() {		
+	private void addItems() {	
 		for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
 			final ConfigurationSection section = config.getConfigurationSection("menu." + key);
 			
@@ -140,12 +138,12 @@ public class SelectorMenu extends IconMenu {
 					final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
 					String subAction = subSection.getString("action");
 					if (!subAction.startsWith("srv:")) 
-						return;
+						continue;
 					
 					String serverName = subAction.substring(4);
 					
 					if (!Main.PLACEHOLDERS.containsKey(serverName)) {
-						return;
+						continue;
 					}
 					
 					Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
