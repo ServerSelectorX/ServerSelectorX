@@ -1,11 +1,3 @@
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
-#                                                                                                        #
-#    For a list of item names see https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html      #
-#                                                                                                        #
-# !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! IMPORTANT !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!! #
-
-
-
 # Number of rows of slots of your server selector menu. For example '2' will mean 2*9 = 18 slots. Max value is 6.
 rows: 2
 
@@ -36,12 +28,13 @@ url-message: '&3&lClick here'
 # Command to open the menu. Specify "none" for no command. (without /)
 command: "menu"
 
+# https://github.com/ServerSelectorX/ServerSelectorX/wiki/Free-%7C-Items-in-the-server-selector
 menu:
 
   # Item in 4th slot (use 0 for first item). Add as many items as you want by copying this section and giving it a new number.
   3:
 
-    # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Server-Pinging
+    # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Free-%7C-Server-Pinging
     ping-server: false
     ip: play.example.com
     port: 1234
@@ -49,8 +42,8 @@ menu:
     # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Actions
     action: 'srv:kitpvp'
 
-    # Change item count based on number of players online. Only works if ping-server is turned on. If there are more than 64 players online, the item count will be 1
-    # Change how this works in config.yml.
+    # Change item count based on number of players online. Only works if server pinging is set up. 
+    # If there are more than 64 players online, the item count will be 1. Change how this works in config.yml.
     change-item-count: true
     
     # This value is ignored when change-item-count is turned on.
@@ -63,7 +56,7 @@ menu:
       enchanted: true
       name: '&aKitPvP Server'
       lore:
-      # Placeholders not working? https://github.com/ServerSelectorX/ServerSelectorX/wiki/Server-Pinging
+      # Placeholders not working? https://github.com/ServerSelectorX/ServerSelectorX/wiki/FAQ#placeholders-are-not-working
        - 'There are {online} out of {max} players online.'
        - 'Message of the day: {motd}'
        - 'Ping: {ping}'
@@ -78,26 +71,9 @@ menu:
        - Ipsum lorem
        - Amet sit dolor
        - The server is offline
-    
-    # Change item based on server motd. If the server has an motd that is not listed below, settings above will be used as fallback.
-    # If you do not need to use this you can just delete this entire section
-    dynamic:
-      "Lore example":
-        item: IRON_SWORD
-        data: 0
-        enchanted: false
-        name: '&cKitPvP Server'
-        lore:
-         - The game has not started
-      "Other lore":
-        item: WOOD_SWORD
-        data: 0
-        enchanted: false
-        name: '&cKitPvP Server'
-        lore:
-         - The game is in progress
          
-  5: # Item in 6th slot   
+  5: # Item in 6th slot
+    # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Actions   
     action: 'none'
     online:
       item: 'head:auto' # You can use head:auto to get the head of the player opening the menu, or head:SomethingElse to get the head of a specific player.
@@ -108,6 +84,7 @@ menu:
        - This item does nothing
        
   -1: # -1 means everything else
+    # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Actions
     action: 'none'
     online:
       item: STAINED_GLASS_PANE

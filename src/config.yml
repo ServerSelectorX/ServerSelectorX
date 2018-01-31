@@ -42,8 +42,12 @@ selector-open-sound: HORSE_ARMOR
 
 # -------------------- Server Pinging -------------------- #
 
+# A premium version is available which among other things has a way better system of
+# getting server information to replace server pinging.
+# https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium
+
 # Use an external query API for pinging servers. This is recommended.
-# The internal query has a lot of problems, one of which is that it doesn't work when there are color codes anywhere in the lore. Version support is terrible as well.
+# The internal query has a lot of problems, one of which is that it doesn't work when there are color codes anywhere in the motd. Version support is terrible as well.
 # If you have your spigot servers behind a firewall (which you should) allow the domain api.minetools.eu to ping your server.
 external-query: true
 
