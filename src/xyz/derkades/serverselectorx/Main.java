@@ -69,6 +69,8 @@ public class Main extends JavaPlugin {
 		plugin = this;
 		
 		try {
+			getDataFolder().mkdirs();
+			
 			File discordNameFile = new File(getDataFolder(), "discord_name.txt");
 			if (!discordNameFile.exists()) {
 				discordNameFile.createNewFile();
