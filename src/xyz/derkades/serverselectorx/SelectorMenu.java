@@ -114,7 +114,7 @@ public class SelectorMenu extends IconMenu {
 						}
 						lore = newLore;
 						
-						name = name.replace(placeholder.getKey(), placeholder.getValue());
+						name = name.replace("{" + placeholder.getKey() + "}", placeholder.getValue());
 					}
 				} else {
 					//Server is offline
