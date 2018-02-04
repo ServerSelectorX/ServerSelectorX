@@ -110,9 +110,7 @@ public class Main extends JavaPlugin {
 				return;
 			}
 		} catch (IOException e) {
-			Bukkit.getPluginManager().disablePlugin(this);
 			e.printStackTrace();
-			return;
 		}
 		
 		configurationManager = new ConfigurationManager();
