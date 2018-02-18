@@ -116,6 +116,17 @@ public class SelectorMenu extends IconMenu {
 						
 						name = name.replace("{" + placeholder.getKey() + "}", placeholder.getValue());
 					}
+					
+					if (section.getBoolean("dynamic-item-count", false)) {
+						if (!placeholders.containsKey("online")) {
+							Main.getPlugin().getLogger().warning("Dynamic item count is enabled but player count is unknown.");
+							Main.getPlugin().getLogger().warning("Is the PlayerCount addon installed?");
+						} else {
+							amount = Integer.parseInt(placeholders.get("online"));
+						}
+					} else {
+						amount = section.getInt("item-count", 1); 
+					}
 				} else {
 					//Server is offline
 					ConfigurationSection offlineSection = section.getConfigurationSection("offline");
@@ -125,10 +136,9 @@ public class SelectorMenu extends IconMenu {
 					name = offlineSection.getString("name");
 					lore = offlineSection.getStringList("lore");
 					enchanted = offlineSection.getBoolean("enchanted", false);
+					amount = section.getInt("item-count", 1); 
 				}
 				
-				// TODO Bring back dynamic item count feature
-				amount = section.getInt("item-count", 1);
 			} else if (action.startsWith("sel:")) {
 				//Add all online counts of servers in the submenu
 				int totalOnline = 0;
