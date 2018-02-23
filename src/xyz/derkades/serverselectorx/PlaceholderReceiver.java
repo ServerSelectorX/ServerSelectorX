@@ -13,6 +13,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class PlaceholderReceiver extends HttpServlet {
 	
@@ -71,9 +72,25 @@ public class PlaceholderReceiver extends HttpServlet {
 	}
 	
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-		response.setContentType("text/html");
-		response.getWriter().print("Congratulations, you typed an address into your browser. Go tell your mom, she'll be proud of you.");
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {	
+		response.setContentType("text/json");
+		
+		Map<Object, Object> map = new HashMap<>();
+		map.put("version", Main.getPlugin().getDescription().getVersion());
+		map.put("api_version", 1);
+		map.put("server_count", Main.LAST_INFO_TIME.keySet().size());
+		Map<Object, Object> servers = new HashMap<>();
+		for (String serverName : Main.LAST_INFO_TIME.keySet()) {
+			Map<Object, Object> serverInfo = new HashMap<>();
+			serverInfo.put("lastPingTime", Main.LAST_INFO_TIME.get(serverName));
+			serverInfo.put("online", Main.isOnline(serverName));
+			serverInfo.put("placeholders", Main.PLACEHOLDERS.get(serverName));
+			servers.put(serverName, serverInfo);
+		}
+		map.put("servers", servers);
+		Gson gson = new GsonBuilder().setPrettyPrinting().create();
+		String json = gson.toJson(map);
+		response.getOutputStream().println(json);
 	}
 
 }
