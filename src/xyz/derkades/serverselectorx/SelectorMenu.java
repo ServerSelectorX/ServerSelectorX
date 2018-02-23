@@ -309,6 +309,7 @@ public class SelectorMenu extends IconMenu {
 			} else {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
 			}
+			return true;
 		} else if (action.startsWith("msg:")){ //Send message
 			String message = action.substring(4);
 			player.sendMessage(Main.PLACEHOLDER_API.parsePlaceholders(player, message));
