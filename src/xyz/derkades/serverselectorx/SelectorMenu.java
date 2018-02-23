@@ -13,6 +13,8 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -301,6 +303,12 @@ public class SelectorMenu extends IconMenu {
 			
 			Main.teleportPlayerToServer(player, serverName);
 			return true;
+		} else if (action.equals("toggleinvis")) {
+			if (player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+				player.removePotionEffect(PotionEffectType.INVISIBILITY);
+			} else {
+				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
+			}
 		} else if (action.startsWith("msg:")){ //Send message
 			String message = action.substring(4);
 			player.sendMessage(Main.PLACEHOLDER_API.parsePlaceholders(player, message));
