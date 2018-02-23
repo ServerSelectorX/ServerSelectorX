@@ -303,11 +303,19 @@ public class SelectorMenu extends IconMenu {
 			
 			Main.teleportPlayerToServer(player, serverName);
 			return true;
-		} else if (action.equals("toggleinvis")) {
+		} else if (action.equalsIgnoreCase("toggleInvis")) {
 			if (player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
 				player.removePotionEffect(PotionEffectType.INVISIBILITY);
 			} else {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
+			}
+			return true;
+		} else if (action.equalsIgnoreCase("toggleSpeed")) {
+			if (player.hasPotionEffect(PotionEffectType.SPEED)) {
+				player.removePotionEffect(PotionEffectType.SPEED);
+			} else {
+				int amplifier = Main.getConfigurationManager().getConfig().getInt("speed-amplifier", 3);
+				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
 			}
 			return true;
 		} else if (action.startsWith("msg:")){ //Send message

@@ -24,6 +24,11 @@ clear-inv: false
 # Note: the chat will be cleared before sending server teleport message, so the server teleport message will still be visible.
 chat-clear: false
 
+# Level of speed for action: 'toggleSpeed'
+# Amplifier 0 -> Speed I
+# Amplifier 3 -> Speed IV
+speed-amplifier: 3
+
 
 # -------------------- Pinging -------------------- #
 
