@@ -29,6 +29,25 @@ chat-clear: false
 # Amplifier 3 -> Speed IV
 speed-amplifier: 3
 
+# Whether speed effect should be turned on when the player joins
+speed-on-join: false
+
+# Hide other players on join
+# Can be toggled with action: 'toggleHideOthers'
+hide-others-on-join: false
+
+# Gives players invisibility when they join
+# This does not hide other players! For that use the setting above.
+# Can be toggled with action: 'toggleInvis'
+hide-self-on-join: false
+
+speed-on: "&7&oSpeed has been turned on"
+speed-off: "&7&oSpeed has been turned off"
+invis-on: "&7&oYou are now invisible"
+invis-off: "&7&oYou are no longer invisible"
+hide-others: "&7&oAll players have been hidden"
+show-others: "&7&oAll players are now visible"
+
 
 # -------------------- Pinging -------------------- #
 

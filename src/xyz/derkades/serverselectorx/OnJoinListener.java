@@ -10,6 +10,8 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 
@@ -17,45 +19,61 @@ public class OnJoinListener implements Listener {
 	
 	@EventHandler(priority = EventPriority.LOW)
 	public void onJoin(PlayerJoinEvent event) {
-		if (Main.getConfigurationManager().getConfig().getBoolean("clear-inv", false)) {
+		Player player = event.getPlayer();
+		FileConfiguration config = Main.getConfigurationManager().getConfig();
+		
+		if (config.getBoolean("clear-inv", false)) {
 			event.getPlayer().getInventory().clear();
 		}
 		
-		for (FileConfiguration config : Main.getConfigurationManager().getAll()) {			
-			boolean putItemInInventory = config.getBoolean("on-join");
+		if (config.getBoolean("speed-on-join", false)) {
+			int amplifier = Main.getConfigurationManager().getConfig().getInt("speed-amplifier", 3);
+			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
+		}
+		
+		if (config.getBoolean("hide-self-on-join", false)) {
+			player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
+		}
+		
+		if (config.getBoolean("hide-others-on-join", false)) {
+			InvisibilityToggle.hideOthers(player);
+		}
+		
+		for (FileConfiguration menuConfig : Main.getConfigurationManager().getAll()) {			
+			boolean putItemInInventory = menuConfig.getBoolean("on-join");
 			if (!putItemInInventory)
 				continue;
 			
-			Player player = event.getPlayer();
+			
 			
 			if (Main.getPlugin().getConfig().getBoolean("permissions-enabled")) {
-				if (!player.hasPermission("ssx.join." + config.getName().replace(".yml", ""))) {
+				if (!player.hasPermission("ssx.join." + menuConfig.getName().replace(".yml", ""))) {
 					continue;
 				}
 			}
 			
-			if (config.getString("item").equals("NONE")) { 
+			if (menuConfig.getString("item").equals("NONE")) { 
 				continue;
 			}
 			
-			Material material = Material.getMaterial(config.getString("item"));
+			Material material = Material.getMaterial(menuConfig.getString("item"));
 			
 			if (material == null) {
 				material = Material.STONE;
 			}
 			
 			ItemBuilder builder = new ItemBuilder(material)
-					.data(config.getInt("data", 0))
-					.coloredName(config.getString("item-name", "error"));
+					.data(menuConfig.getInt("data", 0))
+					.coloredName(menuConfig.getString("item-name", "error"));
 			
-			List<String> lore = config.getStringList("item-lore");
+			List<String> lore = menuConfig.getStringList("item-lore");
 			
 			//Don't add lore if it's null or if the first line is equal to 'none'
 			if (!(lore == null || lore.isEmpty() || lore.get(0).equalsIgnoreCase("none"))) {
 				builder.coloredLore(lore);
 			}
 			
-			int slot = config.getInt("inv-slot", 0);
+			int slot = menuConfig.getInt("inv-slot", 0);
 			PlayerInventory inv = player.getInventory();
 			if (slot < 0) {
 				if (!inv.containsAtLeast(builder.create(), 1)) {

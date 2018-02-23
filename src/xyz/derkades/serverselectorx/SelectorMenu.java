@@ -306,16 +306,29 @@ public class SelectorMenu extends IconMenu {
 		} else if (action.equalsIgnoreCase("toggleInvis")) {
 			if (player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
 				player.removePotionEffect(PotionEffectType.INVISIBILITY);
+				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("invis-off")));
 			} else {
 				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
+				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("invis-on")));
 			}
 			return true;
 		} else if (action.equalsIgnoreCase("toggleSpeed")) {
 			if (player.hasPotionEffect(PotionEffectType.SPEED)) {
 				player.removePotionEffect(PotionEffectType.SPEED);
+				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("speed-off")));
 			} else {
 				int amplifier = Main.getConfigurationManager().getConfig().getInt("speed-amplifier", 3);
 				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
+				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("speed-on")));
+			}
+			return true;
+		} else if (action.equalsIgnoreCase("toggleHideOthers")) {
+			if (InvisibilityToggle.hasHiddenOthers(player)) {
+				InvisibilityToggle.showOthers(player);
+				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("show-others")));
+			} else {
+				InvisibilityToggle.hideOthers(player);
+				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("hide-others")));
 			}
 			return true;
 		} else if (action.startsWith("msg:")){ //Send message
