@@ -93,7 +93,7 @@ public class SelectorMenu extends IconMenu {
 								
 								materialString = dynamicSection.getString("item");
 								data = dynamicSection.getInt("data", 0);
-								name = dynamicSection.getString("name");
+								name = dynamicSection.getString("name", " ");
 								lore = dynamicSection.getStringList("lore");
 								enchanted = dynamicSection.getBoolean("enchanted", false);
 							}
@@ -104,7 +104,7 @@ public class SelectorMenu extends IconMenu {
 						//No dynamic rule matched, fall back to online
 						materialString = section.getString("online.item");
 						data = section.getInt("online.data", 0);
-						name = section.getString("online.name", "error");
+						name = section.getString("online.name", " ");
 						lore = section.getStringList("online.lore");
 						enchanted = section.getBoolean("online.enchanted", false);
 					}
@@ -135,7 +135,7 @@ public class SelectorMenu extends IconMenu {
 					
 					materialString = offlineSection.getString("item");
 					data = offlineSection.getInt("data", 0);
-					name = offlineSection.getString("name");
+					name = offlineSection.getString("name", " ");
 					lore = offlineSection.getStringList("lore");
 					enchanted = offlineSection.getBoolean("enchanted", false);
 					amount = section.getInt("item-count", 1); 
@@ -166,14 +166,14 @@ public class SelectorMenu extends IconMenu {
 				
 				materialString = section.getString("item");
 				data = section.getInt("data", 0);
-				name = section.getString("name", "error");
+				name = section.getString("name", " ");
 				lore = ListUtils.replaceInStringList(section.getStringList("lore"), new Object[] {"{total}"}, new Object[] {totalOnline});
 				enchanted = section.getBoolean("enchanted", false);
 			} else {
 				//Not a server
 				materialString = section.getString("item");
 				data = section.getInt("data", 0);
-				name = section.getString("name", "error");
+				name = section.getString("name", " ");
 				lore = section.getStringList("lore");
 				enchanted = section.getBoolean("enchanted", false);
 			}
