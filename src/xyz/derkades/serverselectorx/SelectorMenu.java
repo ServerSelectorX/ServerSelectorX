@@ -22,8 +22,10 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.ListUtils;
 import xyz.derkades.derkutils.bukkit.Colors;
-import xyz.derkades.derkutils.bukkit.IconMenu;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
+import xyz.derkades.derkutils.bukkit.menu.IconMenu;
+import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
+import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 
 public class SelectorMenu extends IconMenu {
 	
