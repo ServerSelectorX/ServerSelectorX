@@ -233,7 +233,7 @@ public class SelectorMenu extends IconMenu {
 			return true;
 		}
 		
-		String action = config.getString("menu." + slot + ".action");
+		String action = config.getString("menu." + slot + ".action", "none");
 		
 		if (action == null) {
 			//If the action is null (so 'slot' is not found in the config) it is probably a wildcard
