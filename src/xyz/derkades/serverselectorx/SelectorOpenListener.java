@@ -14,7 +14,7 @@ import xyz.derkades.derkutils.Cooldown;
 public class SelectorOpenListener implements Listener {
 	
 	@SuppressWarnings("deprecation")
-	@EventHandler(priority = EventPriority.HIGH)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onInteract(PlayerInteractEvent event){
 		boolean openOnRightClick = Main.getConfigurationManager().getConfig().getBoolean("right-click-open", true);
 		boolean openOnLeftClick = Main.getConfigurationManager().getConfig().getBoolean("left-click-open", false);
