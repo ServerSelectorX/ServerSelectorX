@@ -115,8 +115,8 @@ public class SelectorMenu extends IconMenu {
 									
 								//Replace placeholders in lore
 								lore = replaceInStringList(lore, 
-										new Object[] {"{online}", "{max}", "{motd}", "{ping}"},
-										new Object[] {online, max, motd, ping});
+										new Object[] {"{online}", "{max}", "{motd}", "{ping}", "{player}"},
+										new Object[] {online, max, motd, ping, player.getName()});
 									
 								amount = section.getInt("item-count", 1);
 								
