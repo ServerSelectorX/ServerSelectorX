@@ -210,6 +210,8 @@ public class SelectorMenu extends IconMenu {
 			
 			if (enchanted) item = Main.addGlow(item);
 			
+			item = Main.addHideFlags(item);
+			
 			if (slot < 0) {
 				for (int i = 0; i < slots; i++) {
 					if (!items.containsKey(i)) {

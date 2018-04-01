@@ -301,7 +301,7 @@ public class Main extends JavaPlugin {
 		}
 	}
 	
-	/*public static ItemStack addHideFlags(ItemStack item) {
+	public static ItemStack addHideFlags(ItemStack item) {
 		try {
 			String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
 			
@@ -325,7 +325,7 @@ public class Main extends JavaPlugin {
 				NoSuchMethodException | SecurityException | InstantiationException e) {
 			throw new RuntimeException(e);
 		}
-	}*/
+	}
 	
     public static ItemStack addGlow(ItemStack item) {
     	//return item;
