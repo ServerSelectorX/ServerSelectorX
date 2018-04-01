@@ -37,7 +37,7 @@ no-permission-message: '&cYou do not have permission to use the server selector.
 # Please use sound names corresponding to your server version.
 # If you don't want any sound to play put 'NONE' without ''
 
-selector-open-sound: HORSE_ARMOR
+selector-open-sound: NONE
 
 
 # -------------------- Server Pinging -------------------- #
