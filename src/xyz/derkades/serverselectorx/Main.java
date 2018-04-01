@@ -35,7 +35,6 @@ import org.inventivetalent.update.spiget.comparator.VersionComparator;
 
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
-import xyz.derkades.derkutils.caching.Cache;
 import xyz.derkades.serverselectorx.placeholders.Placeholders;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersDisabled;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
@@ -115,11 +114,6 @@ public class Main extends JavaPlugin {
 			Main.PLACEHOLDER_API = new PlaceholdersDisabled();
 			getLogger().log(Level.INFO, "PlaceholderAPI is not installed. The plugin will still work.");
 		}
-		
-		//Periodically clean cache
-		getServer().getScheduler().runTaskTimer(this, () -> {
-			Cache.cleanCache();
-		}, 30*60*20, 30*60*20);
 		
 		//Check for updates asynchronously
 		getServer().getScheduler().runTaskAsynchronously(this, () -> {
@@ -323,17 +317,6 @@ public class Main extends JavaPlugin {
 				getLogger().info("You are running the latest version.");
 			}
 		});
-	}
-	
-	public static int getOnlinePlayers(String serverName) {
-		//Player count is put in cache by code in PingServersBackground class
-		Object cache = Cache.getCachedObject("playersonline" + serverName);
-		
-		if (cache == null) {
-			return 0;
-		} else {
-			return (int) cache;
-		}
 	}
 	
     public static ItemStack addGlow(ItemStack item) {
