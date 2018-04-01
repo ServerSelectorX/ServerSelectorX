@@ -325,32 +325,6 @@ public class Main extends JavaPlugin {
 		});
 	}
 	
-	public static ItemStack addHideFlags(ItemStack item) {
-		try {
-			String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-			
-			Class<?> craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
-			Class<?> nmsItemStackClass = Class.forName("net.minecraft.server." + version + ".ItemStack");
-			Class<?> nbtTagCompoundClass = Class.forName("net.minecraft.server." + version + ".NBTTagCompound");
-			
-			Object nmsItemStack = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(null, item);
-			
-			Object nbtTagCompound = nmsItemStackClass.getMethod("getTag").invoke(nmsItemStack);
-			if (nbtTagCompound == null) {
-				nbtTagCompound = nbtTagCompoundClass.getConstructor().newInstance();
-			}
-			
-			nbtTagCompoundClass.getMethod("setInt", String.class, int.class).invoke(nbtTagCompound, "HideFlags", 63);
-			
-			nmsItemStackClass.getMethod("setTag", nbtTagCompoundClass).invoke(nmsItemStack, nbtTagCompound);
-			
-			return (ItemStack) craftItemStackClass.getMethod("asBukkitCopy", nmsItemStackClass).invoke(null, nmsItemStack);
-		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException |
-				NoSuchMethodException | SecurityException | InstantiationException e) {
-			throw new RuntimeException(e);
-		}
-	}
-	
 	public static int getOnlinePlayers(String serverName) {
 		//Player count is put in cache by code in PingServersBackground class
 		Object cache = Cache.getCachedObject("playersonline" + serverName);
@@ -361,5 +335,33 @@ public class Main extends JavaPlugin {
 			return (int) cache;
 		}
 	}
+	
+    public static ItemStack addGlow(ItemStack item) {
+    	try {
+    		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+    		
+    		Class<?> craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
+    		Class<?> nmsItemStackClass = Class.forName("net.minecraft.server." + version + ".ItemStack");
+    		Class<?> nbtTagCompoundClass = Class.forName("net.minecraft.server." + version + ".NBTTagCompound");
+    		Class<?> nbtTagListClass = Class.forName("net.minecraft.server." + version + ".NBTTagList");
+    		Class<?> nbtBaseClass = Class.forName("net.minecraft.server." + version + ".NBTBase");
+    		
+        	Object nmsItemStack = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(null, item);
+
+    		Object nbtTagCompound = nmsItemStackClass.getMethod("getTag").invoke(nmsItemStack);
+    		if (nbtTagCompound == null) {
+    			nbtTagCompound = nbtTagCompoundClass.getConstructor().newInstance();
+    		}
+    		
+    		Object enchantments = nbtTagListClass.getConstructor().newInstance();
+    		nbtTagCompoundClass.getMethod("set", String.class, nbtBaseClass).invoke(nbtTagCompound, "ench", enchantments);
+            nmsItemStackClass.getMethod("setTag", nbtTagCompoundClass).invoke(nmsItemStack, nbtTagCompound);
+            Object bukkitStack = craftItemStackClass.getMethod("asBukkitCopy", nmsItemStackClass).invoke(null, nmsItemStack);
+            return (ItemStack) bukkitStack;
+		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException |
+				NoSuchMethodException | SecurityException | InstantiationException e) {
+			throw new RuntimeException(e);
+		}
+    }
 
 }

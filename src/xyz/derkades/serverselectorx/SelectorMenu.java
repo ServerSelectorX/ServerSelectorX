@@ -9,7 +9,6 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -231,9 +230,11 @@ public class SelectorMenu extends IconMenu {
 					builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
 					builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
 						
-					if (enchanted) builder.unsafeEnchant(Enchantment.KNOCKBACK, 1);
+					ItemStack item = builder.create();
+					
+					if (enchanted) item = Main.addGlow(item);
 						
-					addToMenu(Integer.valueOf(key), Main.addHideFlags(builder.create()));
+					addToMenu(Integer.valueOf(key), item);
 				}
 				
 				//After everything has completed, open menu synchronously
