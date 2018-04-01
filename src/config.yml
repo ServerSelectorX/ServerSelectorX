@@ -66,12 +66,6 @@ selector-open-cooldown: 0
 # Specify empty string for no message -> cooldown-message: ''
 cooldown-message: '&cYou cannot use this yet, please wait {x} seconds.'
 
-# Defines for how long server information should be cached, in seconds.
-# Increase this if it takes a long time to open the server selector.
-# Note that the server pinger keeps pinging all servers even though their information has already been cached.
-# This means that if you lower this, information will not update faster. You generally do not want to set this lower than default.
-cache-time: 60
-
 
 # -------------------- Items -------------------- #
 

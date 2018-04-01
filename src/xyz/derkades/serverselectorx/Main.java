@@ -12,7 +12,9 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -37,7 +39,6 @@ import xyz.derkades.derkutils.caching.Cache;
 import xyz.derkades.serverselectorx.placeholders.Placeholders;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersDisabled;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
-import xyz.derkades.serverselectorx.utils.ServerPinger;
 
 public class Main extends JavaPlugin {
 	
@@ -46,6 +47,8 @@ public class Main extends JavaPlugin {
 	public static final int GLOWING_ENCHANTMENT_ID = 96;
 	
 	public static Placeholders PLACEHOLDER_API;
+	
+	public static Map<String, Map<String, Object>> SERVER_PLACEHOLDERS = new HashMap<>();
 	
 	public static final String PREFIX = DARK_GRAY + "[" + DARK_AQUA + "ServerSelectorX" + DARK_GRAY + "]";
 
@@ -80,8 +83,7 @@ public class Main extends JavaPlugin {
 		//Register messaging channels
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		
-		PingServersBackground backgroundPinging = new PingServersBackground();
-		backgroundPinging.runTaskTimerAsynchronously(this, 50, 5);
+		Bukkit.getScheduler().runTaskAsynchronously(this, () -> PingServersBackground.startPinging());
 		
 		//Register command
 		getCommand("serverselectorx").setExecutor(new ReloadCommand());
@@ -123,8 +125,6 @@ public class Main extends JavaPlugin {
 		getServer().getScheduler().runTaskAsynchronously(this, () -> {
 			checkForUpdates();
 		});
-
-		ServerPinger.CACHE_TIME = getConfig().getInt("cache-time", 60);
 	}
 	
 	public void reloadConfig(){	
