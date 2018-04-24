@@ -233,7 +233,7 @@ public class SelectorMenu extends IconMenu {
 		
 		final boolean permissionsEnabled = Main.getPlugin().getConfig().getBoolean("per-icon-permissions");
 		final boolean hasPermission = player.hasPermission("ssx.icon." + configName + "." + slot);
-		final boolean hasWildcardPermission = player.hasPermission("ssx.icon." + config.getName().replace(".yml", "") + ".*");
+		final boolean hasWildcardPermission = player.hasPermission("ssx.icon." + configName + ".*");
 		
 		if (permissionsEnabled && !hasPermission && !hasWildcardPermission) {
 			return true;
