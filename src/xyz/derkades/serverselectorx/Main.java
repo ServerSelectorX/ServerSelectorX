@@ -185,8 +185,11 @@ public class Main extends JavaPlugin {
 			bukkitCommandMap.setAccessible(true);
 			CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
 			
-			for (FileConfiguration config : Main.getConfigurationManager().getAll()){
-				String commandName = config.getString("command");
+			for (Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getAll().entrySet()) {			
+				final String configName = menuConfigEntry.getKey();
+				final FileConfiguration config = menuConfigEntry.getValue();
+				
+				final String commandName = config.getString("command");
 				
 				if (commandName == null || commandName.equalsIgnoreCase("none")) {
 					continue;
@@ -198,7 +201,7 @@ public class Main extends JavaPlugin {
 					public boolean execute(CommandSender sender, String label, String[] args) {
 						if (sender instanceof Player){
 							Player player = (Player) sender;
-							Main.openSelector(player, config);
+							Main.openSelector(player, config, configName);
 						}
 						return true;
 					}
@@ -215,7 +218,10 @@ public class Main extends JavaPlugin {
 		return configurationManager;
 	}
 	
-	public static void openSelector(Player player, FileConfiguration config) {
+	/**
+	 * Only used by open listener and commands
+	 */
+	public static void openSelector(Player player, FileConfiguration config, String configName) {
 		long cooldown = Cooldown.getCooldown(config.getName() + player.getName());
 		if (cooldown > 0) {
 			String cooldownMessage = Main.getPlugin().getConfig().getString("cooldown-message", "&cYou cannot use this yet, please wait {x} seconds.");
@@ -250,7 +256,7 @@ public class Main extends JavaPlugin {
 				}
 			}
 			
-			new SelectorMenu(player, config).open();
+			new SelectorMenu(player, config, configName).open();
 		} else if (config.getBoolean("no-permission-message-enabled", false)) {
 			player.sendMessage(config.getString("no-permission-message"));
 			return;

@@ -30,14 +30,16 @@ import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 public class SelectorMenu extends IconMenu {
 	
 	private FileConfiguration config;
+	private String configName;
 	private Player player;
 	private int slots;
 	
 	private BukkitTask refreshTimer;
 	
-	public SelectorMenu(Player player, FileConfiguration config) {
+	public SelectorMenu(Player player, FileConfiguration config, String configName) {
 		super(Main.getPlugin(), Colors.parseColors(config.getString("title", UUID.randomUUID().toString())), 9, player);
 		this.config = config;
+		this.configName = configName;
 		this.player = player;
 		
 		this.slots = config.getInt("rows", 6) * 9;
@@ -230,7 +232,7 @@ public class SelectorMenu extends IconMenu {
 		Player player = event.getPlayer();
 		
 		final boolean permissionsEnabled = Main.getPlugin().getConfig().getBoolean("per-icon-permissions");
-		final boolean hasPermission = player.hasPermission("ssx.icon." + config.getName().replace(".yml", "") + "." + slot);
+		final boolean hasPermission = player.hasPermission("ssx.icon." + configName + "." + slot);
 		final boolean hasWildcardPermission = player.hasPermission("ssx.icon." + config.getName().replace(".yml", "") + ".*");
 		
 		if (permissionsEnabled && !hasPermission && !hasWildcardPermission) {
@@ -282,7 +284,7 @@ public class SelectorMenu extends IconMenu {
 				player.sendMessage(ChatColor.RED + "This server selector does not exist.");
 				return true;
 			} else {				
-				new SelectorMenu(player, config).open();
+				new SelectorMenu(player, config, configName).open();
 				
 				return false;
 			}

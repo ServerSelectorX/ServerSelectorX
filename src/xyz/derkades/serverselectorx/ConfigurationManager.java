@@ -3,7 +3,6 @@ package xyz.derkades.serverselectorx;
 import java.io.File;
 import java.io.IOException;
 import java.net.URL;
-import java.util.Collection;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,8 +18,8 @@ public class ConfigurationManager {
 	private final Map<String, FileConfiguration> files = new ConcurrentHashMap<>();
 	private FileConfiguration serverConfig;
 	
-	public Collection<FileConfiguration> getAll() {
-		return files.values();
+	public Map<String, FileConfiguration> getAll() {
+		return files;
 	}
 	
 	public FileConfiguration getByName(String name) {

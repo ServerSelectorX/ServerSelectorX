@@ -1,6 +1,7 @@
 package xyz.derkades.serverselectorx;
 
 import java.util.List;
+import java.util.Map;
 
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -39,7 +40,9 @@ public class OnJoinListener implements Listener {
 			InvisibilityToggle.hideOthers(player);
 		}
 		
-		for (FileConfiguration menuConfig : Main.getConfigurationManager().getAll()) {			
+		for (Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getAll().entrySet()) {			
+			//final String configName = menuConfigEntry.getKey();
+			final FileConfiguration menuConfig = menuConfigEntry.getValue();
 			boolean putItemInInventory = menuConfig.getBoolean("on-join");
 			if (!putItemInInventory)
 				continue;
