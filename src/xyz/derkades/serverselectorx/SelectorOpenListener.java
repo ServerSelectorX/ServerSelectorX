@@ -1,5 +1,7 @@
 package xyz.derkades.serverselectorx;
 
+import java.util.Map;
+
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -12,10 +14,14 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import xyz.derkades.derkutils.Cooldown;
 
 public class SelectorOpenListener implements Listener {
-	
+
 	@SuppressWarnings("deprecation")
-	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onInteract(PlayerInteractEvent event){
+		if (event.isCancelled() && Main.getConfigurationManager().getConfig().getBoolean("ignore-cancelled", false)) {
+			return;
+		}
+		
 		boolean openOnRightClick = Main.getConfigurationManager().getConfig().getBoolean("right-click-open", true);
 		boolean openOnLeftClick = Main.getConfigurationManager().getConfig().getBoolean("left-click-open", false);
 		
@@ -33,7 +39,10 @@ public class SelectorOpenListener implements Listener {
 		
 		Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 200); //Add cooldown for 0.2 seconds
 		
-		for (FileConfiguration config : Main.getConfigurationManager().getAll()){
+		for (Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getAll().entrySet()) {			
+			final String configName = menuConfigEntry.getKey();
+			final FileConfiguration config = menuConfigEntry.getValue();
+			
 			if (config.getString("item").equalsIgnoreCase("NONE")){
 				continue;
 			}
@@ -50,7 +59,7 @@ public class SelectorOpenListener implements Listener {
 				continue;
 			}
 			
-			Main.openSelector(player, config);
+			Main.openSelector(player, config, configName);
 			return;
 		}
 	}

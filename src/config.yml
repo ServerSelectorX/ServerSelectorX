@@ -48,6 +48,11 @@ invis-off: "&7&oYou are no longer invisible"
 hide-others: "&7&oAll players have been hidden"
 show-others: "&7&oAll players are now visible"
 
+# Ignore player right click on server selector item if another plugin has cancelled the event
+# When this is set to true, players will no longer be able to open the server selector if plugins
+# such as WorldGuard don't allow it.
+ignore-cancelled: false
+
 
 # -------------------- Pinging -------------------- #
 
