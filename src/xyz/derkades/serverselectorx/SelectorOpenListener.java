@@ -33,11 +33,11 @@ public class SelectorOpenListener implements Listener {
 		Player player = event.getPlayer();
 		
 		//Small cooldown because on 1.9+ interact event is called twice.
-		if (Cooldown.getCooldown(player.getUniqueId() + "doubleopen") > 0) { //if time left on cooldown is >0
+		if (Cooldown.getCooldown(player.getUniqueId() + "doubleopen") > 0) { //if time left on cooldown is > 0
 			return;
 		}
 		
-		Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 200); //Add cooldown for 0.2 seconds
+		Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 1000); //Add cooldown for 1 second
 		
 		for (Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getAll().entrySet()) {			
 			final String configName = menuConfigEntry.getKey();
