@@ -5,64 +5,6 @@
 
 
 
-server-teleport-message-enabled: true
-server-teleport-message: '&7You are being connected to &7&l{x}&r&7.'
-
-# Cancel connecting if the server appears to be offline
-# Warning: if ServerSelectorX breaks this will stop your players from connecting even though servers are online
-offline-cancel-connect: false
-offline-cancel-connect-message: "&cThis server is currently offline."
-
-right-click-open: true
-left-click-open: false
-
-# Clear inventory before adding items on join? 
-# This may not work with other plugins that also add items on join.
-clear-inv: false
-
-# Clear chat before sending player to server? 
-# Note: the chat will be cleared before sending server teleport message, so the server teleport message will still be visible.
-chat-clear: false
-
-# Level of speed for action: 'toggleSpeed'
-# Amplifier 0 -> Speed I
-# Amplifier 3 -> Speed IV
-speed-amplifier: 3
-
-# Whether speed effect should be turned on when the player joins
-speed-on-join: false
-
-# Hide other players on join
-# Can be toggled with action: 'toggleHideOthers'
-hide-others-on-join: false
-
-# Gives players invisibility when they join
-# This does not hide other players! For that use the setting above.
-# Can be toggled with action: 'toggleInvis'
-hide-self-on-join: false
-
-speed-on: "&7&oSpeed has been turned on"
-speed-off: "&7&oSpeed has been turned off"
-invis-on: "&7&oYou are now invisible"
-invis-off: "&7&oYou are no longer invisible"
-hide-others: "&7&oAll players have been hidden"
-show-others: "&7&oAll players are now visible"
-
-# Ignore player right click on server selector item if another plugin has cancelled the event
-# When this is set to true, players will no longer be able to open the server selector if plugins
-# such as WorldGuard don't allow it.
-ignore-cancelled: false
-
-# Cooldown for opening the selector menu in milliseconds.
-# This can be used as workaround for a bug where players are able to take out items if they
-# click the selector again while it is still waiting for servers to be pinged from the first time they clicked.
-# This value is in milliseconds. Any value less than 1000 = cooldown off.
-selector-open-cooldown: 0
-
-# Specify empty string for no message -> cooldown-message: ''
-cooldown-message: '&cYou cannot use this yet, please wait {x} seconds.'
-
-
 # -------------------- Pinging -------------------- #
 
 # Port which ServerSelectorX Connector should connect to
@@ -72,6 +14,37 @@ port: 9782
 # "Recevied message from <server>: { <data> }"
 log-pinger: true
 
+# -------------------- Server selectors -------------------- #
+
+right-click-open: true
+left-click-open: false
+
+# Cooldown for opening the selector menu in milliseconds.
+# This applies to commands and items. By default there is already a one second cooldown.
+# This value is in milliseconds. Any value less than 1000 = cooldown off.
+selector-open-cooldown: 0
+
+# Specify empty string for no message -> cooldown-message: ''
+cooldown-message: '&cYou cannot use this yet, please wait {x} seconds.'
+
+# Ignore player right click on server selector item if another plugin has cancelled the event
+# When this is set to true, players will no longer be able to open the server selector if plugins
+# such as WorldGuard don't allow it.
+ignore-cancelled: false
+
+# -------------------- Server teleportation -------------------- #
+
+# Clear chat before sending player to server? 
+# Note: the chat will be cleared before sending server teleport message, so the server teleport message will still be visible.
+chat-clear: false
+
+server-teleport-message-enabled: true
+server-teleport-message: '&7You are being connected to &7&l{x}&r&7.'
+
+# Cancel connecting if the server appears to be offline
+# Warning: if ServerSelectorX breaks this will stop your players from connecting even though servers are online
+offline-cancel-connect: false
+offline-cancel-connect-message: "&cThis server is currently offline."
 
 # -------------------- Permissions -------------------- #
 
@@ -104,11 +77,41 @@ selector-open-sound: HORSE_ARMOR
 
 # -------------------- Items -------------------- #
 
+# Clear inventory before adding items on join? 
+# This may not work with other plugins that also add items on join.
+clear-inv: false
+
 # Cancel item dropping for players that do not have the permission ssx.drop
 cancel-item-drop: false
 
 # Cancel item move for players that do not have the permission ssx.move (this includes swapping items between hands for 1.9+)
 cancel-item-move: false
+
+# -------------------- Effects -------------------- #
+
+# Level of speed for action: 'toggleSpeed'
+# Amplifier 0 -> Speed I
+# Amplifier 3 -> Speed IV
+speed-amplifier: 3
+
+# Whether speed effect should be turned on when the player joins
+speed-on-join: false
+
+# Hide other players on join
+# Can be toggled with action: 'toggleHideOthers'
+hide-others-on-join: false
+
+# Gives players invisibility when they join
+# This does not hide other players! For that use the setting above.
+# Can be toggled with action: 'toggleInvis'
+hide-self-on-join: false
+
+speed-on: "&7&oSpeed has been turned on"
+speed-off: "&7&oSpeed has been turned off"
+invis-on: "&7&oYou are now invisible"
+invis-off: "&7&oYou are no longer invisible"
+hide-others: "&7&oAll players have been hidden"
+show-others: "&7&oAll players are now visible"
 
 
 
