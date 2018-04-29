@@ -53,6 +53,15 @@ show-others: "&7&oAll players are now visible"
 # such as WorldGuard don't allow it.
 ignore-cancelled: false
 
+# Cooldown for opening the selector menu in milliseconds.
+# This can be used as workaround for a bug where players are able to take out items if they
+# click the selector again while it is still waiting for servers to be pinged from the first time they clicked.
+# This value is in milliseconds. Any value less than 1000 = cooldown off.
+selector-open-cooldown: 0
+
+# Specify empty string for no message -> cooldown-message: ''
+cooldown-message: '&cYou cannot use this yet, please wait {x} seconds.'
+
 
 # -------------------- Pinging -------------------- #
 
