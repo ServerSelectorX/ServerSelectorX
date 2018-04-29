@@ -222,7 +222,7 @@ public class Main extends JavaPlugin {
 	 * Only used by open listener and commands
 	 */
 	public static void openSelector(Player player, FileConfiguration config, String configName) {
-		long cooldown = Cooldown.getCooldown(config.getName() + player.getName());
+		long cooldown = Cooldown.getCooldown(configName + player.getName());
 		if (cooldown > 0) {
 			String cooldownMessage = Main.getPlugin().getConfig().getString("cooldown-message", "&cYou cannot use this yet, please wait {x} seconds.");
 			cooldownMessage = cooldownMessage.replace("{x}", String.valueOf((cooldown / 1000) + 1));
@@ -236,7 +236,7 @@ public class Main extends JavaPlugin {
 		
 		long cooldownDuration = Main.getPlugin().getConfig().getLong("selector-open-cooldown", 0);	
 		if (cooldownDuration >= 1000) {
-			Cooldown.addCooldown(config.getName() + player.getName(), cooldownDuration);
+			Cooldown.addCooldown(configName + player.getName(), cooldownDuration);
 		}
 		
 		final boolean permissionsEnabled = Main.getPlugin().getConfig().getBoolean("permissions-enabled");
