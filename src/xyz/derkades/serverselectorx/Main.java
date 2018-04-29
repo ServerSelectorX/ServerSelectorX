@@ -201,6 +201,13 @@ public class Main extends JavaPlugin {
 					public boolean execute(CommandSender sender, String label, String[] args) {
 						if (sender instanceof Player){
 							Player player = (Player) sender;
+							//Small cooldown to prevent weird bugs
+							if (Cooldown.getCooldown(player.getUniqueId() + "doubleopen") > 0) { //if time left on cooldown is > 0
+								return true;
+							}
+							
+							Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 1000); //Add cooldown for 1 second
+							
 							Main.openSelector(player, config, configName);
 						}
 						return true;
@@ -220,6 +227,8 @@ public class Main extends JavaPlugin {
 	
 	/**
 	 * Only used by open listener and commands
+	 * 
+	 * Checks for cooldown, checks for permissions, plays sound
 	 */
 	public static void openSelector(Player player, FileConfiguration config, String configName) {
 		long cooldown = Cooldown.getCooldown(configName + player.getName());
