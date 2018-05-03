@@ -182,46 +182,48 @@ public class SelectorMenu extends IconMenu {
 				enchanted = section.getBoolean("enchanted", false);
 			}
 			
-			final ItemBuilder builder;
-			
-			if (materialString.startsWith("head:")) {
-				String owner = materialString.split(":")[1];
-				if (owner.equals("auto")) {
-					builder = new ItemBuilder(player.getName());
-				} else {
-					builder = new ItemBuilder(owner);
-				}
-			} else {
-				Material material = Material.valueOf(materialString);
-				if (material == null) material = Material.STONE;
+			if (materialString != "NONE") {
+				final ItemBuilder builder;
 				
-				builder = new ItemBuilder(material);
-				builder.data(data);
-			}
-			
-			name = name.replace("{player}", player.getName());
-			lore = ListUtils.replaceInStringList(lore, new Object[] {"{player}"}, new Object[] {player.getName()});
-			
-			builder.amount(amount);
-			builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
-			builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
-
-			int slot = Integer.valueOf(key);
-			
-			ItemStack item = builder.create();
-			
-			if (enchanted) item = Main.addGlow(item);
-			
-			item = Main.addHideFlags(item);
-			
-			if (slot < 0) {
-				for (int i = 0; i < slots; i++) {
-					if (!items.containsKey(i)) {
-						items.put(i, item);
+				if (materialString.startsWith("head:")) {
+					String owner = materialString.split(":")[1];
+					if (owner.equals("auto")) {
+						builder = new ItemBuilder(player.getName());
+					} else {
+						builder = new ItemBuilder(owner);
 					}
+				} else {
+					Material material = Material.valueOf(materialString);
+					if (material == null) material = Material.STONE;
+					
+					builder = new ItemBuilder(material);
+					builder.data(data);
 				}
-			} else {
-				items.put(slot, item);
+				
+				name = name.replace("{player}", player.getName());
+				lore = ListUtils.replaceInStringList(lore, new Object[] {"{player}"}, new Object[] {player.getName()});
+				
+				builder.amount(amount);
+				builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
+				builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
+	
+				int slot = Integer.valueOf(key);
+				
+				ItemStack item = builder.create();
+				
+				if (enchanted) item = Main.addGlow(item);
+				
+				item = Main.addHideFlags(item);
+				
+				if (slot < 0) {
+					for (int i = 0; i < slots; i++) {
+						if (!items.containsKey(i)) {
+							items.put(i, item);
+						}
+					}
+				} else {
+					items.put(slot, item);
+				}
 			}
 		}
 	}
