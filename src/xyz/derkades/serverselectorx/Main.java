@@ -349,7 +349,8 @@ public class Main extends JavaPlugin {
 			return (ItemStack) craftItemStackClass.getMethod("asBukkitCopy", nmsItemStackClass).invoke(null, nmsItemStack);
 		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException |
 				NoSuchMethodException | SecurityException | InstantiationException e) {
-			throw new RuntimeException(e);
+			e.printStackTrace();
+			return item;
 		}
 	}
 	
@@ -378,7 +379,8 @@ public class Main extends JavaPlugin {
             return (ItemStack) bukkitStack;
 		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException |
 				NoSuchMethodException | SecurityException | InstantiationException e) {
-			throw new RuntimeException(e);
+			e.printStackTrace();
+			return item;
 		}
     }
 
