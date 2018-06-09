@@ -29,11 +29,18 @@ public class OnJoinListener implements Listener {
 		
 		if (config.getBoolean("speed-on-join", false)) {
 			int amplifier = Main.getConfigurationManager().getConfig().getInt("speed-amplifier", 3);
-			player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
+			
+			if (Main.getConfigurationManager().getConfig().getBoolean("show-particles")) 
+				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true));
+			else
+				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
 		}
 		
 		if (config.getBoolean("hide-self-on-join", false)) {
-			player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
+			if (Main.getConfigurationManager().getConfig().getBoolean("show-particles")) 
+				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true));
+			else
+				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
 		}
 		
 		if (config.getBoolean("hide-others-on-join", false)) {

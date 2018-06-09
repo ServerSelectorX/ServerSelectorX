@@ -113,6 +113,11 @@ invis-off: "&7&oYou are no longer invisible"
 hide-others: "&7&oAll players have been hidden"
 show-others: "&7&oAll players are now visible"
 
+# Gives an ambient effect (like beacons) instead of effects without particles.
+# 1.8+ supports effects without particles.
+# You have to set this to true for 1.7.10 servers.
+show-particles: false
+
 
 
 

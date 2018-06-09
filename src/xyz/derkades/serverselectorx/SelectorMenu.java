@@ -316,7 +316,11 @@ public class SelectorMenu extends IconMenu {
 				player.removePotionEffect(PotionEffectType.INVISIBILITY);
 				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("invis-off")));
 			} else {
-				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
+				if (Main.getConfigurationManager().getConfig().getBoolean("show-particles")) 
+					player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true));
+				else
+					player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
+				
 				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("invis-on")));
 			}
 			return true;
@@ -326,7 +330,12 @@ public class SelectorMenu extends IconMenu {
 				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("speed-off")));
 			} else {
 				int amplifier = Main.getConfigurationManager().getConfig().getInt("speed-amplifier", 3);
-				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
+				
+				if (Main.getConfigurationManager().getConfig().getBoolean("show-particles")) 
+					player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true));
+				else
+					player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
+				
 				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("speed-on")));
 			}
 			return true;
