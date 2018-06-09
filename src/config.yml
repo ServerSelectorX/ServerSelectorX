@@ -32,6 +32,7 @@ cooldown-message: '&cYou cannot use this yet, please wait {x} seconds.'
 # such as WorldGuard don't allow it.
 ignore-cancelled: false
 
+
 # -------------------- Server teleportation -------------------- #
 
 # Clear chat before sending player to server? 
@@ -45,6 +46,7 @@ server-teleport-message: '&7You are being connected to &7&l{x}&r&7.'
 # Warning: if ServerSelectorX breaks this will stop your players from connecting even though servers are online
 offline-cancel-connect: false
 offline-cancel-connect-message: "&cThis server is currently offline."
+
 
 # -------------------- Permissions -------------------- #
 
@@ -74,7 +76,6 @@ no-permission-message: '&cYou do not have permission to use the server selector.
 selector-open-sound: HORSE_ARMOR
 
 
-
 # -------------------- Items -------------------- #
 
 # Clear inventory before adding items on join? 
@@ -86,6 +87,7 @@ cancel-item-drop: false
 
 # Cancel item move for players that do not have the permission ssx.move (this includes swapping items between hands for 1.9+)
 cancel-item-move: false
+
 
 # -------------------- Effects -------------------- #
 
@@ -113,10 +115,20 @@ invis-off: "&7&oYou are no longer invisible"
 hide-others: "&7&oAll players have been hidden"
 show-others: "&7&oAll players are now visible"
 
+
+# -------------------- Technical -------------------- #
+
+# -> Only touch if you know what you are doing. Toggling these options may break the plugin.
+
 # Gives an ambient effect (like beacons) instead of effects without particles.
 # 1.8+ supports effects without particles.
 # You have to set this to true for 1.7.10 servers.
 show-particles: false
+
+# Freeze bukkit thread when the plugin is unloaded (/stop or /reload) for 3 seconds
+# Disabling this will make reloads 3 seconds faster but all your servers may appear as offline
+# after doing /reload
+freeze-bukkit-thread: true
 
 
 

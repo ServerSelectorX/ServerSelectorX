@@ -175,6 +175,19 @@ public class Main extends JavaPlugin {
 		server.start();
 	}
 	
+	@Override
+	public void onDisable() {
+		server.stop();
+		if (Main.getConfigurationManager().getConfig().getBoolean("freeze-bukkit-thread", true)) {
+			// Freeze bukkit thread to give the server time to stop
+			try {
+				Thread.sleep(3000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}		
+		}
+	}
+	
 	/**
 	 * Registers all custom commands by going through all menu files and adding commands
 	 */
