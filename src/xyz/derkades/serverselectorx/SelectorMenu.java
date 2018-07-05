@@ -1,6 +1,7 @@
 package xyz.derkades.serverselectorx;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -70,10 +71,16 @@ public class SelectorMenu extends IconMenu {
 			int amount = 1;
 			boolean enchanted = false;
 			
-			String action = section.getString("action");
+			String firstAction;
 			
-			if (action.startsWith("srv")) {
-				String serverName = action.substring(4);
+			if (section.isList("action")) {
+				firstAction = section.getStringList("action").get(0);
+			} else {
+				firstAction = section.getString("action");
+			}
+			
+			if (firstAction.startsWith("srv")) {
+				String serverName = firstAction.substring(4);
 				
 				if (Main.isOnline(serverName)) {
 					Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
@@ -145,11 +152,11 @@ public class SelectorMenu extends IconMenu {
 					amount = section.getInt("item-count", 1); 
 				}
 				
-			} else if (action.startsWith("sel:")) {
+			} else if (firstAction.startsWith("sel:")) {
 				//Add all online counts of servers in the submenu
 				int totalOnline = 0;
 				
-				FileConfiguration subConfig = Main.getConfigurationManager().getByName(action.substring(4));
+				FileConfiguration subConfig = Main.getConfigurationManager().getByName(firstAction.substring(4));
 				for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
 					final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
 					String subAction = subSection.getString("action");
@@ -241,123 +248,141 @@ public class SelectorMenu extends IconMenu {
 			return true;
 		}
 		
-		String action = config.getString("menu." + slot + ".action", "none");
+		List<String> actions;
 		
-		if (action == null) {
-			//If the action is null (so 'slot' is not found in the config) it is probably a wildcard
-			action = config.getString("menu.-1.action");
+		if (config.isList("menu." + slot + ".action")) {
+			// Action exists and is a list
+			actions = config.getStringList("menu." + slot + ".action");
 			
-			if (action == null) { //If it is still null it must be missing
-				action = "msg:Action missing";
+			if (actions.isEmpty()) {
+				actions.add("msg:Action list found, but list is empty");
 			}
-		}
-		
-		if (action.startsWith("url:")){ //Send url message
-			String url = action.substring(4);
-			String message = Colors.parseColors(config.getString("url-message", "&3&lClick here"));
-			
-			player.spigot().sendMessage(
-					new ComponentBuilder(message)
-					.event(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
-					.create()
-					);
-			return true;
-		} else if (action.startsWith("cmd:")){ //Execute command
-			String command = action.substring(4);
-			
-			//Send command 2 ticks later to let the GUI close first (for commands that open a GUI)
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), () -> {
-				Bukkit.dispatchCommand(player, Main.PLACEHOLDER_API.parsePlaceholders(player, command));
-			}, 2);
-			return true;
-		} else if (action.startsWith("consolecmd:")) {
-			String command = action.substring(11);
-			command = command.replace("{player}", player.getName());
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Main.PLACEHOLDER_API.parsePlaceholders(player, command));
-			return true;
-		} else if (action.startsWith("bungeecmd:")) { //BungeeCord command
-			String command = action.substring(10);
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("sync player %s %s", player.getName(), Main.PLACEHOLDER_API.parsePlaceholders(player, command)));
-			return true;
-		} else if (action.startsWith("sel:")){ //Open selector
-			String configName = action.substring(4);
-			FileConfiguration config = Main.getConfigurationManager().getByName(configName);
-			if (config == null){
-				player.sendMessage(ChatColor.RED + "This server selector does not exist.");
-				return true;
-			} else {				
-				new SelectorMenu(player, config, configName).open();
-				
-				return false;
-			}
-		} else if (action.startsWith("world:")){ //Teleport to world
-			String worldName = action.substring(6);
-			World world = Bukkit.getWorld(worldName);
-			if (world == null){
-				player.sendMessage(ChatColor.RED + "A world with the name " + worldName + " does not exist.");
-				return true;
-			} else {
-				player.teleport(world.getSpawnLocation());
-				return true;
-			}
-		} else if (action.startsWith("srv:")){ //Teleport to server
-			String serverName = action.substring(4);
-			
-			// If offline-cancel-connect is turned on and the server is offline, send message and cancel connecting
-			if (Main.getConfigurationManager().getConfig().getBoolean("offline-cancel-connect", false) && !Main.isOnline(serverName)) {
-				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("offline-cancel-connect-message", "error")));
-				return true;
-			}
-			
-			Main.teleportPlayerToServer(player, serverName);
-			return true;
-		} else if (action.equalsIgnoreCase("toggleInvis")) {
-			if (player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
-				player.removePotionEffect(PotionEffectType.INVISIBILITY);
-				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("invis-off")));
-			} else {
-				if (Main.getConfigurationManager().getConfig().getBoolean("show-particles")) 
-					player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true));
-				else
-					player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
-				
-				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("invis-on")));
-			}
-			return true;
-		} else if (action.equalsIgnoreCase("toggleSpeed")) {
-			if (player.hasPotionEffect(PotionEffectType.SPEED)) {
-				player.removePotionEffect(PotionEffectType.SPEED);
-				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("speed-off")));
-			} else {
-				int amplifier = Main.getConfigurationManager().getConfig().getInt("speed-amplifier", 3);
-				
-				if (Main.getConfigurationManager().getConfig().getBoolean("show-particles")) 
-					player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true));
-				else
-					player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
-				
-				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("speed-on")));
-			}
-			return true;
-		} else if (action.equalsIgnoreCase("toggleHideOthers")) {
-			if (InvisibilityToggle.hasHiddenOthers(player)) {
-				InvisibilityToggle.showOthers(player);
-				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("show-others")));
-			} else {
-				InvisibilityToggle.hideOthers(player);
-				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("hide-others")));
-			}
-			return true;
-		} else if (action.startsWith("msg:")){ //Send message
-			String message = action.substring(4);
-			player.sendMessage(Main.PLACEHOLDER_API.parsePlaceholders(player, message));
-			return true;
-		} else if (action.equals("close")){ //Close selector
-			return true; //Return true = close
 		} else {
-			return false; //Return false = stay open
+			// Action is not a list or might not exist
+			String possibleAction = config.getString("menu." + slot + ".action", "none");
+			
+			if (possibleAction == null) {
+				//If the action is null ('slot' is not found in the config) it is probably a wildcard
+				possibleAction = config.getString("menu.-1.action");
+				
+				if (possibleAction == null) { //If it is still null it must be missing
+					possibleAction = "msg:No action found.";
+				}
+			}
+			
+			actions = Arrays.asList(possibleAction);
 		}
-	
+		
+		for (String action : actions) {
+			if (action.startsWith("url:")){ //Send url message
+				String url = action.substring(4);
+				String message = Colors.parseColors(config.getString("url-message", "&3&lClick here"));
+				
+				player.spigot().sendMessage(
+						new ComponentBuilder(message)
+						.event(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
+						.create()
+						);
+				return true;
+			} else if (action.startsWith("cmd:")){ //Execute command
+				String command = action.substring(4);
+				
+				//Send command 2 ticks later to let the GUI close first (for commands that open a GUI)
+				Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), () -> {
+					Bukkit.dispatchCommand(player, Main.PLACEHOLDER_API.parsePlaceholders(player, command));
+				}, 2);
+				return true;
+			} else if (action.startsWith("consolecmd:")) {
+				String command = action.substring(11);
+				command = command.replace("{player}", player.getName());
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Main.PLACEHOLDER_API.parsePlaceholders(player, command));
+				return true;
+			} else if (action.startsWith("bungeecmd:")) { //BungeeCord command
+				String command = action.substring(10);
+				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("sync player %s %s", player.getName(), Main.PLACEHOLDER_API.parsePlaceholders(player, command)));
+				return true;
+			} else if (action.startsWith("sel:")){ //Open selector
+				String configName = action.substring(4);
+				FileConfiguration config = Main.getConfigurationManager().getByName(configName);
+				if (config == null){
+					player.sendMessage(ChatColor.RED + "This server selector does not exist.");
+					return true;
+				} else {				
+					new SelectorMenu(player, config, configName).open();
+					
+					return false;
+				}
+			} else if (action.startsWith("world:")){ //Teleport to world
+				String worldName = action.substring(6);
+				World world = Bukkit.getWorld(worldName);
+				if (world == null){
+					player.sendMessage(ChatColor.RED + "A world with the name " + worldName + " does not exist.");
+					return true;
+				} else {
+					player.teleport(world.getSpawnLocation());
+					return true;
+				}
+			} else if (action.startsWith("srv:")){ //Teleport to server
+				String serverName = action.substring(4);
+				
+				// If offline-cancel-connect is turned on and the server is offline, send message and cancel connecting
+				if (Main.getConfigurationManager().getConfig().getBoolean("offline-cancel-connect", false) && !Main.isOnline(serverName)) {
+					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("offline-cancel-connect-message", "error")));
+					return true;
+				}
+				
+				Main.teleportPlayerToServer(player, serverName);
+				return true;
+			} else if (action.equalsIgnoreCase("toggleInvis")) {
+				if (player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
+					player.removePotionEffect(PotionEffectType.INVISIBILITY);
+					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("invis-off")));
+				} else {
+					if (Main.getConfigurationManager().getConfig().getBoolean("show-particles")) 
+						player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true));
+					else
+						player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
+					
+					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("invis-on")));
+				}
+				return true;
+			} else if (action.equalsIgnoreCase("toggleSpeed")) {
+				if (player.hasPotionEffect(PotionEffectType.SPEED)) {
+					player.removePotionEffect(PotionEffectType.SPEED);
+					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("speed-off")));
+				} else {
+					int amplifier = Main.getConfigurationManager().getConfig().getInt("speed-amplifier", 3);
+					
+					if (Main.getConfigurationManager().getConfig().getBoolean("show-particles")) 
+						player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true));
+					else
+						player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
+					
+					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("speed-on")));
+				}
+				return true;
+			} else if (action.equalsIgnoreCase("toggleHideOthers")) {
+				if (InvisibilityToggle.hasHiddenOthers(player)) {
+					InvisibilityToggle.showOthers(player);
+					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("show-others")));
+				} else {
+					InvisibilityToggle.hideOthers(player);
+					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("hide-others")));
+				}
+				return true;
+			} else if (action.startsWith("msg:")){ //Send message
+				String message = action.substring(4);
+				player.sendMessage(Main.PLACEHOLDER_API.parsePlaceholders(player, message));
+				return true;
+			} else if (action.equals("close")){ //Close selector
+				return true; //Return true = close
+			} else {
+				return false; //Return false = stay open
+			}
+		}
+		
+		// If the action list is still empty something really has gone wrong.
+		throw new AssertionError();
 	}
 	
 	@Override
