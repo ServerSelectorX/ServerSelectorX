@@ -177,14 +177,16 @@ public class Main extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		server.stop();
-		if (Main.getConfigurationManager().getConfig().getBoolean("freeze-bukkit-thread", true)) {
-			// Freeze bukkit thread to give the server time to stop
-			try {
-				Thread.sleep(3000);
-			} catch (InterruptedException e) {
-				e.printStackTrace();
-			}		
+		if (server != null) {
+			server.stop();
+			if (Main.getConfigurationManager().getConfig().getBoolean("freeze-bukkit-thread", true)) {
+				// Freeze bukkit thread to give the server time to stop
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}		
+			}
 		}
 	}
 	
