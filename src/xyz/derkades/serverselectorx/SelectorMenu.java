@@ -283,7 +283,6 @@ public class SelectorMenu extends IconMenu {
 						.event(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
 						.create()
 						);
-				return true;
 			} else if (action.startsWith("cmd:")){ //Execute command
 				String command = action.substring(4);
 				
@@ -291,36 +290,28 @@ public class SelectorMenu extends IconMenu {
 				Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), () -> {
 					Bukkit.dispatchCommand(player, Main.PLACEHOLDER_API.parsePlaceholders(player, command));
 				}, 2);
-				return true;
 			} else if (action.startsWith("consolecmd:")) {
 				String command = action.substring(11);
 				command = command.replace("{player}", player.getName());
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Main.PLACEHOLDER_API.parsePlaceholders(player, command));
-				return true;
 			} else if (action.startsWith("bungeecmd:")) { //BungeeCord command
 				String command = action.substring(10);
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("sync player %s %s", player.getName(), Main.PLACEHOLDER_API.parsePlaceholders(player, command)));
-				return true;
 			} else if (action.startsWith("sel:")){ //Open selector
 				String configName = action.substring(4);
 				FileConfiguration config = Main.getConfigurationManager().getByName(configName);
 				if (config == null){
 					player.sendMessage(ChatColor.RED + "This server selector does not exist.");
-					return true;
 				} else {				
 					new SelectorMenu(player, config, configName).open();
-					
-					return false;
 				}
 			} else if (action.startsWith("world:")){ //Teleport to world
 				String worldName = action.substring(6);
 				World world = Bukkit.getWorld(worldName);
 				if (world == null){
 					player.sendMessage(ChatColor.RED + "A world with the name " + worldName + " does not exist.");
-					return true;
 				} else {
 					player.teleport(world.getSpawnLocation());
-					return true;
 				}
 			} else if (action.startsWith("srv:")){ //Teleport to server
 				String serverName = action.substring(4);
@@ -328,11 +319,9 @@ public class SelectorMenu extends IconMenu {
 				// If offline-cancel-connect is turned on and the server is offline, send message and cancel connecting
 				if (Main.getConfigurationManager().getConfig().getBoolean("offline-cancel-connect", false) && !Main.isOnline(serverName)) {
 					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("offline-cancel-connect-message", "error")));
-					return true;
 				}
 				
 				Main.teleportPlayerToServer(player, serverName);
-				return true;
 			} else if (action.equalsIgnoreCase("toggleInvis")) {
 				if (player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
 					player.removePotionEffect(PotionEffectType.INVISIBILITY);
@@ -345,7 +334,6 @@ public class SelectorMenu extends IconMenu {
 					
 					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("invis-on")));
 				}
-				return true;
 			} else if (action.equalsIgnoreCase("toggleSpeed")) {
 				if (player.hasPotionEffect(PotionEffectType.SPEED)) {
 					player.removePotionEffect(PotionEffectType.SPEED);
@@ -360,7 +348,6 @@ public class SelectorMenu extends IconMenu {
 					
 					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("speed-on")));
 				}
-				return true;
 			} else if (action.equalsIgnoreCase("toggleHideOthers")) {
 				if (InvisibilityToggle.hasHiddenOthers(player)) {
 					InvisibilityToggle.showOthers(player);
@@ -369,20 +356,23 @@ public class SelectorMenu extends IconMenu {
 					InvisibilityToggle.hideOthers(player);
 					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("hide-others")));
 				}
-				return true;
 			} else if (action.startsWith("msg:")){ //Send message
 				String message = action.substring(4);
 				player.sendMessage(Main.PLACEHOLDER_API.parsePlaceholders(player, message));
-				return true;
 			} else if (action.equals("close")){ //Close selector
 				return true; //Return true = close
+			} else if (action.equals("none")){
+				continue;
 			} else {
-				return false; //Return false = stay open
+				player.sendMessage(ChatColor.RED + "unknown action");
+				continue;
 			}
 		}
 		
-		// If the action list is still empty something really has gone wrong.
-		throw new AssertionError();
+		return false;
+		
+		// // If the action list is still empty something really has gone wrong.
+		//throw new AssertionError();
 	}
 	
 	@Override
