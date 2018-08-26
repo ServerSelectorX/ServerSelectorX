@@ -40,6 +40,8 @@ public class SelectorOpenListener implements Listener {
 		Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 1000); //Add cooldown for 1 second
 		
 		for (Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getAll().entrySet()) {			
+			event.setCancelled(Main.getConfigurationManager().getConfig().getBoolean("cancel-click-event", false));
+			
 			final String configName = menuConfigEntry.getKey();
 			final FileConfiguration config = menuConfigEntry.getValue();
 			
