@@ -80,6 +80,7 @@ selector-open-sound: HORSE_ARMOR
 
 # Clear inventory before adding items on join? 
 # This may not work with other plugins that also add items on join.
+# Players with the permission ssx.clearinvbypass will not get their inventory cleared.
 clear-inv: false
 
 # Cancel item dropping for players that do not have the permission ssx.drop
@@ -120,7 +121,7 @@ show-others: "&7&oAll players are now visible"
 
 # -> Only touch if you know what you are doing. Toggling these options may break the plugin.
 
-# Gives an ambient effect (like beacons) instead of effects without particles.
+# When set to true, give an ambient effect (like beacons) instead of effects without particles.
 # 1.8+ supports effects without particles.
 # You have to set this to true for 1.7.10 servers.
 show-particles: false

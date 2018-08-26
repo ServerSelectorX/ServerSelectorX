@@ -23,7 +23,7 @@ public class OnJoinListener implements Listener {
 		Player player = event.getPlayer();
 		FileConfiguration config = Main.getConfigurationManager().getConfig();
 		
-		if (config.getBoolean("clear-inv", false)) {
+		if (config.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
 			event.getPlayer().getInventory().clear();
 		}
 		
