@@ -72,11 +72,15 @@ public class OnJoinListener implements Listener {
 				material = Material.STONE;
 			}
 			
+			String name = Main.PLACEHOLDER_API.parsePlaceholders(player,
+					menuConfig.getString("item-name", "error")
+					.replace("{player}", player.getName()));
+			
 			ItemBuilder builder = new ItemBuilder(material)
 					.data(menuConfig.getInt("data", 0))
-					.coloredName(menuConfig.getString("item-name", "error"));
+					.coloredName(name);
 			
-			List<String> lore = menuConfig.getStringList("item-lore");
+			List<String> lore = Main.PLACEHOLDER_API.parsePlaceholders(player, menuConfig.getStringList("item-lore"));
 			
 			//Don't add lore if it's null or if the first line is equal to 'none'
 			if (!(lore == null || lore.isEmpty() || lore.get(0).equalsIgnoreCase("none"))) {
