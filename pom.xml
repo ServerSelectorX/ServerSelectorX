@@ -157,11 +157,6 @@
 			<url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
 		</repository>
 
-		<repository>
-			<id>derkades</id>
-			<url>https://derkades.xyz/maven</url>
-		</repository>
-
 	</repositories>
 
 </project>
