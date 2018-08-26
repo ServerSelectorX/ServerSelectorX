@@ -14,6 +14,10 @@ port: 9782
 # "Recevied message from <server>: { <data> }"
 log-pinger: true
 
+# The number of milliseconds without a ping until ServerSelectorX will consider a server as offline.
+# This number should be greater than the ping interval in your SSX-Connector config.
+server-offline-timeout: 6000
+
 # -------------------- Server selectors -------------------- #
 
 right-click-open: true

@@ -322,7 +322,9 @@ public class Main extends JavaPlugin {
 			
 			long timeSinceLastPing = System.currentTimeMillis() - Main.LAST_INFO_TIME.get(serverName);
 			
-			return timeSinceLastPing < 7000;
+			long timeout = Main.getConfigurationManager().getConfig().getLong("server-offline-timeout", 6000);
+			
+			return timeSinceLastPing < timeout;
 		} else {
 			//If the server has not sent a message at all it is offline
 			return false;
