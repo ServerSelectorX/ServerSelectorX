@@ -210,6 +210,8 @@ public class SelectorMenu extends IconMenu {
 				name = name.replace("{player}", player.getName());
 				lore = ListUtils.replaceInStringList(lore, new Object[] {"{player}"}, new Object[] {player.getName()});
 				
+				if (amount < 1 || amount > 64) amount = 1;
+				
 				builder.amount(amount);
 				builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
 				builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
