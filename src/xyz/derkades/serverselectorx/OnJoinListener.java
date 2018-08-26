@@ -66,19 +66,30 @@ public class OnJoinListener implements Listener {
 				continue;
 			}
 			
-			Material material = Material.getMaterial(menuConfig.getString("item"));
+			ItemBuilder builder;
 			
-			if (material == null) {
-				material = Material.STONE;
+			String materialString = menuConfig.getString("item");
+			
+			if (materialString.startsWith("head:")) {
+				String owner = materialString.split(":")[1];
+				if (owner.equals("auto")) {
+					builder = new ItemBuilder(player.getName());
+				} else {
+					builder = new ItemBuilder(owner);
+				}
+			} else {
+				Material material = Material.getMaterial(menuConfig.getString("item"));
+				
+				if (material == null) {
+					material = Material.STONE;
+				}
+				
+				builder = new ItemBuilder(material).data(menuConfig.getInt("data", 0));
 			}
 			
-			String name = Main.PLACEHOLDER_API.parsePlaceholders(player,
+			builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player,
 					menuConfig.getString("item-name", "error")
-					.replace("{player}", player.getName()));
-			
-			ItemBuilder builder = new ItemBuilder(material)
-					.data(menuConfig.getInt("data", 0))
-					.coloredName(name);
+					.replace("{player}", player.getName())));
 			
 			List<String> lore = Main.PLACEHOLDER_API.parsePlaceholders(player, menuConfig.getStringList("item-lore"));
 			
