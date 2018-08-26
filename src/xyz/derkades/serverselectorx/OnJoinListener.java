@@ -14,6 +14,7 @@ import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
+import xyz.derkades.derkutils.ListUtils;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 
 public class OnJoinListener implements Listener {
@@ -89,12 +90,17 @@ public class OnJoinListener implements Listener {
 			
 			builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player,
 					menuConfig.getString("item-name", "error")
-					.replace("{player}", player.getName())));
+							.replace("{player}", player.getName()
+							.replace("{globalOnline}", "" + Main.getGlobalPlayerCount()))));
 			
-			List<String> lore = Main.PLACEHOLDER_API.parsePlaceholders(player, menuConfig.getStringList("item-lore"));
+			List<String> lore = menuConfig.getStringList("item-lore");
 			
 			//Don't add lore if it's null or if the first line is equal to 'none'
 			if (!(lore == null || lore.isEmpty() || lore.get(0).equalsIgnoreCase("none"))) {
+				lore = Main.PLACEHOLDER_API.parsePlaceholders(player, lore);
+				lore = ListUtils.replaceInStringList(lore,
+						new Object[] {"{player}", "{globalOnline}"},
+						new Object[] {player.getName(), Main.getGlobalPlayerCount()});
 				builder.coloredLore(lore);
 			}
 			

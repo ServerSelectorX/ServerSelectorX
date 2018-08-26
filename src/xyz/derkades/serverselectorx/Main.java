@@ -331,6 +331,14 @@ public class Main extends JavaPlugin {
 		}
 	}
 	
+	public static int getGlobalPlayerCount() {
+		int online = 0;
+		for (Map<String, String> serverPlaceholders : Main.PLACEHOLDERS.values()) {
+			online += Integer.parseInt(serverPlaceholders.get("online"));
+		}
+		return online;
+	}
+	
 	public static ItemStack addHideFlags(ItemStack item) {
 		try {
 			String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];

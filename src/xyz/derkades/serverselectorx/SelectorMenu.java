@@ -207,8 +207,10 @@ public class SelectorMenu extends IconMenu {
 					builder.data(data);
 				}
 				
-				name = name.replace("{player}", player.getName());
-				lore = ListUtils.replaceInStringList(lore, new Object[] {"{player}"}, new Object[] {player.getName()});
+				name = name.replace("{player}", player.getName()).replace("{globalOnline}", "" + Main.getGlobalPlayerCount());
+				lore = ListUtils.replaceInStringList(lore, 
+						new Object[] {"{player}", "{globalOnline}"}, 
+						new Object[] {player.getName(), Main.getGlobalPlayerCount()});
 				
 				if (amount < 1 || amount > 64) amount = 1;
 				
