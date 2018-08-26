@@ -92,7 +92,12 @@ public class OnJoinListener implements Listener {
 			} else {
 				inv.setItem(slot, builder.create());
 			}
-			
+		}
+		
+		String openOnJoin = Main.getConfigurationManager().getConfig().getString("open-on-join", "none");
+		
+		if (!openOnJoin.equals("none")) {
+			Main.openSelector(player, Main.getConfigurationManager().getByName(openOnJoin), openOnJoin);
 		}
 	}
 

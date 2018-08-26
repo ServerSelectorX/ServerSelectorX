@@ -32,6 +32,10 @@ cooldown-message: '&cYou cannot use this yet, please wait {x} seconds.'
 # such as WorldGuard don't allow it.
 ignore-cancelled: false
 
+# Set a server selector name here to open said selector when a player joins a server
+# If your file is called 'default.yml', enter 'default'.
+open-on-join: none
+
 
 # -------------------- Server teleportation -------------------- #
 
