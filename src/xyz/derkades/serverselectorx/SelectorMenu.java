@@ -82,6 +82,10 @@ public class SelectorMenu extends IconMenu {
 			if (firstAction.startsWith("srv")) {
 				String serverName = firstAction.substring(4);
 				
+				if (serverName.startsWith("__")) {
+					serverName = serverName.substring(2);
+				}
+				
 				if (Main.isOnline(serverName)) {
 					Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
 					
