@@ -33,7 +33,7 @@ public class WebServer {
 				try {
 					Main.getPlugin().getLogger().info("Starting server...");
 					server.start();
-					Main.getPlugin().getLogger().info("Server has been started");
+					Main.getPlugin().getLogger().info("Server has been started on port " + WebServer.this.port);
 					server.join(); //Join with main thread
 				} catch (Exception e) {
 					Main.getPlugin().getLogger().severe("An error occured while starting server: " + e.getMessage());
