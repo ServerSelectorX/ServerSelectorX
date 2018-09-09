@@ -222,27 +222,20 @@ public class Main extends JavaPlugin {
 		if (cooldownDuration >= 1000) {
 			Cooldown.addCooldown(config.getName() + player.getName(), cooldownDuration);
 		}
-		
-		final boolean permissionsEnabled = Main.getPlugin().getConfig().getBoolean("permissions-enabled");
-		final boolean hasPermission = player.hasPermission("ssx.use." + config.getName().replace(".yml", ""));
-		if (!permissionsEnabled || hasPermission){
 			
-			//Play sound
-			String soundString = Main.getPlugin().getConfig().getString("selector-open-sound");
-			if (soundString != null && !soundString.equals("NONE")){
-				try {
-					Sound sound = Sound.valueOf(soundString);
-					player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
-				} catch (IllegalArgumentException e){
-					Main.getPlugin().getLogger().log(Level.WARNING, "A sound with the name " + soundString + " could not be found. Make sure that it is the right name for your server version.");
-				}
+		// Play sound
+		String soundString = Main.getPlugin().getConfig().getString("selector-open-sound");
+		if (soundString != null && !soundString.equals("NONE")) {
+			try {
+				Sound sound = Sound.valueOf(soundString);
+				player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
+			} catch (IllegalArgumentException e) {
+				Main.getPlugin().getLogger().log(Level.WARNING, "A sound with the name " + soundString
+						+ " could not be found. Make sure that it is the right name for your server version.");
 			}
-			
-			new SelectorMenu(player, config).open();
-		} else if (config.getBoolean("no-permission-message-enabled", false)) {
-			player.sendMessage(config.getString("no-permission-message"));
-			return;
 		}
+
+		new SelectorMenu(player, config).open();
 	}
 	
 	public static void teleportPlayerToServer(final Player player, final String server){

@@ -13,16 +13,6 @@ server-teleport-message: '&7You are being connected to &7&l{x}&r&7.'
 chat-clear: false
 
 
-# -------------------- Permissions -------------------- #
-
-# Require the permission 'ssx.use.<selector name>' to open the menu and ssx.join.<selector name> to get the item on join
-permissions-enabled: false
-
-# Send a message if the player does not have permission to use the server selector?
-no-permission-message-enabled: true
-no-permission-message: '&cYou do not have permission to use the server selector.'
-
-
 # -------------------- Sounds -------------------- #
 
 # Latest sound names (currently for 1.12.1): https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
