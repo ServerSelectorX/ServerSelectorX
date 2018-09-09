@@ -107,6 +107,14 @@ public class SelectorMenu extends IconMenu {
 								
 						if (amount > 64 || amount < 1)
 							amount = 1;
+					} else {
+						// Not a server, use online section
+						ConfigurationSection onlineSection = section.getConfigurationSection("online");
+								
+						materialString = onlineSection.getString("item");
+						data = onlineSection.getInt("data", 0);
+						name = onlineSection.getString("name");
+						lore = onlineSection.getStringList("lore");
 					}
 					
 					final ItemBuilder builder;
