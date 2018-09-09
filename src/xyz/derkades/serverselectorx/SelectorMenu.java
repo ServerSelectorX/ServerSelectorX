@@ -17,9 +17,11 @@ import org.bukkit.scheduler.BukkitRunnable;
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import xyz.derkades.derkutils.Cooldown;
+import xyz.derkades.derkutils.ListUtils;
 import xyz.derkades.derkutils.bukkit.Colors;
-import xyz.derkades.derkutils.bukkit.IconMenu;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
+import xyz.derkades.derkutils.bukkit.menu.IconMenu;
+import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 
 public class SelectorMenu extends IconMenu {
 
@@ -83,7 +85,7 @@ public class SelectorMenu extends IconMenu {
 								String motd = (String) placeholders.get("motd");
 									
 								//Replace placeholders in lore
-								lore = replaceInStringList(lore, 
+								lore = ListUtils.replaceInStringList(lore, 
 										new Object[] {"{online}", "{max}", "{motd}", "{ping}", "{player}"},
 										new Object[] {online, max, motd, ping, player.getName()});
 									
@@ -231,23 +233,6 @@ public class SelectorMenu extends IconMenu {
 			return false; //Return false = stay open
 		}
 	
-	}
-	
-	private List<String> replaceInStringList(List<String> list, Object[] before, Object[] after) {
-		if (before.length != after.length) {
-			throw new IllegalArgumentException("before[] length must be equal to after[] length");
-		}
-		
-		List<String> newList = new ArrayList<>();
-		
-		for (String string : list) {
-			for (int i = 0; i < before.length; i++) {
-				string = string.replace(before[i].toString(), after[i].toString());
-			}
-			newList.add(string);
-		}
-		
-		return newList;
 	}
 
 }
