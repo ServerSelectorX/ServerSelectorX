@@ -67,4 +67,4 @@ cancel-item-move: false
 updater: true
 
 # Do not touch this
-version: 7
+version: 8
