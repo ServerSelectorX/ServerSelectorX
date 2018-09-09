@@ -8,7 +8,6 @@ import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -27,7 +26,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.inventivetalent.update.spiget.SpigetUpdate;
 import org.inventivetalent.update.spiget.UpdateCallback;
@@ -318,33 +316,5 @@ public class Main extends JavaPlugin {
 			}
 		});
 	}
-	
-    public static ItemStack addGlow(ItemStack item) {
-    	try {
-    		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-    		
-    		Class<?> craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
-    		Class<?> nmsItemStackClass = Class.forName("net.minecraft.server." + version + ".ItemStack");
-    		Class<?> nbtTagCompoundClass = Class.forName("net.minecraft.server." + version + ".NBTTagCompound");
-    		Class<?> nbtTagListClass = Class.forName("net.minecraft.server." + version + ".NBTTagList");
-    		Class<?> nbtBaseClass = Class.forName("net.minecraft.server." + version + ".NBTBase");
-    		
-        	Object nmsItemStack = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(null, item);
-
-    		Object nbtTagCompound = nmsItemStackClass.getMethod("getTag").invoke(nmsItemStack);
-    		if (nbtTagCompound == null) {
-    			nbtTagCompound = nbtTagCompoundClass.getConstructor().newInstance();
-    		}
-    		
-    		Object enchantments = nbtTagListClass.getConstructor().newInstance();
-    		nbtTagCompoundClass.getMethod("set", String.class, nbtBaseClass).invoke(nbtTagCompound, "ench", enchantments);
-            nmsItemStackClass.getMethod("setTag", nbtTagCompoundClass).invoke(nmsItemStack, nbtTagCompound);
-            Object bukkitStack = craftItemStackClass.getMethod("asBukkitCopy", nmsItemStackClass).invoke(null, nmsItemStack);
-            return (ItemStack) bukkitStack;
-		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException |
-				NoSuchMethodException | SecurityException | InstantiationException e) {
-			throw new RuntimeException(e);
-		}
-    }
 
 }

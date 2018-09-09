@@ -53,7 +53,6 @@ menu:
     online:
       item: DIAMOND_SWORD
       data: 0
-      enchanted: true
       name: '&aKitPvP Server'
       lore:
       # Placeholders not working? https://github.com/ServerSelectorX/ServerSelectorX/wiki/FAQ#placeholders-are-not-working
@@ -65,7 +64,6 @@ menu:
     offline:
       item: WOOD_SWORD
       data: 0
-      enchanted: false
       name: '&cKitPvP Server'
       lore:
        - Ipsum lorem
@@ -78,7 +76,6 @@ menu:
     online:
       item: 'head:auto' # You can use head:auto to get the head of the player opening the menu, or head:SomethingElse to get the head of a specific player.
       data: 0
-      enchanted: false
       name: 'This is you!'
       lore:
        - This item does nothing
@@ -89,6 +86,5 @@ menu:
     online:
       item: STAINED_GLASS_PANE
       data: 0
-      enchanted: false
       name: ''
       lore:

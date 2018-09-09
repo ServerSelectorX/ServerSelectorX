@@ -53,7 +53,6 @@ public class SelectorMenu extends IconMenu {
 					String name = "";
 					List<String> lore = new ArrayList<>();
 					int amount = 1;
-					boolean enchanted = false;
 					
 					String action = section.getString("action");
 					
@@ -67,7 +66,6 @@ public class SelectorMenu extends IconMenu {
 							name = section.getString("online.name", "");
 							lore = section.getStringList("online.lore");
 							amount = section.getInt("item-count", 1);
-							enchanted = section.getBoolean("enchanted");
 						} else {
 							Map<String, Object> placeholders = null;
 							boolean isOnline;
@@ -84,35 +82,6 @@ public class SelectorMenu extends IconMenu {
 								int ping = (int) placeholders.get("ping");
 								String motd = (String) placeholders.get("motd");
 									
-								//Try dynamic motd items first 
-								boolean motdMatch = false;
-								if (section.contains("dynamic")) {
-									for (String dynamicMotd : section.getConfigurationSection("dynamic").getKeys(false)) {
-										if (motd.equals(dynamicMotd)) {
-											//Motd matches, use this section for getting item data
-											motdMatch = true;
-											ConfigurationSection motdSection = section.getConfigurationSection("dynamic." + dynamicMotd);
-												
-											materialString = motdSection.getString("item");
-											data = motdSection.getInt("data", 0);
-											name = motdSection.getString("name");
-											lore = motdSection.getStringList("lore");
-											enchanted = motdSection.getBoolean("enchanted", false);
-										} else {
-											continue; //No match, check next motd in this section
-										}
-									}
-								}
-									
-								if (!motdMatch) {
-									//If no motd matched, fall back to online section
-									materialString = section.getString("online.item");
-									data = section.getInt("online.data", 0);
-									name = section.getString("online.name", "error");
-									lore = section.getStringList("online.lore");
-									enchanted = section.getBoolean("online.enchanted", false);
-								}
-									
 								//Replace placeholders in lore
 								lore = replaceInStringList(lore, 
 										new Object[] {"{online}", "{max}", "{motd}", "{ping}", "{player}"},
@@ -121,18 +90,8 @@ public class SelectorMenu extends IconMenu {
 								amount = section.getInt("item-count", 1);
 								
 								if (section.getBoolean("change-item-count", true)) {
-									String mode = Main.getPlugin().getConfig().getString("item-count-mode", "absolute");									
-									if (mode.equals("absolute")) {
-										amount = online;
-									} else if (mode.equals("relative")) {
-										amount = (online / max) * 100;
-									} else {
-										Main.getPlugin().getLogger().warning("item-count-mode setting is invalid");
-									}
-								} else {
-									amount = 1;
+									amount = online;
 								}
-
 							} else {
 								//Server is offline
 								ConfigurationSection offlineSection = section.getConfigurationSection("offline");
@@ -141,7 +100,6 @@ public class SelectorMenu extends IconMenu {
 								data = offlineSection.getInt("data", 0);
 								name = offlineSection.getString("name");
 								lore = offlineSection.getStringList("lore");
-								enchanted = offlineSection.getBoolean("enchanted", false);
 							}
 						}
 								
@@ -170,8 +128,6 @@ public class SelectorMenu extends IconMenu {
 					builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
 						
 					ItemStack item = builder.create();
-					
-					if (enchanted) item = Main.addGlow(item);
 						
 					addToMenu(Integer.valueOf(key), item);
 				}
