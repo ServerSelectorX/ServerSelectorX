@@ -113,6 +113,11 @@ public class Main extends JavaPlugin {
 			getLogger().log(Level.INFO, "PlaceholderAPI is not installed. The plugin will still work.");
 		}
 		
+		getLogger().info("");
+		getLogger().info("Thank you for using ServerSelectorX. If you enjoy using this plugin, please consider buying the premium version. It's has more features and placeholders update astronomically faster. ");
+		getLogger().info("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium");
+		getLogger().info("");
+		
 		//Check for updates asynchronously
 		getServer().getScheduler().runTaskAsynchronously(this, () -> {
 			checkForUpdates();
