@@ -51,6 +51,13 @@ public class PingServersBackground {
 					}
 					
 					Main.SERVER_PLACEHOLDERS.put(serverName, serverInfo);
+					
+					// Don't spam the API
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					} 
 				}
 			}
 		}
