@@ -1,6 +1,5 @@
 package xyz.derkades.serverselectorx;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -35,11 +34,11 @@ public class SelectorMenu extends IconMenu {
 		for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
 			final ConfigurationSection section = config.getConfigurationSection("menu." + key);
 
-			String materialString = "STONE";
-			int data = 0;
-			String name = "";
-			List<String> lore = new ArrayList<>();
-			int amount = 1;
+			String materialString;
+			int data;
+			String name;
+			List<String> lore;
+			int amount = section.getInt("item-count", 1);
 
 			String action = section.getString("action");
 
@@ -69,18 +68,24 @@ public class SelectorMenu extends IconMenu {
 						int ping = (int) placeholders.get("ping");
 						String motd = (String) placeholders.get("motd");
 
-						// Replace placeholders in lore
-						lore = ListUtils.replaceInStringList(lore,
-								new Object[] { "{online}", "{max}", "{motd}", "{ping}", "{player}" },
-								new Object[] { online, max, motd, ping, player.getName() });
-
-						amount = section.getInt("item-count", 1);
+						// Server is online, use online section
+						ConfigurationSection onlineSection = section.getConfigurationSection("online");
+						materialString = onlineSection.getString("item");
+						data = onlineSection.getInt("data", 0);
+						name = onlineSection.getString("name");
+						lore = onlineSection.getStringList("lore");
+						
 
 						if (section.getBoolean("change-item-count", true)) {
 							amount = online;
 						}
+						
+						// Replace placeholders in lore
+						lore = ListUtils.replaceInStringList(lore,
+								new Object[] { "{online}", "{max}", "{motd}", "{ping}", "{player}" },
+								new Object[] { online, max, motd, ping, player.getName() });
 					} else {
-						// Server is offline
+						// Server is offline, use offline section
 						ConfigurationSection offlineSection = section.getConfigurationSection("offline");
 
 						materialString = offlineSection.getString("item");
