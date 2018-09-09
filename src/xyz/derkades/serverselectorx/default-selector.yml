@@ -58,7 +58,6 @@ menu:
       # Placeholders not working? https://github.com/ServerSelectorX/ServerSelectorX/wiki/FAQ#placeholders-are-not-working
        - 'There are {online} out of {max} players online.'
        - 'Message of the day: {motd}'
-       - 'Ping: {ping}'
       
     # Offline is used when ping-server is turned on and the server is offline.
     offline:
