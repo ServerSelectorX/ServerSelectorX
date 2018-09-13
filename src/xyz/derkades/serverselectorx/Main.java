@@ -287,8 +287,8 @@ public class Main extends JavaPlugin {
 		
 		CURRENT_VERSION = Main.this.getDescription().getVersion();
 		
-		if (CURRENT_VERSION.equals("custom")) {
-			getLogger().info("You are using a custom version so the update checker is disabled.");
+		if (CURRENT_VERSION.equals("custom") || CURRENT_VERSION.equals("beta")) {
+			getLogger().info("You are using a custom or beta version so the update checker is disabled.");
 			return;
 		}
 		
