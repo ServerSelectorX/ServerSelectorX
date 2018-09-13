@@ -39,7 +39,7 @@ import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
 
 public class Main extends JavaPlugin {
 	
-	private static final int CONFIG_VERSION = 7;
+	private static final int CONFIG_VERSION = 8;
 	
 	public static final int GLOWING_ENCHANTMENT_ID = 96;
 	
