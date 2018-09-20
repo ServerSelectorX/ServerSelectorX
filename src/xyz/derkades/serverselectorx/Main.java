@@ -80,7 +80,7 @@ public class Main extends JavaPlugin {
 		//Register messaging channels
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		
-		Bukkit.getScheduler().runTaskAsynchronously(this, () -> PingServersBackground.startPinging());
+		new PingServersBackground().start();
 		
 		//Register command
 		getCommand("serverselectorx").setExecutor(new ReloadCommand());

@@ -9,12 +9,20 @@ import org.bukkit.configuration.file.FileConfiguration;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
 import xyz.derkades.serverselectorx.utils.ServerPinger.Server;
 
-public class PingServersBackground {
+public class PingServersBackground extends Thread {
 
-	public static void startPinging() {
+	@Override
+	public void run() {
 		while(true) {
 			for (FileConfiguration config : Main.getConfigurationManager().getAll()) {
-				for (final String key : config.getConfigurationSection("menu").getKeys(false)) {				
+				for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
+					// Don't overload the CPU or the API
+					try {
+						Thread.sleep(2000);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					
 					final ConfigurationSection section = config.getConfigurationSection("menu." + key);
 					
 					String action = section.getString("action");
@@ -51,13 +59,6 @@ public class PingServersBackground {
 					}
 					
 					Main.SERVER_PLACEHOLDERS.put(serverName, serverInfo);
-					
-					// Don't spam the API
-					try {
-						Thread.sleep(2000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					} 
 				}
 			}
 		}
