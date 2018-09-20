@@ -10,8 +10,10 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.ItemStack;
 
 import xyz.derkades.derkutils.Cooldown;
+import xyz.derkades.derkutils.bukkit.Colors;
 
 public class SelectorOpenListener implements Listener {
 
@@ -49,15 +51,17 @@ public class SelectorOpenListener implements Listener {
 				continue;
 			}
 			
-			final String string = config.getString("item");
-			Material material = Material.getMaterial(string);
+			final Material material = Material.getMaterial(config.getString("item"));
+			final String name = Colors.parseColors(config.getString("item-name"));
 			
-			if (material == null){
-				material = Material.STONE;
-			}
 			
 			//Use deprecated method to still support 1.8.8
-			if (player.getInventory().getItemInHand().getType() != material){
+			ItemStack itemInHand = player.getInventory().getItemInHand();
+			if (itemInHand.getType() != material){
+				continue;
+			}
+			
+			if (!itemInHand.getItemMeta().getDisplayName().equals(name)) {
 				continue;
 			}
 			
