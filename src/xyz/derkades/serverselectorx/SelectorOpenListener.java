@@ -62,7 +62,7 @@ public class SelectorOpenListener implements Listener {
 				continue;
 			}
 			
-			if (!itemInHand.getItemMeta().getDisplayName().equals(name)) {
+			if (itemInHand.getItemMeta() == null || !itemInHand.getItemMeta().getDisplayName().equals(name)) {
 				continue;
 			}
 			
