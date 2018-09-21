@@ -22,6 +22,7 @@ import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.ListUtils;
+import xyz.derkades.derkutils.Random;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.menu.IconMenu;
@@ -191,6 +192,10 @@ public class SelectorMenu extends IconMenu {
 				name = section.getString("name", " ");
 				lore = section.getStringList("lore");
 				enchanted = section.getBoolean("enchanted", false);
+			}
+			
+			if (data < 0) {
+				data = Random.getRandomInteger(0, 15);
 			}
 			
 			if (materialString != "NONE") {
