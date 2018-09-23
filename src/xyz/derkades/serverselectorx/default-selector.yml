@@ -54,9 +54,9 @@ menu:
       enchanted: true
       name: '&aKitPvP Server'
       lore:
-       - Lorem ipsum
-       - Dolor sit amet
-       - There are {online} out of {max} players online.
+       - 'Lorem ipsum'
+       - 'Dolor sit amet'
+       - 'There are {online} out of {max} players online.'
        - 'Message of the day: {motd}'
        - 'Game status: {status}'
       
@@ -67,9 +67,9 @@ menu:
       enchanted: false
       name: '&cKitPvP Server'
       lore:
-       - Ipsum lorem
-       - Amet sit dolor
-       - The server is offline
+       - 'Ipsum lorem'
+       - 'Amet sit dolor'
+       - 'The server is offline'
     
     # Change the item based on different placeholders.
   #  dynamic:
@@ -97,7 +97,7 @@ menu:
     enchanted: false
     name: 'This is you!'
     lore:
-     - This item does nothing
+     - 'This item does nothing'
   
   # If you want blank slots instead of glass panes, simply remove this -1 item.     
   -1: # -1 means everything else
