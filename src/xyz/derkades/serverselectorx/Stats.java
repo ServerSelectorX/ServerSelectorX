@@ -65,11 +65,7 @@ public class Stats {
 		}));
 		
 		metrics.addCustomChart(new Metrics.SimplePie("ping_api", () -> {
-			if (Main.getPlugin().getConfig().getBoolean("external-query", true)) {
-				return "External";
-			} else {
-				return "Internal";
-			}
+			return "Premium";
 		}));
 		
 		metrics.addCustomChart(new Metrics.SimplePie("updater", () -> {
@@ -84,14 +80,6 @@ public class Stats {
 			return Main.getPlugin().getConfig().getString("item-count-mode", "absolute").toLowerCase();
 		}));
 		
-		metrics.addCustomChart(new Metrics.SimplePie("background_pinging", () -> {
-			if (Main.getPlugin().getConfig().getBoolean("background-pinging", true)) {
-				return "Enabled";
-			} else {
-				return "Disabled";
-			}
-		}));
-		
 		metrics.addCustomChart(new Metrics.AdvancedPie("server_pinging", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 			
@@ -101,18 +89,10 @@ public class Stats {
 				for (final String slot : config.getConfigurationSection("menu").getKeys(false)) {
 					String action = config.getString("menu." + slot + ".action").split(":")[0].toLowerCase();
 					if (action.equalsIgnoreCase("srv")) {
-						if (config.getBoolean("menu." + slot + ".ping-server", false)) {
-							if (map.containsKey("Enabled")) {
-								map.put("Enabled", map.get("Enabled") + 1);
-							} else {
-								map.put("Enabled", 1);
-							}
+						if (map.containsKey("Premium")) {
+							map.put("Premium", map.get("Enabled") + 1);
 						} else {
-							if (map.containsKey("Disabled")) {
-								map.put("Disabled", map.get("Disabled") + 1);
-							} else {
-								map.put("Disabled", 1);
-							}
+							map.put("Premium", 1);
 						}
 					}
 				}
