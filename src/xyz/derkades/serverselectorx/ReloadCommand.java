@@ -95,7 +95,7 @@ public class ReloadCommand implements CommandExecutor {
 						
 						File serversYml = new File(pluginDirectory, "servers.yml");
 						File menuDirectory = new File(pluginDirectory, "menu");
-							serversYml.delete(); menuDirectory.delete();
+						serversYml.delete(); menuDirectory.delete(); menuDirectory.mkdirs();
 							
 						sender.sendMessage(ChatColor.GRAY + "Parsing request output..");
 						
