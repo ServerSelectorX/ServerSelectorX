@@ -3,6 +3,7 @@ package xyz.derkades.serverselectorx;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -72,25 +73,40 @@ public class PlaceholderReceiver extends HttpServlet {
 	}
 	
 	@Override
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {	
-		response.setContentType("text/json");
-		
-		Map<Object, Object> map = new HashMap<>();
-		map.put("version", Main.getPlugin().getDescription().getVersion());
-		map.put("api_version", 1);
-		map.put("server_count", Main.LAST_INFO_TIME.keySet().size());
-		Map<Object, Object> servers = new HashMap<>();
-		for (String serverName : Main.LAST_INFO_TIME.keySet()) {
-			Map<Object, Object> serverInfo = new HashMap<>();
-			serverInfo.put("lastPingTime", Main.LAST_INFO_TIME.get(serverName));
-			serverInfo.put("online", Main.isOnline(serverName));
-			serverInfo.put("placeholders", Main.PLACEHOLDERS.get(serverName));
-			servers.put(serverName, serverInfo);
-		}
-		map.put("servers", servers);
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		String json = gson.toJson(map);
-		response.getOutputStream().println(json);
+		
+		if (request.getServletPath().equalsIgnoreCase("config")) {
+			response.setContentType("text/json");
+			
+			Map<Object, Object> json = new HashMap<>();
+			json.put("config", Main.getConfigurationManager().getConfig().saveToString());
+			json.put("servers", Main.getConfigurationManager().getServersConfig().saveToString());
+			Map<Object, Object> menuFiles = new HashMap<>();
+			for (Entry<String, FileConfiguration> menuFile : Main.getConfigurationManager().getAll().entrySet()) {
+				menuFiles.put(menuFile.getKey(), menuFile.getValue().saveToString());
+			}
+			response.getOutputStream().println(gson.toJson(json));
+		} else {
+			response.setContentType("text/json");
+			
+			Map<Object, Object> map = new HashMap<>();
+			map.put("version", Main.getPlugin().getDescription().getVersion());
+			map.put("api_version", 1);
+			map.put("server_count", Main.LAST_INFO_TIME.keySet().size());
+			Map<Object, Object> servers = new HashMap<>();
+			for (String serverName : Main.LAST_INFO_TIME.keySet()) {
+				Map<Object, Object> serverInfo = new HashMap<>();
+				serverInfo.put("lastPingTime", Main.LAST_INFO_TIME.get(serverName));
+				serverInfo.put("online", Main.isOnline(serverName));
+				serverInfo.put("placeholders", Main.PLACEHOLDERS.get(serverName));
+				servers.put(serverName, serverInfo);
+			}
+			map.put("servers", servers);
+			
+			String json = gson.toJson(map);
+			response.getOutputStream().println(json);
+		}
 	}
 
 }

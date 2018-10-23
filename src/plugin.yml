@@ -14,3 +14,4 @@ commands:
       Aliases: serverselectorx, ss, ssx, serversel, serverselector
       
       /ssx reload/rl - reloads the config
+      /ssx retrieveconfig <ip:port> - Retrieve servers.yml and menu files from SSX in another server 
