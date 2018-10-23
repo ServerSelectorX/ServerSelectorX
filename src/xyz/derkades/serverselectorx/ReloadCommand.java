@@ -34,7 +34,7 @@ public class ReloadCommand implements CommandExecutor {
 	
 	@Override
 	public boolean onCommand(CommandSender sender, Command command, String label, String[] args){		
-		if (args.length == 1 && args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl")){
+		if (args.length == 1 && (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl"))){
 			if (!sender.hasPermission("ssx.reload")) {
 				sender.sendMessage(ChatColor.RED + "You need the permission 'ssx.reload' to execute this command.");
 				return true;
@@ -51,7 +51,7 @@ public class ReloadCommand implements CommandExecutor {
 		} else if (args.length == 2 && args[0].equalsIgnoreCase("retrieveconfig")) {
 			URL url;
 			try {
-				url = new URL("http://" + args[0] + "/config");
+				url = new URL("http://" + args[1] + "/config");
 			} catch (MalformedURLException e) {
 				sender.sendMessage(ChatColor.RED + "The address you entered seems to be incorrectly formatted.");
 				sender.sendMessage("It must be formatted like this: 173.45.16.208:8888");
