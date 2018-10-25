@@ -15,6 +15,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
@@ -204,31 +205,46 @@ public class Main extends JavaPlugin {
 				final String configName = menuConfigEntry.getKey();
 				final FileConfiguration config = menuConfigEntry.getValue();
 				
-				final String commandName = config.getString("command");
-				
-				if (commandName == null || commandName.equalsIgnoreCase("none")) {
+				if (!config.contains("command")) {
 					continue;
 				}
 				
-				commandMap.register("ssx-custom", new Command(commandName){
-	
-					@Override
-					public boolean execute(CommandSender sender, String label, String[] args) {
-						if (sender instanceof Player){
-							Player player = (Player) sender;
-							//Small cooldown to prevent weird bugs
-							if (Cooldown.getCooldown(player.getUniqueId() + "doubleopen") > 0) { //if time left on cooldown is > 0
-								return true;
+				List<String> commandNames;
+				
+				if (config.isList("command")) {
+					commandNames = config.getStringList("command");
+				} else if (config.isString("command")) {
+					commandNames = new ArrayList<>();
+					commandNames.add(config.getString("command"));
+				} else {
+					continue;
+				}
+				
+				if (commandNames.get(0).equalsIgnoreCase("none")) {
+					continue;
+				}
+				
+				for (String commandName : commandNames) {
+					commandMap.register("ssx-custom", new Command(commandName){
+		
+						@Override
+						public boolean execute(CommandSender sender, String label, String[] args) {
+							if (sender instanceof Player){
+								Player player = (Player) sender;
+								//Small cooldown to prevent weird bugs
+								if (Cooldown.getCooldown(player.getUniqueId() + "doubleopen") > 0) { //if time left on cooldown is > 0
+									return true;
+								}
+								
+								Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 1000); //Add cooldown for 1 second
+								
+								Main.openSelector(player, config, configName);
 							}
-							
-							Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 1000); //Add cooldown for 1 second
-							
-							Main.openSelector(player, config, configName);
+							return true;
 						}
-						return true;
-					}
-					
-				});
+						
+					});
+				}
 	
 			}
 		} catch (NoSuchFieldException | IllegalAccessException e) {
