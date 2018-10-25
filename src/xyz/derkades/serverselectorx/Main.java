@@ -69,54 +69,6 @@ public class Main extends JavaPlugin {
 	public void onEnable(){
 		plugin = this;
 		
-		try {
-			getDataFolder().mkdirs();
-			
-			File discordNameFile = new File(getDataFolder(), "discord_name.txt");
-			if (!discordNameFile.exists()) {
-				discordNameFile.createNewFile();
-				FileUtils.writeStringToFile(discordNameFile, "Username#1234", Charset.forName("UTF-8"));
-			}
-						
-			String name = FileUtils.readFileToString(discordNameFile, Charset.forName("UTF-8"));
-			
-			if (!name.equals("bypass")) {
-				final String parameters = String.format("name=%s", URLEncoder.encode(name.toString(), "UTF-8"));
-				
-				HttpsURLConnection connection = (HttpsURLConnection) new URL("https://derkades.xyz/ssx/premium-discord.php").openConnection();
-				connection.setRequestMethod("POST");
-				connection.setRequestProperty("Content-Length", parameters.length() + "");
-				connection.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-				connection.setDoOutput(true);
-				connection.addRequestProperty("User-Agent", "Mozilla/4.0 (compatible; MSIE 6.0; Windows NT 5.0)");
-				
-				DataOutputStream outputStream = new DataOutputStream(connection.getOutputStream());
-				outputStream.writeBytes(parameters);
-				outputStream.close();
-				
-				InputStream inputStream = connection.getInputStream();
-	
-				// Handle response
-				BufferedReader streamReader = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
-				StringBuilder responseBuilder = new StringBuilder();
-	
-				String responseString;
-				while ((responseString = streamReader.readLine()) != null)
-					responseBuilder.append(responseString);
-				
-				if (responseBuilder.toString().equals("false")) {
-					getLogger().severe("The discord username in /plugins/ServerSelectorX/discord_name.txt is invalid.");
-					getLogger().severe("Please enter your username in the file.");
-					getLogger().severe("There should only be 1 line in the file, with your username");
-					getLogger().severe("If you are positive you did everything right, please contact me.");
-					Bukkit.getPluginManager().disablePlugin(this);
-					return;
-				}
-			}
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
 		configurationManager = new ConfigurationManager();
 		configurationManager.reloadAll();
 
