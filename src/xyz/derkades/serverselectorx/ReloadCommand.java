@@ -33,13 +33,13 @@ import net.md_5.bungee.api.ChatColor;
 public class ReloadCommand implements CommandExecutor {
 	
 	@Override
-	public boolean onCommand(CommandSender sender, Command command, String label, String[] args){		
+	public boolean onCommand(CommandSender sender, Command command, String label, String[] args){
+		if (!sender.hasPermission("ssx.admin")) {
+			sender.sendMessage(ChatColor.RED + "You need the permission 'ssx.reload' to execute this command.");
+			return true;
+		}
+		
 		if (args.length == 1 && (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl"))){
-			if (!sender.hasPermission("ssx.reload")) {
-				sender.sendMessage(ChatColor.RED + "You need the permission 'ssx.reload' to execute this command.");
-				return true;
-			}
-			
 			Main.getConfigurationManager().reloadAll();
 			
 			Main.server.stop();
