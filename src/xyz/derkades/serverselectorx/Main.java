@@ -3,18 +3,11 @@ package xyz.derkades.serverselectorx;
 import static org.bukkit.ChatColor.DARK_AQUA;
 import static org.bukkit.ChatColor.DARK_GRAY;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.net.URL;
-import java.net.URLEncoder;
-import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -23,9 +16,6 @@ import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import javax.net.ssl.HttpsURLConnection;
-
-import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -46,6 +36,8 @@ import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
 public class Main extends JavaPlugin {
 	
 	private static final int CONFIG_VERSION = 8;
+	
+	public static boolean BETA = false;
 	
 	public static Placeholders PLACEHOLDER_API;
 	
@@ -123,6 +115,10 @@ public class Main extends JavaPlugin {
 			Cache.cleanCache();
 		}, 30*60*20, 30*60*20);
 
+		if (this.getDescription().getVersion().equals("beta")) {
+			BETA = true;
+		}
+		
 		int port = configurationManager.getConfig().getInt("port");
 		server = new WebServer(port);
 		server.start();

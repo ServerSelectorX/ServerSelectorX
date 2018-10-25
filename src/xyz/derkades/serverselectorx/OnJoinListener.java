@@ -3,6 +3,7 @@ package xyz.derkades.serverselectorx;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -23,6 +24,10 @@ public class OnJoinListener implements Listener {
 	public void onJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
 		FileConfiguration config = Main.getConfigurationManager().getConfig();
+		
+		if (player.hasPermission("ssx.reload") && Main.BETA) {
+			player.sendMessage("You are using a beta version of ServerSelectorX. Please update to a stable version as soon as the functionality or bugfix you require is available in a stable release version. " + ChatColor.GRAY + "(only players with the ssx.admin permission will see this message)");
+		}
 		
 		if (config.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
 			event.getPlayer().getInventory().clear();
