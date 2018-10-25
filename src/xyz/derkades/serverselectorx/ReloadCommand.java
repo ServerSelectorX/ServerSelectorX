@@ -108,7 +108,8 @@ public class ReloadCommand implements CommandExecutor {
 						Map<File, String> fileContents = new HashMap<>();
 						fileContents.put(serversYml, json.get("servers").getAsString());
 						
-						for (Entry<String, JsonElement> menuJsonObjectEntryThing : json.entrySet()) {
+						JsonObject menuFilesJson = json.get("menu").getAsJsonObject();
+						for (Entry<String, JsonElement> menuJsonObjectEntryThing : menuFilesJson.entrySet()) {
 						    retrievedConfigurationFiles.add("menu/" + menuJsonObjectEntryThing.getKey() + ".yml");
 						    fileContents.put(new File(menuDirectory, menuJsonObjectEntryThing.getKey() + ".yml"),
 						    menuJsonObjectEntryThing.getValue().getAsString());
