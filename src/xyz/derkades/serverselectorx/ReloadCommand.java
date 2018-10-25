@@ -111,7 +111,7 @@ public class ReloadCommand implements CommandExecutor {
 						for (Entry<String, JsonElement> menuJsonObjectEntryThing : json.entrySet()) {
 						    retrievedConfigurationFiles.add("menu/" + menuJsonObjectEntryThing.getKey() + ".yml");
 						    fileContents.put(new File(menuDirectory, menuJsonObjectEntryThing.getKey() + ".yml"),
-						    		menuJsonObjectEntryThing.getValue().getAsString());
+						    menuJsonObjectEntryThing.getValue().getAsString());
 						}
 						
 						sender.sendMessage(ChatColor.GRAY + "Writing to disk..");

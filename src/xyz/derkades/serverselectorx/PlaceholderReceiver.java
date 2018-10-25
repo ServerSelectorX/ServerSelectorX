@@ -75,8 +75,8 @@ public class PlaceholderReceiver extends HttpServlet {
 	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
 		Gson gson = new GsonBuilder().setPrettyPrinting().create();
-		
-		if (request.getServletPath().equalsIgnoreCase("config")) {
+
+		if (request.getRequestURI().equalsIgnoreCase("/config")) {
 			response.setContentType("text/json");
 			
 			Map<Object, Object> json = new HashMap<>();
@@ -86,7 +86,9 @@ public class PlaceholderReceiver extends HttpServlet {
 			for (Entry<String, FileConfiguration> menuFile : Main.getConfigurationManager().getAll().entrySet()) {
 				menuFiles.put(menuFile.getKey(), menuFile.getValue().saveToString());
 			}
+			json.put("menu", menuFiles);
 			response.getOutputStream().println(gson.toJson(json));
+			System.out.println("[debug] Received config request from " + request.getRemoteAddr().toString());
 		} else {
 			response.setContentType("text/json");
 			
