@@ -77,7 +77,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new OnJoinListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemMoveDropCancelListener(), this);
 		
-		List<String> offHandVersions = Arrays.asList("1.9", "1.10", "1.11", "1.12");
+		List<String> offHandVersions = Arrays.asList("1.9", "1.10", "1.11", "1.12", "1.13");
 		for (String version : offHandVersions) {
 			if (Bukkit.getBukkitVersion().contains(version)) {
 				Bukkit.getPluginManager().registerEvents(new OffHandMoveCancel(), this);
