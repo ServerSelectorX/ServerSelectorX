@@ -76,18 +76,6 @@ public class Stats {
 			}
 		}));
 		
-		metrics.addCustomChart(new Metrics.SimplePie("player_count_mode", () -> {
-			return Main.getPlugin().getConfig().getString("item-count-mode", "absolute").toLowerCase();
-		}));
-		
-		metrics.addCustomChart(new Metrics.SimplePie("background_pinging", () -> {
-			if (Main.getPlugin().getConfig().getBoolean("background-pinging", true)) {
-				return "Enabled";
-			} else {
-				return "Disabled";
-			}
-		}));
-		
 		metrics.addCustomChart(new Metrics.AdvancedPie("server_pinging", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 			
@@ -117,7 +105,7 @@ public class Stats {
 		
 		metrics.addCustomChart(new Metrics.SimplePie("permissions", () -> {
 			if (Main.getPlugin().getConfig().getBoolean("permissions-enabled", false)) {
-				return "Enabled";
+				return "Free";
 			} else {
 				return "Disabled";
 			}
