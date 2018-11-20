@@ -125,6 +125,7 @@ public class SelectorMenu extends IconMenu {
 				builder.data(data);
 			}
 
+			builder.amount(amount);
 			builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
 			builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
 
