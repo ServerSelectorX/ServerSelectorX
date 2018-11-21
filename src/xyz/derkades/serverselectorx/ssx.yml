@@ -1,0 +1,23 @@
+# Port which ServerSelectorX Connector should connect to.
+# This port is also used for configuration synchronisation.
+port: 9782
+
+# Retrieve configuration files from another server
+# Warning: enabling this will delete whitelisted configuration files
+# and ALL menu files, regardless of the whitelist setting
+config-sync:
+  enabled: false
+  
+  # Server to retrieve configuration files from
+  address: '123.45.67.89:9782'
+  
+  # To whitelist all menu files, add menu:all
+  whitelist:
+   - servers
+   - global
+   - menu:default
+   - menu:skywars
+   
+# Set a server selector name here to open said selector when a player joins a server
+# If your file is called 'default.yml', enter 'default'.
+open-on-join: none

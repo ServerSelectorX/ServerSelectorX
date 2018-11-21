@@ -41,12 +41,11 @@ public class ReloadCommand implements CommandExecutor {
 		
 		if (args.length == 1 && (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl"))){
 			Main.getConfigurationManager().reloadAll();
+			sender.sendMessage(AQUA + "The configuration file has been reloaded.");
 			
 			Main.server.stop();
 			Main.server.start();
-			Main.getPlugin().getLogger().info("Server restarted!");
-					
-			sender.sendMessage(AQUA + "The configuration file has been reloaded.");
+			Main.getPlugin().getLogger().info(ChatColor.GRAY + "Restarting SSX-Connector webserver.. Some errors may appear in servers with SSX-Connector installed.");
 			return true;			
 		} else if (args.length == 2 && args[0].equalsIgnoreCase("retrieveconfig")) {
 			URL url;
@@ -91,48 +90,64 @@ public class ReloadCommand implements CommandExecutor {
 						}
 						
 						sender.sendMessage(ChatColor.GRAY + "Deleting existing configuration..");
-						File pluginDirectory = Main.getPlugin().getDataFolder();
 						
-						File serversYml = new File(pluginDirectory, "servers.yml");
-						File menuDirectory = new File(pluginDirectory, "menu");
-						serversYml.delete(); menuDirectory.delete(); menuDirectory.mkdirs();
+						Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> {
+							File pluginDirectory = Main.getPlugin().getDataFolder();
 							
-						sender.sendMessage(ChatColor.GRAY + "Parsing request output..");
-						
-						JsonParser parser = new JsonParser();
-						JsonObject json = parser.parse(jsonOutputFinal).getAsJsonObject();
-						
-						List<String> retrievedConfigurationFiles = new ArrayList<>();
-						retrievedConfigurationFiles.add("servers.yml");
-						
-						Map<File, String> fileContents = new HashMap<>();
-						fileContents.put(serversYml, json.get("servers").getAsString());
-						
-						JsonObject menuFilesJson = json.get("menu").getAsJsonObject();
-						for (Entry<String, JsonElement> menuJsonObjectEntryThing : menuFilesJson.entrySet()) {
-						    retrievedConfigurationFiles.add("menu/" + menuJsonObjectEntryThing.getKey() + ".yml");
-						    fileContents.put(new File(menuDirectory, menuJsonObjectEntryThing.getKey() + ".yml"),
-						    menuJsonObjectEntryThing.getValue().getAsString());
-						}
-						
-						sender.sendMessage(ChatColor.GRAY + "Writing to disk..");
-						
-						// Write to disk
-						for (Entry<File, String> fileContent : fileContents.entrySet()) {
-							FileConfiguration config = new YamlConfiguration();
-							try {
-								config.loadFromString(fileContent.getValue());
-							} catch (InvalidConfigurationException e) {
-								e.printStackTrace();
-							}
-							try {
-								config.save(fileContent.getKey());
-							} catch (IOException e) {
-								e.printStackTrace();
-							}
-						}
-						
-						sender.sendMessage(ChatColor.GREEN + "Done! Retrieved the following config files: " + String.join(", ", retrievedConfigurationFiles));
+							File serversYml = new File(pluginDirectory, "servers.yml");
+							File menuDirectory = new File(pluginDirectory, "menu");
+							serversYml.delete();
+							for (File file : menuDirectory.listFiles()) file.delete();
+							
+							Bukkit.getScheduler().runTask(Main.getPlugin(), () -> {
+								sender.sendMessage(ChatColor.GRAY + "Parsing request output..");
+								
+								Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> {
+									JsonParser parser = new JsonParser();
+									JsonObject json = parser.parse(jsonOutputFinal).getAsJsonObject();
+									
+									List<String> retrievedConfigurationFiles = new ArrayList<>();
+									retrievedConfigurationFiles.add("servers.yml");
+									
+									Map<File, String> fileContents = new HashMap<>();
+									fileContents.put(serversYml, json.get("servers").getAsString());
+									
+									JsonObject menuFilesJson = json.get("menu").getAsJsonObject();
+									for (Entry<String, JsonElement> menuJsonObjectEntryThing : menuFilesJson.entrySet()) {
+									    retrievedConfigurationFiles.add("menu/" + menuJsonObjectEntryThing.getKey() + ".yml");
+									    fileContents.put(new File(menuDirectory, menuJsonObjectEntryThing.getKey() + ".yml"),
+									    menuJsonObjectEntryThing.getValue().getAsString());
+									}
+									
+									Bukkit.getScheduler().runTask(Main.getPlugin(), () -> {
+										sender.sendMessage(ChatColor.GRAY + "Writing to disk..");
+										
+										Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> {
+											// Write to disk
+											for (Entry<File, String> fileContent : fileContents.entrySet()) {
+												FileConfiguration config = new YamlConfiguration();
+												try {
+													config.loadFromString(fileContent.getValue());
+												} catch (InvalidConfigurationException e) {
+													e.printStackTrace();
+												}
+												try {
+													config.save(fileContent.getKey());
+												} catch (IOException e) {
+													e.printStackTrace();
+												}
+											}
+											
+											Bukkit.getScheduler().runTask(Main.getPlugin(), () -> {
+												sender.sendMessage(ChatColor.GREEN + "Done! Retrieved the following config files: " + String.join(", ", retrievedConfigurationFiles));
+												sender.sendMessage(ChatColor.GRAY + "The plugin will now reload.");
+												Bukkit.dispatchCommand(sender, "serverselectorx reload");
+											});
+										});
+									});
+								});
+							});
+						});
 					}
 				});
 			});

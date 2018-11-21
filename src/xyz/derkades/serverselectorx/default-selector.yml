@@ -1,56 +1,31 @@
-# For a list of item names see https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
-
-
-# Number of rows of slots of your server selector menu. For example '2' will mean 2*9 = 18 slots. Max value is 6.
+title: 'Server Selector'
 rows: 2
 
-# This will be displayed as the title of the menu. YOU CANNOT HAVE MULTIPLE MENUS WITH THE SAME TITLE!
-# The title cannot be longer than 32 characters due to a vanilla minecraft limitation.
-title: 'Server Selector'
+item:
+  enabled: true
+  title: 'Server Selector'
+  lore:
+   - 'Right click this item to select a server'
+  material: COMPASS
+  data: 0
+  on-join: 
+    enabled: true
+    inv-slot: 0
+  right-click: true
+  left-click: false
 
-# This will be the name of the server selector item
-item-name: 'Server Selector'
+commands:
+ - menu
+ - servers
 
-# Item lore. For no lore, put 'none' in the first line.
-item-lore:
-- 'Line 1'
-- 'Line 2'
-
-# The name of the server selector item. Specify "NONE" for no item.
-item: COMPASS
-data: 0
-
-# Give the item when a player joins?
-on-join: true
-
-# What slot should the item be in? Specify -1 to automatically put it in the first available slot.
-inv-slot: 0
-
-# URL clickable message. If you don't know what this does you don't need to change it.
 url-message: '&3&lClick here'
-
-# Command to open the menu. Specify "none" for no command. (without /).
-# You need to fully restart your server for commands to work, /ssx reload is not enough!
-command: "menu"
-
-# Possible values for action: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Actions
 
 menu:
 
-  3: # Item in 4th slot (use 0 for first item). Add as many items as you want by copying this section and giving it a new number. This number must not be greater than (rows*9)-1
-
-    item-count: 1
-    
-    # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Actions
+  3:
     action: 'srv:kitpvp'
-
-    # Settings in this section are used when the server is online
-    # Placeholders not working and/or server always offline? See this:
-    # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium-%7C-Installation-Instructions#enabling-custom-placeholders-and-onlineoffline-status
     online:
-      # For a list of item names see https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Material.html
       item: DIAMOND_SWORD
-      data: 0
       enchanted: true
       name: '&aKitPvP Server'
       lore:
@@ -59,51 +34,24 @@ menu:
        - 'There are {online} out of {max} players online.'
        - 'Message of the day: {motd}'
        - 'Game status: {status}'
-      
-    # Settings in this section are used when the server is offline
+
     offline:
       item: WOOD_SWORD
-      data: 0
-      enchanted: false
       name: '&cKitPvP Server'
       lore:
        - 'Ipsum lorem'
        - 'Amet sit dolor'
        - 'The server is offline'
-    
-    # Change the item based on different placeholders.
-  #  dynamic:
-  #    # If the placeholder {test} is equal to 'Hello!'
-  #    "test:Hello!":
-  #      item: IRON_SWORD
-  #      data: 0
-  #      enchanted: false
-  #      name: '&cKitPvP Server'
-  #      lore:
-  #       - The game has not started
-  #    # If the placeholder {online} is equal to '1'
-  #    "online:2":
-  #      item: WOODEN_SWORD
-  #      data: 0
-  #      enchanted: false
-  #      name: '&cKitPvP Server'
-  #      lore:
-  #       - The game is in progress
          
-  5: # Item in 6th slot   
-    action: 'none'
-    item: 'head:auto' # You can use head:auto to get the head of the player opening the menu, or head:SomethingElse to get the head of a specific player.
-    data: 0
-    enchanted: false
-    name: 'This is you!'
+  5:
+    action: 
+     - 'msg:&8This is a message'
+     - 'close'
+    item: 'head:auto'
+    name: '&aThis is you!'
     lore:
-     - 'This item does nothing'
+     - '&6Click this item to receive a message'
   
-  # If you want blank slots instead of glass panes, simply remove this -1 item.     
-  -1: # -1 means everything else
-    action: 'none'
+  -1: # -1 means all blank slots
     item: STAINED_GLASS_PANE
-    data: 0
-    enchanted: false
-    name: ''
-    lore: []
+    data: 8

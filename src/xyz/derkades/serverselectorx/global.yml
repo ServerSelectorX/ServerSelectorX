@@ -1,54 +1,5 @@
-# Please note that if you want to use color codes or special characters 
-# you have to enclose your string into quotation marks, for example:
-#
-# name: '&aFancy &cColors!'
 
 
-
-# -------------------- Pinging -------------------- #
-
-# Port which ServerSelectorX Connector should connect to
-port: 9782
-
-# Log information recieved from the connector plugin
-# "Recevied message from <server>: { <data> }"
-log-pinger: true
-
-# The number of milliseconds without a ping until ServerSelectorX will consider a server as offline.
-# This number should be greater than the ping interval in your SSX-Connector config.
-server-offline-timeout: 6000
-
-# -------------------- Server selectors -------------------- #
-
-right-click-open: true
-left-click-open: false
-
-# When this is set to true, stuff that would normally happen when you click an item will not happen.
-# For example, right clicking with a hoe will not turn dirt into farmland.
-# (only for items that open a menu)
-# This is useful if you use certain items, but can cause problems
-# with some plugins which is why it's disabled by default.
-cancel-click-event: false
-
-# Cooldown for opening the selector menu in milliseconds.
-# This applies to commands and items. By default there is already a one second cooldown.
-# This value is in milliseconds. Any value less than 1000 = cooldown off.
-selector-open-cooldown: 0
-
-# Specify empty string for no message -> cooldown-message: ''
-cooldown-message: '&cYou cannot use this yet, please wait {x} seconds.'
-
-# Ignore player right click on server selector item if another plugin has cancelled the event
-# When this is set to true, players will no longer be able to open the server selector if plugins
-# such as WorldGuard don't allow it.
-ignore-cancelled: false
-
-# Set a server selector name here to open said selector when a player joins a server
-# If your file is called 'default.yml', enter 'default'.
-open-on-join: none
-
-
-# -------------------- Server teleportation -------------------- #
 
 # Clear chat before sending player to server? 
 # Note: the chat will be cleared before sending server teleport message, so the server teleport message will still be visible.
@@ -62,20 +13,15 @@ server-teleport-message: '&7You are being connected to &7&l{x}&r&7.'
 offline-cancel-connect: false
 offline-cancel-connect-message: "&cThis server is currently offline."
 
+# -------------------- Pinging -------------------- #
 
-# -------------------- Permissions -------------------- #
+# Log information recieved from the connector plugin
+# "Recevied message from <server>: { <data> }"
+log-pinger: true
 
-# Require the permission 'ssx.use.<menu name>' to open the menu and ssx.join.<menu name> to get the item on join
-permissions-enabled: false
-
-# Require permissions per icon.
-# ssx.icon.<menu name>.<slot> e.g. ssx.icon.default.3
-# Wildcards are allowed for slots e.g. ssx.icon.default.*
-per-icon-permissions: false
-
-# Send a message if the player does not have permission to use the server selector?
-no-permission-message-enabled: true
-no-permission-message: '&cYou do not have permission to use the server selector.'
+# The number of milliseconds without a ping until ServerSelectorX will consider a server as offline.
+# This number should be greater than the ping interval in your SSX-Connector config.
+server-offline-timeout: 6000
 
 
 # -------------------- Sounds -------------------- #
@@ -104,6 +50,19 @@ cancel-item-drop: false
 # Cancel item move for players that do not have the permission ssx.move (this includes swapping items between hands for 1.9+)
 cancel-item-move: false
 
+# -------------------- Permissions -------------------- #
+
+# Require the permission 'ssx.use.<menu name>' to open the menu and ssx.join.<menu name> to get the item on join
+permissions-enabled: false
+
+# Require permissions per icon.
+# ssx.icon.<menu name>.<slot> e.g. ssx.icon.default.3
+# Wildcards are allowed for slots e.g. ssx.icon.default.*
+per-icon-permissions: false
+
+# Send a message if the player does not have permission to use the server selector?
+no-permission-message-enabled: true
+no-permission-message: '&cYou do not have permission to use the server selector.'
 
 # -------------------- Effects -------------------- #
 
@@ -132,9 +91,19 @@ hide-others: "&7&oAll players have been hidden"
 show-others: "&7&oAll players are now visible"
 
 
-# -------------------- Technical -------------------- #
+# -------------------- Advanced -------------------- #
 
-# -> Only touch if you know what you are doing. Toggling these options may break the plugin.
+# When this is set to true, stuff that would normally happen when you click an item will not happen.
+# For example, right clicking with a hoe will not turn dirt into farmland.
+# (only for items that open a menu)
+# This is useful if you use certain items, but can cause problems
+# with some plugins which is why it's disabled by default.
+cancel-click-event: false
+
+# Ignore player right click on server selector item if another plugin has cancelled the event
+# When this is set to true, players will no longer be able to open the server selector if plugins
+# such as WorldGuard don't allow it.
+ignore-cancelled: false
 
 # When set to true, give an ambient effect (like beacons) instead of effects without particles.
 # 1.8+ supports effects without particles.
@@ -145,9 +114,3 @@ show-particles: false
 # Disabling this will make reloads 3 seconds faster but all your servers may appear as offline
 # after doing /reload
 freeze-bukkit-thread: true
-
-
-
-
-# Do not touch this
-version: 8

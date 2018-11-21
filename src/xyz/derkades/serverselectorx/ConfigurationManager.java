@@ -15,78 +15,59 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public class ConfigurationManager {
 
-	private final Map<String, FileConfiguration> files = new ConcurrentHashMap<>();
-	private FileConfiguration serverConfig;
+	private final Map<String, FileConfiguration> menus = new ConcurrentHashMap<>();
+	private FileConfiguration servers;
+	private FileConfiguration global;
+	private FileConfiguration ssx;
 	
-	public Map<String, FileConfiguration> getAll() {
-		return files;
+	public Map<String, FileConfiguration> getAllMenus() {
+		return menus;
 	}
 	
-	public FileConfiguration getByName(String name) {
-		return files.get(name);
+	public FileConfiguration getMenuByName(String name) {
+		return menus.get(name);
 	}
-	
-	public FileConfiguration getConfig() {
-		return Main.getPlugin().getConfig();
-	}
-	
-	private void loadServersConfig() {
-		File file = new File(Main.getPlugin().getDataFolder(), "servers.yml");
-		
-		if (!file.exists()) {
-			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/servers.yml");
-			try {
-				FileUtils.copyURLToFile(inputUrl, file);
-			} catch (IOException e){
-				e.printStackTrace();
-			}
+
+	public void reload() {		
+		File dataFolder = Main.getPlugin().getDataFolder();
+		File menuFolder = new File(dataFolder, "menu");
+		menuFolder.mkdirs();
+
+		if (menuFolder.listFiles().length == 0){
+			// Save default.yml file if menu folder is empty
+			saveDefaultAndLoad("default-selector", new File(menuFolder, "default.yml"));
 		}
-		
-		serverConfig = YamlConfiguration.loadConfiguration(file);
-	}
-	
-	public FileConfiguration getServersConfig() {
-		if (serverConfig == null) loadServersConfig();
-		
-		return serverConfig;
-	}
-	
-	public void reloadAll() {		
-		//Create default configuration files
-		
-		Main.getPlugin().saveDefaultConfig();
-		
-		File dir = new File(Main.getPlugin().getDataFolder() + File.separator + "menu");
-		dir.mkdirs();
-		if (dir.listFiles().length == 0){
-			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/default-selector.yml");
-			try {
-				File defaultConfig = new File(dir, "default.yml");
-				FileUtils.copyURLToFile(inputUrl, defaultConfig);
-			} catch (IOException e){
-				e.printStackTrace();
-			}
-		}
-		
-		//Reload configuration files
 		
 		Main.getPlugin().reloadConfig();
 		
 		loadServersConfig();
 
-		files.clear();
+		menus.clear();
 		for (File file : new File(Main.getPlugin().getDataFolder() + File.separator + "menu").listFiles()){
 			if (!file.getName().endsWith(".yml"))
 				continue;
 
 			String name = file.getName().replace(".yml", "");
 			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-			files.put(name, config);
+			menus.put(name, config);
 		}
 		
 		//Initialize variables
 		ItemMoveDropCancelListener.DROP_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-drop", false);
 		ItemMoveDropCancelListener.MOVE_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-move", false);
+	}
+	
+	private FileConfiguration saveDefaultAndLoad(String name, File destination) {
+		if (!destination.exists()) {
+			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/" + name + ".yml");
+			try {
+				FileUtils.copyURLToFile(inputUrl, destination);
+			} catch (IOException e){
+				e.printStackTrace();
+			}
+		}
+		
+		return YamlConfiguration.loadConfiguration(destination);
 	}
 
 }
