@@ -62,7 +62,7 @@ public class Main extends JavaPlugin {
 		plugin = this;
 		
 		configurationManager = new ConfigurationManager();
-		configurationManager.reloadAll();
+		configurationManager.reload();
 
 		//Register listeners
 		Bukkit.getPluginManager().registerEvents(new SelectorOpenListener(), this);
@@ -84,19 +84,6 @@ public class Main extends JavaPlugin {
 		
 		//Start bStats
 		Stats.initialize();
-		
-		//Check if config is up to date
-		int version = getConfig().getInt("version");
-		if (version != CONFIG_VERSION){
-			Logger logger = super.getLogger();
-			logger.log(Level.SEVERE, "************** IMPORTANT **************");
-			logger.log(Level.SEVERE, "You updated the plugin without deleting the config.");
-			logger.log(Level.SEVERE, "Please rename config.yml to something else and restart your server.");
-			logger.log(Level.SEVERE, "If you don't want to redo your config, see resource updates on spigotmc.org for instructions.");
-			logger.log(Level.SEVERE, "***************************************");
-			getServer().getPluginManager().disablePlugin(this);
-			return;
-		}
 		
 		//Register custom selector commands
 		registerCommands();
