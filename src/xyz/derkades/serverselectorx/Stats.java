@@ -104,11 +104,7 @@ public class Stats {
 		}));
 		
 		metrics.addCustomChart(new Metrics.SimplePie("permissions", () -> {
-			if (Main.getPlugin().getConfig().getBoolean("permissions-enabled", false)) {
-				return "Free";
-			} else {
-				return "Disabled";
-			}
+			return "Free";
 		}));
 		
 		metrics.addCustomChart(new Metrics.SimplePie("item_drop", () -> {
