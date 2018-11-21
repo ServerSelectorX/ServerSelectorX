@@ -157,7 +157,7 @@ public class Main extends JavaPlugin {
 								
 								Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 1000); //Add cooldown for 1 second
 								
-								Main.openSelector(player, config, configName);
+								Main.openSelector(player, configName);
 							}
 							return true;
 						}
