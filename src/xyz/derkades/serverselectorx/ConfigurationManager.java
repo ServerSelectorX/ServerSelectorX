@@ -27,34 +27,46 @@ public class ConfigurationManager {
 	public FileConfiguration getMenuByName(String name) {
 		return menus.get(name);
 	}
+	
+	public FileConfiguration getServersConfig() {
+		return servers;
+	}
+	
+	public FileConfiguration getGlobalConfig() {
+		return global;
+	}
+	
+	public FileConfiguration getSSXConfig() {
+		return ssx;
+	}
 
 	public void reload() {		
 		File dataFolder = Main.getPlugin().getDataFolder();
 		File menuFolder = new File(dataFolder, "menu");
-		menuFolder.mkdirs();
-
+		menuFolder.mkdirs(); //will create data folder as well
+		
 		if (menuFolder.listFiles().length == 0){
 			// Save default.yml file if menu folder is empty
-			saveDefaultAndLoad("default-selector", new File(menuFolder, "default.yml"));
+			saveDefaultAndLoad("default-selector", new File(dataFolder, "default.yml"));
 		}
 		
-		Main.getPlugin().reloadConfig();
-		
-		loadServersConfig();
-
-		menus.clear();
-		for (File file : new File(Main.getPlugin().getDataFolder() + File.separator + "menu").listFiles()){
-			if (!file.getName().endsWith(".yml"))
-				continue;
-
-			String name = file.getName().replace(".yml", "");
-			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-			menus.put(name, config);
-		}
+		servers = saveDefaultAndLoad("servers", new File(dataFolder, "servers.yml"));
+		global = saveDefaultAndLoad("global", new File(dataFolder, "global.yml"));
+		ssx = saveDefaultAndLoad("ssx", new File(dataFolder, "ssx.yml"));
 		
 		//Initialize variables
-		ItemMoveDropCancelListener.DROP_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-drop", false);
-		ItemMoveDropCancelListener.MOVE_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-move", false);
+		ItemMoveDropCancelListener.DROP_PERMISSION_ENABLED = global.getBoolean("cancel-item-drop", false);
+		ItemMoveDropCancelListener.MOVE_PERMISSION_ENABLED = global.getBoolean("cancel-item-move", false);
+		
+		menus.clear();
+		for (File file : menuFolder.listFiles()) {
+			if (!(file.getName().endsWith(".yml") || file.getName().endsWith(".yaml"))){
+				Main.getPlugin().getLogger().warning("Skipped non-yml file " + file.getPath());
+				continue;
+			}
+			
+			menus.put(file.getName().replace(".yml", "").replace(".yaml", ""), YamlConfiguration.loadConfiguration(file));
+		}
 	}
 	
 	private FileConfiguration saveDefaultAndLoad(String name, File destination) {
