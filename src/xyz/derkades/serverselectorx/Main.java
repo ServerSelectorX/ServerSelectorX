@@ -8,13 +8,11 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
@@ -26,6 +24,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import net.md_5.bungee.api.ChatColor;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.caching.Cache;
@@ -34,8 +33,6 @@ import xyz.derkades.serverselectorx.placeholders.PlaceholdersDisabled;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
 
 public class Main extends JavaPlugin {
-	
-	private static final int CONFIG_VERSION = 8;
 	
 	public static boolean BETA = false;
 	
@@ -106,7 +103,7 @@ public class Main extends JavaPlugin {
 			BETA = true;
 		}
 		
-		int port = configurationManager.getConfig().getInt("port");
+		int port = configurationManager.getSSXConfig().getInt("port");
 		server = new WebServer(port);
 		server.start();
 	}
@@ -115,7 +112,7 @@ public class Main extends JavaPlugin {
 	public void onDisable() {
 		if (server != null) {
 			server.stop();
-			if (Main.getConfigurationManager().getConfig().getBoolean("freeze-bukkit-thread", true)) {
+			if (configurationManager.getGlobalConfig().getBoolean("freeze-bukkit-thread", true)) {
 				// Freeze bukkit thread to give the server time to stop
 				try {
 					Thread.sleep(3000);
@@ -136,28 +133,15 @@ public class Main extends JavaPlugin {
 			bukkitCommandMap.setAccessible(true);
 			CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
 			
-			for (Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getAll().entrySet()) {			
+			for (Map.Entry<String, FileConfiguration> menuConfigEntry : configurationManager.getAllMenus().entrySet()) {			
 				final String configName = menuConfigEntry.getKey();
 				final FileConfiguration config = menuConfigEntry.getValue();
 				
-				if (!config.contains("command")) {
+				if (!config.contains("commands")) {
 					continue;
 				}
 				
-				List<String> commandNames;
-				
-				if (config.isList("command")) {
-					commandNames = config.getStringList("command");
-				} else if (config.isString("command")) {
-					commandNames = new ArrayList<>();
-					commandNames.add(config.getString("command"));
-				} else {
-					continue;
-				}
-				
-				if (commandNames.get(0).equalsIgnoreCase("none")) {
-					continue;
-				}
+				List<String> commandNames = config.getStringList("command");
 				
 				for (String commandName : commandNames) {
 					commandMap.register("ssx-custom", new Command(commandName){
@@ -196,44 +180,39 @@ public class Main extends JavaPlugin {
 	 * 
 	 * Checks for cooldown, checks for permissions, plays sound
 	 */
-	public static void openSelector(Player player, FileConfiguration config, String configName) {
-		long cooldown = Cooldown.getCooldown(configName + player.getName());
-		if (cooldown > 0) {
-			String cooldownMessage = Main.getPlugin().getConfig().getString("cooldown-message", "&cYou cannot use this yet, please wait {x} seconds.");
-			cooldownMessage = cooldownMessage.replace("{x}", String.valueOf((cooldown / 1000) + 1));
-			cooldownMessage = Colors.parseColors(cooldownMessage);
-			if (!(cooldownMessage.equals("") || cooldownMessage.equals(" "))) { //Do not send message if message is an empty string
-				player.sendMessage(cooldownMessage);
-			}
-			
+	public static void openSelector(Player player, String configName) {
+		final FileConfiguration config = configurationManager.getMenuByName(configName);
+		
+		if (config == null) {
+			Main.error("A server selector with this name does not exist", player);
 			return;
 		}
 		
-		long cooldownDuration = Main.getPlugin().getConfig().getLong("selector-open-cooldown", 0);	
-		if (cooldownDuration >= 1000) {
-			Cooldown.addCooldown(configName + player.getName(), cooldownDuration);
-		}
+		// Check for permissions
 		
-		final boolean permissionsEnabled = Main.getPlugin().getConfig().getBoolean("permissions-enabled");
-		final boolean hasPermission = player.hasPermission("ssx.use." + configName);
-		if (!permissionsEnabled || hasPermission){
-			
-			//Play sound
-			String soundString = Main.getPlugin().getConfig().getString("selector-open-sound");
-			if (soundString != null && !soundString.equals("NONE")){
-				try {
-					Sound sound = Sound.valueOf(soundString);
-					player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
-				} catch (IllegalArgumentException e){
-					Main.getPlugin().getLogger().log(Level.WARNING, "A sound with the name " + soundString + " could not be found. Make sure that it is the right name for your server version.");
-				}
+		final boolean permissionEnabled = config.getBoolean("permission", false);
+		final String permission = "ssx.open." + configName;
+		
+		if (permissionEnabled && !player.hasPermission(permission)) {
+			if (Main.getConfigurationManager().getGlobalConfig().getBoolean("no-permission-message-enabled")) {
+				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("no-permission-message")));
 			}
-			
-			new SelectorMenu(player, config, configName).open();
-		} else if (config.getBoolean("no-permission-message-enabled", false)) {
-			player.sendMessage(config.getString("no-permission-message"));
 			return;
 		}
+			
+		// Play sound
+		
+		String soundString = Main.getPlugin().getConfig().getString("selector-open-sound");
+		if (soundString != null && !soundString.equals("NONE")){
+			try {
+				Sound sound = Sound.valueOf(soundString);
+				player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
+			} catch (IllegalArgumentException e){
+				Main.getPlugin().getLogger().log(Level.WARNING, "A sound with the name " + soundString + " could not be found. Make sure that it is the right name for your server version.");
+			}
+		}
+			
+		new SelectorMenu(player, config, configName).open();
 	}
 	
 	public static void teleportPlayerToServer(final Player player, final String server){
@@ -243,17 +222,20 @@ public class Main extends JavaPlugin {
 		
 		Cooldown.addCooldown("servertp" + player.getName() + server, 1000);
 		
-		if (Main.getPlugin().getConfig().getBoolean("server-teleport-message-enabled", false)){
-			if (Main.getPlugin().getConfig().getBoolean("chat-clear", false)){
+		// Send message if enabled
+		final FileConfiguration globalConfig = Main.getConfigurationManager().getGlobalConfig();
+		if (globalConfig.getBoolean("server-teleport-message-enabled", false)){
+			if (globalConfig.getBoolean("chat-clear", false)){
 				for (int i = 0; i < 150; i++) {
 					player.sendMessage("");
 				}
 			}
 			
-			String message = Colors.parseColors(Main.getPlugin().getConfig().getString("server-teleport-message", "error"));
-			player.sendMessage(message.replace("{x}", server));
+			String message = Colors.parseColors(globalConfig.getString("server-teleport-message", "error"));
+			player.sendMessage(message.replace("{server}", server));
 		}
-
+		
+		// Send message to bungeecord
 		try (
 				ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
 				DataOutputStream dos = new DataOutputStream(baos)
@@ -273,7 +255,7 @@ public class Main extends JavaPlugin {
 			
 			long timeSinceLastPing = System.currentTimeMillis() - Main.LAST_INFO_TIME.get(serverName);
 			
-			long timeout = Main.getConfigurationManager().getConfig().getLong("server-offline-timeout", 6000);
+			long timeout = configurationManager.getGlobalConfig().getLong("server-offline-timeout", 6000);
 			
 			return timeSinceLastPing < timeout;
 		} else {
@@ -318,7 +300,6 @@ public class Main extends JavaPlugin {
 	}
 	
     public static ItemStack addGlow(ItemStack item) {
-    	//return item;
     	try {
     		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
     		
@@ -345,6 +326,13 @@ public class Main extends JavaPlugin {
 			e.printStackTrace();
 			return item;
 		}
+    }
+    
+    public static void error(String message, Player... players) {
+    	for (Player player : players) {
+    		player.sendMessage(ChatColor.RED + message);
+    	}
+		Main.getPlugin().getLogger().severe(message);
     }
 
 }

@@ -1,4 +1,5 @@
-
+# Settings in this file may be synced to other servers with SSX installed.
+# ssx.yml contains settings unique to this server.
 
 
 # Clear chat before sending player to server? 
@@ -6,7 +7,7 @@
 chat-clear: false
 
 server-teleport-message-enabled: true
-server-teleport-message: '&7You are being connected to &7&l{x}&r&7.'
+server-teleport-message: '&7You are being connected to &7&l{server}&r&7.'
 
 # Cancel connecting if the server appears to be offline
 # Warning: if ServerSelectorX breaks this will stop your players from connecting even though servers are online
@@ -52,17 +53,12 @@ cancel-item-move: false
 
 # -------------------- Permissions -------------------- #
 
-# Require the permission 'ssx.use.<menu name>' to open the menu and ssx.join.<menu name> to get the item on join
-permissions-enabled: false
-
-# Require permissions per icon.
-# ssx.icon.<menu name>.<slot> e.g. ssx.icon.default.3
-# Wildcards are allowed for slots e.g. ssx.icon.default.*
-per-icon-permissions: false
-
 # Send a message if the player does not have permission to use the server selector?
 no-permission-message-enabled: true
 no-permission-message: '&cYou do not have permission to use the server selector.'
+
+no-permission-icon-click-message-enabled: true
+no-permission-icon-click-message: '&cYou do not have permission to click on this icon.'
 
 # -------------------- Effects -------------------- #
 

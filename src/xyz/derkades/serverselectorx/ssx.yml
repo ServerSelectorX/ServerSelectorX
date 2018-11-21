@@ -1,3 +1,5 @@
+# Settings in this file are unique to this server. global.yml contains settings may be synced accross hub servers.
+
 # Port which ServerSelectorX Connector should connect to.
 # This port is also used for configuration synchronisation.
 port: 9782
