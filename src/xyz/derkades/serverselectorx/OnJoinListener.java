@@ -3,6 +3,7 @@ package xyz.derkades.serverselectorx;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -11,6 +12,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -23,58 +25,29 @@ public class OnJoinListener implements Listener {
 	@EventHandler(priority = EventPriority.LOW)
 	public void onJoin(PlayerJoinEvent event) {
 		Player player = event.getPlayer();
-		FileConfiguration config = Main.getConfigurationManager().getConfig();
 		
-		if (player.hasPermission("ssx.reload") && Main.BETA) {
-			player.sendMessage("You are using a beta version of ServerSelectorX. Please update to a stable version as soon as the functionality or bugfix you require is available in a stable release version. " + ChatColor.GRAY + "(only players with the ssx.admin permission will see this message)");
-		}
-		
-		if (config.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
-			event.getPlayer().getInventory().clear();
-		}
-		
-		if (config.getBoolean("speed-on-join", false)) {
-			int amplifier = Main.getConfigurationManager().getConfig().getInt("speed-amplifier", 3);
+		for (Map.Entry<String, FileConfiguration> menuConfigEntry : 
+			Main.getConfigurationManager().getAllMenus().entrySet()) {			
 			
-			if (Main.getConfigurationManager().getConfig().getBoolean("show-particles")) 
-				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true));
-			else
-				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
-		}
-		
-		if (config.getBoolean("hide-self-on-join", false)) {
-			if (Main.getConfigurationManager().getConfig().getBoolean("show-particles")) 
-				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true));
-			else
-				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
-		}
-		
-		if (config.getBoolean("hide-others-on-join", false)) {
-			InvisibilityToggle.hideOthers(player);
-		}
-		
-		for (Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getAll().entrySet()) {			
-			//final String configName = menuConfigEntry.getKey();
 			final FileConfiguration menuConfig = menuConfigEntry.getValue();
-			boolean putItemInInventory = menuConfig.getBoolean("on-join");
-			if (!putItemInInventory)
-				continue;
+			final String configName = menuConfigEntry.getKey();
 			
+			if (!menuConfig.getBoolean("item.enabled"))
+				continue; // Item is disabled
 			
+			if (!menuConfig.getBoolean("item.on-join.enabled"))
+				continue; // Item on join is disbled
+
 			
-			if (Main.getPlugin().getConfig().getBoolean("permissions-enabled")) {
-				if (!player.hasPermission("ssx.join." + menuConfig.getName().replace(".yml", ""))) {
-					continue;
+			if (menuConfig.getBoolean("permission.item")) {
+				if (!player.hasPermission("ssx.item." + configName)) {
+					continue; // Player does not have permission
 				}
 			}
 			
-			if (menuConfig.getString("item").equals("NONE")) { 
-				continue;
-			}
+			final ItemBuilder builder;
 			
-			ItemBuilder builder;
-			
-			String materialString = menuConfig.getString("item");
+			final String materialString = menuConfig.getString("item.material");
 			
 			if (materialString.startsWith("head:")) {
 				String owner = materialString.split(":")[1];
@@ -84,46 +57,95 @@ public class OnJoinListener implements Listener {
 					builder = new ItemBuilder(owner);
 				}
 			} else {
-				Material material = Material.getMaterial(menuConfig.getString("item"));
+				Material material = Material.getMaterial(materialString);
 				
 				if (material == null) {
-					material = Material.STONE;
+					Main.error("Invalid item name for menu with name " + configName, player);
 				}
 				
-				builder = new ItemBuilder(material).data(menuConfig.getInt("data", 0));
+				builder = new ItemBuilder(material)
+						.data(menuConfig.getInt("item.data", 0));
 			}
 			
 			builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player,
-					menuConfig.getString("item-name", "error")
+					menuConfig.getString("item.title", "error")
 							.replace("{player}", player.getName()
 							.replace("{globalOnline}", "" + Main.getGlobalPlayerCount()))));
 			
-			List<String> lore = menuConfig.getStringList("item-lore");
-			
-			//Don't add lore if it's null or if the first line is equal to 'none'
-			if (!(lore == null || lore.isEmpty() || lore.get(0).equalsIgnoreCase("none"))) {
+			if (menuConfig.contains("item.lore")) {
+				List<String> lore = menuConfig.getStringList("item.lore");
 				lore = Main.PLACEHOLDER_API.parsePlaceholders(player, lore);
 				lore = ListUtils.replaceInStringList(lore,
-						new Object[] {"{player}", "{globalOnline}"},
-						new Object[] {player.getName(), Main.getGlobalPlayerCount()});
-				builder.coloredLore(lore);
+							new Object[] {"{player}", "{globalOnline}"},
+							new Object[] {player.getName(), Main.getGlobalPlayerCount()});
+					builder.coloredLore(lore);
 			}
 			
-			int slot = menuConfig.getInt("inv-slot", 0);
+			ItemStack item = builder.create();
+			
+			int slot = menuConfig.getInt("item.on-join.inv-slot", 0);
 			PlayerInventory inv = player.getInventory();
 			if (slot < 0) {
-				if (!inv.containsAtLeast(builder.create(), 1)) {
-					inv.addItem(builder.create());
+				if (!inv.containsAtLeast(item, 1)) {
+					inv.addItem(item);
 				}
 			} else {
-				inv.setItem(slot, builder.create());
+				inv.setItem(slot, item);
 			}
+		}		
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void applyEffects(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
+		FileConfiguration global = Main.getConfigurationManager().getGlobalConfig();
+		
+		if (global.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
+			event.getPlayer().getInventory().clear();
 		}
 		
-		String openOnJoin = Main.getConfigurationManager().getConfig().getString("open-on-join", "none");
+		if (global.getBoolean("speed-on-join", false)) {
+			int amplifier = global.getInt("speed-amplifier", 3);
+			
+			if (global.getBoolean("show-particles")) 
+				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true));
+			else
+				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
+		}
 		
-		if (!openOnJoin.equals("none")) {
-			Main.openSelector(player, Main.getConfigurationManager().getByName(openOnJoin), openOnJoin);
+		if (global.getBoolean("hide-self-on-join", false)) {
+			if (global.getBoolean("show-particles")) 
+				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true));
+			else
+				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
+		}
+		
+		if (global.getBoolean("hide-others-on-join", false)) {
+			InvisibilityToggle.hideOthers(player);
+		}
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void openMenu(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
+		
+		Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
+			
+			for (Map.Entry<String, FileConfiguration> menuConfigEntry : 
+				Main.getConfigurationManager().getAllMenus().entrySet()) {
+				
+				if (menuConfigEntry.getValue().getBoolean("open-on-join", false)) {
+					Main.openSelector(player, menuConfigEntry.getKey());
+				}
+			}
+		}, 5);
+	}
+	
+	@EventHandler(priority = EventPriority.MONITOR)
+	public void sendAnnoyingMessage(PlayerJoinEvent event) {
+		Player player = event.getPlayer();
+		if (player.hasPermission("ssx.reload") && Main.BETA) {
+			player.sendMessage("You are using a beta version of ServerSelectorX. Please update to a stable version as soon as the functionality or bugfix you require is available in a stable release version. " + ChatColor.GRAY + "(only players with the ssx.admin permission will see this message)");
 		}
 	}
 
