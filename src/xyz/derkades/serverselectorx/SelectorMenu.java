@@ -32,7 +32,7 @@ import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 public class SelectorMenu extends IconMenu {
 	
 	private FileConfiguration config;
-	private String configName;
+	//private String configName;
 	private Player player;
 	private int slots;
 	
@@ -41,7 +41,7 @@ public class SelectorMenu extends IconMenu {
 	public SelectorMenu(Player player, FileConfiguration config, String configName) {
 		super(Main.getPlugin(), Colors.parseColors(config.getString("title", UUID.randomUUID().toString())), 9, player);
 		this.config = config;
-		this.configName = configName;
+		//this.configName = configName;
 		this.player = player;
 		
 		this.slots = config.getInt("rows", 6) * 9;
@@ -72,127 +72,138 @@ public class SelectorMenu extends IconMenu {
 			int amount = 1;
 			boolean enchanted = false;
 			
-			String firstAction;
-			
-			if (section.isList("action")) {
-				firstAction = section.getStringList("action").get(0);
+			if (section.contains("permission") && !player.hasPermission(section.getString("permission"))) {
+				// Use no-permission section
+				ConfigurationSection noPermissionSection = section.getConfigurationSection("no-permission");
+				materialString = noPermissionSection.getString("item");
+				data = noPermissionSection.getInt("data", 0);
+				name = noPermissionSection.getString("name", "");
+				lore = noPermissionSection.getStringList("lore");
+				enchanted = noPermissionSection.getBoolean("enchanted", false);
 			} else {
-				firstAction = section.getString("action");
-			}
-			
-			if (firstAction.startsWith("srv")) {
-				String serverName = firstAction.substring(4);
+				// Player has permission, use other sections			
+				String firstAction;
 				
-				if (serverName.startsWith("__")) {
-					serverName = serverName.substring(2);
+				if (section.isList("action")) {
+					firstAction = section.getStringList("action").get(0);
+				} else {
+					firstAction = section.getString("action");
 				}
 				
-				if (Main.isOnline(serverName)) {
-					Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
+				if (firstAction.startsWith("srv")) {
+					String serverName = firstAction.substring(4);
 					
-					boolean dynamicMatchFound = false;
-					
-					if (section.contains("dynamic")) {
-						for (String dynamic : section.getConfigurationSection("dynamic").getKeys(false)) {
-							String placeholder = dynamic.split(":")[0];
-							String result = dynamic.split(":")[1];
-							
-							if (!placeholders.containsKey(placeholder)) {
-								Main.getPlugin().getLogger().warning("Dynamic feature contains rule with placeholder " + placeholder + " which has not been received from the server.");
-								continue;
-							}
-							
-							if (placeholders.get(placeholder).equals(result)) {
-								//Placeholder result matches with placeholder result in rule
-								dynamicMatchFound = true;
-								ConfigurationSection dynamicSection = section.getConfigurationSection("dynamic." + dynamic);
-								
-								materialString = dynamicSection.getString("item");
-								data = dynamicSection.getInt("data", 0);
-								name = dynamicSection.getString("name", "");
-								lore = dynamicSection.getStringList("lore");
-								enchanted = dynamicSection.getBoolean("enchanted", false);
-							}
-						}
+					if (serverName.startsWith("__")) {
+						serverName = serverName.substring(2);
 					}
 					
-					if (!dynamicMatchFound) {
-						//No dynamic rule matched, fall back to online
-						materialString = section.getString("online.item");
-						data = section.getInt("online.data", 0);
-						name = section.getString("online.name", "");
-						lore = section.getStringList("online.lore");
-						enchanted = section.getBoolean("online.enchanted", false);
-					}
-					
-					for (Map.Entry<String, String> placeholder : placeholders.entrySet()) {
-						List<String> newLore = new ArrayList<>();
-						for (String string : lore) {
-							newLore.add(string.replace("{" + placeholder.getKey() + "}", placeholder.getValue()));
-						}
-						lore = newLore;
+					if (Main.isOnline(serverName)) {
+						Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
 						
-						name = name.replace("{" + placeholder.getKey() + "}", placeholder.getValue());
-					}
-					
-					if (section.getBoolean("dynamic-item-count", false)) {
-						if (!placeholders.containsKey("online")) { //Check for very old SSX-Connector versions. Can be removed soon.
-							Main.getPlugin().getLogger().warning("Dynamic item count is enabled but player count is unknown.");
-							Main.getPlugin().getLogger().warning("Is the PlayerCount addon installed?");
+						boolean dynamicMatchFound = false;
+						
+						if (section.contains("dynamic")) {
+							for (String dynamic : section.getConfigurationSection("dynamic").getKeys(false)) {
+								String placeholder = dynamic.split(":")[0];
+								String result = dynamic.split(":")[1];
+								
+								if (!placeholders.containsKey(placeholder)) {
+									Main.getPlugin().getLogger().warning("Dynamic feature contains rule with placeholder " + placeholder + " which has not been received from the server.");
+									continue;
+								}
+								
+								if (placeholders.get(placeholder).equals(result)) {
+									//Placeholder result matches with placeholder result in rule
+									dynamicMatchFound = true;
+									ConfigurationSection dynamicSection = section.getConfigurationSection("dynamic." + dynamic);
+									
+									materialString = dynamicSection.getString("item");
+									data = dynamicSection.getInt("data", 0);
+									name = dynamicSection.getString("name", "");
+									lore = dynamicSection.getStringList("lore");
+									enchanted = dynamicSection.getBoolean("enchanted", false);
+								}
+							}
+						}
+						
+						if (!dynamicMatchFound) {
+							//No dynamic rule matched, fall back to online
+							materialString = section.getString("online.item");
+							data = section.getInt("online.data", 0);
+							name = section.getString("online.name", "");
+							lore = section.getStringList("online.lore");
+							enchanted = section.getBoolean("online.enchanted", false);
+						}
+						
+						for (Map.Entry<String, String> placeholder : placeholders.entrySet()) {
+							List<String> newLore = new ArrayList<>();
+							for (String string : lore) {
+								newLore.add(string.replace("{" + placeholder.getKey() + "}", placeholder.getValue()));
+							}
+							lore = newLore;
+							
+							name = name.replace("{" + placeholder.getKey() + "}", placeholder.getValue());
+						}
+						
+						if (section.getBoolean("dynamic-item-count", false)) {
+							if (!placeholders.containsKey("online")) { //Check for very old SSX-Connector versions. Can be removed soon.
+								Main.getPlugin().getLogger().warning("Dynamic item count is enabled but player count is unknown.");
+								Main.getPlugin().getLogger().warning("Is the PlayerCount addon installed?");
+							} else {
+								amount = Integer.parseInt(placeholders.get("online"));
+							}
 						} else {
-							amount = Integer.parseInt(placeholders.get("online"));
+							amount = section.getInt("item-count", 1); 
 						}
 					} else {
-						amount = section.getInt("item-count", 1); 
+						//Server is offline
+						ConfigurationSection offlineSection = section.getConfigurationSection("offline");
+						
+						materialString = offlineSection.getString("item");
+						data = offlineSection.getInt("data", 0);
+						name = offlineSection.getString("name", "");
+						lore = offlineSection.getStringList("lore");
+						enchanted = offlineSection.getBoolean("enchanted", false);
+						
+						amount = section.getInt("item-count", 1); // When the server is offline, so the item count is not set by the player count
 					}
+					
+				} else if (firstAction.startsWith("sel:")) {
+					//Add all online counts of servers in the submenu
+					int totalOnline = 0;
+					
+					FileConfiguration subConfig = Main.getConfigurationManager().getMenuByName(firstAction.substring(4));
+					for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
+						final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
+						String subAction = subSection.getString("action");
+						if (!subAction.startsWith("srv:")) 
+							continue;
+						
+						String serverName = subAction.substring(4);
+						
+						if (!Main.PLACEHOLDERS.containsKey(serverName)) {
+							continue;
+						}
+						
+						Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
+						if (placeholders.containsKey("online")) {
+							totalOnline += Integer.parseInt(placeholders.get("online"));
+						}
+					}
+					
+					materialString = section.getString("item");
+					data = section.getInt("data", 0);
+					name = section.getString("name", "");
+					lore = ListUtils.replaceInStringList(section.getStringList("lore"), new Object[] {"{total}"}, new Object[] {totalOnline});
+					enchanted = section.getBoolean("enchanted", false);
 				} else {
-					//Server is offline
-					ConfigurationSection offlineSection = section.getConfigurationSection("offline");
-					
-					materialString = offlineSection.getString("item");
-					data = offlineSection.getInt("data", 0);
-					name = offlineSection.getString("name", "");
-					lore = offlineSection.getStringList("lore");
-					enchanted = offlineSection.getBoolean("enchanted", false);
-					
-					amount = section.getInt("item-count", 1); // When the server is offline, so the item count is not set by the player count
+					//Not a server
+					materialString = section.getString("item");
+					data = section.getInt("data", 0);
+					name = section.getString("name", "");
+					lore = section.getStringList("lore");
+					enchanted = section.getBoolean("enchanted", false);
 				}
-				
-			} else if (firstAction.startsWith("sel:")) {
-				//Add all online counts of servers in the submenu
-				int totalOnline = 0;
-				
-				FileConfiguration subConfig = Main.getConfigurationManager().getMenuByName(firstAction.substring(4));
-				for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
-					final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
-					String subAction = subSection.getString("action");
-					if (!subAction.startsWith("srv:")) 
-						continue;
-					
-					String serverName = subAction.substring(4);
-					
-					if (!Main.PLACEHOLDERS.containsKey(serverName)) {
-						continue;
-					}
-					
-					Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
-					if (placeholders.containsKey("online")) {
-						totalOnline += Integer.parseInt(placeholders.get("online"));
-					}
-				}
-				
-				materialString = section.getString("item");
-				data = section.getInt("data", 0);
-				name = section.getString("name", "");
-				lore = ListUtils.replaceInStringList(section.getStringList("lore"), new Object[] {"{total}"}, new Object[] {totalOnline});
-				enchanted = section.getBoolean("enchanted", false);
-			} else {
-				//Not a server
-				materialString = section.getString("item");
-				data = section.getInt("data", 0);
-				name = section.getString("name", "");
-				lore = section.getStringList("lore");
-				enchanted = section.getBoolean("enchanted", false);
 			}
 			
 			// If data is set to -1, randomize data
@@ -254,14 +265,6 @@ public class SelectorMenu extends IconMenu {
 	public boolean onOptionClick(OptionClickEvent event) {		
 		int slot = event.getPosition();
 		Player player = event.getPlayer();
-		
-		final boolean permissionsEnabled = Main.getPlugin().getConfig().getBoolean("per-icon-permissions");
-		final boolean hasPermission = player.hasPermission("ssx.icon." + configName + "." + slot);
-		final boolean hasWildcardPermission = player.hasPermission("ssx.icon." + configName + ".*");
-		
-		if (permissionsEnabled && !hasPermission && !hasWildcardPermission) {
-			return true;
-		}
 		
 		List<String> actions;
 		
@@ -385,9 +388,6 @@ public class SelectorMenu extends IconMenu {
 		}
 		
 		return false;
-		
-		// // If the action list is still empty something really has gone wrong.
-		//throw new AssertionError();
 	}
 	
 	@Override

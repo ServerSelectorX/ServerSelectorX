@@ -17,6 +17,10 @@ item:
 commands:
  - menu
  - servers
+ 
+#permission:
+#  enabled: true
+#  message: '&cYou do not have permisison to open this menu.'
 
 url-message: '&3&lClick here'
 

@@ -102,7 +102,7 @@ public class Main extends JavaPlugin {
 			Cache.cleanCache();
 		}, 30*60*20, 30*60*20);
 
-		if (this.getDescription().getVersion().equals("beta")) {
+		if (this.getDescription().getVersion().contains("beta")) {
 			BETA = true;
 		}
 		
@@ -187,18 +187,21 @@ public class Main extends JavaPlugin {
 		final FileConfiguration config = configurationManager.getMenuByName(configName);
 		
 		if (config == null) {
-			Main.error("A server selector with this name does not exist", player);
+			Main.error("A menu with this name does not exist", player);
 			return;
 		}
 		
 		// Check for permissions
 		
-		final boolean permissionEnabled = config.getBoolean("permission.use", false);
+		final boolean permissionEnabled = config.getBoolean("permission.enabled", false);
 		final String permission = "ssx.open." + configName;
 		
 		if (permissionEnabled && !player.hasPermission(permission)) {
-			if (Main.getConfigurationManager().getGlobalConfig().getBoolean("no-permission-message-enabled")) {
-				player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("no-permission-message")));
+			if (config.contains("permission.message")) {
+				String message = config.getString("permission.message");
+				if (!message.equals("")) {
+					player.sendMessage(Colors.parseColors(message));
+				}
 			}
 			return;
 		}
@@ -214,6 +217,8 @@ public class Main extends JavaPlugin {
 				Main.getPlugin().getLogger().log(Level.WARNING, "A sound with the name " + soundString + " could not be found. Make sure that it is the right name for your server version.");
 			}
 		}
+		
+		// Open menu
 			
 		new SelectorMenu(player, config, configName).open();
 	}
