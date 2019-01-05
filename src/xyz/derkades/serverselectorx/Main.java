@@ -3,15 +3,23 @@ package xyz.derkades.serverselectorx;
 import static org.bukkit.ChatColor.DARK_AQUA;
 import static org.bukkit.ChatColor.DARK_GRAY;
 
+import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
+import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -20,10 +28,17 @@ import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
+
+import com.google.gson.JsonElement;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import net.md_5.bungee.api.ChatColor;
 import xyz.derkades.derkutils.Cooldown;
@@ -109,6 +124,8 @@ public class Main extends JavaPlugin {
 		int port = configurationManager.getSSXConfig().getInt("port");
 		server = new WebServer(port);
 		server.start();
+		
+		retrieveConfigs();
 	}
 	
 	@Override
@@ -172,6 +189,122 @@ public class Main extends JavaPlugin {
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
+	}
+	
+	private void retrieveConfigs() {
+		final ConfigurationSection syncConfig = getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
+		
+		if (!syncConfig.getBoolean("enabled", false)) {
+			return;
+		}
+	
+		getLogger().info("Config sync is enabled. Starting the configuration file retrieval process..");
+		
+		final String address = syncConfig.getString("address");
+		final List<String> whitelist = syncConfig.getStringList("whitelist");
+		
+		URL url;
+		try {
+			url = new URL("http://" + address + "/config");
+		} catch (MalformedURLException e) {
+			getLogger().severe("The address you entered seems to be incorrectly formatted.");
+			getLogger().severe("It must be formatted like this: 173.45.16.208:8888");
+			//e.printStackTrace();
+			return;
+		}
+		
+		Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> {
+
+			getLogger().info("Making request to " + url.toString());
+			boolean error = false;
+			String jsonOutput = null;
+			try {
+				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+				BufferedReader streamReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+				StringBuilder responseBuilder = new StringBuilder();
+				String temp;
+				while ((temp = streamReader.readLine()) != null)
+					responseBuilder.append(temp);
+				jsonOutput = responseBuilder.toString();
+			} catch (IOException e) {
+				e.printStackTrace();
+				error = true;
+			}
+			
+			if (error) {
+				getLogger().severe("An error occured while making a request. Are you sure you are using the right IP and port? You can find a more detailed error message in the server log.");
+				return;
+			}
+		
+			if (jsonOutput == null) {
+				// it should only ever be null if error == true
+				getLogger().severe("Json output null. Report issue to developer");
+			}
+			
+			File pluginDirectory = Main.getPlugin().getDataFolder();
+											
+			File serversYml = new File(pluginDirectory, "servers.yml");
+			File globalYml = new File(pluginDirectory, "global.yml");
+			File menuDirectory = new File(pluginDirectory, "menu");
+			
+			JsonParser parser = new JsonParser();
+			JsonObject json = parser.parse(jsonOutput).getAsJsonObject();
+			
+			getLogger().info("Writing to disk..");
+			
+			try {
+				if (whitelist.contains("servers")) {
+					serversYml.delete();
+					FileConfiguration config = new YamlConfiguration();
+					config.loadFromString(json.get("servers").getAsString());
+					config.save(serversYml);
+				}
+				
+				if (whitelist.contains("global")) {
+					globalYml.delete();
+					FileConfiguration config = new YamlConfiguration();
+					config.loadFromString(json.get("global").getAsString());
+					config.save(globalYml);
+				}
+				
+				if (whitelist.contains("menu:all")) {
+					Arrays.asList(menuDirectory.listFiles()).forEach(File::delete);
+					
+					JsonObject menuFilesJson = json.get("menu").getAsJsonObject();
+					for (Entry<String, JsonElement> menuJson : menuFilesJson.entrySet()) {
+						FileConfiguration config = new YamlConfiguration();
+						config.loadFromString(menuJson.getValue().getAsString());
+						config.save(new File(menuDirectory, menuJson.getKey() + ".yml"));
+					}
+				} else {
+					for (final String string : whitelist) {
+						if (!string.startsWith("menu:")) {
+							continue;
+						}
+						
+						final String menuName = string.substring(5);
+						if (!json.get("menu").getAsJsonObject().has(menuName)) {
+							getLogger().warning("Skipped menu file with name '" + menuName + "', it was not sent by the server.");
+							continue;
+						}
+						
+						JsonElement menuJson = json.get("menu").getAsJsonObject().get(menuName);
+						FileConfiguration config = new YamlConfiguration();
+						config.loadFromString(menuJson.getAsString());
+						config.save(new File(menuDirectory, menuName + ".yml"));
+					}
+				}
+			} catch (InvalidConfigurationException e) {
+				RuntimeException e2 = new RuntimeException("The configuration received from the server is invalid");
+				e2.initCause(e);
+				throw e2;
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			
+			getLogger().info("Done! The plugin will now reload.");
+			Bukkit.getScheduler().runTask(Main.getPlugin(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "serverselectorx reload"));
+		});
 	}
 	
 	public static ConfigurationManager getConfigurationManager() {
