@@ -40,7 +40,7 @@ public class ReloadCommand implements CommandExecutor {
 		}
 		
 		if (args.length == 1 && (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl"))){
-			Main.getConfigurationManager().reloadAll();
+			Main.getConfigurationManager().reload();
 			sender.sendMessage(AQUA + "The configuration file has been reloaded.");
 			
 			Main.server.stop();

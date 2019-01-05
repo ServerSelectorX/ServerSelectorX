@@ -109,7 +109,7 @@ public class SelectorMenu extends IconMenu {
 								
 								materialString = dynamicSection.getString("item");
 								data = dynamicSection.getInt("data", 0);
-								name = dynamicSection.getString("name", " ");
+								name = dynamicSection.getString("name", "");
 								lore = dynamicSection.getStringList("lore");
 								enchanted = dynamicSection.getBoolean("enchanted", false);
 							}
@@ -120,7 +120,7 @@ public class SelectorMenu extends IconMenu {
 						//No dynamic rule matched, fall back to online
 						materialString = section.getString("online.item");
 						data = section.getInt("online.data", 0);
-						name = section.getString("online.name", " ");
+						name = section.getString("online.name", "");
 						lore = section.getStringList("online.lore");
 						enchanted = section.getBoolean("online.enchanted", false);
 					}
@@ -136,7 +136,7 @@ public class SelectorMenu extends IconMenu {
 					}
 					
 					if (section.getBoolean("dynamic-item-count", false)) {
-						if (!placeholders.containsKey("online")) {
+						if (!placeholders.containsKey("online")) { //Check for very old SSX-Connector versions. Can be removed soon.
 							Main.getPlugin().getLogger().warning("Dynamic item count is enabled but player count is unknown.");
 							Main.getPlugin().getLogger().warning("Is the PlayerCount addon installed?");
 						} else {
@@ -151,17 +151,18 @@ public class SelectorMenu extends IconMenu {
 					
 					materialString = offlineSection.getString("item");
 					data = offlineSection.getInt("data", 0);
-					name = offlineSection.getString("name", " ");
+					name = offlineSection.getString("name", "");
 					lore = offlineSection.getStringList("lore");
 					enchanted = offlineSection.getBoolean("enchanted", false);
-					amount = section.getInt("item-count", 1); 
+					
+					amount = section.getInt("item-count", 1); // When the server is offline, so the item count is not set by the player count
 				}
 				
 			} else if (firstAction.startsWith("sel:")) {
 				//Add all online counts of servers in the submenu
 				int totalOnline = 0;
 				
-				FileConfiguration subConfig = Main.getConfigurationManager().getByName(firstAction.substring(4));
+				FileConfiguration subConfig = Main.getConfigurationManager().getMenuByName(firstAction.substring(4));
 				for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
 					final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
 					String subAction = subSection.getString("action");
@@ -182,18 +183,19 @@ public class SelectorMenu extends IconMenu {
 				
 				materialString = section.getString("item");
 				data = section.getInt("data", 0);
-				name = section.getString("name", " ");
+				name = section.getString("name", "");
 				lore = ListUtils.replaceInStringList(section.getStringList("lore"), new Object[] {"{total}"}, new Object[] {totalOnline});
 				enchanted = section.getBoolean("enchanted", false);
 			} else {
 				//Not a server
 				materialString = section.getString("item");
 				data = section.getInt("data", 0);
-				name = section.getString("name", " ");
+				name = section.getString("name", "");
 				lore = section.getStringList("lore");
 				enchanted = section.getBoolean("enchanted", false);
 			}
 			
+			// If data is set to -1, randomize data
 			if (data < 0) {
 				data = Random.getRandomInteger(0, 15);
 			}
@@ -312,7 +314,7 @@ public class SelectorMenu extends IconMenu {
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("sync player %s %s", player.getName(), Main.PLACEHOLDER_API.parsePlaceholders(player, command)));
 			} else if (action.startsWith("sel:")){ //Open selector
 				String configName = action.substring(4);
-				FileConfiguration config = Main.getConfigurationManager().getByName(configName);
+				FileConfiguration config = Main.getConfigurationManager().getMenuByName(configName);
 				if (config == null){
 					player.sendMessage(ChatColor.RED + "This server selector does not exist.");
 				} else {				
@@ -330,44 +332,44 @@ public class SelectorMenu extends IconMenu {
 				String serverName = action.substring(4);
 				
 				// If offline-cancel-connect is turned on and the server is offline, send message and cancel connecting
-				if (Main.getConfigurationManager().getConfig().getBoolean("offline-cancel-connect", false) && !Main.isOnline(serverName)) {
-					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("offline-cancel-connect-message", "error")));
+				if (Main.getConfigurationManager().getGlobalConfig().getBoolean("offline-cancel-connect", false) && !Main.isOnline(serverName)) {
+					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("offline-cancel-connect-message", "error")));
 				}
 				
 				Main.teleportPlayerToServer(player, serverName);
 			} else if (action.equalsIgnoreCase("toggleInvis")) {
 				if (player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
 					player.removePotionEffect(PotionEffectType.INVISIBILITY);
-					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("invis-off")));
+					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("invis-off")));
 				} else {
-					if (Main.getConfigurationManager().getConfig().getBoolean("show-particles")) 
+					if (Main.getConfigurationManager().getGlobalConfig().getBoolean("show-particles")) 
 						player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true));
 					else
 						player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
 					
-					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("invis-on")));
+					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("invis-on")));
 				}
 			} else if (action.equalsIgnoreCase("toggleSpeed")) {
 				if (player.hasPotionEffect(PotionEffectType.SPEED)) {
 					player.removePotionEffect(PotionEffectType.SPEED);
-					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("speed-off")));
+					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("speed-off")));
 				} else {
-					int amplifier = Main.getConfigurationManager().getConfig().getInt("speed-amplifier", 3);
+					int amplifier = Main.getConfigurationManager().getGlobalConfig().getInt("speed-amplifier", 3);
 					
-					if (Main.getConfigurationManager().getConfig().getBoolean("show-particles")) 
+					if (Main.getConfigurationManager().getGlobalConfig().getBoolean("show-particles")) 
 						player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true));
 					else
 						player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
 					
-					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("speed-on")));
+					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("speed-on")));
 				}
 			} else if (action.equalsIgnoreCase("toggleHideOthers")) {
 				if (InvisibilityToggle.hasHiddenOthers(player)) {
 					InvisibilityToggle.showOthers(player);
-					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("show-others")));
+					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("show-others")));
 				} else {
 					InvisibilityToggle.hideOthers(player);
-					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getConfig().getString("hide-others")));
+					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("hide-others")));
 				}
 			} else if (action.startsWith("msg:")){ //Send message
 				String message = action.substring(4);

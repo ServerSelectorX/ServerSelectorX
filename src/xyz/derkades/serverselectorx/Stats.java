@@ -14,6 +14,8 @@ public class Stats {
 	public static void initialize() {
 		final Metrics metrics = new Metrics(Main.getPlugin());
 		
+		Map<String, FileConfiguration> menuConfigs = Main.getConfigurationManager().getAllMenus();
+		
 		metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", () -> {
 			if (Main.PLACEHOLDER_API instanceof PlaceholdersEnabled) {
 				return "yes";
@@ -23,22 +25,29 @@ public class Stats {
 		}));
 		
 		metrics.addCustomChart(new Metrics.SimplePie("number_of_selectors", () -> {
-			return Main.getConfigurationManager().getAll().size() + "";
+			return menuConfigs.entrySet().size() + "";
 		}));
 		
 		metrics.addCustomChart(new Metrics.AdvancedPie("selector_item", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 			
-			for (Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getAll().entrySet()) {			
+			for (Map.Entry<String, FileConfiguration> menuConfigEntry : menuConfigs.entrySet()) {			
 				final FileConfiguration config = menuConfigEntry.getValue();
 				
-				final Material material = Material.getMaterial(config.getString("item"));
-				if (material == null) continue; //Do not count invalid items
+				String materialString;
 				
-				if (map.containsKey(material.toString())) {
-					map.put(material.toString(), map.get(material.toString() + 1));
+				if (!config.getBoolean("item.enabled")) {
+					materialString = "disabled";
 				} else {
-					map.put(material.toString(), 1);
+					final Material material = Material.getMaterial(config.getString("item.material"));
+					if (material == null) continue; //Do not count invalid items
+					materialString = material.toString();
+				}
+				
+				if (map.containsKey(materialString)) {
+					map.put(materialString, map.get(materialString + 1));
+				} else {
+					map.put(materialString, 1);
 				}
 			}
 			
@@ -48,7 +57,7 @@ public class Stats {
 		metrics.addCustomChart(new Metrics.AdvancedPie("type", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 			
-			for (Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getAll().entrySet()) {			
+			for (Map.Entry<String, FileConfiguration> menuConfigEntry : menuConfigs.entrySet()) {			
 				final FileConfiguration config = menuConfigEntry.getValue();
 				
 				for (final String slot : config.getConfigurationSection("menu").getKeys(false)) {
@@ -83,7 +92,7 @@ public class Stats {
 		metrics.addCustomChart(new Metrics.AdvancedPie("server_pinging", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 			
-			for (Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getAll().entrySet()) {			
+			for (Map.Entry<String, FileConfiguration> menuConfigEntry : menuConfigs.entrySet()) {			
 				final FileConfiguration config = menuConfigEntry.getValue();
 				
 				for (final String slot : config.getConfigurationSection("menu").getKeys(false)) {
@@ -128,8 +137,10 @@ public class Stats {
 		metrics.addCustomChart(new Metrics.AdvancedPie("menu_item_slot", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 			
-			for (Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getAll().entrySet()) {			
+			for (Map.Entry<String, FileConfiguration> menuConfigEntry : menuConfigs.entrySet()) {			
 				final FileConfiguration config = menuConfigEntry.getValue();
+				
+				// kijken of item / on join uit staat
 				
 				int slot = config.getInt("inv-slot", 0);
 				if (slot < 0) {
@@ -153,7 +164,7 @@ public class Stats {
 		metrics.addCustomChart(new Metrics.AdvancedPie("rows", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 			
-			for (Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getAll().entrySet()) {			
+			for (Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getAllMenus().entrySet()) {			
 				final FileConfiguration config = menuConfigEntry.getValue();
 				
 				int rows = config.getInt("rows", 6);

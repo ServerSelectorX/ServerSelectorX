@@ -56,7 +56,7 @@ public class PlaceholderReceiver extends HttpServlet {
 		}
 		
 		response.setStatus(HttpServletResponse.SC_OK);
-		if (Main.getConfigurationManager().getConfig().getBoolean("log-pinger", true)) {
+		if (Main.getConfigurationManager().getGlobalConfig().getBoolean("log-pinger", true)) {
 			logger.info("Recieved message from " + serverName + ": " + placeholdersJsonString);
 		}
 
@@ -80,14 +80,19 @@ public class PlaceholderReceiver extends HttpServlet {
 			response.setContentType("text/json");
 			
 			Map<Object, Object> json = new HashMap<>();
-			json.put("config", Main.getConfigurationManager().getConfig().saveToString());
+			
+			json.put("global", Main.getConfigurationManager().getGlobalConfig().saveToString());
+			
 			json.put("servers", Main.getConfigurationManager().getServersConfig().saveToString());
+			
 			Map<Object, Object> menuFiles = new HashMap<>();
-			for (Entry<String, FileConfiguration> menuFile : Main.getConfigurationManager().getAll().entrySet()) {
+			for (Entry<String, FileConfiguration> menuFile : Main.getConfigurationManager().getAllMenus().entrySet()) {
 				menuFiles.put(menuFile.getKey(), menuFile.getValue().saveToString());
 			}
 			json.put("menu", menuFiles);
+			
 			response.getOutputStream().println(gson.toJson(json));
+			
 			System.out.println("[debug] Received config request from " + request.getRemoteAddr().toString());
 		} else {
 			response.setContentType("text/json");

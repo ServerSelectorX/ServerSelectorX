@@ -15,6 +15,7 @@ import java.util.Map;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -26,7 +27,9 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import net.md_5.bungee.api.ChatColor;
 import xyz.derkades.derkutils.Cooldown;
+import xyz.derkades.derkutils.ListUtils;
 import xyz.derkades.derkutils.bukkit.Colors;
+import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.caching.Cache;
 import xyz.derkades.serverselectorx.placeholders.Placeholders;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersDisabled;
@@ -333,6 +336,45 @@ public class Main extends JavaPlugin {
     		player.sendMessage(ChatColor.RED + message);
     	}
 		Main.getPlugin().getLogger().severe(message);
+    }
+    
+    public static ItemStack getHotbarItemStackFromMenuConfig(Player player, FileConfiguration menuConfig, String configName) {
+    	final ItemBuilder builder;
+		
+		final String materialString = menuConfig.getString("item.material");
+		
+		if (materialString.startsWith("head:")) {
+			String owner = materialString.split(":")[1];
+			if (owner.equals("auto")) {
+				builder = new ItemBuilder(player.getName());
+			} else {
+				builder = new ItemBuilder(owner);
+			}
+		} else {
+			Material material = Material.getMaterial(materialString);
+			
+			if (material == null) {
+				Main.error("Invalid item name for menu with name " + configName, player);
+			}
+			
+			builder = new ItemBuilder(material)
+					.data(menuConfig.getInt("item.data", 0));
+		}
+		
+		builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player,
+				menuConfig.getString("item.title", "error")
+						.replace("{player}", player.getName())));
+		
+		if (menuConfig.contains("item.lore")) {
+			List<String> lore = menuConfig.getStringList("item.lore");
+			lore = Main.PLACEHOLDER_API.parsePlaceholders(player, lore);
+			lore = ListUtils.replaceInStringList(lore,
+						new Object[] {"{player}"},
+						new Object[] {player.getName()});
+				builder.coloredLore(lore);
+		}
+		
+		return builder.create();
     }
 
 }

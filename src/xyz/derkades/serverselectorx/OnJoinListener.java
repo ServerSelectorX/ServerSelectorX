@@ -1,11 +1,9 @@
 package xyz.derkades.serverselectorx;
 
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -16,9 +14,6 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
-
-import xyz.derkades.derkutils.ListUtils;
-import xyz.derkades.derkutils.bukkit.ItemBuilder;
 
 public class OnJoinListener implements Listener {
 	
@@ -45,43 +40,7 @@ public class OnJoinListener implements Listener {
 				}
 			}
 			
-			final ItemBuilder builder;
-			
-			final String materialString = menuConfig.getString("item.material");
-			
-			if (materialString.startsWith("head:")) {
-				String owner = materialString.split(":")[1];
-				if (owner.equals("auto")) {
-					builder = new ItemBuilder(player.getName());
-				} else {
-					builder = new ItemBuilder(owner);
-				}
-			} else {
-				Material material = Material.getMaterial(materialString);
-				
-				if (material == null) {
-					Main.error("Invalid item name for menu with name " + configName, player);
-				}
-				
-				builder = new ItemBuilder(material)
-						.data(menuConfig.getInt("item.data", 0));
-			}
-			
-			builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player,
-					menuConfig.getString("item.title", "error")
-							.replace("{player}", player.getName()
-							.replace("{globalOnline}", "" + Main.getGlobalPlayerCount()))));
-			
-			if (menuConfig.contains("item.lore")) {
-				List<String> lore = menuConfig.getStringList("item.lore");
-				lore = Main.PLACEHOLDER_API.parsePlaceholders(player, lore);
-				lore = ListUtils.replaceInStringList(lore,
-							new Object[] {"{player}", "{globalOnline}"},
-							new Object[] {player.getName(), Main.getGlobalPlayerCount()});
-					builder.coloredLore(lore);
-			}
-			
-			ItemStack item = builder.create();
+			ItemStack item = Main.getHotbarItemStackFromMenuConfig(player, menuConfig, configName);
 			
 			int slot = menuConfig.getInt("item.on-join.inv-slot", 0);
 			PlayerInventory inv = player.getInventory();
