@@ -41,10 +41,7 @@ public class SelectorOpenListener implements Listener {
 		
 		Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 1000); //Add cooldown for 1 second
 		
-		for (final Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getAllMenus().entrySet()) {
-			boolean cancel = globalConfig.getBoolean("cancel-click-event", false);
-			if (cancel) event.setCancelled(true);
-			
+		for (final Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getAllMenus().entrySet()) {		
 			final String configName = menuConfigEntry.getKey();
 			final FileConfiguration menuConfig = menuConfigEntry.getValue();
 			
@@ -57,6 +54,9 @@ public class SelectorOpenListener implements Listener {
 			if (!item.isSimilar(player.getItemInHand())) {
 				continue;
 			}
+			
+			boolean cancel = globalConfig.getBoolean("cancel-click-event", false);
+			if (cancel) event.setCancelled(true);
 			
 			Main.openSelector(player, configName);
 			return;
