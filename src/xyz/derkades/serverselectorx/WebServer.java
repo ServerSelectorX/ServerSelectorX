@@ -34,6 +34,7 @@ public class WebServer {
 					Main.getPlugin().getLogger().info("Starting server...");
 					server.start();
 					Main.getPlugin().getLogger().info("Server has been started on port " + WebServer.this.port);
+					Main.getPlugin().getLogger().info("You may see a warning message from jetty. It is normal, you can ignore it.");
 					server.join(); //Join with main thread
 				} catch (Exception e) {
 					Main.getPlugin().getLogger().severe("An error occured while starting server: " + e.getMessage());
