@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>xyz.derkades</groupId>
 	<artifactId>ServerSelectorX</artifactId>
-	<version>3.3.1</version>
+	<version>3.3.2-beta</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -86,7 +86,7 @@
 		<dependency>
 			<groupId>org.spigotmc</groupId>
 			<artifactId>spigot</artifactId>
-			<version>1.8.8-R0.1-SNAPSHOT</version>
+			<version>1.12-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -112,7 +112,7 @@
 		<dependency>
 			<groupId>org.inventivetalent.spiget-update</groupId>
 			<artifactId>bukkit</artifactId>
-			<version>1.4.0</version>
+			<version>1.4.1</version>
 		</dependency>
 
 	</dependencies>

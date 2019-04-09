@@ -14,51 +14,61 @@ public class PingServersBackground extends Thread {
 	@Override
 	public void run() {
 		while(true) {
-			for (FileConfiguration config : Main.getConfigurationManager().getAll()) {
-				for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
-					// Don't overload the CPU or the API
-					try {
-						Thread.sleep(2000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
+			try {
+				for (FileConfiguration config : Main.getConfigurationManager().getAll()) {
+					for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
+						// Don't overload the CPU or the API
+						try {
+							Thread.sleep(2000);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						
+						final ConfigurationSection section = config.getConfigurationSection("menu." + key);
+						
+						String action = section.getString("action");
+						
+						if (!action.startsWith("srv:")) {
+							continue;
+						}
+						
+						if (!section.getBoolean("ping-server", false)) {
+							continue;
+						}
+						
+						String serverName = action.substring(4);
+	
+						String ip = section.getString("ip");
+						int port = section.getInt("port");
+	
+						Server server;
+						
+						if (Main.getPlugin().getConfig().getBoolean("external-query", true)) {
+							server = new ServerPinger.ExternalServer(ip, port);
+						} else {
+							int timeout = section.getInt("ping-timeout", 100);
+							server = new ServerPinger.InternalServer(ip, port, timeout);
+						}
+						
+						Map<String, Object> serverInfo = new HashMap<>();
+						serverInfo.put("isOnline", server.isOnline());
+						if (server.isOnline()) {
+							serverInfo.put("online", server.getOnlinePlayers());
+							serverInfo.put("max", server.getMaximumPlayers());
+							serverInfo.put("motd", server.getMotd());
+							serverInfo.put("ping", server.getResponseTimeMillis());
+						}
+						
+						Main.SERVER_PLACEHOLDERS.put(serverName, serverInfo);
 					}
-					
-					final ConfigurationSection section = config.getConfigurationSection("menu." + key);
-					
-					String action = section.getString("action");
-					
-					if (!action.startsWith("srv:")) {
-						continue;
-					}
-					
-					if (!section.getBoolean("ping-server", false)) {
-						continue;
-					}
-					
-					String serverName = action.substring(4);
-
-					String ip = section.getString("ip");
-					int port = section.getInt("port");
-
-					Server server;
-					
-					if (Main.getPlugin().getConfig().getBoolean("external-query", true)) {
-						server = new ServerPinger.ExternalServer(ip, port);
-					} else {
-						int timeout = section.getInt("ping-timeout", 100);
-						server = new ServerPinger.InternalServer(ip, port, timeout);
-					}
-					
-					Map<String, Object> serverInfo = new HashMap<>();
-					serverInfo.put("isOnline", server.isOnline());
-					if (server.isOnline()) {
-						serverInfo.put("online", server.getOnlinePlayers());
-						serverInfo.put("max", server.getMaximumPlayers());
-						serverInfo.put("motd", server.getMotd());
-						serverInfo.put("ping", server.getResponseTimeMillis());
-					}
-					
-					Main.SERVER_PLACEHOLDERS.put(serverName, serverInfo);
+				}
+			} catch (Exception e) {
+				// So the loop doesn't break if an error occurs
+				// Print the error, sleep, try again.
+				try {
+					Thread.sleep(5000);
+				} catch (InterruptedException e2) {
+					e2.printStackTrace();
 				}
 			}
 		}

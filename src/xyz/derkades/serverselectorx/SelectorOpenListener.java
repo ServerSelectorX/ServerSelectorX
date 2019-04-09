@@ -13,6 +13,7 @@ import xyz.derkades.derkutils.Cooldown;
 
 public class SelectorOpenListener implements Listener {
 	
+	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onInteract(PlayerInteractEvent event){
 		if (!(event.getAction() == Action.RIGHT_CLICK_AIR ||
