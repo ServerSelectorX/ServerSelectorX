@@ -7,7 +7,6 @@ item:
   lore:
    - 'Right click this item to select a server'
   material: COMPASS
-  data: 0
   on-join: 
     enabled: true
     inv-slot: 0
@@ -40,7 +39,7 @@ menu:
        - 'Game status: {status}'
 
     offline:
-      item: WOOD_SWORD
+      item: WOODEN_SWORD
       name: '&cKitPvP Server'
       lore:
        - 'Ipsum lorem'
@@ -57,5 +56,4 @@ menu:
      - '&6Click this item to receive a message'
   
   -1: # -1 means all blank slots
-    item: STAINED_GLASS_PANE
-    data: 8
+    item: LIGHT_GRAY_STAINED_GLASS_PANE

@@ -226,7 +226,6 @@ public class SelectorMenu extends IconMenu {
 					if (material == null) material = Material.STONE;
 					
 					builder = new ItemBuilder(material);
-					builder.data(data);
 				}
 				
 				name = name.replace("{player}", player.getName()).replace("{globalOnline}", "" + Main.getGlobalPlayerCount());

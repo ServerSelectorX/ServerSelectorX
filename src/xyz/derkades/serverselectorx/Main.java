@@ -84,13 +84,6 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new OnJoinListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemMoveDropCancelListener(), this);
 		
-		List<String> offHandVersions = Arrays.asList("1.9", "1.10", "1.11", "1.12", "1.13");
-		for (String version : offHandVersions) {
-			if (Bukkit.getBukkitVersion().contains(version)) {
-				Bukkit.getPluginManager().registerEvents(new OffHandMoveCancel(), this);
-			}
-		}
-		
 		//Register messaging channels
 		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 		
@@ -495,8 +488,7 @@ public class Main extends JavaPlugin {
 				Main.error("Invalid item name for menu with name " + configName, player);
 			}
 			
-			builder = new ItemBuilder(material)
-					.data(menuConfig.getInt("item.data", 0));
+			builder = new ItemBuilder(material);
 		}
 		
 		builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player,
