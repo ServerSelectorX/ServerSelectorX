@@ -35,7 +35,6 @@ public class SelectorMenu extends IconMenu {
 			final ConfigurationSection section = config.getConfigurationSection("menu." + key);
 
 			String materialString;
-			int data;
 			String name;
 			List<String> lore;
 			int amount = section.getInt("item-count", 1);
@@ -48,7 +47,6 @@ public class SelectorMenu extends IconMenu {
 				if (!section.getBoolean("ping-server")) {
 					// Server pinging is turned off, get item info from 'online' section
 					materialString = section.getString("online.item");
-					data = section.getInt("online.data", 0);
 					name = section.getString("online.name", "");
 					lore = section.getStringList("online.lore");
 					amount = section.getInt("item-count", 1);
@@ -71,7 +69,6 @@ public class SelectorMenu extends IconMenu {
 						// Server is online, use online section
 						ConfigurationSection onlineSection = section.getConfigurationSection("online");
 						materialString = onlineSection.getString("item");
-						data = onlineSection.getInt("data", 0);
 						name = onlineSection.getString("name");
 						lore = onlineSection.getStringList("lore");
 						
@@ -89,7 +86,6 @@ public class SelectorMenu extends IconMenu {
 						ConfigurationSection offlineSection = section.getConfigurationSection("offline");
 
 						materialString = offlineSection.getString("item");
-						data = offlineSection.getInt("data", 0);
 						name = offlineSection.getString("name");
 						lore = offlineSection.getStringList("lore");
 					}
@@ -102,7 +98,6 @@ public class SelectorMenu extends IconMenu {
 				ConfigurationSection onlineSection = section.getConfigurationSection("online");
 
 				materialString = onlineSection.getString("item");
-				data = onlineSection.getInt("data", 0);
 				name = onlineSection.getString("name");
 				lore = onlineSection.getStringList("lore");
 			}
@@ -122,7 +117,6 @@ public class SelectorMenu extends IconMenu {
 					material = Material.STONE;
 
 				builder = new ItemBuilder(material);
-				builder.data(data);
 			}
 
 			builder.amount(amount);

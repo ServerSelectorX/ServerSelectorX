@@ -46,7 +46,6 @@ public class OnJoinListener implements Listener {
 			}
 			
 			ItemBuilder builder = new ItemBuilder(material)
-					.data(config.getInt("data", 0))
 					.coloredName(config.getString("item-name", "error"));
 			
 			List<String> lore = config.getStringList("item-lore");

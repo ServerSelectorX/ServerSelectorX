@@ -31,52 +31,41 @@ command: "menu"
 # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Free-%7C-Items-in-the-server-selector
 menu:
 
-  # Item in 4th slot (use 0 for first item). Add as many items as you want by copying this section and giving it a new number.
   3:
-
-    # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Free-%7C-Server-Pinging
     ping-server: false
     ip: play.example.com
     port: 1234
     
-    # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Actions
     action: 'srv:kitpvp'
 
     # Online is used when ping-server is turned off, or ping-server is turned on and the server is online.
     online:
       item: DIAMOND_SWORD
-      data: 0
       name: '&aKitPvP Server'
       lore:
-      # Placeholders not working? https://github.com/ServerSelectorX/ServerSelectorX/wiki/FAQ#placeholders-are-not-working
        - 'There are {online} out of {max} players online.'
        - 'Message of the day: {motd}'
       
     # Offline is used when ping-server is turned on and the server is offline.
     offline:
-      item: WOOD_SWORD
-      data: 0
+      item: WOODEN_SWORD
       name: '&cKitPvP Server'
       lore:
        - Ipsum lorem
        - Amet sit dolor
        - The server is offline
          
-  5: # Item in 6th slot
-    # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Actions   
+  5:  
     action: 'none'
     online:
       item: 'head:auto' # You can use head:auto to get the head of the player opening the menu, or head:SomethingElse to get the head of a specific player.
-      data: 0
       name: 'This is you!'
       lore:
        - This item does nothing
        
   -1: # -1 means everything else
-    # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Actions
     action: 'none'
     online:
-      item: STAINED_GLASS_PANE
-      data: 0
+      item: LIGHT_GRAY_STAINED_GLASS_PANE
       name: ''
       lore:
