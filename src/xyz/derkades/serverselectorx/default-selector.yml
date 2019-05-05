@@ -56,4 +56,5 @@ menu:
      - '&6Click this item to receive a message'
   
   -1: # -1 means all blank slots
-    item: LIGHT_GRAY_STAINED_GLASS_PANE
+    item: GRAY_STAINED_GLASS_PANE
+    name: ' '
