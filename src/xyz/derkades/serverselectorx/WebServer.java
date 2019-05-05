@@ -1,7 +1,6 @@
 package xyz.derkades.serverselectorx;
 
 import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.nio.SelectChannelConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 
 public class WebServer {
@@ -16,9 +15,6 @@ public class WebServer {
 	
 	public void start() {
 		server = new Server();
-		SelectChannelConnector connector = new SelectChannelConnector();
-		connector.setPort(this.port);
-		server.addConnector(connector);
 		
         ServletHandler handler = new ServletHandler();
 
@@ -31,10 +27,8 @@ public class WebServer {
 			@Override
 			public void run() {
 				try {
-					Main.getPlugin().getLogger().info("Starting server...");
 					server.start();
 					Main.getPlugin().getLogger().info("Server has been started on port " + WebServer.this.port);
-					Main.getPlugin().getLogger().info("You may see a warning message from jetty. It is normal, you can ignore it.");
 					server.join(); //Join with main thread
 				} catch (Exception e) {
 					Main.getPlugin().getLogger().severe("An error occured while starting server: " + e.getMessage());

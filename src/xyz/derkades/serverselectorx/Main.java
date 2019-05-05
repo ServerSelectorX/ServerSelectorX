@@ -114,11 +114,15 @@ public class Main extends JavaPlugin {
 			BETA = true;
 		}
 		
+		// Disable annoying jetty warnings
+		System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");
+		System.setProperty("org.eclipse.jetty.LEVEL", "OFF");
+		
 		int port = configurationManager.getSSXConfig().getInt("port");
 		server = new WebServer(port);
 		server.start();
 		
-		retrieveConfigs();
+		getServer().getScheduler().runTaskLater(this, () -> retrieveConfigs(), 5*20);
 	}
 	
 	@Override
@@ -184,7 +188,7 @@ public class Main extends JavaPlugin {
 		}
 	}
 	
-	private void retrieveConfigs() {
+	void retrieveConfigs() {
 		final ConfigurationSection syncConfig = getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
 		
 		if (!syncConfig.getBoolean("enabled", false)) {
@@ -296,7 +300,9 @@ public class Main extends JavaPlugin {
 			}
 			
 			getLogger().info("Done! The plugin will now reload.");
-			Bukkit.getScheduler().runTask(Main.getPlugin(), () -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "serverselectorx reload"));
+			Main.getConfigurationManager().reload();
+			server.stop();
+			server.start();
 		});
 	}
 	
