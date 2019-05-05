@@ -47,7 +47,7 @@ public class ConfigurationManager {
 		
 		if (menuFolder.listFiles().length == 0){
 			// Save default.yml file if menu folder is empty
-			saveDefaultAndLoad("default-selector", new File(dataFolder, "default.yml"));
+			saveDefaultAndLoad("default-selector", new File(menuFolder, "default.yml"));
 		}
 		
 		servers = saveDefaultAndLoad("servers", new File(dataFolder, "servers.yml"));
