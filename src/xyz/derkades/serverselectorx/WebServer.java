@@ -48,9 +48,9 @@ public class WebServer {
 		try {
 			server.setStopAtShutdown(true);
 			server.stop();
-			System.out.println("Server has been stopped.");
+			Main.getPlugin().getLogger().info("Server has been stopped.");
 		} catch (Exception e) {
-			System.err.println("An error occured while stopping server: " + e.getMessage());
+			Main.getPlugin().getLogger().severe("An error occured while stopping server: " + e.getMessage());
 		}
 	}
 
