@@ -84,10 +84,14 @@ public class SelectorMenu extends IconMenu {
 				// Player has permission, use other sections			
 				String firstAction;
 				
-				if (section.isList("action")) {
-					firstAction = section.getStringList("action").get(0);
+				if (section.contains("action")) {
+					if (section.isList("action")) {
+						firstAction = section.getStringList("action").get(0);
+					} else {
+						firstAction = section.getString("action");
+					}
 				} else {
-					firstAction = section.getString("action");
+					firstAction = "none";
 				}
 				
 				if (firstAction.startsWith("srv")) {
