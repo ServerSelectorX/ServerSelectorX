@@ -1,6 +1,7 @@
 package xyz.derkades.serverselectorx;
 
 import static org.bukkit.ChatColor.AQUA;
+import static org.bukkit.ChatColor.GRAY;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
@@ -17,14 +18,21 @@ public class ReloadCommand implements CommandExecutor {
 			return true;
 		}
 		
-		if (args.length == 1 && (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl"))){
+		if (args.length != 1) {
+			return false;
+		}
+		if (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl")){
 			Main.getConfigurationManager().reload();
 			sender.sendMessage(AQUA + "The configuration file has been reloaded.");
 			
 			Main.server.stop();
 			Main.server.start();
-			//sender.sendMessage(ChatColor.GRAY + "Restarting SSX-Connector webserver.. Some errors may appear in servers with SSX-Connector installed.");
 			return true;			
+		} else if (args[0].equalsIgnoreCase("sync")) {
+			sender.sendMessage(AQUA + "Starting configuration synchronisation..");
+			sender.sendMessage(GRAY + "You can find more information in the console. If config-sync is disabled in ssx.yml, nothing will happen.");
+			Main.getPlugin().retrieveConfigs();
+			return true;
 		}
 		
 		return false;
