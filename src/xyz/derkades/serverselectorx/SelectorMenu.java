@@ -226,8 +226,14 @@ public class SelectorMenu extends IconMenu {
 						builder = new ItemBuilder(owner);
 					}
 				} else {
-					Material material = Material.valueOf(materialString);
-					if (material == null) material = Material.STONE;
+					
+					Material material;
+					try {
+						material = Material.valueOf(materialString);
+					} catch (IllegalArgumentException e) {
+						player.sendMessage("Invalid item name '" + materialString + "'");
+						return;
+					}
 					
 					builder = new ItemBuilder(material);
 				}
