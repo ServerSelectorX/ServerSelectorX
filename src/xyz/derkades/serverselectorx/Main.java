@@ -115,8 +115,10 @@ public class Main extends JavaPlugin {
 		}
 		
 		// Disable annoying jetty warnings
-		System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");
-		System.setProperty("org.eclipse.jetty.LEVEL", "OFF");
+		if (!configurationManager.getSSXConfig().getBoolean("jetty-debug", false)){
+			System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");
+			System.setProperty("org.eclipse.jetty.LEVEL", "OFF");
+		}
 		
 		int port = configurationManager.getSSXConfig().getInt("port");
 		server = new WebServer(port);
@@ -158,7 +160,7 @@ public class Main extends JavaPlugin {
 					continue;
 				}
 				
-				List<String> commandNames = config.getStringList("command");
+				List<String> commandNames = config.getStringList("commands");
 				
 				for (String commandName : commandNames) {
 					commandMap.register("ssx-custom", new Command(commandName){

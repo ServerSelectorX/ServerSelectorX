@@ -1,6 +1,7 @@
 package xyz.derkades.serverselectorx;
 
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletHandler;
 
 public class WebServer {
@@ -21,6 +22,10 @@ public class WebServer {
         handler.addServletWithMapping(PlaceholderReceiver.class, "/*");
         
         server.setHandler(handler);
+        
+        ServerConnector connector = new ServerConnector(server);
+        connector.setPort(this.port);
+        server.addConnector(connector);
 
 		new Thread() {
 			
@@ -28,10 +33,10 @@ public class WebServer {
 			public void run() {
 				try {
 					server.start();
-					Main.getPlugin().getLogger().info("Server has been started on port " + WebServer.this.port);
+					Main.getPlugin().getLogger().info("Listening on port " + WebServer.this.port);
 					server.join(); //Join with main thread
 				} catch (Exception e) {
-					Main.getPlugin().getLogger().severe("An error occured while starting server: " + e.getMessage());
+					Main.getPlugin().getLogger().severe("An error occured while starting webserver: " + e.getMessage());
 				}
 			}
 			
@@ -42,9 +47,9 @@ public class WebServer {
 		try {
 			server.setStopAtShutdown(true);
 			server.stop();
-			Main.getPlugin().getLogger().info("Server has been stopped.");
+			Main.getPlugin().getLogger().info("Embedded webserver has been stopped.");
 		} catch (Exception e) {
-			Main.getPlugin().getLogger().severe("An error occured while stopping server: " + e.getMessage());
+			Main.getPlugin().getLogger().severe("An error occured while stopping webserver: " + e.getMessage());
 		}
 	}
 
