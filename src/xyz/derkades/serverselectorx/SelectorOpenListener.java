@@ -47,6 +47,10 @@ public class SelectorOpenListener implements Listener {
 
 			final ItemStack item = Main.getHotbarItemStackFromMenuConfig(player, menuConfig, configName);
 
+			if (item == null) {
+				continue;
+			}
+			
 			if (!item.isSimilar(player.getItemInHand())) {
 				continue;
 			}
