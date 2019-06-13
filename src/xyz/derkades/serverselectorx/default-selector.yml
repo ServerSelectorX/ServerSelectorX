@@ -21,7 +21,7 @@ commands:
  - servers
  
 #permission:
-#  use: true
+#  open: true
 #  message: '&cYou do not have permission to open this menu.'
 #  item: false
 
