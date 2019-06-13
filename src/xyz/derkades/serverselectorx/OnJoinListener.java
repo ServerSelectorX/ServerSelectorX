@@ -19,7 +19,9 @@ public class OnJoinListener implements Listener {
 
 	@EventHandler(priority = EventPriority.LOW)
 	public void onJoin(final PlayerJoinEvent event) {
-
+		if (Main.getConfigurationManager().getSSXConfig().getBoolean("disable-items")) {
+			return;
+		}
 
 		final Player player = event.getPlayer();
 

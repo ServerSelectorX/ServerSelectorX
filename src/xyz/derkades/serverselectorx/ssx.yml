@@ -20,6 +20,9 @@ config-sync:
    - menu:default
    - menu:skywars
    
+  # Don't give the players any items (they will only be able to use commands to open menus).
+  disable-items: true
+   
 # Set a server selector name here to open said selector when a player joins a server
 # If your file is called 'default.yml', enter 'default'.
 open-on-join: none
