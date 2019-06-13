@@ -21,8 +21,9 @@ commands:
  - servers
  
 #permission:
-#  enabled: true
-#  message: '&cYou do not have permisison to open this menu.'
+#  open: true
+#  message: '&cYou do not have permission to open this menu.'
+#  item: false
 
 url-message: '&3&lClick here'
 

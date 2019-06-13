@@ -36,7 +36,14 @@ public class OnJoinListener implements Listener {
 			
 			if (menuConfig.getBoolean("permission.item")) {
 				if (!player.hasPermission("ssx.item." + configName)) {
-					continue; // Player does not have permission
+					final String permission = "ssx.item." + configName;
+					if (!player.hasPermission(permission)) {
+						if (menuConfig.getBoolean("permission.debug")) {
+							Main.getPlugin().getLogger().info(String.format("%s did not receive an item because they don't have the permission %s", 
+									player.getName(), permission));
+						}
+						continue;
+					}
 				}
 			}
 			
