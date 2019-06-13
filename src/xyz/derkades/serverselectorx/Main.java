@@ -32,6 +32,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -332,7 +333,7 @@ public class Main extends JavaPlugin {
 		
 		if (permissionEnabled && !player.hasPermission(permission)) {
 			if (config.contains("permission.message")) {
-				String message = config.getString("permission.message");
+				String message = config.getString("permission.message", "");
 				if (!message.equals("")) {
 					player.sendMessage(Colors.parseColors(message));
 				}
@@ -442,7 +443,9 @@ public class Main extends JavaPlugin {
 	}
 	
     public static ItemStack addGlow(ItemStack item) {
-    	try {
+    	item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+    	return item;
+    	/*try {
     		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
     		
     		Class<?> craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
@@ -467,7 +470,7 @@ public class Main extends JavaPlugin {
 				NoSuchMethodException | SecurityException | InstantiationException e) {
 			e.printStackTrace();
 			return item;
-		}
+		}*/
     }
     
     public static void error(String message, Player... players) {
@@ -485,9 +488,10 @@ public class Main extends JavaPlugin {
 		if (materialString.startsWith("head:")) {
 			String owner = materialString.split(":")[1];
 			if (owner.equals("auto")) {
-				builder = new ItemBuilder(player.getName());
+				builder = new ItemBuilder(player);
 			} else {
-				builder = new ItemBuilder(owner);
+				player.sendMessage("Custom player heads are not implemented in this version. You can only use 'head:auto'.");
+				return null;
 			}
 		} else {
 			Material material = Material.getMaterial(materialString);

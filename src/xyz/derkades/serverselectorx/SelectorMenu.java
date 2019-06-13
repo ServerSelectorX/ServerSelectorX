@@ -221,9 +221,10 @@ public class SelectorMenu extends IconMenu {
 				if (materialString.startsWith("head:")) {
 					String owner = materialString.split(":")[1];
 					if (owner.equals("auto")) {
-						builder = new ItemBuilder(player.getName());
+						builder = new ItemBuilder(player);
 					} else {
-						builder = new ItemBuilder(owner);
+						player.sendMessage("Custom player heads are not implemented in this version. You can only use 'head:auto'.");
+						return;
 					}
 				} else {
 					
