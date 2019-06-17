@@ -30,60 +30,60 @@ import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
 import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 
 public class SelectorMenu extends IconMenu {
-	
-	private FileConfiguration config;
+
+	private final FileConfiguration config;
 	//private String configName;
-	private Player player;
-	private int slots;
-	
+	private final Player player;
+	private final int slots;
+
 	private BukkitTask refreshTimer;
-	
-	public SelectorMenu(Player player, FileConfiguration config, String configName) {
+
+	public SelectorMenu(final Player player, final FileConfiguration config, final String configName) {
 		super(Main.getPlugin(), Colors.parseColors(config.getString("title", UUID.randomUUID().toString())), 9, player);
 		this.config = config;
 		//this.configName = configName;
 		this.player = player;
-		
+
 		this.slots = config.getInt("rows", 6) * 9;
-		setSize(slots);
+		this.setSize(this.slots);
 	}
 
 	@Override
 	public void open() {
-		addItems();
-		
-		Cooldown.addCooldown(config.getName() + player.getName(), 0); //Remove cooldown if menu opened successfully
+		this.addItems();
+
+		Cooldown.addCooldown(this.config.getName() + this.player.getName(), 0); //Remove cooldown if menu opened successfully
 		super.open();
-		
-		refreshTimer = Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), () -> {
-			addItems();
+
+		this.refreshTimer = Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), () -> {
+			this.addItems();
 			super.refreshItems();
 		}, 1*20, 1*20);
 	}
 
-	private void addItems() {	
-		for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
-			final ConfigurationSection section = config.getConfigurationSection("menu." + key);
-			
+	private void addItems() {
+		for (final String key : this.config.getConfigurationSection("menu").getKeys(false)) {
+			final ConfigurationSection section = this.config.getConfigurationSection("menu." + key);
+
 			String materialString = "STONE";
 			int data = 0;
 			String name = "";
 			List<String> lore = new ArrayList<>();
 			int amount = 1;
 			boolean enchanted = false;
-			
-			if (section.contains("permission") && !player.hasPermission(section.getString("permission"))) {
+
+			if (section.contains("permission") && !this.player.hasPermission(section.getString("permission"))) {
 				// Use no-permission section
-				ConfigurationSection noPermissionSection = section.getConfigurationSection("no-permission");
+				final ConfigurationSection noPermissionSection = section.getConfigurationSection("no-permission");
 				materialString = noPermissionSection.getString("item");
 				data = noPermissionSection.getInt("data", 0);
 				name = noPermissionSection.getString("name", "");
 				lore = noPermissionSection.getStringList("lore");
 				enchanted = noPermissionSection.getBoolean("enchanted", false);
 			} else {
-				// Player has permission, use other sections			
+				// Player has permission, use other sections
 				String firstAction;
-				
+
 				if (section.contains("action")) {
 					if (section.isList("action")) {
 						firstAction = section.getStringList("action").get(0);
@@ -93,34 +93,42 @@ public class SelectorMenu extends IconMenu {
 				} else {
 					firstAction = "none";
 				}
-				
+
 				if (firstAction.startsWith("srv")) {
 					String serverName = firstAction.substring(4);
-					
+
 					if (serverName.startsWith("__")) {
 						serverName = serverName.substring(2);
 					}
-					
+
 					if (Main.isOnline(serverName)) {
-						Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
-						
+						final Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
+
 						boolean dynamicMatchFound = false;
-						
+
 						if (section.contains("dynamic")) {
-							for (String dynamic : section.getConfigurationSection("dynamic").getKeys(false)) {
-								String placeholder = dynamic.split(":")[0];
-								String result = dynamic.split(":")[1];
-								
+							for (final String dynamicKey : section.getConfigurationSection("dynamic").getKeys(false)) {
+								final String placeholder = dynamicKey.split(":")[0];
+								final String placeholderValueInConfig = dynamicKey.split(":")[1];
+								final String placeholderValueFromConnector = placeholders.get(placeholder);
+
 								if (!placeholders.containsKey(placeholder)) {
 									Main.getPlugin().getLogger().warning("Dynamic feature contains rule with placeholder " + placeholder + " which has not been received from the server.");
 									continue;
 								}
-								
-								if (placeholders.get(placeholder).equals(result)) {
+
+								final ConfigurationSection dynamicSection = section.getConfigurationSection("dynamic." + dynamicKey);
+
+								final String mode = dynamicSection.getString("mode", "equals");
+
+								if (
+										(mode.equals("equals") && placeholders.get(placeholder).equals(placeholderValueInConfig)) ||
+										(mode.equals("less") && Double.parseDouble(placeholderValueInConfig) < Double.parseDouble(placeholderValueFromConnector)) ||
+										(mode.equals("less") && Double.parseDouble(placeholderValueInConfig) > Double.parseDouble(placeholderValueFromConnector))
+										) {
 									//Placeholder result matches with placeholder result in rule
 									dynamicMatchFound = true;
-									ConfigurationSection dynamicSection = section.getConfigurationSection("dynamic." + dynamic);
-									
+
 									materialString = dynamicSection.getString("item");
 									data = dynamicSection.getInt("data", 0);
 									name = dynamicSection.getString("name", "");
@@ -129,7 +137,7 @@ public class SelectorMenu extends IconMenu {
 								}
 							}
 						}
-						
+
 						if (!dynamicMatchFound) {
 							//No dynamic rule matched, fall back to online
 							materialString = section.getString("online.item");
@@ -138,17 +146,17 @@ public class SelectorMenu extends IconMenu {
 							lore = section.getStringList("online.lore");
 							enchanted = section.getBoolean("online.enchanted", false);
 						}
-						
-						for (Map.Entry<String, String> placeholder : placeholders.entrySet()) {
-							List<String> newLore = new ArrayList<>();
-							for (String string : lore) {
+
+						for (final Map.Entry<String, String> placeholder : placeholders.entrySet()) {
+							final List<String> newLore = new ArrayList<>();
+							for (final String string : lore) {
 								newLore.add(string.replace("{" + placeholder.getKey() + "}", placeholder.getValue()));
 							}
 							lore = newLore;
-							
+
 							name = name.replace("{" + placeholder.getKey() + "}", placeholder.getValue());
 						}
-						
+
 						if (section.getBoolean("dynamic-item-count", false)) {
 							if (!placeholders.containsKey("online")) { //Check for very old SSX-Connector versions. Can be removed soon.
 								Main.getPlugin().getLogger().warning("Dynamic item count is enabled but player count is unknown.");
@@ -157,44 +165,44 @@ public class SelectorMenu extends IconMenu {
 								amount = Integer.parseInt(placeholders.get("online"));
 							}
 						} else {
-							amount = section.getInt("item-count", 1); 
+							amount = section.getInt("item-count", 1);
 						}
 					} else {
 						//Server is offline
-						ConfigurationSection offlineSection = section.getConfigurationSection("offline");
-						
+						final ConfigurationSection offlineSection = section.getConfigurationSection("offline");
+
 						materialString = offlineSection.getString("item");
 						data = offlineSection.getInt("data", 0);
 						name = offlineSection.getString("name", "");
 						lore = offlineSection.getStringList("lore");
 						enchanted = offlineSection.getBoolean("enchanted", false);
-						
+
 						amount = section.getInt("item-count", 1); // When the server is offline, so the item count is not set by the player count
 					}
-					
+
 				} else if (firstAction.startsWith("sel:")) {
 					//Add all online counts of servers in the submenu
 					int totalOnline = 0;
-					
-					FileConfiguration subConfig = Main.getConfigurationManager().getMenuByName(firstAction.substring(4));
+
+					final FileConfiguration subConfig = Main.getConfigurationManager().getMenuByName(firstAction.substring(4));
 					for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
 						final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
-						String subAction = subSection.getString("action");
-						if (!subAction.startsWith("srv:")) 
+						final String subAction = subSection.getString("action");
+						if (!subAction.startsWith("srv:"))
 							continue;
-						
-						String serverName = subAction.substring(4);
-						
+
+						final String serverName = subAction.substring(4);
+
 						if (!Main.PLACEHOLDERS.containsKey(serverName)) {
 							continue;
 						}
-						
-						Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
+
+						final Map<String, String> placeholders = Main.PLACEHOLDERS.get(serverName);
 						if (placeholders.containsKey("online")) {
 							totalOnline += Integer.parseInt(placeholders.get("online"));
 						}
 					}
-					
+
 					materialString = section.getString("item");
 					data = section.getInt("data", 0);
 					name = section.getString("name", "");
@@ -209,111 +217,111 @@ public class SelectorMenu extends IconMenu {
 					enchanted = section.getBoolean("enchanted", false);
 				}
 			}
-			
+
 			// If data is set to -1, randomize data
 			if (data < 0) {
 				data = Random.getRandomInteger(0, 15);
 			}
-			
+
 			if (materialString != "NONE") {
 				final ItemBuilder builder;
-				
+
 				if (materialString.startsWith("head:")) {
-					String owner = materialString.split(":")[1];
+					final String owner = materialString.split(":")[1];
 					if (owner.equals("auto")) {
-						builder = new ItemBuilder(player);
+						builder = new ItemBuilder(this.player);
 					} else {
-						player.sendMessage("Custom player heads are not implemented in this version. You can only use 'head:auto'.");
+						this.player.sendMessage("Custom player heads are not implemented in this version. You can only use 'head:auto'.");
 						return;
 					}
 				} else {
-					
+
 					Material material;
 					try {
 						material = Material.valueOf(materialString);
-					} catch (IllegalArgumentException e) {
-						player.sendMessage("Invalid item name '" + materialString + "'");
+					} catch (final IllegalArgumentException e) {
+						this.player.sendMessage("Invalid item name '" + materialString + "'");
 						return;
 					}
-					
+
 					builder = new ItemBuilder(material);
 				}
-				
-				name = name.replace("{player}", player.getName()).replace("{globalOnline}", "" + Main.getGlobalPlayerCount());
-				lore = ListUtils.replaceInStringList(lore, 
-						new Object[] {"{player}", "{globalOnline}"}, 
-						new Object[] {player.getName(), Main.getGlobalPlayerCount()});
-				
+
+				name = name.replace("{player}", this.player.getName()).replace("{globalOnline}", "" + Main.getGlobalPlayerCount());
+				lore = ListUtils.replaceInStringList(lore,
+						new Object[] {"{player}", "{globalOnline}"},
+						new Object[] {this.player.getName(), Main.getGlobalPlayerCount()});
+
 				if (amount < 1 || amount > 64) amount = 1;
-				
+
 				builder.amount(amount);
-				builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
-				builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
-	
-				int slot = Integer.valueOf(key);
-				
+				builder.name(Main.PLACEHOLDER_API.parsePlaceholders(this.player, name));
+				builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(this.player, lore));
+
+				final int slot = Integer.valueOf(key);
+
 				ItemStack item = builder.create();
-				
+
 				if (enchanted) item = Main.addGlow(item);
-				
+
 				if (section.getBoolean("hide-flags", false)) item = Main.addHideFlags(item);
-				
+
 				if (slot < 0) {
-					for (int i = 0; i < slots; i++) {
-						if (!items.containsKey(i)) {
-							items.put(i, item);
+					for (int i = 0; i < this.slots; i++) {
+						if (!this.items.containsKey(i)) {
+							this.items.put(i, item);
 						}
 					}
 				} else {
-					items.put(slot, item);
+					this.items.put(slot, item);
 				}
 			}
 		}
 	}
 
 	@Override
-	public boolean onOptionClick(OptionClickEvent event) {		
-		int slot = event.getPosition();
-		Player player = event.getPlayer();
-		
+	public boolean onOptionClick(final OptionClickEvent event) {
+		final int slot = event.getPosition();
+		final Player player = event.getPlayer();
+
 		List<String> actions;
-		
-		if (config.isList("menu." + slot + ".action")) {
+
+		if (this.config.isList("menu." + slot + ".action")) {
 			// Action exists and is a list
-			actions = config.getStringList("menu." + slot + ".action");
-			
+			actions = this.config.getStringList("menu." + slot + ".action");
+
 			if (actions.isEmpty()) {
 				actions.add("msg:Action list found, but list is empty");
 			}
 		} else {
 			// Action is not a list or might not exist
-			String possibleAction = config.getString("menu." + slot + ".action", "none");
-			
+			String possibleAction = this.config.getString("menu." + slot + ".action", "none");
+
 			if (possibleAction == null) {
 				//If the action is null ('slot' is not found in the config) it is probably a wildcard
-				possibleAction = config.getString("menu.-1.action");
-				
+				possibleAction = this.config.getString("menu.-1.action");
+
 				if (possibleAction == null) { //If it is still null it must be missing
 					possibleAction = "msg:No action found.";
 				}
 			}
-			
+
 			actions = Arrays.asList(possibleAction);
 		}
-		
-		for (String action : actions) {
+
+		for (final String action : actions) {
 			if (action.startsWith("url:")){ //Send url message
-				String url = action.substring(4);
-				String message = Colors.parseColors(config.getString("url-message", "&3&lClick here"));
-				
+				final String url = action.substring(4);
+				final String message = Colors.parseColors(this.config.getString("url-message", "&3&lClick here"));
+
 				player.spigot().sendMessage(
 						new ComponentBuilder(message)
 						.event(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
 						.create()
 						);
 			} else if (action.startsWith("cmd:")){ //Execute command
-				String command = action.substring(4);
-				
+				final String command = action.substring(4);
+
 				//Send command 2 ticks later to let the GUI close first (for commands that open a GUI)
 				Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), () -> {
 					Bukkit.dispatchCommand(player, Main.PLACEHOLDER_API.parsePlaceholders(player, command));
@@ -323,43 +331,43 @@ public class SelectorMenu extends IconMenu {
 				command = command.replace("{player}", player.getName());
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Main.PLACEHOLDER_API.parsePlaceholders(player, command));
 			} else if (action.startsWith("bungeecmd:")) { //BungeeCord command
-				String command = action.substring(10);
+				final String command = action.substring(10);
 				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("sync player %s %s", player.getName(), Main.PLACEHOLDER_API.parsePlaceholders(player, command)));
 			} else if (action.startsWith("sel:")){ //Open selector
-				String configName = action.substring(4);
-				FileConfiguration config = Main.getConfigurationManager().getMenuByName(configName);
+				final String configName = action.substring(4);
+				final FileConfiguration config = Main.getConfigurationManager().getMenuByName(configName);
 				if (config == null){
 					player.sendMessage(ChatColor.RED + "This server selector does not exist.");
-				} else {				
+				} else {
 					new SelectorMenu(player, config, configName).open();
 				}
 			} else if (action.startsWith("world:")){ //Teleport to world
-				String worldName = action.substring(6);
-				World world = Bukkit.getWorld(worldName);
+				final String worldName = action.substring(6);
+				final World world = Bukkit.getWorld(worldName);
 				if (world == null){
 					player.sendMessage(ChatColor.RED + "A world with the name " + worldName + " does not exist.");
 				} else {
 					player.teleport(world.getSpawnLocation());
 				}
 			} else if (action.startsWith("srv:")){ //Teleport to server
-				String serverName = action.substring(4);
-				
+				final String serverName = action.substring(4);
+
 				// If offline-cancel-connect is turned on and the server is offline, send message and cancel connecting
 				if (Main.getConfigurationManager().getGlobalConfig().getBoolean("offline-cancel-connect", false) && !Main.isOnline(serverName)) {
 					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("offline-cancel-connect-message", "error")));
 				}
-				
+
 				Main.teleportPlayerToServer(player, serverName);
 			} else if (action.equalsIgnoreCase("toggleInvis")) {
 				if (player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
 					player.removePotionEffect(PotionEffectType.INVISIBILITY);
 					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("invis-off")));
 				} else {
-					if (Main.getConfigurationManager().getGlobalConfig().getBoolean("show-particles")) 
+					if (Main.getConfigurationManager().getGlobalConfig().getBoolean("show-particles"))
 						player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true));
 					else
 						player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
-					
+
 					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("invis-on")));
 				}
 			} else if (action.equalsIgnoreCase("toggleSpeed")) {
@@ -367,13 +375,13 @@ public class SelectorMenu extends IconMenu {
 					player.removePotionEffect(PotionEffectType.SPEED);
 					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("speed-off")));
 				} else {
-					int amplifier = Main.getConfigurationManager().getGlobalConfig().getInt("speed-amplifier", 3);
-					
-					if (Main.getConfigurationManager().getGlobalConfig().getBoolean("show-particles")) 
+					final int amplifier = Main.getConfigurationManager().getGlobalConfig().getInt("speed-amplifier", 3);
+
+					if (Main.getConfigurationManager().getGlobalConfig().getBoolean("show-particles"))
 						player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true));
 					else
 						player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
-					
+
 					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("speed-on")));
 				}
 			} else if (action.equalsIgnoreCase("toggleHideOthers")) {
@@ -385,7 +393,7 @@ public class SelectorMenu extends IconMenu {
 					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("hide-others")));
 				}
 			} else if (action.startsWith("msg:")){ //Send message
-				String message = action.substring(4);
+				final String message = action.substring(4);
 				player.sendMessage(Main.PLACEHOLDER_API.parsePlaceholders(player, message));
 			} else if (action.equals("close")){ //Close selector
 				return true; //Return true = close
@@ -396,13 +404,13 @@ public class SelectorMenu extends IconMenu {
 				continue;
 			}
 		}
-		
+
 		return false;
 	}
-	
+
 	@Override
-	public void onClose(MenuCloseEvent event) {
-		if (refreshTimer != null) refreshTimer.cancel();
+	public void onClose(final MenuCloseEvent event) {
+		if (this.refreshTimer != null) this.refreshTimer.cancel();
 	}
 
 }
