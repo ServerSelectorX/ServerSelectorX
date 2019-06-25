@@ -25,11 +25,11 @@ public class OnJoinListener implements Listener {
 
 		final FileConfiguration global = Main.getConfigurationManager().getGlobalConfig();
 
+		final Player player = event.getPlayer();
+
 		if (global.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
 			event.getPlayer().getInventory().clear();
 		}
-
-		final Player player = event.getPlayer();
 
 		for (final Map.Entry<String, FileConfiguration> menuConfigEntry :
 			Main.getConfigurationManager().getAllMenus().entrySet()) {
