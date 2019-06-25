@@ -52,31 +52,31 @@ import xyz.derkades.serverselectorx.placeholders.PlaceholdersDisabled;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
 
 public class Main extends JavaPlugin {
-	
+
 	public static boolean BETA = false;
-	
+
 	public static Placeholders PLACEHOLDER_API;
-	
+
 	public static final String PREFIX = DARK_GRAY + "[" + DARK_AQUA + "ServerSelectorX" + DARK_GRAY + "]";
-	
+
 	/** <server, <placeholder, result>> */
 	public static final Map<String, Map<String, String>> PLACEHOLDERS = new HashMap<>();
 	public static final Map<String, Long> LAST_INFO_TIME = new HashMap<>();
 
 	private static ConfigurationManager configurationManager;
-	
+
 	private static Main plugin;
-	
+
 	public static WebServer server;
-	
+
 	public static Main getPlugin(){
 		return plugin;
 	}
-	
+
 	@Override
 	public void onEnable(){
 		plugin = this;
-		
+
 		configurationManager = new ConfigurationManager();
 		configurationManager.reload();
 
@@ -84,50 +84,50 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new SelectorOpenListener(), this);
 		Bukkit.getPluginManager().registerEvents(new OnJoinListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemMoveDropCancelListener(), this);
-		
+
 		//Register messaging channels
-		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
-		
+		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+
 		//Register command
-		getCommand("serverselectorx").setExecutor(new ReloadCommand());
-		
+		this.getCommand("serverselectorx").setExecutor(new ReloadCommand());
+
 		//Start bStats
 		Stats.initialize();
-		
+
 		//Register custom selector commands
-		registerCommands();
-		
+		this.registerCommands();
+
 		//Check if PlaceHolderAPI is installed
 		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")){
 			Main.PLACEHOLDER_API = new PlaceholdersEnabled();
-			getLogger().log(Level.INFO, "PlaceholderAPI is found. Placeholders will work!");
+			//getLogger().log(Level.INFO, "PlaceholderAPI is found. Placeholders will work!");
 		} else {
 			Main.PLACEHOLDER_API = new PlaceholdersDisabled();
-			getLogger().log(Level.INFO, "PlaceholderAPI is not installed. The plugin will still work.");
+			//getLogger().log(Level.INFO, "PlaceholderAPI is not installed. The plugin will still work.");
 		}
-		
+
 		//Periodically clean cache
-		getServer().getScheduler().runTaskTimer(this, () -> {
+		this.getServer().getScheduler().runTaskTimer(this, () -> {
 			Cache.cleanCache();
 		}, 30*60*20, 30*60*20);
 
 		if (this.getDescription().getVersion().contains("beta")) {
 			BETA = true;
 		}
-		
+
 		// Disable annoying jetty warnings
 		if (!configurationManager.getSSXConfig().getBoolean("jetty-debug", false)){
 			System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");
 			System.setProperty("org.eclipse.jetty.LEVEL", "OFF");
 		}
-		
-		int port = configurationManager.getSSXConfig().getInt("port");
+
+		final int port = configurationManager.getSSXConfig().getInt("port");
 		server = new WebServer(port);
 		server.start();
-		
-		getServer().getScheduler().runTaskLater(this, () -> retrieveConfigs(), 5*20);
+
+		this.getServer().getScheduler().runTaskLater(this, () -> this.retrieveConfigs(), 5*20);
 	}
-	
+
 	@Override
 	public void onDisable() {
 		if (server != null) {
@@ -136,143 +136,143 @@ public class Main extends JavaPlugin {
 				// Freeze bukkit thread to give the server time to stop
 				try {
 					Thread.sleep(3000);
-				} catch (InterruptedException e) {
+				} catch (final InterruptedException e) {
 					e.printStackTrace();
-				}		
+				}
 			}
 		}
 	}
-	
+
 	/**
 	 * Registers all custom commands by going through all menu files and adding commands
 	 */
 	private void registerCommands(){
 		try {
 			final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-	
+
 			bukkitCommandMap.setAccessible(true);
-			CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
-			
-			for (Map.Entry<String, FileConfiguration> menuConfigEntry : configurationManager.getAllMenus().entrySet()) {			
+			final CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
+
+			for (final Map.Entry<String, FileConfiguration> menuConfigEntry : configurationManager.getAllMenus().entrySet()) {
 				final String configName = menuConfigEntry.getKey();
 				final FileConfiguration config = menuConfigEntry.getValue();
-				
+
 				if (!config.contains("commands")) {
 					continue;
 				}
-				
-				List<String> commandNames = config.getStringList("commands");
-				
-				for (String commandName : commandNames) {
+
+				final List<String> commandNames = config.getStringList("commands");
+
+				for (final String commandName : commandNames) {
 					commandMap.register("ssx-custom", new Command(commandName){
-		
+
 						@Override
-						public boolean execute(CommandSender sender, String label, String[] args) {
+						public boolean execute(final CommandSender sender, final String label, final String[] args) {
 							if (sender instanceof Player){
-								Player player = (Player) sender;
+								final Player player = (Player) sender;
 								//Small cooldown to prevent weird bugs
 								if (Cooldown.getCooldown(player.getUniqueId() + "doubleopen") > 0) { //if time left on cooldown is > 0
 									return true;
 								}
-								
+
 								Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 1000); //Add cooldown for 1 second
-								
+
 								Main.openSelector(player, configName);
 							}
 							return true;
 						}
-						
+
 					});
 				}
-	
+
 			}
 		} catch (NoSuchFieldException | IllegalAccessException e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	void retrieveConfigs() {
 		final ConfigurationSection syncConfig = getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
-		
+
 		if (!syncConfig.getBoolean("enabled", false)) {
 			return;
 		}
-	
-		getLogger().info("Config sync is enabled. Starting the configuration file retrieval process..");
-		
+
+		this.getLogger().info("Config sync is enabled. Starting the configuration file retrieval process..");
+
 		final String address = syncConfig.getString("address");
 		final List<String> whitelist = syncConfig.getStringList("whitelist");
-		
+
 		URL url;
 		try {
 			url = new URL("http://" + address + "/config");
-		} catch (MalformedURLException e) {
-			getLogger().severe("The address you entered seems to be incorrectly formatted.");
-			getLogger().severe("It must be formatted like this: 173.45.16.208:8888");
+		} catch (final MalformedURLException e) {
+			this.getLogger().severe("The address you entered seems to be incorrectly formatted.");
+			this.getLogger().severe("It must be formatted like this: 173.45.16.208:8888");
 			//e.printStackTrace();
 			return;
 		}
-		
+
 		Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> {
 
-			getLogger().info("Making request to " + url.toString());
+			this.getLogger().info("Making request to " + url.toString());
 			boolean error = false;
 			String jsonOutput = null;
 			try {
-				HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-				BufferedReader streamReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
-				StringBuilder responseBuilder = new StringBuilder();
+				final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+				final BufferedReader streamReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
+				final StringBuilder responseBuilder = new StringBuilder();
 				String temp;
 				while ((temp = streamReader.readLine()) != null)
 					responseBuilder.append(temp);
 				jsonOutput = responseBuilder.toString();
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 				error = true;
 			}
-			
+
 			if (error) {
-				getLogger().severe("An error occured while making a request. Are you sure you are using the right IP and port? You can find a more detailed error message in the server log.");
+				this.getLogger().severe("An error occured while making a request. Are you sure you are using the right IP and port? You can find a more detailed error message in the server log.");
 				return;
 			}
-		
+
 			if (jsonOutput == null) {
 				// it should only ever be null if error == true
-				getLogger().severe("Json output null. Report issue to developer");
+				this.getLogger().severe("Json output null. Report issue to developer");
 			}
-			
-			File pluginDirectory = Main.getPlugin().getDataFolder();
-											
-			File serversYml = new File(pluginDirectory, "servers.yml");
-			File globalYml = new File(pluginDirectory, "global.yml");
-			File menuDirectory = new File(pluginDirectory, "menu");
-			
-			JsonParser parser = new JsonParser();
-			JsonObject json = parser.parse(jsonOutput).getAsJsonObject();
-			
-			getLogger().info("Writing to disk..");
-			
+
+			final File pluginDirectory = Main.getPlugin().getDataFolder();
+
+			final File serversYml = new File(pluginDirectory, "servers.yml");
+			final File globalYml = new File(pluginDirectory, "global.yml");
+			final File menuDirectory = new File(pluginDirectory, "menu");
+
+			final JsonParser parser = new JsonParser();
+			final JsonObject json = parser.parse(jsonOutput).getAsJsonObject();
+
+			this.getLogger().info("Writing to disk..");
+
 			try {
 				if (whitelist.contains("servers")) {
 					serversYml.delete();
-					FileConfiguration config = new YamlConfiguration();
+					final FileConfiguration config = new YamlConfiguration();
 					config.loadFromString(json.get("servers").getAsString());
 					config.save(serversYml);
 				}
-				
+
 				if (whitelist.contains("global")) {
 					globalYml.delete();
-					FileConfiguration config = new YamlConfiguration();
+					final FileConfiguration config = new YamlConfiguration();
 					config.loadFromString(json.get("global").getAsString());
 					config.save(globalYml);
 				}
-				
+
 				if (whitelist.contains("menu:all")) {
 					Arrays.asList(menuDirectory.listFiles()).forEach(File::delete);
-					
-					JsonObject menuFilesJson = json.get("menu").getAsJsonObject();
-					for (Entry<String, JsonElement> menuJson : menuFilesJson.entrySet()) {
-						FileConfiguration config = new YamlConfiguration();
+
+					final JsonObject menuFilesJson = json.get("menu").getAsJsonObject();
+					for (final Entry<String, JsonElement> menuJson : menuFilesJson.entrySet()) {
+						final FileConfiguration config = new YamlConfiguration();
 						config.loadFromString(menuJson.getValue().getAsString());
 						config.save(new File(menuDirectory, menuJson.getKey() + ".yml"));
 					}
@@ -281,90 +281,90 @@ public class Main extends JavaPlugin {
 						if (!string.startsWith("menu:")) {
 							continue;
 						}
-						
+
 						final String menuName = string.substring(5);
 						if (!json.get("menu").getAsJsonObject().has(menuName)) {
-							getLogger().warning("Skipped menu file with name '" + menuName + "', it was not sent by the server.");
+							this.getLogger().warning("Skipped menu file with name '" + menuName + "', it was not sent by the server.");
 							continue;
 						}
-						
-						JsonElement menuJson = json.get("menu").getAsJsonObject().get(menuName);
-						FileConfiguration config = new YamlConfiguration();
+
+						final JsonElement menuJson = json.get("menu").getAsJsonObject().get(menuName);
+						final FileConfiguration config = new YamlConfiguration();
 						config.loadFromString(menuJson.getAsString());
 						config.save(new File(menuDirectory, menuName + ".yml"));
 					}
 				}
-			} catch (InvalidConfigurationException e) {
-				RuntimeException e2 = new RuntimeException("The configuration received from the server is invalid");
+			} catch (final InvalidConfigurationException e) {
+				final RuntimeException e2 = new RuntimeException("The configuration received from the server is invalid");
 				e2.initCause(e);
 				throw e2;
-			} catch (IOException e) {
+			} catch (final IOException e) {
 				e.printStackTrace();
 			}
-			
-			getLogger().info("Done! The plugin will now reload.");
+
+			this.getLogger().info("Done! The plugin will now reload.");
 			Main.getConfigurationManager().reload();
 			server.stop();
 			server.start();
 		});
 	}
-	
+
 	public static ConfigurationManager getConfigurationManager() {
 		return configurationManager;
 	}
-	
+
 	/**
 	 * Only used by open listener and commands
-	 * 
+	 *
 	 * Checks for cooldown, checks for permissions, plays sound
 	 */
-	public static void openSelector(Player player, String configName) {
+	public static void openSelector(final Player player, final String configName) {
 		final FileConfiguration config = configurationManager.getMenuByName(configName);
-		
+
 		if (config == null) {
 			Main.error("A menu with this name does not exist", player);
 			return;
 		}
-		
+
 		// Check for permissions
-		
+
 		final boolean permissionEnabled = config.getBoolean("permission.open", false);
 		final String permission = "ssx.open." + configName;
-		
+
 		if (permissionEnabled && !player.hasPermission(permission)) {
 			if (config.contains("permission.message")) {
-				String message = config.getString("permission.message", "");
+				final String message = config.getString("permission.message", "");
 				if (!message.equals("")) {
 					player.sendMessage(Colors.parseColors(message));
 				}
 			}
 			return;
 		}
-			
+
 		// Play sound
-		
-		String soundString = Main.getPlugin().getConfig().getString("selector-open-sound");
+
+		final String soundString = Main.getPlugin().getConfig().getString("selector-open-sound");
 		if (soundString != null && !soundString.equals("NONE")){
 			try {
-				Sound sound = Sound.valueOf(soundString);
+				final Sound sound = Sound.valueOf(soundString);
 				player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
-			} catch (IllegalArgumentException e){
+			} catch (final IllegalArgumentException e){
 				Main.getPlugin().getLogger().log(Level.WARNING, "A sound with the name " + soundString + " could not be found. Make sure that it is the right name for your server version.");
 			}
 		}
-		
+
 		// Open menu
-			
+
 		new SelectorMenu(player, config, configName).open();
 	}
-	
+
 	public static void teleportPlayerToServer(final Player player, final String server){
 		if (Cooldown.getCooldown("servertp" + player.getName() + server) > 0) {
 			return;
 		}
-		
+
 		Cooldown.addCooldown("servertp" + player.getName() + server, 1000);
-		
+
 		// Send message if enabled
 		final FileConfiguration globalConfig = Main.getConfigurationManager().getGlobalConfig();
 		if (globalConfig.getBoolean("server-teleport-message-enabled", false)){
@@ -373,67 +373,67 @@ public class Main extends JavaPlugin {
 					player.sendMessage("");
 				}
 			}
-			
-			String message = Colors.parseColors(globalConfig.getString("server-teleport-message", "error"));
+
+			final String message = Colors.parseColors(globalConfig.getString("server-teleport-message", "error"));
 			player.sendMessage(message.replace("{server}", server));
 		}
-		
+
 		// Send message to bungeecord
 		try (
-				ByteArrayOutputStream baos = new ByteArrayOutputStream(); 
+				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				DataOutputStream dos = new DataOutputStream(baos)
 			){
-			
+
 	        dos.writeUTF("Connect");
 	        dos.writeUTF(server);
 	        player.sendPluginMessage(getPlugin(), "BungeeCord", baos.toByteArray());
-		} catch (IOException e){
+		} catch (final IOException e){
 			e.printStackTrace();
 		}
 	}
-	
-	public static boolean isOnline(String serverName) {
+
+	public static boolean isOnline(final String serverName) {
 		if (Main.LAST_INFO_TIME.containsKey(serverName)) {
 			// If the server has not sent a message for 7 seconds (usually the server sends a message every 5 seconds)
-			
-			long timeSinceLastPing = System.currentTimeMillis() - Main.LAST_INFO_TIME.get(serverName);
-			
-			long timeout = configurationManager.getGlobalConfig().getLong("server-offline-timeout", 6000);
-			
+
+			final long timeSinceLastPing = System.currentTimeMillis() - Main.LAST_INFO_TIME.get(serverName);
+
+			final long timeout = configurationManager.getGlobalConfig().getLong("server-offline-timeout", 6000);
+
 			return timeSinceLastPing < timeout;
 		} else {
 			//If the server has not sent a message at all it is offline
 			return false;
 		}
 	}
-	
+
 	public static int getGlobalPlayerCount() {
 		int online = 0;
-		for (Map<String, String> serverPlaceholders : Main.PLACEHOLDERS.values()) {
+		for (final Map<String, String> serverPlaceholders : Main.PLACEHOLDERS.values()) {
 			online += Integer.parseInt(serverPlaceholders.get("online"));
 		}
 		return online;
 	}
-	
-	public static ItemStack addHideFlags(ItemStack item) {
+
+	public static ItemStack addHideFlags(final ItemStack item) {
 		try {
-			String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-			
-			Class<?> craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
-			Class<?> nmsItemStackClass = Class.forName("net.minecraft.server." + version + ".ItemStack");
-			Class<?> nbtTagCompoundClass = Class.forName("net.minecraft.server." + version + ".NBTTagCompound");
-			
-			Object nmsItemStack = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(null, item);
-			
+			final String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
+
+			final Class<?> craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
+			final Class<?> nmsItemStackClass = Class.forName("net.minecraft.server." + version + ".ItemStack");
+			final Class<?> nbtTagCompoundClass = Class.forName("net.minecraft.server." + version + ".NBTTagCompound");
+
+			final Object nmsItemStack = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(null, item);
+
 			Object nbtTagCompound = nmsItemStackClass.getMethod("getTag").invoke(nmsItemStack);
 			if (nbtTagCompound == null) {
 				nbtTagCompound = nbtTagCompoundClass.getConstructor().newInstance();
 			}
-			
+
 			nbtTagCompoundClass.getMethod("setInt", String.class, int.class).invoke(nbtTagCompound, "HideFlags", 63);
-			
+
 			nmsItemStackClass.getMethod("setTag", nbtTagCompoundClass).invoke(nmsItemStack, nbtTagCompound);
-			
+
 			return (ItemStack) craftItemStackClass.getMethod("asBukkitCopy", nmsItemStackClass).invoke(null, nmsItemStack);
 		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException |
 				NoSuchMethodException | SecurityException | InstantiationException e) {
@@ -441,26 +441,26 @@ public class Main extends JavaPlugin {
 			return item;
 		}
 	}
-	
-    public static ItemStack addGlow(ItemStack item) {
+
+    public static ItemStack addGlow(final ItemStack item) {
     	item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
     	return item;
     	/*try {
     		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-    		
+
     		Class<?> craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
     		Class<?> nmsItemStackClass = Class.forName("net.minecraft.server." + version + ".ItemStack");
     		Class<?> nbtTagCompoundClass = Class.forName("net.minecraft.server." + version + ".NBTTagCompound");
     		Class<?> nbtTagListClass = Class.forName("net.minecraft.server." + version + ".NBTTagList");
     		Class<?> nbtBaseClass = Class.forName("net.minecraft.server." + version + ".NBTBase");
-    		
+
         	Object nmsItemStack = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(null, item);
 
     		Object nbtTagCompound = nmsItemStackClass.getMethod("getTag").invoke(nmsItemStack);
     		if (nbtTagCompound == null) {
     			nbtTagCompound = nbtTagCompoundClass.getConstructor().newInstance();
     		}
-    		
+
     		Object enchantments = nbtTagListClass.getConstructor().newInstance();
     		nbtTagCompoundClass.getMethod("set", String.class, nbtBaseClass).invoke(nbtTagCompound, "ench", enchantments);
             nmsItemStackClass.getMethod("setTag", nbtTagCompoundClass).invoke(nmsItemStack, nbtTagCompound);
@@ -472,21 +472,21 @@ public class Main extends JavaPlugin {
 			return item;
 		}*/
     }
-    
-    public static void error(String message, Player... players) {
-    	for (Player player : players) {
+
+    public static void error(final String message, final Player... players) {
+    	for (final Player player : players) {
     		player.sendMessage(ChatColor.RED + message);
     	}
 		Main.getPlugin().getLogger().severe(message);
     }
-    
-    public static ItemStack getHotbarItemStackFromMenuConfig(Player player, FileConfiguration menuConfig, String configName) {
+
+    public static ItemStack getHotbarItemStackFromMenuConfig(final Player player, final FileConfiguration menuConfig, final String configName) {
     	final ItemBuilder builder;
-		
+
 		final String materialString = menuConfig.getString("item.material");
-		
+
 		if (materialString.startsWith("head:")) {
-			String owner = materialString.split(":")[1];
+			final String owner = materialString.split(":")[1];
 			if (owner.equals("auto")) {
 				builder = new ItemBuilder(player);
 			} else {
@@ -494,19 +494,19 @@ public class Main extends JavaPlugin {
 				return null;
 			}
 		} else {
-			Material material = Material.getMaterial(materialString);
-			
+			final Material material = Material.getMaterial(materialString);
+
 			if (material == null) {
 				Main.error("Invalid item name for menu with name " + configName, player);
 			}
-			
+
 			builder = new ItemBuilder(material);
 		}
-		
+
 		builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player,
 				menuConfig.getString("item.title", "error")
 						.replace("{player}", player.getName())));
-		
+
 		if (menuConfig.contains("item.lore")) {
 			List<String> lore = menuConfig.getStringList("item.lore");
 			lore = Main.PLACEHOLDER_API.parsePlaceholders(player, lore);
@@ -515,7 +515,7 @@ public class Main extends JavaPlugin {
 						new Object[] {player.getName()});
 				builder.coloredLore(lore);
 		}
-		
+
 		return builder.create();
     }
 
