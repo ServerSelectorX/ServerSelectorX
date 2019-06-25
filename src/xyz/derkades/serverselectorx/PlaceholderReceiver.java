@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.logging.Logger;
 
 import javax.servlet.ServletException;
@@ -30,7 +31,7 @@ public class PlaceholderReceiver extends HttpServlet {
 		final Logger logger = Main.getPlugin().getLogger();
 
 		if (key == null || placeholdersJsonString == null) {
-			logger.warning("Received invalid request from " + request.getRemoteAddr() + ". This may be a hacking attempt.");
+			logger.warning("Received invalid request from " + request.getRemoteAddr());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
@@ -50,7 +51,6 @@ public class PlaceholderReceiver extends HttpServlet {
 		if (serverName == null) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			logger.warning("Received request with invalid key from " + request.getRemoteAddr());
-			logger.warning("If you configured everything correctly, this may be a hacking attempt.");
 			logger.warning("Provided key: " + key);
 			return;
 		}
@@ -66,7 +66,26 @@ public class PlaceholderReceiver extends HttpServlet {
 
 		@SuppressWarnings("unchecked")
 		final
-		Map<String, String> placeholders = gson.fromJson(placeholdersJsonString, genericSample.getClass());
+		Map<String, String> receivedPlaceholders = gson.fromJson(placeholdersJsonString, genericSample.getClass());
+
+		final Map<UUID, Map<String, String>> placeholders = new HashMap<>();
+
+		// These received placeholders are not player specific
+		// Store them for UUID 'null'
+		placeholders.put(null, receivedPlaceholders);
+
+		// Now check if SSX-Connector has sent any player-specific placeholders
+		final String playerPlaceholdersJsonString = request.getParameter("data_player");
+		if (playerPlaceholdersJsonString != null) {
+			@SuppressWarnings("unchecked")
+			final Map<String, String> receivedPlayerPlaceholders = gson.fromJson(placeholdersJsonString, genericSample.getClass());
+			if (!receivedPlayerPlaceholders.containsKey("_uuid")) {
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				return;
+			}
+			final UUID uuid = UUID.fromString(receivedPlayerPlaceholders.remove("_uuid"));
+			placeholders.put(uuid, receivedPlayerPlaceholders);
+		}
 
 		Main.PLACEHOLDERS.put(serverName, placeholders);
 

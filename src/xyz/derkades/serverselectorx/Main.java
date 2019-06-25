@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.UUID;
 import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
@@ -58,8 +59,8 @@ public class Main extends JavaPlugin {
 
 	public static final String PREFIX = DARK_GRAY + "[" + DARK_AQUA + "ServerSelectorX" + DARK_GRAY + "]";
 
-	/** <server, <placeholder, result>> */
-	public static final Map<String, Map<String, String>> PLACEHOLDERS = new HashMap<>();
+	/* <serverName, <player uuid (null for global placeholders), <placeholder, result>>> */
+	public static final Map<String, Map<UUID, Map<String, String>>> PLACEHOLDERS = new HashMap<>();
 	public static final Map<String, Long> LAST_INFO_TIME = new HashMap<>();
 
 	private static ConfigurationManager configurationManager;
@@ -408,8 +409,8 @@ public class Main extends JavaPlugin {
 
 	public static int getGlobalPlayerCount() {
 		int online = 0;
-		for (final Map<String, String> serverPlaceholders : Main.PLACEHOLDERS.values()) {
-			online += Integer.parseInt(serverPlaceholders.get("online"));
+		for (final Map<UUID, Map<String, String>> serverPlaceholders : Main.PLACEHOLDERS.values()) {
+			online += Integer.parseInt(serverPlaceholders.get(null).get("online"));
 		}
 		return online;
 	}
