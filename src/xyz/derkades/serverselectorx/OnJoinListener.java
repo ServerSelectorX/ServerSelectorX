@@ -23,6 +23,12 @@ public class OnJoinListener implements Listener {
 			return;
 		}
 
+		final FileConfiguration global = Main.getConfigurationManager().getGlobalConfig();
+
+		if (global.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
+			event.getPlayer().getInventory().clear();
+		}
+
 		final Player player = event.getPlayer();
 
 		for (final Map.Entry<String, FileConfiguration> menuConfigEntry :
@@ -69,10 +75,6 @@ public class OnJoinListener implements Listener {
 	public void applyEffects(final PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
 		final FileConfiguration global = Main.getConfigurationManager().getGlobalConfig();
-
-		if (global.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
-			event.getPlayer().getInventory().clear();
-		}
 
 		if (global.getBoolean("speed-on-join", false)) {
 			final int amplifier = global.getInt("speed-amplifier", 3);
