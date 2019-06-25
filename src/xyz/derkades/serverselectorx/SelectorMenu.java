@@ -261,8 +261,8 @@ public class SelectorMenu extends IconMenu {
 			final Placeholder playerPlaceholder = new Placeholder("{player}", this.player.getName());
 			final Placeholder globalOnlinePlaceholder = new Placeholder("globalOnline}", Main.getGlobalPlayerCount() + "");
 
-			name = PlaceholderUtil.parsePapiPlaceholders(name, this.player, playerPlaceholder, globalOnlinePlaceholder);
-			lore = PlaceholderUtil.parsePapiPlaceholders(lore, this.player, playerPlaceholder, globalOnlinePlaceholder);
+			builder.coloredName(PlaceholderUtil.parsePapiPlaceholders(name, this.player, playerPlaceholder, globalOnlinePlaceholder));
+			builder.coloredLore(PlaceholderUtil.parsePapiPlaceholders(lore, this.player, playerPlaceholder, globalOnlinePlaceholder));
 
 			// Fix unsafe amounts, then apply amounts
 			if (amount < 1 || amount > 64) amount = 1;
