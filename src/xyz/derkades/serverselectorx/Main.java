@@ -32,7 +32,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
@@ -441,37 +440,6 @@ public class Main extends JavaPlugin {
 			return item;
 		}
 	}
-
-    public static ItemStack addGlow(final ItemStack item) {
-    	item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-    	return item;
-    	/*try {
-    		String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-
-    		Class<?> craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
-    		Class<?> nmsItemStackClass = Class.forName("net.minecraft.server." + version + ".ItemStack");
-    		Class<?> nbtTagCompoundClass = Class.forName("net.minecraft.server." + version + ".NBTTagCompound");
-    		Class<?> nbtTagListClass = Class.forName("net.minecraft.server." + version + ".NBTTagList");
-    		Class<?> nbtBaseClass = Class.forName("net.minecraft.server." + version + ".NBTBase");
-
-        	Object nmsItemStack = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(null, item);
-
-    		Object nbtTagCompound = nmsItemStackClass.getMethod("getTag").invoke(nmsItemStack);
-    		if (nbtTagCompound == null) {
-    			nbtTagCompound = nbtTagCompoundClass.getConstructor().newInstance();
-    		}
-
-    		Object enchantments = nbtTagListClass.getConstructor().newInstance();
-    		nbtTagCompoundClass.getMethod("set", String.class, nbtBaseClass).invoke(nbtTagCompound, "ench", enchantments);
-            nmsItemStackClass.getMethod("setTag", nbtTagCompoundClass).invoke(nmsItemStack, nbtTagCompound);
-            Object bukkitStack = craftItemStackClass.getMethod("asBukkitCopy", nmsItemStackClass).invoke(null, nmsItemStack);
-            return (ItemStack) bukkitStack;
-		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException |
-				NoSuchMethodException | SecurityException | InstantiationException e) {
-			e.printStackTrace();
-			return item;
-		}*/
-    }
 
     public static void error(final String message, final Player... players) {
     	for (final Player player : players) {

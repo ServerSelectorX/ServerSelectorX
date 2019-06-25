@@ -12,6 +12,7 @@ import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
@@ -262,7 +263,7 @@ public class SelectorMenu extends IconMenu {
 
 				ItemStack item = builder.create();
 
-				if (enchanted) item = Main.addGlow(item);
+				if (enchanted) item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
 
 				if (section.getBoolean("hide-flags", false)) item = Main.addHideFlags(item);
 
