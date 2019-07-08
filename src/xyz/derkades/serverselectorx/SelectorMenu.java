@@ -232,7 +232,7 @@ public class SelectorMenu extends IconMenu {
 				data = Random.getRandomInteger(0, 15);
 			}
 
-			if (materialString == "NONE") {
+			if (materialString.equalsIgnoreCase("NONE")) {
 				continue;
 			}
 
