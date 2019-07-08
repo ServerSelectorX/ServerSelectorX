@@ -201,7 +201,7 @@ public class SelectorMenu extends IconMenu {
 					final FileConfiguration subConfig = Main.getConfigurationManager().getMenuByName(firstAction.substring(4));
 					for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
 						final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
-						final String subAction = subSection.getString("action");
+						final String subAction = subSection.getString("action", "none");
 						if (!subAction.startsWith("srv:"))
 							continue;
 
