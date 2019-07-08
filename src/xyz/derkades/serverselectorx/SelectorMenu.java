@@ -119,7 +119,7 @@ public class SelectorMenu extends IconMenu {
 								if (playerPlaceholders.get(null).containsKey(placeholder))
 								{ // Global placeholder
 									placeholderValueFromConnector = playerPlaceholders.get(null).get(placeholder);
-								} else if (playerPlaceholders.get(this.player.getUniqueId()).containsKey(placeholder))
+								} else if (playerPlaceholders.containsKey(this.player.getUniqueId()) && playerPlaceholders.get(this.player.getUniqueId()).containsKey(placeholder))
 								{ // Player specific placeholder
 									placeholderValueFromConnector = playerPlaceholders.get(this.player.getUniqueId()).get(placeholder);
 								} else {
