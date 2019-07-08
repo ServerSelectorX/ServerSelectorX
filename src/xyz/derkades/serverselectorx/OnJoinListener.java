@@ -2,7 +2,6 @@ package xyz.derkades.serverselectorx;
 
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -95,22 +94,6 @@ public class OnJoinListener implements Listener {
 		if (global.getBoolean("hide-others-on-join", false)) {
 			InvisibilityToggle.hideOthers(player);
 		}
-	}
-
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void openMenu(final PlayerJoinEvent event) {
-		final Player player = event.getPlayer();
-
-		Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-
-			for (final Map.Entry<String, FileConfiguration> menuConfigEntry :
-				Main.getConfigurationManager().getAllMenus().entrySet()) {
-
-				if (menuConfigEntry.getValue().getBoolean("open-on-join", false)) {
-					Main.openSelector(player, menuConfigEntry.getKey());
-				}
-			}
-		}, 5);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)
