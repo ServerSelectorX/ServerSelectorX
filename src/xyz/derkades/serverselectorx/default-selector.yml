@@ -15,6 +15,9 @@ item:
     inv-slot: 0
   right-click: true
   left-click: false
+#  worlds:
+#   - hub
+  
 
 commands:
  - menu

@@ -30,7 +30,7 @@ public class OnJoinListener implements Listener {
 			event.getPlayer().getInventory().clear();
 		}
 
-		for (final Map.Entry<String, FileConfiguration> menuConfigEntry :
+		menusLoop: for (final Map.Entry<String, FileConfiguration> menuConfigEntry :
 			Main.getConfigurationManager().getAllMenus().entrySet()) {
 
 			final FileConfiguration menuConfig = menuConfigEntry.getValue();
@@ -42,6 +42,14 @@ public class OnJoinListener implements Listener {
 			if (!menuConfig.getBoolean("item.on-join.enabled"))
 				continue; // Item on join is disbled
 
+			if (menuConfig.contains("item.worlds")) {
+				// World whitelisting option is present
+				for (final String worldName : menuConfig.getStringList("item.worlds")) {
+					if (!player.getWorld().getName().equalsIgnoreCase(worldName)) {
+						continue menusLoop;
+					}
+				}
+			}
 
 			if (menuConfig.getBoolean("permission.item")) {
 				if (!player.hasPermission("ssx.item." + configName)) {
