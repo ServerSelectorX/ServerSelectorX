@@ -16,7 +16,7 @@ import org.bukkit.potion.PotionEffectType;
 
 public class OnJoinListener implements Listener {
 
-	@EventHandler(priority = EventPriority.LOW)
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onJoin(final PlayerJoinEvent event) {
 		if (Main.getConfigurationManager().getSSXConfig().getBoolean("disable-items")) {
 			return;
@@ -78,7 +78,7 @@ public class OnJoinListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.MONITOR)
+	@EventHandler(priority = EventPriority.HIGHEST)
 	public void applyEffects(final PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
 		final FileConfiguration global = Main.getConfigurationManager().getGlobalConfig();
