@@ -25,6 +25,7 @@ import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -171,9 +172,8 @@ public class Main extends JavaPlugin {
 							if (sender instanceof Player){
 								final Player player = (Player) sender;
 								//Small cooldown to prevent weird bugs
-								if (Cooldown.getCooldown(player.getUniqueId() + "doubleopen") > 0) { //if time left on cooldown is > 0
+								if (Cooldown.getCooldown(player.getUniqueId() + "doubleopen") > 0)
 									return true;
-								}
 
 								Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 1000); //Add cooldown for 1 second
 
@@ -194,9 +194,8 @@ public class Main extends JavaPlugin {
 	void retrieveConfigs() {
 		final ConfigurationSection syncConfig = getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
 
-		if (!syncConfig.getBoolean("enabled", false)) {
+		if (!syncConfig.getBoolean("enabled", false))
 			return;
-		}
 
 		this.getLogger().info("Config sync is enabled. Starting the configuration file retrieval process..");
 
@@ -223,8 +222,9 @@ public class Main extends JavaPlugin {
 				final BufferedReader streamReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
 				final StringBuilder responseBuilder = new StringBuilder();
 				String temp;
-				while ((temp = streamReader.readLine()) != null)
+				while ((temp = streamReader.readLine()) != null) {
 					responseBuilder.append(temp);
+				}
 				jsonOutput = responseBuilder.toString();
 			} catch (final IOException e) {
 				e.printStackTrace();
@@ -359,9 +359,8 @@ public class Main extends JavaPlugin {
 	}
 
 	public static void teleportPlayerToServer(final Player player, final String server){
-		if (Cooldown.getCooldown("servertp" + player.getName() + server) > 0) {
+		if (Cooldown.getCooldown("servertp" + player.getName() + server) > 0)
 			return;
-		}
 
 		Cooldown.addCooldown("servertp" + player.getName() + server, 1000);
 
@@ -401,10 +400,9 @@ public class Main extends JavaPlugin {
 			final long timeout = configurationManager.getGlobalConfig().getLong("server-offline-timeout", 6000);
 
 			return timeSinceLastPing < timeout;
-		} else {
+		} else
 			//If the server has not sent a message at all it is offline
 			return false;
-		}
 	}
 
 	public static int getGlobalPlayerCount() {
@@ -450,27 +448,8 @@ public class Main extends JavaPlugin {
     }
 
     public static ItemStack getHotbarItemStackFromMenuConfig(final Player player, final FileConfiguration menuConfig, final String configName) {
-    	final ItemBuilder builder;
-
-		final String materialString = menuConfig.getString("item.material");
-
-		if (materialString.startsWith("head:")) {
-			final String owner = materialString.split(":")[1];
-			if (owner.equals("auto")) {
-				builder = new ItemBuilder(player);
-			} else {
-				player.sendMessage("Custom player heads are not implemented in this version. You can only use 'head:auto'.");
-				return null;
-			}
-		} else {
-			final Material material = Material.getMaterial(materialString);
-
-			if (material == null) {
-				Main.error("Invalid item name for menu with name " + configName, player);
-			}
-
-			builder = new ItemBuilder(material);
-		}
+    	final String materialString = menuConfig.getString("item.material");
+    	final ItemBuilder builder = getItemBuilderFromMaterialString(player, materialString);
 
 		builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player,
 				menuConfig.getString("item.title", "error")
@@ -486,6 +465,45 @@ public class Main extends JavaPlugin {
 		}
 
 		return builder.create();
+    }
+    
+    public static ItemBuilder getItemBuilderFromMaterialString(final Player player, final String materialString) {
+		final ItemBuilder builder;
+
+		if (materialString.startsWith("head:")) {
+			final String owner = materialString.split(":")[1];
+			if (owner.equals("auto")) {
+				builder = new ItemBuilder(player);
+			} else {
+				final OfflinePlayer ownerPlayer;
+				try {
+					ownerPlayer = Bukkit.getOfflinePlayer(UUID.fromString(owner));
+				} catch (final IllegalArgumentException e) {
+					player.sendMessage("Invalid player uuid (for head item): " + owner);
+					e.printStackTrace();
+					return new ItemBuilder(Material.COBBLESTONE);
+				}
+				
+				if (ownerPlayer == null) {
+					player.sendMessage("A player with the uuid " + ownerPlayer + " does not exist");
+					return new ItemBuilder(Material.COBBLESTONE);
+				}
+				
+				builder = new ItemBuilder(ownerPlayer);
+			}
+		} else {
+			Material material;
+			try {
+				material = Material.valueOf(materialString);
+			} catch (final IllegalArgumentException e) {
+				player.sendMessage("Invalid item name '" + materialString + "'");
+				return new ItemBuilder(Material.COBBLESTONE);
+			}
+
+			builder = new ItemBuilder(material);
+		}
+		
+		return builder;
     }
 
 }

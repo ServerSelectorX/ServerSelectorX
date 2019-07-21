@@ -8,7 +8,6 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -202,8 +201,9 @@ public class SelectorMenu extends IconMenu {
 					for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
 						final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
 						final String subAction = subSection.getString("action", "none");
-						if (!subAction.startsWith("srv:"))
+						if (!subAction.startsWith("srv:")) {
 							continue;
+						}
 
 						final String serverName = subAction.substring(4);
 
@@ -236,27 +236,7 @@ public class SelectorMenu extends IconMenu {
 				continue;
 			}
 
-			final ItemBuilder builder;
-
-			if (materialString.startsWith("head:")) {
-				final String owner = materialString.split(":")[1];
-				if (owner.equals("auto")) {
-					builder = new ItemBuilder(this.player);
-				} else {
-					this.player.sendMessage("Custom player heads are not supported in this version");
-					return;
-				}
-			} else {
-				Material material;
-				try {
-					material = Material.valueOf(materialString);
-				} catch (final IllegalArgumentException e) {
-					this.player.sendMessage("Invalid item name '" + materialString + "'");
-					return;
-				}
-
-				builder = new ItemBuilder(material);
-			}
+			final ItemBuilder builder = Main.getItemBuilderFromMaterialString(this.player, materialString);
 
 			final Placeholder playerPlaceholder = new Placeholder("{player}", this.player.getName());
 			final Placeholder globalOnlinePlaceholder = new Placeholder("globalOnline}", Main.getGlobalPlayerCount() + "");
@@ -265,14 +245,20 @@ public class SelectorMenu extends IconMenu {
 			builder.coloredLore(PlaceholderUtil.parsePapiPlaceholders(lore, this.player, playerPlaceholder, globalOnlinePlaceholder));
 
 			// Fix unsafe amounts, then apply amounts
-			if (amount < 1 || amount > 64) amount = 1;
+			if (amount < 1 || amount > 64) {
+				amount = 1;
+			}
 			builder.amount(amount);
 
 			ItemStack item = builder.create();
 
-			if (enchanted) item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+			if (enchanted) {
+				item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
+			}
 
-			if (section.getBoolean("hide-flags", false)) item = Main.addHideFlags(item);
+			if (section.getBoolean("hide-flags", false)) {
+				item = Main.addHideFlags(item);
+			}
 
 			final int slot = Integer.valueOf(key);
 
@@ -380,10 +366,11 @@ public class SelectorMenu extends IconMenu {
 					player.removePotionEffect(PotionEffectType.INVISIBILITY);
 					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("invis-off")));
 				} else {
-					if (Main.getConfigurationManager().getGlobalConfig().getBoolean("show-particles"))
+					if (Main.getConfigurationManager().getGlobalConfig().getBoolean("show-particles")) {
 						player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true));
-					else
+					} else {
 						player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
+					}
 
 					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("invis-on")));
 				}
@@ -394,10 +381,11 @@ public class SelectorMenu extends IconMenu {
 				} else {
 					final int amplifier = Main.getConfigurationManager().getGlobalConfig().getInt("speed-amplifier", 3);
 
-					if (Main.getConfigurationManager().getGlobalConfig().getBoolean("show-particles"))
+					if (Main.getConfigurationManager().getGlobalConfig().getBoolean("show-particles")) {
 						player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true));
-					else
+					} else {
 						player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
+					}
 
 					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("speed-on")));
 				}
@@ -412,9 +400,9 @@ public class SelectorMenu extends IconMenu {
 			} else if (action.startsWith("msg:")){ //Send message
 				final String message = action.substring(4);
 				player.sendMessage(Main.PLACEHOLDER_API.parsePlaceholders(player, message));
-			} else if (action.equals("close")){ //Close selector
+			} else if (action.equals("close"))
 				return true; //Return true = close
-			} else if (action.equals("none")){
+			else if (action.equals("none")){
 				continue;
 			} else {
 				player.sendMessage(ChatColor.RED + "unknown action");
@@ -427,7 +415,9 @@ public class SelectorMenu extends IconMenu {
 
 	@Override
 	public void onClose(final MenuCloseEvent event) {
-		if (this.refreshTimer != null) this.refreshTimer.cancel();
+		if (this.refreshTimer != null) {
+			this.refreshTimer.cancel();
+		}
 	}
 
 }
