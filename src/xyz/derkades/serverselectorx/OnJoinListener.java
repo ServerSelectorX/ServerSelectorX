@@ -11,16 +11,13 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 
 public class OnJoinListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onJoin(final PlayerJoinEvent event) {
-		if (Main.getConfigurationManager().getSSXConfig().getBoolean("disable-items")) {
+		if (Main.getConfigurationManager().getSSXConfig().getBoolean("disable-items"))
 			return;
-		}
 
 		final FileConfiguration global = Main.getConfigurationManager().getGlobalConfig();
 
@@ -37,10 +34,14 @@ public class OnJoinListener implements Listener {
 			final String configName = menuConfigEntry.getKey();
 
 			if (!menuConfig.getBoolean("item.enabled"))
+			 {
 				continue; // Item is disabled
+			}
 
 			if (!menuConfig.getBoolean("item.on-join.enabled"))
+			 {
 				continue; // Item on join is disbled
+			}
 
 			if (menuConfig.contains("item.worlds")) {
 				// World whitelisting option is present
@@ -83,25 +84,11 @@ public class OnJoinListener implements Listener {
 		final Player player = event.getPlayer();
 		final FileConfiguration global = Main.getConfigurationManager().getGlobalConfig();
 
-		if (global.getBoolean("speed-on-join", false)) {
-			final int amplifier = global.getInt("speed-amplifier", 3);
-
-			if (global.getBoolean("show-particles"))
-				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true));
-			else
-				player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
-		}
-
-		if (global.getBoolean("hide-self-on-join", false)) {
-			if (global.getBoolean("show-particles"))
-				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true));
-			else
-				player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
-		}
-
 		if (global.getBoolean("hide-others-on-join", false)) {
 			InvisibilityToggle.hideOthers(player);
 		}
+		
+		new EffectsTimer(player);
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)

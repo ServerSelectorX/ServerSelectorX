@@ -127,6 +127,10 @@ public class Main extends JavaPlugin {
 		server.start();
 
 		this.getServer().getScheduler().runTaskLater(this, () -> this.retrieveConfigs(), 5*20);
+		
+		for (final Player player : Bukkit.getOnlinePlayers()) {
+			new EffectsTimer(player);
+		}
 	}
 
 	@Override
