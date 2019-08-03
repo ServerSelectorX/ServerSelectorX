@@ -15,10 +15,21 @@ config-sync:
   
   # To whitelist all menu files, add menu:all
   whitelist:
-   - servers
    - global
    - menu:default
    - menu:skywars
    
   # Don't give the players any items (they will only be able to use commands to open menus).
+  # This will also disable inventory clearing on join
   disable-items: true
+  
+  
+# It is recommended that you configure your firewall so that only your Minecraft servers have access to 
+# the ServerSelectorX API (running on the port configured above). In that case, you do not need to
+# worry about setting a password.
+# If for some reason the ServerSelectorX port has to be open, you should set a password.
+# Please note that, since the API uses standard HTTP, there is no encryption so someone who
+# is able to perform a MITM attack will be able to get the password.
+#
+# TL;DR: The SSX port should not be accessible externally, and you don't need to worry about this password
+password: "a"

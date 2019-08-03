@@ -2,6 +2,8 @@
 # ssx.yml contains settings unique to this server.
 
 
+url-message: '&3&lClick here'
+
 # Clear chat before sending player to server? 
 # Note: the chat will be cleared before sending server teleport message, so the server teleport message will still be visible.
 chat-clear: false
@@ -13,6 +15,9 @@ server-teleport-message: '&7You are being connected to &7&l{server}&r&7.'
 # Warning: if ServerSelectorX breaks this will stop your players from connecting even though servers are online
 offline-cancel-connect: false
 offline-cancel-connect-message: "&cThis server is currently offline."
+
+# Send message to console when players don't have the required permission
+permission-debug: true
 
 # -------------------- Pinging -------------------- #
 
@@ -59,24 +64,16 @@ cancel-item-move: false
 speed-amplifier: 3
 
 # Whether speed effect should be turned on when the player joins
+# Can be toggled with action: toggleSpeed as well
 speed-on-join: false
 
-# Hide other players on join
+# Gives players invisibility when they join
+# Can be toggled with action: 'toggleInvis'
+invis-on-join: false
+
+# Hide (or "vanish") other players on join
 # Can be toggled with action: 'toggleHideOthers'
 hide-others-on-join: false
-
-# Gives players invisibility when they join
-# This does not hide other players! For that use the setting above.
-# Can be toggled with action: 'toggleInvis'
-hide-self-on-join: false
-
-speed-on: "&7&oSpeed has been turned on"
-speed-off: "&7&oSpeed has been turned off"
-invis-on: "&7&oYou are now invisible"
-invis-off: "&7&oYou are no longer invisible"
-hide-others: "&7&oAll players have been hidden"
-show-others: "&7&oAll players are now visible"
-
 
 # -------------------- Advanced -------------------- #
 
@@ -98,6 +95,6 @@ ignore-cancelled: false
 show-particles: false
 
 # Freeze bukkit thread when the plugin is unloaded (/stop or /reload) for 3 seconds
-# Disabling this will make reloads 3 seconds faster but all your servers may appear as offline
+# Disabling this will make reloads 2 seconds faster but all your servers may appear as offline
 # after doing /reload
 freeze-bukkit-thread: true

@@ -2,22 +2,7 @@
 # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium-menu-items-2.0.0
 
 title: 'Server Selector'
-rows: 2
-
-item:
-  enabled: true
-  title: 'Server Selector'
-  lore:
-   - 'Right click this item to select a server'
-  material: COMPASS
-  on-join: 
-    enabled: true
-    inv-slot: 0
-  right-click: true
-  left-click: false
-#  worlds:
-#   - hub
-  
+rows: 1
 
 commands:
  - menu
@@ -26,42 +11,107 @@ commands:
 #permission:
 #  open: true
 #  message: '&cYou do not have permission to open this menu.'
-#  item: false
-
-url-message: '&3&lClick here'
 
 menu:
 
-  3:
-    action: 'srv:kitpvp'
+  # Simple item that turns on or off a speed effect
+  0:
+    actions:
+     - 'message:Toggled speed effect'
+     - 'togglespeed'
+     - 'close'
+    material: FEATHER
+    title: 'Toggle speed'
+    lore:
+     - '&7Click to toggle speed effect'
+     
+  # Simple server item
+  1:
+    actions:
+     - 'server:smp'
+     - 'close'
+    material: GRASS_BLOCK
+    title: 'SMP server'
+    lore:
+     - '&7Click to go to our SMP server'
+    
+  # Advanced server item 
+  2:
+    # define which server to use for placeholders and status
+    # when the 'connector' option is set, you must use online/offline sections
+    # you may use the dynamic section as well, see the wiki for more info
+    connector: 'kitpvp' 
+    
     online:
-      item: DIAMOND_SWORD
+      actions: ['srv:kitpvp']
+      material: IRON_SWORD
       enchanted: true
-      name: '&aKitPvP Server'
+      hide-flags: true # hide the enchantment and attack damage info
+      title: '&aKitPvP Server'
       lore:
-       - 'Lorem ipsum'
-       - 'Dolor sit amet'
-       - 'There are {online} out of {max} players online.'
-       - 'Message of the day: {motd}'
-       - 'Game status: {status}'
-
+       - '&7There are {online} out of {max} players online.'
+       - '&7For more placeholders, download SSX-Connector addons!'
     offline:
-      item: WOODEN_SWORD
-      name: '&cKitPvP Server'
+      actions: ['msg:&cSorry, you cannot connect to this server at the moment.']
+      material: WOODEN_SWORD
+      hide-flags: true # hide attack damage info
+      title: '&cKitPvP Server'
       lore:
        - 'Ipsum lorem'
        - 'Amet sit dolor'
        - 'The server is offline'
-         
-  5:
-    action: 
+  
+  # Example of head items. You can use a UUID instead of auto if you want a specific player head.    
+  3:
+    action:
      - 'msg:&8This is a message'
      - 'close'
-    item: 'head:auto'
-    name: '&aThis is you!'
+    material: 'head:auto'
+    title: '&aThis is you!'
     lore:
      - '&6Click this item to receive a message'
+     
+  # Item with permission
+  4:
+    permission: ssx.dirt
+    actions:
+     - 'consolecommand:give {player} dirt 64'
+     - 'playercommand:say I am too lazy to get dirt myself'
+    material: DIRT
+    title: '&aFree dirt'
+    
+    no-permission:
+      actions:
+       - 'message:No free dirt for you'
+      material: DIRT
+      title: '&cFree dirt'
+ 
+  # Server item with permissions 
+  5:
+    connector: 'vip'
+    permission: 'ssx.vip' # require permission ssx.vip to click on the icon
+    online:
+      actions: ['srv:vip']
+      material: DIAMOND
+      enchanted: true
+      hide-flags: true # hide the enchantment
+      title: '&6VIP Server'
+      lore:
+       - 'You are VIP, join the server!'
+       - 'There are {online} players online.'
+    offline:
+      actions: ['msg:&cSorry, you cannot connect to this server at the moment.', 'close']
+      material: DIAMOND
+      title: '&cVIP Server'
+      lore:
+       - '&7Unfortunately, the server is offline.'
+    no-permission:
+      actions: ['msg:&cThis server is VIP-only']
+      material: DIAMOND
+      title: '&cVIP Server'
+      lore:
+       - '&7Unfortunately, the server is offline.'    
   
   -1: # -1 means all blank slots
-    item: GRAY_STAINED_GLASS_PANE
+    material: GRAY_STAINED_GLASS_PANE
     name: ' '

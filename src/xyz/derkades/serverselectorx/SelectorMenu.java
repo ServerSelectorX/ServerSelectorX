@@ -1,60 +1,52 @@
 package xyz.derkades.serverselectorx;
 
-import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.function.Supplier;
 
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.potion.PotionEffect;
-import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitTask;
 
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
-import xyz.derkades.derkutils.Cooldown;
-import xyz.derkades.derkutils.ListUtils;
-import xyz.derkades.derkutils.Random;
 import xyz.derkades.derkutils.bukkit.Colors;
+import xyz.derkades.derkutils.bukkit.IllegalItems;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
-import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
-import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
 import xyz.derkades.derkutils.bukkit.menu.IconMenu;
 import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
 import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
+import xyz.derkades.serverselectorx.actions.Action;
 
 public class SelectorMenu extends IconMenu {
 
 	private final FileConfiguration config;
-	//private String configName;
 	private final Player player;
 	private final int slots;
+	
+	private final IllegalItems illegalItems;
 
 	private BukkitTask refreshTimer;
 
 	public SelectorMenu(final Player player, final FileConfiguration config, final String configName) {
 		super(Main.getPlugin(), Colors.parseColors(config.getString("title", UUID.randomUUID().toString())), 9, player);
 		this.config = config;
-		//this.configName = configName;
 		this.player = player;
 
 		this.slots = config.getInt("rows", 6) * 9;
 		this.setSize(this.slots);
+		
+		this.illegalItems = new IllegalItems(Main.getPlugin());
 	}
 
 	@Override
 	public void open() {
 		this.addItems();
 
-		Cooldown.addCooldown(this.config.getName() + this.player.getName(), 0); //Remove cooldown if menu opened successfully
 		super.open();
 
 		this.refreshTimer = Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), () -> {
@@ -64,24 +56,15 @@ public class SelectorMenu extends IconMenu {
 	}
 
 	private void addItems() {
+		itemLoop:
 		for (final String key : this.config.getConfigurationSection("menu").getKeys(false)) {
 			final ConfigurationSection section = this.config.getConfigurationSection("menu." + key);
 
-			String materialString = "STONE";
-			int data = 0;
-			String name = "";
-			List<String> lore = new ArrayList<>();
-			int amount = 1;
-			boolean enchanted = false;
-
+			ItemBuilder builder;
+			
 			if (section.contains("permission") && !this.player.hasPermission(section.getString("permission"))) {
 				// Use no-permission section
-				final ConfigurationSection noPermissionSection = section.getConfigurationSection("no-permission");
-				materialString = noPermissionSection.getString("item");
-				data = noPermissionSection.getInt("data", 0);
-				name = noPermissionSection.getString("name", "");
-				lore = noPermissionSection.getStringList("lore");
-				enchanted = noPermissionSection.getBoolean("enchanted", false);
+				builder = Main.getItemBuilderFromItemSection(this.player, section.getConfigurationSection("no-permission"));
 			} else {
 				// Player has permission, use other sections
 				String firstAction;
@@ -96,7 +79,7 @@ public class SelectorMenu extends IconMenu {
 					firstAction = "none";
 				}
 
-				if (firstAction.startsWith("srv")) {
+				if (firstAction.startsWith("server")) {
 					String serverName = firstAction.substring(4);
 
 					if (serverName.startsWith("__")) {
@@ -106,8 +89,8 @@ public class SelectorMenu extends IconMenu {
 					if (Main.isOnline(serverName)) {
 						final Map<UUID, Map<String, String>> playerPlaceholders = Main.PLACEHOLDERS.get(serverName);
 
-						boolean dynamicMatchFound = false;
-
+						builder = null;
+						
 						if (section.contains("dynamic")) {
 							for (final String dynamicKey : section.getConfigurationSection("dynamic").getKeys(false)) {
 								final String placeholder = dynamicKey.split(":")[0];
@@ -135,130 +118,116 @@ public class SelectorMenu extends IconMenu {
 										(mode.equals("less") && Double.parseDouble(placeholderValueInConfig) < Double.parseDouble(placeholderValueFromConnector)) ||
 										(mode.equals("less") && Double.parseDouble(placeholderValueInConfig) > Double.parseDouble(placeholderValueFromConnector))
 										) {
-									//Placeholder result matches with placeholder result in rule
-									dynamicMatchFound = true;
-
-									materialString = dynamicSection.getString("item");
-									data = dynamicSection.getInt("data", 0);
-									name = dynamicSection.getString("name", "");
-									lore = dynamicSection.getStringList("lore");
-									enchanted = dynamicSection.getBoolean("enchanted", false);
+									
+									if (dynamicSection.getString("material").equalsIgnoreCase("NONE")) {
+										continue itemLoop;
+									}
+									
+									builder = Main.getItemBuilderFromItemSection(this.player, dynamicSection);
+									break;
 								}
 							}
 						}
 
-						if (!dynamicMatchFound) {
+						if (builder == null) {
 							//No dynamic rule matched, fall back to online
-							materialString = section.getString("online.item");
-							data = section.getInt("online.data", 0);
-							name = section.getString("online.name", "");
-							lore = section.getStringList("online.lore");
-							enchanted = section.getBoolean("online.enchanted", false);
+							if (!section.isConfigurationSection("online")) {
+								this.player.sendMessage("Online section does not exist");
+								return;
+							}
+							
+							final ConfigurationSection onlineSection = section.getConfigurationSection("online");
+							if (section.getString("material").equalsIgnoreCase("NONE")) {
+								continue itemLoop;
+							}
+							
+							builder = Main.getItemBuilderFromItemSection(this.player, onlineSection);
 						}
 
-						final List<Placeholder> placeholders = new ArrayList<>();
+						final Map<String, String> placeholders = new HashMap<>();
 
 						// Add global placeholders to list (uuid = null)
-						playerPlaceholders.get(null).forEach((k, v) -> {
-							placeholders.add(new Placeholder("{" + k + "}", v));
-						});
+						playerPlaceholders.get(null).forEach((k, v) -> placeholders.put("{" + k + "}", v));
 
 						// If there are any player specific placeholders for this player, parse them too
 						if (playerPlaceholders.containsKey(this.player.getUniqueId())) {
-							playerPlaceholders.get(this.player.getUniqueId()).forEach((k, v) -> {
-								placeholders.add(new Placeholder("{" + k + "}", v));
-							});
+							playerPlaceholders.get(this.player.getUniqueId()).forEach((k, v) -> placeholders.put("{" + k + "}", v));
 						}
 
 						// Now parse the collected placeholders and papi placeholders in name and lore
-						name = PlaceholderUtil.parsePlaceholders(name, placeholders.toArray(new Placeholder[] {}));
-						lore = PlaceholderUtil.parsePlaceholders(lore, placeholders.toArray(new Placeholder[] {}));
+						builder.namePlaceholders(placeholders).lorePlaceholders(placeholders);
 
 						// Set item amount if dynamic item count is enabled
 						if (section.getBoolean("dynamic-item-count", false)) {
-							amount = Integer.parseInt(playerPlaceholders.get(null).get("online"));
-						} else {
-							amount = section.getInt("item-count", 1);
+							final int amount = Integer.parseInt(playerPlaceholders.get(null).get("online"));
+							builder.amount(amount < 1 || amount > 64 ? 1 : amount);
 						}
 					} else {
 						//Server is offline
+						if (!section.isConfigurationSection("offline")) {
+							this.player.sendMessage("Offline section does not exist");
+							return;
+						}
+						
 						final ConfigurationSection offlineSection = section.getConfigurationSection("offline");
-
-						materialString = offlineSection.getString("item");
-						data = offlineSection.getInt("data", 0);
-						name = offlineSection.getString("name", "");
-						lore = offlineSection.getStringList("lore");
-						enchanted = offlineSection.getBoolean("enchanted", false);
-
-						amount = section.getInt("item-count", 1); // When the server is offline, so the item count is not set by the player count
-					}
-
-				} else if (firstAction.startsWith("sel:")) {
-					//Add all online counts of servers in the submenu
-					int totalOnline = 0;
-
-					final FileConfiguration subConfig = Main.getConfigurationManager().getMenuByName(firstAction.substring(4));
-					for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
-						final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
-						final String subAction = subSection.getString("action", "none");
-						if (!subAction.startsWith("srv:")) {
+						if (section.getString("material").equalsIgnoreCase("NONE")) {
 							continue;
 						}
-
-						final String serverName = subAction.substring(4);
-
-						if (Main.isOnline(serverName)) {
-							totalOnline += Integer.parseInt(Main.PLACEHOLDERS.get(serverName).get(null).get("online"));
-						}
+						
+						builder = Main.getItemBuilderFromItemSection(this.player, offlineSection);
 					}
+				} else if (firstAction.startsWith("openmenu:")) {
+					if (section.getString("material").equalsIgnoreCase("NONE")) {
+						continue itemLoop;
+					}
+					
+					final String menuName = firstAction.substring(9);
 
-					materialString = section.getString("item");
-					data = section.getInt("data", 0);
-					name = section.getString("name", "");
-					lore = ListUtils.replaceInStringList(section.getStringList("lore"), new Object[] {"{total}"}, new Object[] {totalOnline});
-					enchanted = section.getBoolean("enchanted", false);
+					if (!Main.getConfigurationManager().getMenus().containsKey(menuName)) {
+						this.player.sendMessage("Menu '" + menuName + "' does not exist");
+						return;
+					}
+					
+					final Supplier<String> placeholderSupplier = () -> {
+						//Add all online counts of servers in the submenu
+						int totalOnline = 0;
+						
+						final FileConfiguration subConfig = Main.getConfigurationManager().getMenus().get(menuName);
+						for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
+							final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
+							final String subAction = subSection.getString("action", "none");
+							if (!subAction.startsWith("srv:")) {
+								continue;
+							}
+
+							final String serverName = subAction.substring(4);
+
+							if (Main.isOnline(serverName)) {
+								totalOnline += Integer.parseInt(Main.PLACEHOLDERS.get(serverName).get(null).get("online"));
+							}
+						}
+						return totalOnline + "";
+					};
+					
+					builder = Main.getItemBuilderFromItemSection(this.player, section)
+							.namePlaceholderOptional("{total}", placeholderSupplier).lorePlaceholderOptional("{total}", placeholderSupplier);
 				} else {
 					//Not a server
-					materialString = section.getString("item");
-					data = section.getInt("data", 0);
-					name = section.getString("name", "");
-					lore = section.getStringList("lore");
-					enchanted = section.getBoolean("enchanted", false);
+					if (section.getString("material").equalsIgnoreCase("NONE")) {
+						continue itemLoop;
+					}
+					
+					builder = Main.getItemBuilderFromItemSection(this.player, section);
 				}
 			}
 
-			// If data is set to -1, randomize data
-			if (data < 0) {
-				data = Random.getRandomInteger(0, 15);
-			}
+			builder.papi(this.player)
+				.placeholder("{player}", this.player.getName())
+				.placeholder("{globalOnline}", Main.getGlobalPlayerCount() + "");
 
-			if (materialString.equalsIgnoreCase("NONE")) {
-				continue;
-			}
-
-			final ItemBuilder builder = Main.getItemBuilderFromMaterialString(this.player, materialString);
-
-			final Placeholder playerPlaceholder = new Placeholder("{player}", this.player.getName());
-			final Placeholder globalOnlinePlaceholder = new Placeholder("globalOnline}", Main.getGlobalPlayerCount() + "");
-
-			builder.coloredName(PlaceholderUtil.parsePapiPlaceholders(name, this.player, playerPlaceholder, globalOnlinePlaceholder));
-			builder.coloredLore(PlaceholderUtil.parsePapiPlaceholders(lore, this.player, playerPlaceholder, globalOnlinePlaceholder));
-
-			// Fix unsafe amounts, then apply amounts
-			if (amount < 1 || amount > 64) {
-				amount = 1;
-			}
-			builder.amount(amount);
-
-			ItemStack item = builder.create();
-
-			if (enchanted) {
-				item.addUnsafeEnchantment(Enchantment.DURABILITY, 1);
-			}
-
-			if (section.getBoolean("hide-flags", false)) {
-				item = Main.addHideFlags(item);
-			}
+			final ItemStack item = builder.create();
+			
+			this.illegalItems.setIllegal(item, true);
 
 			final int slot = Integer.valueOf(key);
 
@@ -311,69 +280,11 @@ public class SelectorMenu extends IconMenu {
 
 			actions = Arrays.asList(possibleAction);
 		}
-
-		for (final String action : actions) {
-			if (action.startsWith("url:")){ //Send url message
-				final String url = action.substring(4);
-				final String message = Colors.parseColors(this.config.getString("url-message", "&3&lClick here"));
-
-				player.spigot().sendMessage(
-						new ComponentBuilder(message)
-						.event(new ClickEvent(ClickEvent.Action.OPEN_URL, url))
-						.create()
-						);
-			} else if (action.startsWith("cmd:")){ //Execute command
-				final String command = action.substring(4);
-
-				//Send command 2 ticks later to let the GUI close first (for commands that open a GUI)
-				Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), () -> {
-					Bukkit.dispatchCommand(player, Main.PLACEHOLDER_API.parsePlaceholders(player, command));
-				}, 2);
-			} else if (action.startsWith("consolecmd:")) {
-				String command = action.substring(11);
-				command = command.replace("{player}", player.getName());
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Main.PLACEHOLDER_API.parsePlaceholders(player, command));
-			} else if (action.startsWith("bungeecmd:")) { //BungeeCord command
-				final String command = action.substring(10);
-				Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("sync player %s %s", player.getName(), Main.PLACEHOLDER_API.parsePlaceholders(player, command)));
-			} else if (action.startsWith("sel:")){ //Open selector
-				final String configName = action.substring(4);
-				final FileConfiguration config = Main.getConfigurationManager().getMenuByName(configName);
-				if (config == null){
-					player.sendMessage(ChatColor.RED + "This server selector does not exist.");
-				} else {
-					new SelectorMenu(player, config, configName).open();
-				}
-			} else if (action.startsWith("world:")){ //Teleport to world
-				final String worldName = action.substring(6);
-				final World world = Bukkit.getWorld(worldName);
-				if (world == null){
-					player.sendMessage(ChatColor.RED + "A world with the name " + worldName + " does not exist.");
-				} else {
-					player.teleport(world.getSpawnLocation());
-				}
-			} else if (action.startsWith("srv:")){ //Teleport to server
-				final String serverName = action.substring(4);
-
-				// If offline-cancel-connect is turned on and the server is offline, send message and cancel connecting
-				if (Main.getConfigurationManager().getGlobalConfig().getBoolean("offline-cancel-connect", false) && !Main.isOnline(serverName)) {
-					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("offline-cancel-connect-message", "error")));
-				}
-
-				Main.teleportPlayerToServer(player, serverName);
-			} else if (action.equalsIgnoreCase("toggleInvis")) {
-				if (player.hasPotionEffect(PotionEffectType.INVISIBILITY)) {
-					player.removePotionEffect(PotionEffectType.INVISIBILITY);
-					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("invis-off")));
-				} else {
-					if (Main.getConfigurationManager().getGlobalConfig().getBoolean("show-particles")) {
-						player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true));
-					} else {
-						player.addPotionEffect(new PotionEffect(PotionEffectType.INVISIBILITY, Integer.MAX_VALUE, 0, true, false));
-					}
-
-					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("invis-on")));
-				}
+		
+		return Action.runActions(player, actions);
+			
+			/*} else if (action.equalsIgnoreCase("toggleInvis")) {
+				
 			} else if (action.equalsIgnoreCase("toggleSpeed")) {
 				if (player.hasPotionEffect(PotionEffectType.SPEED)) {
 					player.removePotionEffect(PotionEffectType.SPEED);
@@ -390,27 +301,10 @@ public class SelectorMenu extends IconMenu {
 					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("speed-on")));
 				}
 			} else if (action.equalsIgnoreCase("toggleHideOthers")) {
-				if (InvisibilityToggle.hasHiddenOthers(player)) {
-					InvisibilityToggle.showOthers(player);
-					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("show-others")));
-				} else {
-					InvisibilityToggle.hideOthers(player);
-					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("hide-others")));
-				}
+				
 			} else if (action.startsWith("msg:")){ //Send message
 				final String message = action.substring(4);
-				player.sendMessage(Main.PLACEHOLDER_API.parsePlaceholders(player, message));
-			} else if (action.equals("close"))
-				return true; //Return true = close
-			else if (action.equals("none")){
-				continue;
-			} else {
-				player.sendMessage(ChatColor.RED + "unknown action");
-				continue;
-			}
-		}
-
-		return false;
+				player.sendMessage(Main.PLACEHOLDER_API.parsePlaceholders(player, message));*/
 	}
 
 	@Override
@@ -418,6 +312,8 @@ public class SelectorMenu extends IconMenu {
 		if (this.refreshTimer != null) {
 			this.refreshTimer.cancel();
 		}
+		
+		this.illegalItems.unregister();
 	}
 
 }

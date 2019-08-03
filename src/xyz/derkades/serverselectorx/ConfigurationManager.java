@@ -16,70 +16,80 @@ import org.bukkit.configuration.file.YamlConfiguration;
 public class ConfigurationManager {
 
 	private final Map<String, FileConfiguration> menus = new ConcurrentHashMap<>();
-	private FileConfiguration servers;
+	private final Map<String, FileConfiguration> items = new ConcurrentHashMap<>();
 	private FileConfiguration global;
 	private FileConfiguration ssx;
 	
-	public Map<String, FileConfiguration> getAllMenus() {
-		return menus;
+	public ConfigurationManager() {
+		this.reload();
 	}
-	
-	public FileConfiguration getMenuByName(String name) {
-		return menus.get(name);
+
+	public Map<String, FileConfiguration> getMenus() {
+		return this.menus;
 	}
-	
-	public FileConfiguration getServersConfig() {
-		return servers;
+
+	public Map<String, FileConfiguration> getItems(){
+		return this.items;
 	}
 	
 	public FileConfiguration getGlobalConfig() {
-		return global;
-	}
-	
-	public FileConfiguration getSSXConfig() {
-		return ssx;
+		return this.global;
 	}
 
-	public void reload() {		
-		File dataFolder = Main.getPlugin().getDataFolder();
-		File menuFolder = new File(dataFolder, "menu");
-		menuFolder.mkdirs(); //will create data folder as well
+	public FileConfiguration getSSXConfig() {
+		return this.ssx;
+	}
+
+	public void reload() {
+		final File dataFolder = Main.getPlugin().getDataFolder();
 		
-		if (menuFolder.listFiles().length == 0){
+		this.global = this.saveDefaultAndLoad("global", new File(dataFolder, "global.yml"));
+		this.ssx = this.saveDefaultAndLoad("ssx", new File(dataFolder, "ssx.yml"));
+		
+		final File menuFolder = new File(dataFolder, "menu");
+		menuFolder.mkdirs();
+
+		this.menus.clear();
+		if (menuFolder.listFiles().length == 0) {
 			// Save default.yml file if menu folder is empty
-			saveDefaultAndLoad("default-selector", new File(menuFolder, "default.yml"));
-		}
-		
-		servers = saveDefaultAndLoad("servers", new File(dataFolder, "servers.yml"));
-		global = saveDefaultAndLoad("global", new File(dataFolder, "global.yml"));
-		ssx = saveDefaultAndLoad("ssx", new File(dataFolder, "ssx.yml"));
-		
-		//Initialize variables
-		ItemMoveDropCancelListener.DROP_PERMISSION_ENABLED = global.getBoolean("cancel-item-drop", false);
-		ItemMoveDropCancelListener.MOVE_PERMISSION_ENABLED = global.getBoolean("cancel-item-move", false);
-		
-		menus.clear();
-		for (File file : menuFolder.listFiles()) {
-			if (!(file.getName().endsWith(".yml") || file.getName().endsWith(".yaml"))){
-				Main.getPlugin().getLogger().warning("Skipped non-yml file " + file.getPath());
-				continue;
+			this.menus.put("default", this.saveDefaultAndLoad("default-selector", new File(menuFolder, "default.yml")));
+		} else {
+			// Load files from directory
+			for (final File file : this.getFilesFromFolder(menuFolder)) {
+				this.menus.put(file.getName().replace(".yml", "").replace(".yaml", ""), YamlConfiguration.loadConfiguration(file));
 			}
-			
-			menus.put(file.getName().replace(".yml", "").replace(".yaml", ""), YamlConfiguration.loadConfiguration(file));
+		}
+
+		final File itemFolder = new File(dataFolder, "item");
+		itemFolder.mkdirs();
+
+		this.items.clear();
+		if (itemFolder.listFiles().length == 0) {
+			// Save default.yml file if menu folder is empty
+			this.items.put("default", this.saveDefaultAndLoad("default-item", new File(itemFolder, "serverselector.yml")));
+		} else {
+			// Load files from directory
+			for (final File file : this.getFilesFromFolder(itemFolder)) {
+				this.items.put(file.getName().replace(".yml", "").replace(".yaml", ""), YamlConfiguration.loadConfiguration(file));
+			}
 		}
 	}
-	
-	private FileConfiguration saveDefaultAndLoad(String name, File destination) {
+
+	private FileConfiguration saveDefaultAndLoad(final String name, final File destination) {
 		if (!destination.exists()) {
-			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/" + name + ".yml");
+			final URL inputUrl = this.getClass().getResource("/xyz/derkades/serverselectorx/" + name + ".yml");
 			try {
 				FileUtils.copyURLToFile(inputUrl, destination);
-			} catch (IOException e){
+			} catch (final IOException e) {
 				e.printStackTrace();
 			}
 		}
-		
+
 		return YamlConfiguration.loadConfiguration(destination);
+	}
+
+	private File[] getFilesFromFolder(final File folder) {
+		return folder.listFiles((f) -> f.getName().endsWith(".yml") || f.getName().endsWith(".yaml"));
 	}
 
 }

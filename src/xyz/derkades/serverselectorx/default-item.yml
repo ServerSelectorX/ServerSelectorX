@@ -1,0 +1,41 @@
+# Default server selector hotbar item. Create more hotbar items by copying this file in 
+# the same directory and giving it a different name.
+
+item:
+  material: COMPASS
+  enchanted: false
+  hide-flags: true
+  amount: 1
+  title: '&7Server Selector'
+  lore:
+   - '&7Right click this item to select a server'
+
+
+right-click: true
+left-click: false
+
+# Give the server selector?
+give:
+  join: true
+  world-switch: false
+  death: true
+  clear: false
+
+  inv-slot: 0
+  
+  # If set to true, require permission ssx.item.<name> to receive the item.
+  permission: false
+  
+actions:
+ - 'openmenu:default' # Open default menu (config file in /menu/default.yml)
+ 
+## When the `left-cick-actions` option is set, the `actions` option is used for right click and the 
+## `left-click-actions` option is used for left click. If the `left-click-actions` option is not set,
+## `actions` used for right cilck and left click
+# left-click-actions:
+# - 'server:survival'
+  
+# Uncomment to define a world whitelist. Players who are not in one of the worlds defined 
+# below will not receive the item on join and will not be able use the item.
+#worlds:
+# - hub

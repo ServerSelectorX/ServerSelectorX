@@ -2,7 +2,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>xyz.derkades</groupId>
 	<artifactId>ServerSelectorX</artifactId>
-	<version>Premium-2.0.0-rc4</version>
+	<version>Premium-2.0.0-rc5</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -45,19 +45,15 @@
 					<relocations>
 						<relocation>
 							<pattern>org.bstats.bukkit</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.ext.bstats</shadedPattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.bstats</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>org.inventivetalent.update.spiget</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.ext.spiget_update</shadedPattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.spiget_update</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>org.eclipse.jetty</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.ext.jetty</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>com.mitch528.sockets</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.ext.sockets</shadedPattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.jetty</shadedPattern>
 						</relocation>
 					</relocations>
 
@@ -90,8 +86,8 @@
 
 		<dependency>
 			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot</artifactId>
-			<version>1.14.3-R0.1-SNAPSHOT</version>
+			<artifactId>spigot-api</artifactId>
+			<version>1.13.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 

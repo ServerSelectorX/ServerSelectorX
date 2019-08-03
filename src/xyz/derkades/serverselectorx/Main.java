@@ -3,23 +3,14 @@ package xyz.derkades.serverselectorx;
 import static org.bukkit.ChatColor.DARK_AQUA;
 import static org.bukkit.ChatColor.DARK_GRAY;
 
-import java.io.BufferedReader;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
-import java.io.File;
 import java.io.IOException;
-import java.io.InputStreamReader;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.logging.Level;
 
@@ -31,16 +22,11 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
-
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 
 import net.md_5.bungee.api.ChatColor;
 import xyz.derkades.derkutils.Cooldown;
@@ -48,6 +34,7 @@ import xyz.derkades.derkutils.ListUtils;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.caching.Cache;
+import xyz.derkades.serverselectorx.effects.Effects;
 import xyz.derkades.serverselectorx.placeholders.Placeholders;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersDisabled;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
@@ -79,22 +66,13 @@ public class Main extends JavaPlugin {
 		plugin = this;
 
 		configurationManager = new ConfigurationManager();
-		configurationManager.reload();
 
-		//Register listeners
-		Bukkit.getPluginManager().registerEvents(new SelectorOpenListener(), this);
 		Bukkit.getPluginManager().registerEvents(new OnJoinListener(), this);
-		Bukkit.getPluginManager().registerEvents(new ItemMoveDropCancelListener(), this);
 
-		//Register messaging channels
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		//Register command
 		this.getCommand("serverselectorx").setExecutor(new ReloadCommand());
-
-		//Start bStats
-		Stats.initialize();
-
+		
 		//Register custom selector commands
 		this.registerCommands();
 
@@ -128,9 +106,10 @@ public class Main extends JavaPlugin {
 
 		this.getServer().getScheduler().runTaskLater(this, () -> this.retrieveConfigs(), 5*20);
 		
-		for (final Player player : Bukkit.getOnlinePlayers()) {
-			new EffectsTimer(player);
-		}
+		new Effects();
+		new ConfigSync();
+		new Stats();
+		new ItemMoveDropCancelListener();
 	}
 
 	@Override
@@ -158,7 +137,7 @@ public class Main extends JavaPlugin {
 			bukkitCommandMap.setAccessible(true);
 			final CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
 
-			for (final Map.Entry<String, FileConfiguration> menuConfigEntry : configurationManager.getAllMenus().entrySet()) {
+			for (final Map.Entry<String, FileConfiguration> menuConfigEntry : configurationManager.getMenus().entrySet()) {
 				final String configName = menuConfigEntry.getKey();
 				final FileConfiguration config = menuConfigEntry.getValue();
 
@@ -196,122 +175,7 @@ public class Main extends JavaPlugin {
 	}
 
 	void retrieveConfigs() {
-		final ConfigurationSection syncConfig = getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
-
-		if (!syncConfig.getBoolean("enabled", false))
-			return;
-
-		this.getLogger().info("Config sync is enabled. Starting the configuration file retrieval process..");
-
-		final String address = syncConfig.getString("address");
-		final List<String> whitelist = syncConfig.getStringList("whitelist");
-
-		URL url;
-		try {
-			url = new URL("http://" + address + "/config");
-		} catch (final MalformedURLException e) {
-			this.getLogger().severe("The address you entered seems to be incorrectly formatted.");
-			this.getLogger().severe("It must be formatted like this: 173.45.16.208:8888");
-			//e.printStackTrace();
-			return;
-		}
-
-		Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> {
-
-			this.getLogger().info("Making request to " + url.toString());
-			boolean error = false;
-			String jsonOutput = null;
-			try {
-				final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-				final BufferedReader streamReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
-				final StringBuilder responseBuilder = new StringBuilder();
-				String temp;
-				while ((temp = streamReader.readLine()) != null) {
-					responseBuilder.append(temp);
-				}
-				jsonOutput = responseBuilder.toString();
-			} catch (final IOException e) {
-				e.printStackTrace();
-				error = true;
 			}
-
-			if (error) {
-				this.getLogger().severe("An error occured while making a request. Are you sure you are using the right IP and port? You can find a more detailed error message in the server log.");
-				return;
-			}
-
-			if (jsonOutput == null) {
-				// it should only ever be null if error == true
-				this.getLogger().severe("Json output null. Report issue to developer");
-			}
-
-			final File pluginDirectory = Main.getPlugin().getDataFolder();
-
-			final File serversYml = new File(pluginDirectory, "servers.yml");
-			final File globalYml = new File(pluginDirectory, "global.yml");
-			final File menuDirectory = new File(pluginDirectory, "menu");
-
-			final JsonParser parser = new JsonParser();
-			final JsonObject json = parser.parse(jsonOutput).getAsJsonObject();
-
-			this.getLogger().info("Writing to disk..");
-
-			try {
-				if (whitelist.contains("servers")) {
-					serversYml.delete();
-					final FileConfiguration config = new YamlConfiguration();
-					config.loadFromString(json.get("servers").getAsString());
-					config.save(serversYml);
-				}
-
-				if (whitelist.contains("global")) {
-					globalYml.delete();
-					final FileConfiguration config = new YamlConfiguration();
-					config.loadFromString(json.get("global").getAsString());
-					config.save(globalYml);
-				}
-
-				if (whitelist.contains("menu:all")) {
-					Arrays.asList(menuDirectory.listFiles()).forEach(File::delete);
-
-					final JsonObject menuFilesJson = json.get("menu").getAsJsonObject();
-					for (final Entry<String, JsonElement> menuJson : menuFilesJson.entrySet()) {
-						final FileConfiguration config = new YamlConfiguration();
-						config.loadFromString(menuJson.getValue().getAsString());
-						config.save(new File(menuDirectory, menuJson.getKey() + ".yml"));
-					}
-				} else {
-					for (final String string : whitelist) {
-						if (!string.startsWith("menu:")) {
-							continue;
-						}
-
-						final String menuName = string.substring(5);
-						if (!json.get("menu").getAsJsonObject().has(menuName)) {
-							this.getLogger().warning("Skipped menu file with name '" + menuName + "', it was not sent by the server.");
-							continue;
-						}
-
-						final JsonElement menuJson = json.get("menu").getAsJsonObject().get(menuName);
-						final FileConfiguration config = new YamlConfiguration();
-						config.loadFromString(menuJson.getAsString());
-						config.save(new File(menuDirectory, menuName + ".yml"));
-					}
-				}
-			} catch (final InvalidConfigurationException e) {
-				final RuntimeException e2 = new RuntimeException("The configuration received from the server is invalid");
-				e2.initCause(e);
-				throw e2;
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
-
-			this.getLogger().info("Done! The plugin will now reload.");
-			Main.getConfigurationManager().reload();
-			server.stop();
-			server.start();
-		});
-	}
 
 	public static ConfigurationManager getConfigurationManager() {
 		return configurationManager;
@@ -323,8 +187,8 @@ public class Main extends JavaPlugin {
 	 * Checks for cooldown, checks for permissions, plays sound
 	 */
 	public static void openSelector(final Player player, final String configName) {
-		final FileConfiguration config = configurationManager.getMenuByName(configName);
-
+		final FileConfiguration config = configurationManager.getMenus().get(configName);
+		
 		if (config == null) {
 			Main.error("A menu with this name does not exist", player);
 			return;
@@ -417,6 +281,7 @@ public class Main extends JavaPlugin {
 		return online;
 	}
 
+	@Deprecated
 	public static ItemStack addHideFlags(final ItemStack item) {
 		try {
 			final String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
@@ -451,24 +316,36 @@ public class Main extends JavaPlugin {
 		Main.getPlugin().getLogger().severe(message);
     }
 
-    public static ItemStack getHotbarItemStackFromMenuConfig(final Player player, final FileConfiguration menuConfig, final String configName) {
-    	final String materialString = menuConfig.getString("item.material");
+    public static ItemBuilder getItemBuilderFromItemSection(final Player player, final ConfigurationSection section) {
+    	final String materialString = section.getString("material");
     	final ItemBuilder builder = getItemBuilderFromMaterialString(player, materialString);
 
 		builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player,
-				menuConfig.getString("item.title", "error")
+				section.getString("title", " ")
 						.replace("{player}", player.getName())));
 
-		if (menuConfig.contains("item.lore")) {
-			List<String> lore = menuConfig.getStringList("item.lore");
+		if (section.contains("lore")) {
+			List<String> lore = section.getStringList("lore");
 			lore = Main.PLACEHOLDER_API.parsePlaceholders(player, lore);
 			lore = ListUtils.replaceInStringList(lore,
 						new Object[] {"{player}"},
 						new Object[] {player.getName()});
 				builder.coloredLore(lore);
 		}
+		
+		if (section.getBoolean("enchanted")) {
+			builder.unsafeEnchant(Enchantment.DURABILITY, 1);
+		}
+		
+		if (section.getBoolean("hide-flags")) {
+			builder.hideFlags(63);
+		}
+		
+		if (section.isInt("amount")) {
+			builder.amount(section.getInt("amount"));
+		}
 
-		return builder.create();
+		return builder;
     }
     
     public static ItemBuilder getItemBuilderFromMaterialString(final Player player, final String materialString) {

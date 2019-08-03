@@ -12,75 +12,12 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
+import de.tr7zw.nbtapi.NBTItem;
+
 public class OnJoinListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGHEST)
 	public void onJoin(final PlayerJoinEvent event) {
-		if (Main.getConfigurationManager().getSSXConfig().getBoolean("disable-items"))
-			return;
-
-		final FileConfiguration global = Main.getConfigurationManager().getGlobalConfig();
-
-		final Player player = event.getPlayer();
-
-		if (global.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
-			event.getPlayer().getInventory().clear();
-		}
-
-		menusLoop: for (final Map.Entry<String, FileConfiguration> menuConfigEntry :
-			Main.getConfigurationManager().getAllMenus().entrySet()) {
-
-			final FileConfiguration menuConfig = menuConfigEntry.getValue();
-			final String configName = menuConfigEntry.getKey();
-
-			if (!menuConfig.getBoolean("item.enabled"))
-			 {
-				continue; // Item is disabled
-			}
-
-			if (!menuConfig.getBoolean("item.on-join.enabled"))
-			 {
-				continue; // Item on join is disbled
-			}
-
-			if (menuConfig.contains("item.worlds")) {
-				// World whitelisting option is present
-				for (final String worldName : menuConfig.getStringList("item.worlds")) {
-					if (!player.getWorld().getName().equalsIgnoreCase(worldName)) {
-						continue menusLoop;
-					}
-				}
-			}
-
-			if (menuConfig.getBoolean("permission.item")) {
-				if (!player.hasPermission("ssx.item." + configName)) {
-					final String permission = "ssx.item." + configName;
-					if (!player.hasPermission(permission)) {
-						if (menuConfig.getBoolean("permission.debug")) {
-							Main.getPlugin().getLogger().info(String.format("%s did not receive an item because they don't have the permission %s",
-									player.getName(), permission));
-						}
-						continue;
-					}
-				}
-			}
-
-			final ItemStack item = Main.getHotbarItemStackFromMenuConfig(player, menuConfig, configName);
-
-			final int slot = menuConfig.getInt("item.on-join.inv-slot", 0);
-			final PlayerInventory inv = player.getInventory();
-			if (slot < 0) {
-				if (!inv.containsAtLeast(item, 1)) {
-					inv.addItem(item);
-				}
-			} else {
-				inv.setItem(slot, item);
-			}
-		}
-	}
-
-	@EventHandler(priority = EventPriority.HIGHEST)
-	public void applyEffects(final PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
 		final FileConfiguration global = Main.getConfigurationManager().getGlobalConfig();
 
@@ -88,7 +25,61 @@ public class OnJoinListener implements Listener {
 			InvisibilityToggle.hideOthers(player);
 		}
 		
-		new EffectsTimer(player);
+		final FileConfiguration ssx = Main.getConfigurationManager().getSSXConfig();
+		
+		if (ssx.getBoolean("config-sync.enabled") && ssx.getBoolean("config-sync.disable-items"))
+			return;
+
+		if (global.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
+			event.getPlayer().getInventory().clear();
+		}
+		
+		itemLoop: 
+		for (final Map.Entry<String, FileConfiguration> itemConfigEntry : Main.getConfigurationManager().getItems().entrySet()) {
+			final String name = itemConfigEntry.getKey();
+			final FileConfiguration config = itemConfigEntry.getValue();
+			
+			if (!config.getBoolean("on-join.enabled")) {
+				continue;
+			}
+			
+			if (config.getBoolean("on-join.permission")) {
+				final String permission = "ssx.item." + name;
+				if (!player.hasPermission(permission)) {
+					if (config.getBoolean("permission.debug")) {
+						Main.getPlugin().getLogger().info(String.format("%s did not receive an item because they don't have the permission %s",
+								player.getName(), permission));
+					}
+					continue;
+				}
+			}
+			
+			if (config.contains("worlds")) {
+				// World whitelisting option is present
+				for (final String worldName : config.getStringList("worlds")) {
+					if (!player.getWorld().getName().equalsIgnoreCase(worldName)) {
+						continue itemLoop;
+					}
+				}
+			}
+
+
+			ItemStack item = Main.getItemBuilderFromItemSection(player, config.getConfigurationSection("item")).create();
+			
+			final NBTItem nbt = new NBTItem(item);
+			nbt.setString("SSXMenu", name);
+			item = nbt.getItem();
+
+			final int slot = config.getInt("on-join.inv-slot", 0);
+			final PlayerInventory inv = player.getInventory();
+			if (slot < 0) {
+				if (!inv.containsAtLeast(item, item.getAmount())) {
+					inv.addItem(item);
+				}
+			} else {
+				inv.setItem(slot, item);
+			}
+		}
 	}
 
 	@EventHandler(priority = EventPriority.MONITOR)

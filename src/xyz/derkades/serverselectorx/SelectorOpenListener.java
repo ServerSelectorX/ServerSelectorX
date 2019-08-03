@@ -1,20 +1,11 @@
 package xyz.derkades.serverselectorx;
 
-import java.util.Map;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemStack;
 
+@Deprecated
 public class SelectorOpenListener implements Listener {
 
-	@SuppressWarnings("deprecation")
+	/*@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onInteract(final PlayerInteractEvent event){
 		if (event.getHand() == EquipmentSlot.OFF_HAND) {
@@ -37,7 +28,7 @@ public class SelectorOpenListener implements Listener {
 
 		final Player player = event.getPlayer();
 
-		for (final Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getAllMenus().entrySet()) {
+		for (final Map.Entry<String, FileConfiguration> menuConfigEntry : Main.getConfigurationManager().getMenus().entrySet()) {
 			final String configName = menuConfigEntry.getKey();
 			final FileConfiguration menuConfig = menuConfigEntry.getValue();
 
@@ -61,6 +52,6 @@ public class SelectorOpenListener implements Listener {
 			Main.openSelector(player, configName);
 			return;
 		}
-	}
+	}*/
 
 }
