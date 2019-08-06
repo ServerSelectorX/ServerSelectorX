@@ -10,10 +10,6 @@ item:
   lore:
    - '&7Right click this item to select a server'
 
-
-right-click: true
-left-click: false
-
 # Give the server selector?
 give:
   join: true

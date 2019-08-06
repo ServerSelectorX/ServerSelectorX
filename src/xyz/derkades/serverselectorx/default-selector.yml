@@ -43,7 +43,7 @@ menu:
     connector: 'kitpvp' 
     
     online:
-      actions: ['srv:kitpvp']
+      actions: ['server:kitpvp']
       material: IRON_SWORD
       enchanted: true
       hide-flags: true # hide the enchantment and attack damage info
