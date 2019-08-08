@@ -1,12 +1,14 @@
 package xyz.derkades.serverselectorx.actions;
 
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import org.bukkit.entity.Player;
 
 public abstract class Action {
-	
-	private static final Action[] ACTIONS = {
+
+	private static final Action[] DEFAULT_ACTIONS = {
 			new CloseAction(),
 			new ConsoleCommandAction(),
 			new NoneAction(),
@@ -19,25 +21,31 @@ public abstract class Action {
 			new ToggleSpeedAction(),
 			new UrlAction(),
 	};
-	
+
+	public static final List<Action> ACTIONS = new ArrayList<>();
+
+	static {
+		ACTIONS.addAll(Arrays.asList(DEFAULT_ACTIONS));
+	}
+
 	private final String name;
 	private final boolean requiresValue;
-	
+
 	public Action(final String name, final boolean requiresValue) {
 		this.name = name;
 		this.requiresValue = requiresValue;
 	}
-	
+
 	public String getName() {
 		return this.name;
 	}
-	
+
 	public boolean requiresValue() {
 		return this.requiresValue;
 	}
-	
+
 	public abstract boolean apply(Player player, String value);
-	
+
 	public static boolean runAction(final Player player, final String actionString) {
 		boolean hasValue;
 		String actionName;
@@ -48,7 +56,7 @@ public abstract class Action {
 			hasValue = false;
 			actionName = actionString;
 		}
-		
+
 		for (final Action action : ACTIONS) {
 			if (action.getName().equals(actionName)) {
 				if (action.requiresValue()) {
@@ -69,11 +77,11 @@ public abstract class Action {
 				}
 			}
 		}
-		
+
 		player.sendMessage("Invalid action: '" + actionName + "'");
 		return true;
 	}
-	
+
 	public static boolean runActions(final Player player, final List<String> actionStrings) {
 		boolean close = false;
 		for (final String actionString : actionStrings) {
@@ -84,4 +92,4 @@ public abstract class Action {
 		return close;
 	}
 
-} 
+}
