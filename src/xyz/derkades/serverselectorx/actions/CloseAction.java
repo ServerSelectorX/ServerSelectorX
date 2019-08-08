@@ -10,7 +10,7 @@ public class CloseAction extends Action {
 
 	@Override
 	public boolean apply(final Player player, final String value) {
-		return false;
+		return true; // true == close menu
 	}
 
 }
