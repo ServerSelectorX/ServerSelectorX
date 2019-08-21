@@ -17,7 +17,7 @@ config-sync:
   whitelist:
    - global
    - menu:default
-   - menu:skywars
+   - item:default
    
   # Don't give the players any items (they will only be able to use commands to open menus).
   # This will also disable inventory clearing on join

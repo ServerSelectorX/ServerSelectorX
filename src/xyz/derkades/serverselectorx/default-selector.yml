@@ -43,7 +43,8 @@ menu:
     connector: 'kitpvp' 
     
     online:
-      actions: ['server:kitpvp']
+      actions:
+       - 'server:kitpvp'
       material: IRON_SWORD
       enchanted: true
       hide-flags: true # hide the enchantment and attack damage info
@@ -52,7 +53,8 @@ menu:
        - '&7There are {online} out of {max} players online.'
        - '&7For more placeholders, download SSX-Connector addons!'
     offline:
-      actions: ['msg:&cSorry, you cannot connect to this server at the moment.']
+      actions: 
+       - 'message:&cSorry, you cannot connect to this server at the moment.'
       material: WOODEN_SWORD
       hide-flags: true # hide attack damage info
       title: '&cKitPvP Server'
@@ -64,7 +66,7 @@ menu:
   # Example of head items. You can use a UUID instead of auto if you want a specific player head.    
   3:
     action:
-     - 'msg:&8This is a message'
+     - 'message:&8This is a message'
      - 'close'
     material: 'head:auto'
     title: '&aThis is you!'
@@ -91,7 +93,8 @@ menu:
     connector: 'vip'
     permission: 'ssx.vip' # require permission ssx.vip to click on the icon
     online:
-      actions: ['srv:vip']
+      actions:
+       - 'srv:vip'
       material: DIAMOND
       enchanted: true
       hide-flags: true # hide the enchantment
@@ -100,17 +103,20 @@ menu:
        - 'You are VIP, join the server!'
        - 'There are {online} players online.'
     offline:
-      actions: ['msg:&cSorry, you cannot connect to this server at the moment.', 'close']
+      actions: 
+       - 'message:&cSorry, you cannot connect to this server at the moment.'
+       - 'close'
       material: DIAMOND
       title: '&cVIP Server'
       lore:
        - '&7Unfortunately, the server is offline.'
     no-permission:
-      actions: ['msg:&cThis server is VIP-only']
+      actions: 
+       - 'message:&cThis server is VIP-only'
       material: DIAMOND
       title: '&cVIP Server'
       lore:
-       - '&7Unfortunately, the server is offline.'    
+       - '&7Only players with the VIP rank can join this server.'    
   
   -1: # -1 means all blank slots
     material: GRAY_STAINED_GLASS_PANE

@@ -30,17 +30,17 @@ public class PlaceholderReceiver extends HttpServlet {
 		final String placeholdersJsonString = request.getParameter("data");
 
 		final Logger logger = Main.getPlugin().getLogger();
-		
+
 		if (password == null || server == null || placeholdersJsonString == null) {
 			logger.warning("Received invalid request from " + request.getRemoteAddr());
 			logger.warning("Make sure that you are using the correct version of SSX-Connector");
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
-		
+
 		final FileConfiguration config = Main.getConfigurationManager().getSSXConfig();
 
-		if (config.getString("password", "abc").equals(password)) {
+		if (config.getString("password", "a").equals(password)) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			logger.warning("Received request with invalid password from " + request.getRemoteAddr());
 			logger.warning("Provided password: " + password);
@@ -48,7 +48,7 @@ public class PlaceholderReceiver extends HttpServlet {
 		}
 
 		response.setStatus(HttpServletResponse.SC_OK);
-		
+
 		if (Main.getConfigurationManager().getGlobalConfig().getBoolean("log-pinger", true)) {
 			logger.info("Recieved message from " + server + ": " + placeholdersJsonString);
 		}
@@ -56,12 +56,12 @@ public class PlaceholderReceiver extends HttpServlet {
 		final Gson gson = new Gson();
 
 		final Map<String, Map<String, String>> genericSample = new HashMap<>();
-		
+
 		@SuppressWarnings("unchecked")
 		final Map<String, Map<String, String>> receivedPlaceholders = gson.fromJson(placeholdersJsonString, genericSample.getClass());
-		
+
 		final Map<UUID, Map<String, String>> serverPlaceholders = new HashMap<>();
-		
+
 		receivedPlaceholders.forEach((uuidString, placeholders) -> {
 			final UUID uuid;
 			if (uuidString.equals("global")){
@@ -69,10 +69,10 @@ public class PlaceholderReceiver extends HttpServlet {
 			} else {
 				uuid = UUID.fromString(uuidString);
 			}
-			
+
 			serverPlaceholders.put(uuid, placeholders);
 		});
-		
+
 		Main.PLACEHOLDERS.put(server, serverPlaceholders);
 		Main.LAST_INFO_TIME.put(server, System.currentTimeMillis());
 	}
@@ -80,26 +80,26 @@ public class PlaceholderReceiver extends HttpServlet {
 	@Override
 	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
 		response.setContentType("text/json");
-		
+
 		final String password = request.getParameter("password");
 
 		final Logger logger = Main.getPlugin().getLogger();
-		
+
 		if (password == null) {
 			logger.warning("Received invalid request from " + request.getRemoteAddr());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
-		
+
 		final FileConfiguration config = Main.getConfigurationManager().getSSXConfig();
 
-		if (config.getString("password", "abc").equals(password)) {
+		if (config.getString("password", "a").equals(password)) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			logger.warning("Received request with invalid password from " + request.getRemoteAddr());
 			logger.warning("Provided password: " + password);
 			return;
 		}
-		
+
 		final Gson gson = new GsonBuilder().setPrettyPrinting().create();
 
 		if (request.getRequestURI().equalsIgnoreCase("/config")) {
@@ -112,6 +112,12 @@ public class PlaceholderReceiver extends HttpServlet {
 				menuFiles.put(menuFile.getKey(), menuFile.getValue().saveToString());
 			}
 			json.put("menu", menuFiles);
+
+			final Map<Object, Object> itemFiles = new HashMap<>();
+			for (final Entry<String, FileConfiguration> itemFile : Main.getConfigurationManager().getItems().entrySet()) {
+				itemFiles.put(itemFile.getKey(), itemFile.getValue().saveToString());
+			}
+			json.put("item", itemFiles);
 
 			response.getOutputStream().println(gson.toJson(json));
 		} else {

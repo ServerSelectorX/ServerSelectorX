@@ -11,6 +11,7 @@ public abstract class Action {
 	private static final Action[] DEFAULT_ACTIONS = {
 			new CloseAction(),
 			new ConsoleCommandAction(),
+			new MessageAction(),
 			new NoneAction(),
 			new OpenMenuAction(),
 			new PlayerCommandAction(),
@@ -62,14 +63,14 @@ public abstract class Action {
 				if (action.requiresValue()) {
 					if (hasValue) {
 						final String value = actionString.split(":")[1];
-						action.apply(player, value);
+						return action.apply(player, value);
 					} else {
 						player.sendMessage("Action '" + actionName + "' requires a value");
 						return true;
 					}
 				} else {
 					if (!hasValue) {
-						action.apply(player, null);
+						return action.apply(player, null);
 					} else {
 						player.sendMessage("Action '" + actionName + "' does not require a value");
 						return true;

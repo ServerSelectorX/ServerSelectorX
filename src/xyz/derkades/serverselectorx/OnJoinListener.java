@@ -24,26 +24,26 @@ public class OnJoinListener implements Listener {
 		if (global.getBoolean("hide-others-on-join", false)) {
 			InvisibilityToggle.hideOthers(player);
 		}
-		
+
 		final FileConfiguration ssx = Main.getConfigurationManager().getSSXConfig();
-		
+
 		if (ssx.getBoolean("config-sync.enabled") && ssx.getBoolean("config-sync.disable-items"))
 			return;
 
 		if (global.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
 			event.getPlayer().getInventory().clear();
 		}
-		
-		itemLoop: 
+
+		itemLoop:
 		for (final Map.Entry<String, FileConfiguration> itemConfigEntry : Main.getConfigurationManager().getItems().entrySet()) {
 			final String name = itemConfigEntry.getKey();
 			final FileConfiguration config = itemConfigEntry.getValue();
-			
-			if (!config.getBoolean("on-join.enabled")) {
+
+			if (!config.getBoolean("give.join")) {
 				continue;
 			}
-			
-			if (config.getBoolean("on-join.permission")) {
+
+			if (config.getBoolean("give.permission")) {
 				final String permission = "ssx.item." + name;
 				if (!player.hasPermission(permission)) {
 					if (config.getBoolean("permission.debug")) {
@@ -53,7 +53,7 @@ public class OnJoinListener implements Listener {
 					continue;
 				}
 			}
-			
+
 			if (config.contains("worlds")) {
 				// World whitelisting option is present
 				for (final String worldName : config.getStringList("worlds")) {
@@ -65,9 +65,9 @@ public class OnJoinListener implements Listener {
 
 
 			ItemStack item = Main.getItemBuilderFromItemSection(player, config.getConfigurationSection("item")).create();
-			
+
 			final NBTItem nbt = new NBTItem(item);
-			nbt.setString("SSXMenu", name);
+			nbt.setString("SSXItem", name);
 			item = nbt.getItem();
 
 			final int slot = config.getInt("on-join.inv-slot", 0);

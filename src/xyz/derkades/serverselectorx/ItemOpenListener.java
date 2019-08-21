@@ -16,12 +16,12 @@ import org.bukkit.inventory.ItemStack;
 import de.tr7zw.nbtapi.NBTItem;
 
 public class ItemOpenListener implements Listener {
-	
+
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onInteract(final PlayerInteractEvent event){
 		if (event.getAction() == Action.PHYSICAL)
 			return;
-		
+
 		if (event.getHand() == EquipmentSlot.OFF_HAND)
 			return;
 
@@ -29,41 +29,42 @@ public class ItemOpenListener implements Listener {
 
 		if (event.isCancelled() && globalConfig.getBoolean("ignore-cancelled", false))
 			return;
-		
+
 		final Player player = event.getPlayer();
 		final ItemStack item = player.getInventory().getItemInMainHand();
-		
+
 		if (item == null || item.getType() == Material.AIR)
 			return;
-		
+
 		final NBTItem nbt = new NBTItem(item);
-		
-		if (!nbt.hasKey("SSXMenu"))
-			return;
-		
-		final String menuName = nbt.getString("SSXMenu");
-		
-		if (!Main.getConfigurationManager().getMenus().containsKey(menuName)) {
-			player.sendMessage("A menu with the name '" + menuName + "' does not exist.");
+
+		if (!nbt.hasKey("SSXItem")) {
 			return;
 		}
-		
-		final FileConfiguration menu = Main.getConfigurationManager().getMenus().get(menuName);
-		
+
+		final String itemName = nbt.getString("SSXItem");
+
+		if (!Main.getConfigurationManager().getItems().containsKey(itemName)) {
+			player.sendMessage("An item with the name '" + itemName + "' does not exist.");
+			return;
+		}
+
+		final FileConfiguration config = Main.getConfigurationManager().getItems().get(itemName);
+
 		final List<String> actions;
-		
-		if (menu.isList("left-click-actions")) {
+
+		if (config.isList("left-click-actions")) {
 			if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-				actions = menu.getStringList("left-click-actions");
+				actions = config.getStringList("left-click-actions");
 			} else {
-				actions = menu.getStringList("actions");
+				actions = config.getStringList("actions");
 			}
 		} else {
-			actions = menu.getStringList("actions");
+			actions = config.getStringList("actions");
 		}
-		
+
 		xyz.derkades.serverselectorx.actions.Action.runActions(player, actions);
-		
+
 		final boolean cancel = globalConfig.getBoolean("cancel-click-event", false);
 		if (cancel) {
 			event.setCancelled(true);

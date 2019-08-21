@@ -33,7 +33,6 @@ import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.ListUtils;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
-import xyz.derkades.derkutils.caching.Cache;
 import xyz.derkades.serverselectorx.effects.Effects;
 import xyz.derkades.serverselectorx.placeholders.Placeholders;
 import xyz.derkades.serverselectorx.placeholders.PlaceholdersDisabled;
@@ -72,7 +71,7 @@ public class Main extends JavaPlugin {
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
 		this.getCommand("serverselectorx").setExecutor(new ReloadCommand());
-		
+
 		//Register custom selector commands
 		this.registerCommands();
 
@@ -85,18 +84,13 @@ public class Main extends JavaPlugin {
 			//getLogger().log(Level.INFO, "PlaceholderAPI is not installed. The plugin will still work.");
 		}
 
-		//Periodically clean cache
-		this.getServer().getScheduler().runTaskTimer(this, () -> {
-			Cache.cleanCache();
-		}, 30*60*20, 30*60*20);
-
 		if (this.getDescription().getVersion().contains("beta")) {
 			BETA = true;
 		}
 
 		// Disable annoying jetty warnings
 		if (!configurationManager.getSSXConfig().getBoolean("jetty-debug", false)){
-			System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");
+			//System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");
 			System.setProperty("org.eclipse.jetty.LEVEL", "OFF");
 		}
 
@@ -105,11 +99,12 @@ public class Main extends JavaPlugin {
 		server.start();
 
 		this.getServer().getScheduler().runTaskLater(this, () -> this.retrieveConfigs(), 5*20);
-		
+
 		new Effects();
 		new ConfigSync();
 		new Stats();
 		new ItemMoveDropCancelListener();
+		Bukkit.getPluginManager().registerEvents(new ItemOpenListener(), this);
 	}
 
 	@Override
@@ -188,7 +183,7 @@ public class Main extends JavaPlugin {
 	 */
 	public static void openSelector(final Player player, final String configName) {
 		final FileConfiguration config = configurationManager.getMenus().get(configName);
-		
+
 		if (config == null) {
 			Main.error("A menu with this name does not exist", player);
 			return;
@@ -332,22 +327,22 @@ public class Main extends JavaPlugin {
 						new Object[] {player.getName()});
 				builder.coloredLore(lore);
 		}
-		
+
 		if (section.getBoolean("enchanted")) {
 			builder.unsafeEnchant(Enchantment.DURABILITY, 1);
 		}
-		
+
 		if (section.getBoolean("hide-flags")) {
 			builder.hideFlags(63);
 		}
-		
+
 		if (section.isInt("amount")) {
 			builder.amount(section.getInt("amount"));
 		}
 
 		return builder;
     }
-    
+
     public static ItemBuilder getItemBuilderFromMaterialString(final Player player, final String materialString) {
 		final ItemBuilder builder;
 
@@ -364,12 +359,12 @@ public class Main extends JavaPlugin {
 					e.printStackTrace();
 					return new ItemBuilder(Material.COBBLESTONE);
 				}
-				
+
 				if (ownerPlayer == null) {
 					player.sendMessage("A player with the uuid " + ownerPlayer + " does not exist");
 					return new ItemBuilder(Material.COBBLESTONE);
 				}
-				
+
 				builder = new ItemBuilder(ownerPlayer);
 			}
 		} else {
@@ -383,7 +378,7 @@ public class Main extends JavaPlugin {
 
 			builder = new ItemBuilder(material);
 		}
-		
+
 		return builder;
     }
 

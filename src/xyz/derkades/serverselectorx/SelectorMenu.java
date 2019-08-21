@@ -1,11 +1,9 @@
 package xyz.derkades.serverselectorx;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.function.Supplier;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
@@ -14,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitTask;
 
+import de.tr7zw.nbtapi.NBTItem;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.IllegalItems;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
@@ -25,9 +24,8 @@ import xyz.derkades.serverselectorx.actions.Action;
 public class SelectorMenu extends IconMenu {
 
 	private final FileConfiguration config;
-	private final Player player;
 	private final int slots;
-	
+
 	private final IllegalItems illegalItems;
 
 	private BukkitTask refreshTimer;
@@ -35,11 +33,10 @@ public class SelectorMenu extends IconMenu {
 	public SelectorMenu(final Player player, final FileConfiguration config, final String configName) {
 		super(Main.getPlugin(), Colors.parseColors(config.getString("title", UUID.randomUUID().toString())), 9, player);
 		this.config = config;
-		this.player = player;
 
 		this.slots = config.getInt("rows", 6) * 9;
 		this.setSize(this.slots);
-		
+
 		this.illegalItems = new IllegalItems(Main.getPlugin());
 	}
 
@@ -60,37 +57,25 @@ public class SelectorMenu extends IconMenu {
 		for (final String key : this.config.getConfigurationSection("menu").getKeys(false)) {
 			final ConfigurationSection section = this.config.getConfigurationSection("menu." + key);
 
+			List<String> actions;
 			ItemBuilder builder;
-			
+
 			if (section.contains("permission") && !this.player.hasPermission(section.getString("permission"))) {
 				// Use no-permission section
 				builder = Main.getItemBuilderFromItemSection(this.player, section.getConfigurationSection("no-permission"));
+				actions = section.getConfigurationSection("no-permission").getStringList("actions");
 			} else {
 				// Player has permission, use other sections
-				String firstAction;
-
-				if (section.contains("action")) {
-					if (section.isList("action")) {
-						firstAction = section.getStringList("action").get(0);
-					} else {
-						firstAction = section.getString("action");
-					}
-				} else {
-					firstAction = "none";
-				}
-
-				if (firstAction.startsWith("server")) {
-					String serverName = firstAction.substring(4);
-
-					if (serverName.startsWith("__")) {
-						serverName = serverName.substring(2);
-					}
+				if (section.contains("connector")) {
+					// Advanced server section. Use online, offline, dynamic sections.
+					final String serverName = section.getString("connector");
 
 					if (Main.isOnline(serverName)) {
 						final Map<UUID, Map<String, String>> playerPlaceholders = Main.PLACEHOLDERS.get(serverName);
 
 						builder = null;
-						
+						actions = null;
+
 						if (section.contains("dynamic")) {
 							for (final String dynamicKey : section.getConfigurationSection("dynamic").getKeys(false)) {
 								final String placeholder = dynamicKey.split(":")[0];
@@ -118,12 +103,13 @@ public class SelectorMenu extends IconMenu {
 										(mode.equals("less") && Double.parseDouble(placeholderValueInConfig) < Double.parseDouble(placeholderValueFromConnector)) ||
 										(mode.equals("less") && Double.parseDouble(placeholderValueInConfig) > Double.parseDouble(placeholderValueFromConnector))
 										) {
-									
+
 									if (dynamicSection.getString("material").equalsIgnoreCase("NONE")) {
 										continue itemLoop;
 									}
-									
+
 									builder = Main.getItemBuilderFromItemSection(this.player, dynamicSection);
+									actions = dynamicSection.getStringList("actions");
 									break;
 								}
 							}
@@ -132,16 +118,24 @@ public class SelectorMenu extends IconMenu {
 						if (builder == null) {
 							//No dynamic rule matched, fall back to online
 							if (!section.isConfigurationSection("online")) {
+								this.player.sendMessage("Error for item " + key);
 								this.player.sendMessage("Online section does not exist");
 								return;
 							}
-							
+
 							final ConfigurationSection onlineSection = section.getConfigurationSection("online");
-							if (section.getString("material").equalsIgnoreCase("NONE")) {
+
+							if (!onlineSection.contains("material")) {
+								this.player.sendMessage("Error for item " + key);
+								this.player.sendMessage("Online section does not have a material option");
+							}
+
+							if (onlineSection.getString("material").equalsIgnoreCase("NONE")) {
 								continue itemLoop;
 							}
-							
+
 							builder = Main.getItemBuilderFromItemSection(this.player, onlineSection);
+							actions = onlineSection.getStringList("actions");
 						}
 
 						final Map<String, String> placeholders = new HashMap<>();
@@ -168,56 +162,70 @@ public class SelectorMenu extends IconMenu {
 							this.player.sendMessage("Offline section does not exist");
 							return;
 						}
-						
+
 						final ConfigurationSection offlineSection = section.getConfigurationSection("offline");
-						if (section.getString("material").equalsIgnoreCase("NONE")) {
+
+						if (!offlineSection.contains("material")) {
+							this.player.sendMessage("Error for item " + key);
+							this.player.sendMessage("Offline section does not have a material option");
+						}
+
+						if (offlineSection.getString("material").equalsIgnoreCase("NONE")) {
 							continue;
 						}
-						
+
 						builder = Main.getItemBuilderFromItemSection(this.player, offlineSection);
+						actions = offlineSection.getStringList("actions");
 					}
-				} else if (firstAction.startsWith("openmenu:")) {
-					if (section.getString("material").equalsIgnoreCase("NONE")) {
-						continue itemLoop;
-					}
-					
-					final String menuName = firstAction.substring(9);
-
-					if (!Main.getConfigurationManager().getMenus().containsKey(menuName)) {
-						this.player.sendMessage("Menu '" + menuName + "' does not exist");
-						return;
-					}
-					
-					final Supplier<String> placeholderSupplier = () -> {
-						//Add all online counts of servers in the submenu
-						int totalOnline = 0;
-						
-						final FileConfiguration subConfig = Main.getConfigurationManager().getMenus().get(menuName);
-						for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
-							final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
-							final String subAction = subSection.getString("action", "none");
-							if (!subAction.startsWith("srv:")) {
-								continue;
-							}
-
-							final String serverName = subAction.substring(4);
-
-							if (Main.isOnline(serverName)) {
-								totalOnline += Integer.parseInt(Main.PLACEHOLDERS.get(serverName).get(null).get("online"));
-							}
-						}
-						return totalOnline + "";
-					};
-					
-					builder = Main.getItemBuilderFromItemSection(this.player, section)
-							.namePlaceholderOptional("{total}", placeholderSupplier).lorePlaceholderOptional("{total}", placeholderSupplier);
+//				} else if (firstAction.startsWith("openmenu:")) {
+//					if (section.getString("material").equalsIgnoreCase("NONE")) {
+//						continue itemLoop;
+//					}
+//
+//					final String menuName = firstAction.substring(9);
+//
+//					if (!Main.getConfigurationManager().getMenus().containsKey(menuName)) {
+//						this.player.sendMessage("Menu '" + menuName + "' does not exist");
+//						return;
+//					}
+//
+//					final Supplier<String> placeholderSupplier = () -> {
+//						//Add all online counts of servers in the submenu
+//						int totalOnline = 0;
+//
+//						final FileConfiguration subConfig = Main.getConfigurationManager().getMenus().get(menuName);
+//						for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
+//							final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
+//							final String subAction = subSection.getString("action", "none");
+//							if (!subAction.startsWith("srv:")) {
+//								continue;
+//							}
+//
+//							final String serverName = subAction.substring(4);
+//
+//							if (Main.isOnline(serverName)) {
+//								totalOnline += Integer.parseInt(Main.PLACEHOLDERS.get(serverName).get(null).get("online"));
+//							}
+//						}
+//						return totalOnline + "";
+//					};
+//
+//					builder = Main.getItemBuilderFromItemSection(this.player, section)
+//							.namePlaceholderOptional("{total}", placeholderSupplier).lorePlaceholderOptional("{total}", placeholderSupplier);
 				} else {
-					//Not a server
+					// Simple section
+					if (section.getString("material") == null) {
+						this.player.sendMessage("Error for item " + key);
+						this.player.sendMessage("Missing material option. Remember, this is not an advanced section, so don't use online/offline/dynamic sections in the config.");
+						this.player.sendMessage("If you want to use these sections, add a connector option.");
+					}
+
 					if (section.getString("material").equalsIgnoreCase("NONE")) {
 						continue itemLoop;
 					}
-					
+
 					builder = Main.getItemBuilderFromItemSection(this.player, section);
+					actions = section.getStringList("actions");
 				}
 			}
 
@@ -225,8 +233,12 @@ public class SelectorMenu extends IconMenu {
 				.placeholder("{player}", this.player.getName())
 				.placeholder("{globalOnline}", Main.getGlobalPlayerCount() + "");
 
-			final ItemStack item = builder.create();
-			
+			// Add actions to item as NBT
+			final NBTItem nbt = new NBTItem(builder.create());
+			nbt.setObject("SSXActions", actions);
+
+			final ItemStack item = nbt.getItem();
+
 			this.illegalItems.setIllegal(item, true);
 
 			final int slot = Integer.valueOf(key);
@@ -253,58 +265,16 @@ public class SelectorMenu extends IconMenu {
 
 	@Override
 	public boolean onOptionClick(final OptionClickEvent event) {
-		final int slot = event.getPosition();
 		final Player player = event.getPlayer();
 
-		List<String> actions;
+		final NBTItem nbt = new NBTItem(event.getItemStack());
 
-		if (this.config.isList("menu." + slot + ".action")) {
-			// Action exists and is a list
-			actions = this.config.getStringList("menu." + slot + ".action");
+		@SuppressWarnings("unchecked")
+		final List<String> actions = nbt.getObject("SSXActions", List.class);
 
-			if (actions.isEmpty()) {
-				actions.add("msg:Action list found, but list is empty");
-			}
-		} else {
-			// Action is not a list or might not exist
-			String possibleAction = this.config.getString("menu." + slot + ".action", "none");
+		System.out.println(actions.toArray());
 
-			if (possibleAction == null) {
-				//If the action is null ('slot' is not found in the config) it is probably a wildcard
-				possibleAction = this.config.getString("menu.-1.action");
-
-				if (possibleAction == null) { //If it is still null it must be missing
-					possibleAction = "msg:No action found.";
-				}
-			}
-
-			actions = Arrays.asList(possibleAction);
-		}
-		
 		return Action.runActions(player, actions);
-			
-			/*} else if (action.equalsIgnoreCase("toggleInvis")) {
-				
-			} else if (action.equalsIgnoreCase("toggleSpeed")) {
-				if (player.hasPotionEffect(PotionEffectType.SPEED)) {
-					player.removePotionEffect(PotionEffectType.SPEED);
-					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("speed-off")));
-				} else {
-					final int amplifier = Main.getConfigurationManager().getGlobalConfig().getInt("speed-amplifier", 3);
-
-					if (Main.getConfigurationManager().getGlobalConfig().getBoolean("show-particles")) {
-						player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true));
-					} else {
-						player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, amplifier, true, false));
-					}
-
-					player.sendMessage(Colors.parseColors(Main.getConfigurationManager().getGlobalConfig().getString("speed-on")));
-				}
-			} else if (action.equalsIgnoreCase("toggleHideOthers")) {
-				
-			} else if (action.startsWith("msg:")){ //Send message
-				final String message = action.substring(4);
-				player.sendMessage(Main.PLACEHOLDER_API.parsePlaceholders(player, message));*/
 	}
 
 	@Override
@@ -312,7 +282,7 @@ public class SelectorMenu extends IconMenu {
 		if (this.refreshTimer != null) {
 			this.refreshTimer.cancel();
 		}
-		
+
 		this.illegalItems.unregister();
 	}
 

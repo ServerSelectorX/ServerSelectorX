@@ -24,26 +24,26 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 public class ConfigSync {
-	
+
 	ConfigSync() {
 		final ConfigurationSection syncConfig = Main.getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
 
 		if (!syncConfig.getBoolean("enabled", false))
 			return;
-		
+
 		// Run 1 second after server startup, then every hour
 		Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Task(), 20, 60*60*20);
 	}
-	
+
 	private static class Task implements Runnable {
-		
+
 		@Override
 		public void run() {
 			final ConfigurationSection syncConfig = Main.getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
-			
+
 			final Logger logger = Main.getPlugin().getLogger();
 
-			logger.info("Starting config syncs..");
+			logger.info("Starting config sync");
 
 			final String address = syncConfig.getString("address");
 			final List<String> whitelist = syncConfig.getStringList("whitelist");
@@ -91,6 +91,7 @@ public class ConfigSync {
 				final File serversYml = new File(pluginDirectory, "servers.yml");
 				final File globalYml = new File(pluginDirectory, "global.yml");
 				final File menuDirectory = new File(pluginDirectory, "menu");
+				final File itemDirectory = new File(pluginDirectory, "item");
 
 				final JsonParser parser = new JsonParser();
 				final JsonObject json = parser.parse(jsonOutput).getAsJsonObject();
@@ -122,7 +123,7 @@ public class ConfigSync {
 							final FileConfiguration config = new YamlConfiguration();
 							config.loadFromString(menuJson.getValue().getAsString());
 							config.save(new File(menuDirectory, menuJson.getKey() + ".yml"));
-							logger.info("Replaced menu/" + menuJson.getKey() + ".yml");
+							logger.info("Downloaded menu/" + menuJson.getKey() + ".yml");
 						}
 					} else {
 						for (final String string : whitelist) {
@@ -142,6 +143,35 @@ public class ConfigSync {
 							config.save(new File(menuDirectory, menuName + ".yml"));
 						}
 					}
+
+					if (whitelist.contains("item:all")) {
+						Arrays.asList(itemDirectory.listFiles()).forEach(File::delete);
+
+						final JsonObject itemFilesJson = json.get("item").getAsJsonObject();
+						for (final Entry<String, JsonElement> itemJson : itemFilesJson.entrySet()) {
+							final FileConfiguration config = new YamlConfiguration();
+							config.loadFromString(itemJson.getValue().getAsString());
+							config.save(new File(itemDirectory, itemJson.getKey() + ".yml"));
+							logger.info("Downloaded item/" + itemJson.getKey() + ".yml");
+						}
+					} else {
+						for (final String string : whitelist) {
+							if (!string.startsWith("item:")) {
+								continue;
+							}
+
+							final String itemName = string.substring(5);
+							if (!json.get("item").getAsJsonObject().has(itemName)) {
+								logger.warning("Item with name '" + itemName + "' is in the config sync whitelist, but was not sent by the server.");
+								continue;
+							}
+
+							final JsonElement itemJson = json.get("item").getAsJsonObject().get(itemName);
+							final FileConfiguration config = new YamlConfiguration();
+							config.loadFromString(itemJson.getAsString());
+							config.save(new File(menuDirectory, itemName + ".yml"));
+						}
+					}
 				} catch (final InvalidConfigurationException e) {
 					throw new RuntimeException("The configuration received from the server is invalid", e);
 				} catch (final IOException e) {
@@ -154,7 +184,7 @@ public class ConfigSync {
 				Main.server.start();
 			});
 		}
-		
+
 	}
 
 }
