@@ -7,12 +7,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Level;
+import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -25,24 +25,21 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import net.md_5.bungee.api.ChatColor;
 import xyz.derkades.derkutils.Cooldown;
-import xyz.derkades.derkutils.ListUtils;
 import xyz.derkades.derkutils.bukkit.Colors;
+import xyz.derkades.derkutils.bukkit.IllegalItems;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
+import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
+import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
+import xyz.derkades.serverselectorx.configuration.ConfigSync;
+import xyz.derkades.serverselectorx.configuration.ConfigurationManager;
 import xyz.derkades.serverselectorx.effects.Effects;
-import xyz.derkades.serverselectorx.placeholders.Placeholders;
-import xyz.derkades.serverselectorx.placeholders.PlaceholdersDisabled;
-import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
 
 public class Main extends JavaPlugin {
 
 	public static boolean BETA = false;
-
-	public static Placeholders PLACEHOLDER_API;
 
 	public static final String PREFIX = DARK_GRAY + "[" + DARK_AQUA + "ServerSelectorX" + DARK_GRAY + "]";
 
@@ -56,6 +53,8 @@ public class Main extends JavaPlugin {
 
 	public static WebServer server;
 
+	public static IllegalItems illegalItems;
+
 	public static Main getPlugin(){
 		return plugin;
 	}
@@ -66,23 +65,13 @@ public class Main extends JavaPlugin {
 
 		configurationManager = new ConfigurationManager();
 
-		Bukkit.getPluginManager().registerEvents(new OnJoinListener(), this);
 
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		this.getCommand("serverselectorx").setExecutor(new ReloadCommand());
+		this.getCommand("serverselectorx").setExecutor(new ServerSelectorXCommand());
 
 		//Register custom selector commands
 		this.registerCommands();
-
-		//Check if PlaceHolderAPI is installed
-		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")){
-			Main.PLACEHOLDER_API = new PlaceholdersEnabled();
-			//getLogger().log(Level.INFO, "PlaceholderAPI is found. Placeholders will work!");
-		} else {
-			Main.PLACEHOLDER_API = new PlaceholdersDisabled();
-			//getLogger().log(Level.INFO, "PlaceholderAPI is not installed. The plugin will still work.");
-		}
 
 		if (this.getDescription().getVersion().contains("beta")) {
 			BETA = true;
@@ -98,13 +87,16 @@ public class Main extends JavaPlugin {
 		server = new WebServer(port);
 		server.start();
 
-		this.getServer().getScheduler().runTaskLater(this, () -> this.retrieveConfigs(), 5*20);
-
 		new Effects();
 		new ConfigSync();
 		new Stats();
 		new ItemMoveDropCancelListener();
+
 		Bukkit.getPluginManager().registerEvents(new ItemOpenListener(), this);
+		Bukkit.getPluginManager().registerEvents(new GiveItemsListener(), this);
+		Bukkit.getPluginManager().registerEvents(new BetaMessageJoinListener(), this);
+
+		illegalItems = new IllegalItems(Main.getPlugin());
 	}
 
 	@Override
@@ -169,9 +161,6 @@ public class Main extends JavaPlugin {
 		}
 	}
 
-	void retrieveConfigs() {
-			}
-
 	public static ConfigurationManager getConfigurationManager() {
 		return configurationManager;
 	}
@@ -183,11 +172,6 @@ public class Main extends JavaPlugin {
 	 */
 	public static void openSelector(final Player player, final String configName) {
 		final FileConfiguration config = configurationManager.getMenus().get(configName);
-
-		if (config == null) {
-			Main.error("A menu with this name does not exist", player);
-			return;
-		}
 
 		// Check for permissions
 
@@ -218,7 +202,7 @@ public class Main extends JavaPlugin {
 
 		// Open menu
 
-		new SelectorMenu(player, config, configName).open();
+		new Menu(player, config, configName).open();
 	}
 
 	public static void teleportPlayerToServer(final Player player, final String server){
@@ -276,56 +260,25 @@ public class Main extends JavaPlugin {
 		return online;
 	}
 
-	@Deprecated
-	public static ItemStack addHideFlags(final ItemStack item) {
-		try {
-			final String version = Bukkit.getServer().getClass().getPackage().getName().replace(".", ",").split(",")[3];
-
-			final Class<?> craftItemStackClass = Class.forName("org.bukkit.craftbukkit." + version + ".inventory.CraftItemStack");
-			final Class<?> nmsItemStackClass = Class.forName("net.minecraft.server." + version + ".ItemStack");
-			final Class<?> nbtTagCompoundClass = Class.forName("net.minecraft.server." + version + ".NBTTagCompound");
-
-			final Object nmsItemStack = craftItemStackClass.getMethod("asNMSCopy", ItemStack.class).invoke(null, item);
-
-			Object nbtTagCompound = nmsItemStackClass.getMethod("getTag").invoke(nmsItemStack);
-			if (nbtTagCompound == null) {
-				nbtTagCompound = nbtTagCompoundClass.getConstructor().newInstance();
-			}
-
-			nbtTagCompoundClass.getMethod("setInt", String.class, int.class).invoke(nbtTagCompound, "HideFlags", 63);
-
-			nmsItemStackClass.getMethod("setTag", nbtTagCompoundClass).invoke(nmsItemStack, nbtTagCompound);
-
-			return (ItemStack) craftItemStackClass.getMethod("asBukkitCopy", nmsItemStackClass).invoke(null, nmsItemStack);
-		} catch (ClassNotFoundException | IllegalAccessException | IllegalArgumentException | InvocationTargetException |
-				NoSuchMethodException | SecurityException | InstantiationException e) {
-			e.printStackTrace();
-			return item;
-		}
-	}
-
-    public static void error(final String message, final Player... players) {
-    	for (final Player player : players) {
-    		player.sendMessage(ChatColor.RED + message);
-    	}
-		Main.getPlugin().getLogger().severe(message);
-    }
-
     public static ItemBuilder getItemBuilderFromItemSection(final Player player, final ConfigurationSection section) {
     	final String materialString = section.getString("material");
     	final ItemBuilder builder = getItemBuilderFromMaterialString(player, materialString);
 
-		builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player,
-				section.getString("title", " ")
-						.replace("{player}", player.getName())));
+    	if (section.contains("title")) {
+	    	String title = "&r" + section.getString("title");
+	    	title = title.replace("{player}", player.getName());
+	    	title = PlaceholderUtil.parsePapiPlaceholders(player, title);
+	    	builder.coloredName(title);
+    	} else {
+    		builder.name(" ");
+    	}
 
 		if (section.contains("lore")) {
 			List<String> lore = section.getStringList("lore");
-			lore = Main.PLACEHOLDER_API.parsePlaceholders(player, lore);
-			lore = ListUtils.replaceInStringList(lore,
-						new Object[] {"{player}"},
-						new Object[] {player.getName()});
-				builder.coloredLore(lore);
+			lore = lore.stream().map((s) -> "&r" + s).collect(Collectors.toList());
+			final Placeholder playerPlaceholder = new Placeholder("{player}", player.getName());
+			lore = PlaceholderUtil.parsePapiPlaceholders(player, lore, playerPlaceholder);
+			builder.coloredLore(lore);
 		}
 
 		if (section.getBoolean("enchanted")) {

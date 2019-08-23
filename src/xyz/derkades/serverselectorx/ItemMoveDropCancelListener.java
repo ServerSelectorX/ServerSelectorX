@@ -11,36 +11,41 @@ import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 public class ItemMoveDropCancelListener implements Listener {
-	
-	public static boolean DROP_PERMISSION_ENABLED = false;
-	public static boolean MOVE_PERMISSION_ENABLED = false;
-	
+
 	public ItemMoveDropCancelListener() {
 		final FileConfiguration global = Main.getConfigurationManager().getGlobalConfig();
 		if (global.getBoolean("cancel-item-drop", false)) {
 			Bukkit.getPluginManager().registerEvents(new Listener() {
 				@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 				public void onDrop(final PlayerDropItemEvent event){
-					event.setCancelled(DROP_PERMISSION_ENABLED && !event.getPlayer().hasPermission("ssx.drop"));
+					if (!event.getPlayer().hasPermission("ssx.drop")) {
+						event.setCancelled(true);
+					}
 				}
 			}, Main.getPlugin());
 		}
-		
+
 		if (global.getBoolean("cancel-item-move", false)) {
 			Bukkit.getPluginManager().registerEvents(new Listener() {
 				@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 				public void onItemMove(final InventoryClickEvent event){
-					event.setCancelled(MOVE_PERMISSION_ENABLED && !event.getWhoClicked().hasPermission("ssx.move"));
+					if (!event.getWhoClicked().hasPermission("ssx.move")) {
+						event.setCancelled(true);
+					}
 				}
-				
+
 				@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 				public void onItemMove(final InventoryDragEvent event){
-					event.setCancelled(MOVE_PERMISSION_ENABLED && !event.getWhoClicked().hasPermission("ssx.move"));
+					if (!event.getWhoClicked().hasPermission("ssx.move")) {
+						event.setCancelled(true);
+					}
 				}
-				
+
 				@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 				public void onItemMove(final PlayerSwapHandItemsEvent event) {
-					event.setCancelled(MOVE_PERMISSION_ENABLED && !event.getPlayer().hasPermission("ssx.move"));
+					if (!event.getPlayer().hasPermission("ssx.move")) {
+						event.setCancelled(true);
+					}
 				}
 			}, Main.getPlugin());
 		}

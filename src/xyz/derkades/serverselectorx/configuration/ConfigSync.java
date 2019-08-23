@@ -1,4 +1,4 @@
-package xyz.derkades.serverselectorx;
+package xyz.derkades.serverselectorx.configuration;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -23,9 +23,11 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
+import xyz.derkades.serverselectorx.Main;
+
 public class ConfigSync {
 
-	ConfigSync() {
+	public ConfigSync() {
 		final ConfigurationSection syncConfig = Main.getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
 
 		if (!syncConfig.getBoolean("enabled", false))

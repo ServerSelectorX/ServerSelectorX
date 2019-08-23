@@ -14,30 +14,25 @@ import org.bukkit.scheduler.BukkitTask;
 
 import de.tr7zw.nbtapi.NBTItem;
 import xyz.derkades.derkutils.bukkit.Colors;
-import xyz.derkades.derkutils.bukkit.IllegalItems;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.menu.IconMenu;
 import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
 import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 import xyz.derkades.serverselectorx.actions.Action;
 
-public class SelectorMenu extends IconMenu {
+public class Menu extends IconMenu {
 
 	private final FileConfiguration config;
 	private final int slots;
 
-	private final IllegalItems illegalItems;
-
 	private BukkitTask refreshTimer;
 
-	public SelectorMenu(final Player player, final FileConfiguration config, final String configName) {
+	public Menu(final Player player, final FileConfiguration config, final String configName) {
 		super(Main.getPlugin(), Colors.parseColors(config.getString("title", UUID.randomUUID().toString())), 9, player);
 		this.config = config;
 
 		this.slots = config.getInt("rows", 6) * 9;
 		this.setSize(this.slots);
-
-		this.illegalItems = new IllegalItems(Main.getPlugin());
 	}
 
 	@Override
@@ -177,41 +172,6 @@ public class SelectorMenu extends IconMenu {
 						builder = Main.getItemBuilderFromItemSection(this.player, offlineSection);
 						actions = offlineSection.getStringList("actions");
 					}
-//				} else if (firstAction.startsWith("openmenu:")) {
-//					if (section.getString("material").equalsIgnoreCase("NONE")) {
-//						continue itemLoop;
-//					}
-//
-//					final String menuName = firstAction.substring(9);
-//
-//					if (!Main.getConfigurationManager().getMenus().containsKey(menuName)) {
-//						this.player.sendMessage("Menu '" + menuName + "' does not exist");
-//						return;
-//					}
-//
-//					final Supplier<String> placeholderSupplier = () -> {
-//						//Add all online counts of servers in the submenu
-//						int totalOnline = 0;
-//
-//						final FileConfiguration subConfig = Main.getConfigurationManager().getMenus().get(menuName);
-//						for (final String subKey : subConfig.getConfigurationSection("menu").getKeys(false)){
-//							final ConfigurationSection subSection = subConfig.getConfigurationSection("menu." + subKey);
-//							final String subAction = subSection.getString("action", "none");
-//							if (!subAction.startsWith("srv:")) {
-//								continue;
-//							}
-//
-//							final String serverName = subAction.substring(4);
-//
-//							if (Main.isOnline(serverName)) {
-//								totalOnline += Integer.parseInt(Main.PLACEHOLDERS.get(serverName).get(null).get("online"));
-//							}
-//						}
-//						return totalOnline + "";
-//					};
-//
-//					builder = Main.getItemBuilderFromItemSection(this.player, section)
-//							.namePlaceholderOptional("{total}", placeholderSupplier).lorePlaceholderOptional("{total}", placeholderSupplier);
 				} else {
 					// Simple section
 					if (section.getString("material") == null) {
@@ -239,7 +199,7 @@ public class SelectorMenu extends IconMenu {
 
 			final ItemStack item = nbt.getItem();
 
-			this.illegalItems.setIllegal(item, true);
+			Main.illegalItems.setIllegal(item, true);
 
 			final int slot = Integer.valueOf(key);
 
@@ -272,8 +232,6 @@ public class SelectorMenu extends IconMenu {
 		@SuppressWarnings("unchecked")
 		final List<String> actions = nbt.getObject("SSXActions", List.class);
 
-		System.out.println(actions.toArray());
-
 		return Action.runActions(player, actions);
 	}
 
@@ -282,8 +240,6 @@ public class SelectorMenu extends IconMenu {
 		if (this.refreshTimer != null) {
 			this.refreshTimer.cancel();
 		}
-
-		this.illegalItems.unregister();
 	}
 
 }

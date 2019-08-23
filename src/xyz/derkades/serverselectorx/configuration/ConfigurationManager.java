@@ -1,4 +1,4 @@
-package xyz.derkades.serverselectorx;
+package xyz.derkades.serverselectorx.configuration;
 
 import java.io.File;
 import java.io.IOException;
@@ -9,6 +9,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import org.apache.commons.io.FileUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
+
+import xyz.derkades.serverselectorx.Main;
 
 /**
  * Manages configuration files

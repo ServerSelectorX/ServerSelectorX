@@ -120,4 +120,4 @@ menu:
   
   -1: # -1 means all blank slots
     material: GRAY_STAINED_GLASS_PANE
-    name: ' '
+    title: ' '

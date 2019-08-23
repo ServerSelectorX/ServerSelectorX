@@ -17,7 +17,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class PlaceholderReceiver extends HttpServlet {
+public class WebServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -7682997363243721686L;
 

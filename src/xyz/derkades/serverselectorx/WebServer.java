@@ -19,7 +19,7 @@ public class WebServer {
 		
         ServletHandler handler = new ServletHandler();
 
-        handler.addServletWithMapping(PlaceholderReceiver.class, "/*");
+        handler.addServletWithMapping(WebServlet.class, "/*");
         
         server.setHandler(handler);
         

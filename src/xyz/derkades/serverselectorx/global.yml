@@ -40,7 +40,7 @@ server-offline-timeout: 6000
 # Please use sound names corresponding to your server version.
 # If you don't want any sound to play put 'NONE' without ''
 
-selector-open-sound: HORSE_ARMOR
+selector-open-sound: NONE
 
 
 # -------------------- Items -------------------- #
@@ -94,7 +94,7 @@ ignore-cancelled: false
 # You have to set this to true for 1.7.10 servers.
 show-particles: false
 
-# Freeze bukkit thread when the plugin is unloaded (/stop or /reload) for 3 seconds
+# Freeze bukkit thread when the plugin is unloaded (/stop or /reload) for 2 seconds
 # Disabling this will make reloads 2 seconds faster but all your servers may appear as offline
 # after doing /reload
 freeze-bukkit-thread: true

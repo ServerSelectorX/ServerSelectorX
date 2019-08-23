@@ -15,4 +15,3 @@ commands:
       Aliases: serverselectorx, ss, ssx, serversel, serverselector
       
       /ssx reload/rl - Reload configuration files
-      /ssx sync - Sync configuration files 

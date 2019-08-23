@@ -2,21 +2,26 @@ package xyz.derkades.serverselectorx;
 
 import java.util.Map;
 
-import org.bukkit.ChatColor;
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerChangedWorldEvent;
+import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import de.tr7zw.nbtapi.NBTItem;
 
-public class OnJoinListener implements Listener {
+public class GiveItemsListener implements Listener {
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	// Event priorities are set to high so the items are given after other plugins clear the player's inventory.
+
+	@EventHandler(priority = EventPriority.HIGH)
 	public void onJoin(final PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
 		final FileConfiguration global = Main.getConfigurationManager().getGlobalConfig();
@@ -34,12 +39,33 @@ public class OnJoinListener implements Listener {
 			event.getPlayer().getInventory().clear();
 		}
 
+		this.giveItems(player, "join");
+	}
+
+	@EventHandler(priority = EventPriority.HIGH)
+	public void onWorldChange(final PlayerChangedWorldEvent event) {
+		this.giveItems(event.getPlayer(), "world-switch");
+	}
+
+	@EventHandler(priority = EventPriority.HIGH)
+	public void onRespawn(final PlayerRespawnEvent event) {
+		this.giveItems(event.getPlayer(), "death");
+	}
+
+	@EventHandler
+	public void onClear(final PlayerCommandPreprocessEvent event) {
+		if (event.getMessage().equalsIgnoreCase("/clear")) {
+			Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> this.giveItems(event.getPlayer(), "clear"), 1);
+		}
+	}
+
+	public void giveItems(final Player player, final String type) {
 		itemLoop:
 		for (final Map.Entry<String, FileConfiguration> itemConfigEntry : Main.getConfigurationManager().getItems().entrySet()) {
 			final String name = itemConfigEntry.getKey();
 			final FileConfiguration config = itemConfigEntry.getValue();
 
-			if (!config.getBoolean("give.join")) {
+			if (!config.getBoolean("give." + type)) {
 				continue;
 			}
 
@@ -63,7 +89,6 @@ public class OnJoinListener implements Listener {
 				}
 			}
 
-
 			ItemStack item = Main.getItemBuilderFromItemSection(player, config.getConfigurationSection("item")).create();
 
 			final NBTItem nbt = new NBTItem(item);
@@ -79,14 +104,6 @@ public class OnJoinListener implements Listener {
 			} else {
 				inv.setItem(slot, item);
 			}
-		}
-	}
-
-	@EventHandler(priority = EventPriority.MONITOR)
-	public void sendAnnoyingMessage(final PlayerJoinEvent event) {
-		final Player player = event.getPlayer();
-		if (player.hasPermission("ssx.reload") && Main.BETA) {
-			player.sendMessage("You are using a beta version of ServerSelectorX. Please update to a stable version as soon as the functionality or bugfix you require is available in a stable release version. " + ChatColor.GRAY + "(only players with the ssx.reload permission will see this message)");
 		}
 	}
 

@@ -6,7 +6,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import xyz.derkades.serverselectorx.Main;
-import xyz.derkades.serverselectorx.SelectorMenu;
+import xyz.derkades.serverselectorx.Menu;
 
 public class OpenMenuAction extends Action {
 
@@ -24,7 +24,7 @@ public class OpenMenuAction extends Action {
 		
 		final FileConfiguration config = menus.get(value);
 		
-		new SelectorMenu(player, config, value).open();
+		new Menu(player, config, value).open();
 		return false;
 	}
 
