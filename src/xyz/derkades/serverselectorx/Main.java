@@ -1,23 +1,17 @@
 package xyz.derkades.serverselectorx;
 
-import static org.bukkit.ChatColor.DARK_AQUA;
-import static org.bukkit.ChatColor.DARK_GRAY;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.logging.Level;
-import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
@@ -27,9 +21,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.inventivetalent.update.spiget.SpigetUpdate;
-import org.inventivetalent.update.spiget.UpdateCallback;
-import org.inventivetalent.update.spiget.comparator.VersionComparator;
 
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
@@ -39,15 +30,9 @@ import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
 
 public class Main extends JavaPlugin {
 	
-	private static final int CONFIG_VERSION = 8;
-	
-	public static final int GLOWING_ENCHANTMENT_ID = 96;
-	
 	public static Placeholders PLACEHOLDER_API;
 	
 	public static Map<String, Map<String, Object>> SERVER_PLACEHOLDERS = new HashMap<>();
-	
-	public static final String PREFIX = DARK_GRAY + "[" + DARK_AQUA + "ServerSelectorX" + DARK_GRAY + "]";
 
 	private static ConfigurationManager configurationManager;
 	
@@ -69,9 +54,8 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new OnJoinListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemMoveDropCancelListener(), this);
 		
-		
-		List<String> offHandVersions = Arrays.asList("1.9", "1.10", "1.11", "1.12");
-		for (String version : offHandVersions) {
+		final List<String> offHandVersions = Arrays.asList("1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15");
+		for (final String version : offHandVersions) {
 			if (Bukkit.getBukkitVersion().contains(version)) {
 				Bukkit.getPluginManager().registerEvents(new OffHandMoveCancel(), this);
 			}
@@ -88,19 +72,6 @@ public class Main extends JavaPlugin {
 		//Start bStats
 		Stats.initialize();
 		
-		//Check if config is up to date
-		int version = getConfig().getInt("version");
-		if (version != CONFIG_VERSION){
-			Logger logger = super.getLogger();
-			logger.log(Level.SEVERE, "************** IMPORTANT **************");
-			logger.log(Level.SEVERE, "You updated the plugin without deleting the config.");
-			logger.log(Level.SEVERE, "Please rename config.yml to something else and restart your server.");
-			logger.log(Level.SEVERE, "If you don't want to redo your config, see resource updates on spigotmc.org for instructions.");
-			logger.log(Level.SEVERE, "***************************************");
-			getServer().getPluginManager().disablePlugin(this);
-			return;
-		}
-		
 		//Register custom selector commands
 		registerCommands();
 		
@@ -113,39 +84,7 @@ public class Main extends JavaPlugin {
 			getLogger().log(Level.INFO, "PlaceholderAPI is not installed. The plugin will still work.");
 		}
 		
-		getLogger().info("");
-		getLogger().info("Thank you for using ServerSelectorX. If you enjoy using this plugin, please consider buying the premium version. It's has more features and placeholders update astronomically faster. ");
-		getLogger().info("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium");
-		getLogger().info("");
-		
-		//Check for updates asynchronously
-		getServer().getScheduler().runTaskAsynchronously(this, () -> {
-			checkForUpdates();
-		});
-	}
-	
-	public void reloadConfig(){	
-		//Load default config if it has been deleted
-		super.saveDefaultConfig();
-		
-		//Reload config
-		super.reloadConfig();
-	
-		//Copy default selector if directory is empty
-		boolean createFile = new File(this.getDataFolder() + "/menu").listFiles().length == 0;
-		File file = new File(this.getDataFolder() + "/menu", "default.yml");
-		if (createFile){
-			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/default-selector.yml");
-			try {
-				FileUtils.copyURLToFile(inputUrl, file);
-			} catch (IOException e){
-				e.printStackTrace();
-			}
-		}
-		
-		//Initialize variables
-		ItemMoveDropCancelListener.DROP_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-drop", false);
-		ItemMoveDropCancelListener.MOVE_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-move", false);
+		getLogger().info("Thank you for using ServerSelectorX. If you enjoy using this plugin, please consider buying the premium version. It has more features and placeholders update instantly. https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium");
 	}
 	
 	/**
@@ -156,10 +95,10 @@ public class Main extends JavaPlugin {
 			final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
 	
 			bukkitCommandMap.setAccessible(true);
-			CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
+			final CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
 			
-			for (FileConfiguration config : Main.getServerSelectorConfigurationFiles()){
-				String commandName = config.getString("command");
+			for (final FileConfiguration config : Main.getServerSelectorConfigurationFiles()){
+				final String commandName = config.getString("command");
 				
 				if (commandName == null || commandName.equalsIgnoreCase("none")) {
 					continue;
@@ -168,9 +107,9 @@ public class Main extends JavaPlugin {
 				commandMap.register("ssx-custom", new Command(commandName){
 	
 					@Override
-					public boolean execute(CommandSender sender, String label, String[] args) {
+					public boolean execute(final CommandSender sender, final String label, final String[] args) {
 						if (sender instanceof Player){
-							Player player = (Player) sender;
+							final Player player = (Player) sender;
 							Main.openSelector(player, config);
 						}
 						return true;
@@ -185,8 +124,8 @@ public class Main extends JavaPlugin {
 	}
 	
 	@Deprecated
-	public static FileConfiguration getSelectorConfigurationFile(String name){
-		File file = new File(Main.getPlugin().getDataFolder() + "/menu", name + ".yml");
+	public static FileConfiguration getSelectorConfigurationFile(final String name){
+		final File file = new File(Main.getPlugin().getDataFolder() + "/menu", name + ".yml");
 		if (file.exists()){
 			return YamlConfiguration.loadConfiguration(file);
 		} else {
@@ -196,8 +135,8 @@ public class Main extends JavaPlugin {
 	
 	@Deprecated
 	public static List<FileConfiguration> getServerSelectorConfigurationFiles(){
-		List<FileConfiguration> configs = new ArrayList<>();
-		for (File file : new File(Main.getPlugin().getDataFolder() + "/menu").listFiles()){
+		final List<FileConfiguration> configs = new ArrayList<>();
+		for (final File file : new File(Main.getPlugin().getDataFolder() + "/menu").listFiles()){
 			if (!file.getName().endsWith(".yml"))
 				continue;
 
@@ -210,8 +149,8 @@ public class Main extends JavaPlugin {
 		return configurationManager;
 	}
 	
-	public static void openSelector(Player player, FileConfiguration config) {
-		long cooldown = Cooldown.getCooldown(config.getName() + player.getName());
+	public static void openSelector(final Player player, final FileConfiguration config) {
+		final long cooldown = Cooldown.getCooldown(config.getName() + player.getName());
 		if (cooldown > 0) {
 			String cooldownMessage = Main.getPlugin().getConfig().getString("cooldown-message", "&cYou cannot use this yet, please wait {x} seconds.");
 			cooldownMessage = cooldownMessage.replace("{x}", String.valueOf((cooldown / 1000) + 1));
@@ -223,18 +162,18 @@ public class Main extends JavaPlugin {
 			return;
 		}
 		
-		long cooldownDuration = Main.getPlugin().getConfig().getLong("selector-open-cooldown", 0);	
+		final long cooldownDuration = Main.getPlugin().getConfig().getLong("selector-open-cooldown", 0);	
 		if (cooldownDuration >= 1000) {
 			Cooldown.addCooldown(config.getName() + player.getName(), cooldownDuration);
 		}
 			
 		// Play sound
-		String soundString = Main.getPlugin().getConfig().getString("selector-open-sound");
+		final String soundString = Main.getPlugin().getConfig().getString("selector-open-sound");
 		if (soundString != null && !soundString.equals("NONE")) {
 			try {
-				Sound sound = Sound.valueOf(soundString);
+				final Sound sound = Sound.valueOf(soundString);
 				player.playSound(player.getLocation(), sound, 1.0f, 1.0f);
-			} catch (IllegalArgumentException e) {
+			} catch (final IllegalArgumentException e) {
 				Main.getPlugin().getLogger().log(Level.WARNING, "A sound with the name " + soundString
 						+ " could not be found. Make sure that it is the right name for your server version.");
 			}
@@ -257,7 +196,7 @@ public class Main extends JavaPlugin {
 				}
 			}
 			
-			String message = Colors.parseColors(Main.getPlugin().getConfig().getString("server-teleport-message", "error"));
+			final String message = Colors.parseColors(Main.getPlugin().getConfig().getString("server-teleport-message", "error"));
 			player.sendMessage(message.replace("{x}", server));
 		}
 
@@ -269,50 +208,9 @@ public class Main extends JavaPlugin {
 	        dos.writeUTF("Connect");
 	        dos.writeUTF(server);
 	        player.sendPluginMessage(getPlugin(), "BungeeCord", baos.toByteArray());
-		} catch (IOException e){
+		} catch (final IOException e){
 			e.printStackTrace();
 		}
-	}
-	
-	public static boolean UPDATE_AVAILABLE;
-	public static String NEW_VERSION;
-	public static String CURRENT_VERSION;
-	public static String DOWNLOAD_LINK = "https://www.spigotmc.org/resources/serverselectorx.32853/updates";
-	
-	private void checkForUpdates() {
-		if (!getConfig().getBoolean("updater")) {
-			getLogger().info("The update checker is disabled.");
-			return;
-		}
-		
-		CURRENT_VERSION = Main.this.getDescription().getVersion();
-		
-		if (CURRENT_VERSION.equals("custom") || CURRENT_VERSION.equals("beta")) {
-			getLogger().info("You are using a custom or beta version so the update checker is disabled.");
-			return;
-		}
-		
-		SpigetUpdate updater = new SpigetUpdate(this, 32853).setVersionComparator(VersionComparator.EQUAL);
-		
-		updater.checkForUpdate(new UpdateCallback() {
-			
-			@Override
-			public void updateAvailable(String newVersion, String downloadUrl, boolean hasDirectDownload) {
-				UPDATE_AVAILABLE = true;
-				NEW_VERSION = newVersion;
-				
-				getLogger().info("An update is available!");
-				getLogger().info("Your version: " + CURRENT_VERSION);
-				getLogger().info("Latest version: " + NEW_VERSION);
-			}
-
-			@Override
-			public void upToDate() {
-				UPDATE_AVAILABLE = false;
-				
-				getLogger().info("You are running the latest version.");
-			}
-		});
 	}
 
 }

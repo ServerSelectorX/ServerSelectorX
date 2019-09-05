@@ -13,24 +13,24 @@ import xyz.derkades.derkutils.Cooldown;
 
 public class SelectorOpenListener implements Listener {
 	
-	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGH)
-	public void onInteract(PlayerInteractEvent event){
+	public void onInteract(final PlayerInteractEvent event){
 		if (!(event.getAction() == Action.RIGHT_CLICK_AIR ||
 				event.getAction() == Action.RIGHT_CLICK_BLOCK)){
 			return;
 		}
 		
-		Player player = event.getPlayer();
+		final Player player = event.getPlayer();
 		
-		//Small cooldown because on 1.9+ interact event is called twice.
+		// Small cooldown to prevent weird glitches when right clicking the item very quickly
+		// and because on 1.9+ interact event is called twice.
 		if (Cooldown.getCooldown(player.getUniqueId() + "doubleopen") > 0) {
 			return;
 		}
 		
-		Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 200); //Add cooldown for 0.2 seconds
+		Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 500);
 		
-		for (FileConfiguration config : Main.getConfigurationManager().getAll()){	
+		for (final FileConfiguration config : Main.getConfigurationManager().getAll()){	
 			if (config.getString("item").equalsIgnoreCase("NONE")){
 				continue;
 			}

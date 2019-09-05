@@ -15,18 +15,18 @@ public class PingServersBackground extends Thread {
 	public void run() {
 		while(true) {
 			try {
-				for (FileConfiguration config : Main.getConfigurationManager().getAll()) {
+				for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
 					for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
 						// Don't overload the CPU or the API
 						try {
-							Thread.sleep(2000);
-						} catch (InterruptedException e) {
+							Thread.sleep(1000);
+						} catch (final InterruptedException e) {
 							e.printStackTrace();
 						}
 						
 						final ConfigurationSection section = config.getConfigurationSection("menu." + key);
 						
-						String action = section.getString("action");
+						final String action = section.getString("action");
 						
 						if (!action.startsWith("srv:")) {
 							continue;
@@ -36,21 +36,21 @@ public class PingServersBackground extends Thread {
 							continue;
 						}
 						
-						String serverName = action.substring(4);
+						final String serverName = action.substring(4);
 	
-						String ip = section.getString("ip");
-						int port = section.getInt("port");
+						final String ip = section.getString("ip");
+						final int port = section.getInt("port");
 	
 						Server server;
 						
 						if (Main.getPlugin().getConfig().getBoolean("external-query", true)) {
 							server = new ServerPinger.ExternalServer(ip, port);
 						} else {
-							int timeout = section.getInt("ping-timeout", 100);
+							final int timeout = section.getInt("ping-timeout", 100);
 							server = new ServerPinger.InternalServer(ip, port, timeout);
 						}
 						
-						Map<String, Object> serverInfo = new HashMap<>();
+						final Map<String, Object> serverInfo = new HashMap<>();
 						serverInfo.put("isOnline", server.isOnline());
 						if (server.isOnline()) {
 							serverInfo.put("online", server.getOnlinePlayers());
@@ -62,12 +62,12 @@ public class PingServersBackground extends Thread {
 						Main.SERVER_PLACEHOLDERS.put(serverName, serverInfo);
 					}
 				}
-			} catch (Exception e) {
+			} catch (final Exception e) {
 				// So the loop doesn't break if an error occurs
 				// Print the error, sleep, try again.
 				try {
 					Thread.sleep(5000);
-				} catch (InterruptedException e2) {
+				} catch (final InterruptedException e2) {
 					e2.printStackTrace();
 				}
 			}

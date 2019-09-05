@@ -14,13 +14,7 @@ public class Stats {
 	public static void initialize() {
 		final Metrics metrics = new Metrics(Main.getPlugin());
 		
-		metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", () -> {
-			if (Main.PLACEHOLDER_API instanceof PlaceholdersEnabled) {
-				return "yes";
-			} else {
-				return "no";
-			}
-		}));
+		metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", () -> Main.PLACEHOLDER_API instanceof PlaceholdersEnabled ? "yes" : "no"));
 		
 		metrics.addCustomChart(new Metrics.SimplePie("number_of_selectors", () -> {
 			return Main.getConfigurationManager().getAll().size() + "";
@@ -48,7 +42,7 @@ public class Stats {
 			
 			for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
 				for (final String slot : config.getConfigurationSection("menu").getKeys(false)) {
-					String action = config.getString("menu." + slot + ".action").split(":")[0].toLowerCase();
+					final String action = config.getString("menu." + slot + ".action").split(":")[0].toLowerCase();
 					if (map.containsKey(action)) {
 						map.put(action, map.get(action) + 1);
 					} else {
@@ -60,28 +54,14 @@ public class Stats {
 			return map;
 		}));
 		
-		metrics.addCustomChart(new Metrics.SimplePie("ping_api", () -> {
-			if (Main.getPlugin().getConfig().getBoolean("external-query", true)) {
-				return "External";
-			} else {
-				return "Internal";
-			}
-		}));
-		
-		metrics.addCustomChart(new Metrics.SimplePie("updater", () -> {
-			if (Main.getPlugin().getConfig().getBoolean("updater", true)) {
-				return "Enabled";
-			} else {
-				return "Disabled";
-			}
-		}));
+		metrics.addCustomChart(new Metrics.SimplePie("updater", () -> "Unavailable"));
 		
 		metrics.addCustomChart(new Metrics.AdvancedPie("server_pinging", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 			
 			for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
 				for (final String slot : config.getConfigurationSection("menu").getKeys(false)) {
-					String action = config.getString("menu." + slot + ".action").split(":")[0].toLowerCase();
+					final String action = config.getString("menu." + slot + ".action").split(":")[0].toLowerCase();
 					if (action.equalsIgnoreCase("srv")) {
 						if (config.getBoolean("menu." + slot + ".ping-server", false)) {
 							if (map.containsKey("Enabled")) {
@@ -104,7 +84,7 @@ public class Stats {
 		}));
 		
 		metrics.addCustomChart(new Metrics.SimplePie("permissions", () -> {
-			return "Free";
+			return "Unavailable";
 		}));
 		
 		metrics.addCustomChart(new Metrics.SimplePie("item_drop", () -> {
@@ -127,7 +107,7 @@ public class Stats {
 			final Map<String, Integer> map = new HashMap<>();
 			
 			for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
-				int slot = config.getInt("inv-slot", 0);
+				final int slot = config.getInt("inv-slot", 0);
 				if (slot < 0) {
 					if (map.containsKey("Auto")) {
 						map.put("Auto", map.get("Auto") + 1);
@@ -150,7 +130,7 @@ public class Stats {
 			final Map<String, Integer> map = new HashMap<>();
 			
 			for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
-				int rows = config.getInt("rows", 6);
+				final int rows = config.getInt("rows", 6);
 				if (map.containsKey(rows + "")) {
 					map.put(rows + "", map.get(rows + "") + 1);
 				} else {

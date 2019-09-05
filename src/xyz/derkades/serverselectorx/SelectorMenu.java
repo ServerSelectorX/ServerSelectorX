@@ -22,10 +22,10 @@ import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 
 public class SelectorMenu extends IconMenu {
 	
-	private FileConfiguration config;
-	private int slots;
+	private final FileConfiguration config;
+	private final int slots;
 	
-	public SelectorMenu(Player player, FileConfiguration config) {
+	public SelectorMenu(final Player player, final FileConfiguration config) {
 		super(Main.getPlugin(), Colors.parseColors(config.getString("title", "no title")), config.getInt("rows", 6) * 9, player);
 		
 		this.config = config;
@@ -38,11 +38,12 @@ public class SelectorMenu extends IconMenu {
 			String name;
 			List<String> lore;
 			int amount = section.getInt("item-count", 1);
+			int data = 0;
 
-			String action = section.getString("action");
+			final String action = section.getString("action");
 
 			if (action.startsWith("srv:")) {
-				String serverName = action.substring(4);
+				final String serverName = action.substring(4);
 
 				if (!section.getBoolean("ping-server")) {
 					// Server pinging is turned off, get item info from 'online' section
@@ -50,6 +51,7 @@ public class SelectorMenu extends IconMenu {
 					name = section.getString("online.name", "");
 					lore = section.getStringList("online.lore");
 					amount = section.getInt("item-count", 1);
+					data = section.getInt("data");
 				} else {
 					Map<String, Object> placeholders = null;
 					boolean isOnline;
@@ -61,17 +63,17 @@ public class SelectorMenu extends IconMenu {
 					}
 
 					if (isOnline) {
-						int online = (int) placeholders.get("online");
-						int max = (int) placeholders.get("max");
-						int ping = (int) placeholders.get("ping");
-						String motd = (String) placeholders.get("motd");
+						final int online = (int) placeholders.get("online");
+						final int max = (int) placeholders.get("max");
+						final int ping = (int) placeholders.get("ping");
+						final String motd = (String) placeholders.get("motd");
 
 						// Server is online, use online section
-						ConfigurationSection onlineSection = section.getConfigurationSection("online");
+						final ConfigurationSection onlineSection = section.getConfigurationSection("online");
 						materialString = onlineSection.getString("item");
 						name = onlineSection.getString("name");
 						lore = onlineSection.getStringList("lore");
-						
+						data = section.getInt("data");						
 
 						if (section.getBoolean("change-item-count", true)) {
 							amount = online;
@@ -83,11 +85,12 @@ public class SelectorMenu extends IconMenu {
 								new Object[] { online, max, motd, ping, player.getName() });
 					} else {
 						// Server is offline, use offline section
-						ConfigurationSection offlineSection = section.getConfigurationSection("offline");
+						final ConfigurationSection offlineSection = section.getConfigurationSection("offline");
 
 						materialString = offlineSection.getString("item");
 						name = offlineSection.getString("name");
 						lore = offlineSection.getStringList("lore");
+						data = section.getInt("data");
 					}
 				}
 
@@ -95,17 +98,18 @@ public class SelectorMenu extends IconMenu {
 					amount = 1;
 			} else {
 				// Not a server, use online section
-				ConfigurationSection onlineSection = section.getConfigurationSection("online");
+				final ConfigurationSection onlineSection = section.getConfigurationSection("online");
 
 				materialString = onlineSection.getString("item");
 				name = onlineSection.getString("name");
 				lore = onlineSection.getStringList("lore");
+				data = section.getInt("data");
 			}
 
 			final ItemBuilder builder;
 
 			if (materialString.startsWith("head:")) {
-				String owner = materialString.split(":")[1];
+				final String owner = materialString.split(":")[1];
 				if (owner.equals("auto")) {
 					builder = new ItemBuilder(player.getName());
 				} else {
@@ -122,35 +126,39 @@ public class SelectorMenu extends IconMenu {
 			builder.amount(amount);
 			builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
 			builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
+			
+			if (data != 0) {
+				builder.damage(data);
+			}
 
-			ItemStack item = builder.create();
+			final ItemStack item = builder.create();
 
 			addToMenu(Integer.valueOf(key), item);
 		}
 	}
 
-	private void addToMenu(int slot, ItemStack item) {
+	private void addToMenu(final int slot, final ItemStack item) {
 		if (slot < 0) {
-			for (int i = 0; i < slots; i++) {
-				if (!items.containsKey(i)) {
-					items.put(i, item);
+			for (int i = 0; i < this.slots; i++) {
+				if (!this.items.containsKey(i)) {
+					this.items.put(i, item);
 				}
 			}
 		} else {
-			items.put(slot, item);
+			this.items.put(slot, item);
 		}
 	}
 
 	@Override
-	public boolean onOptionClick(OptionClickEvent event) {		
-		int slot = event.getPosition();
-		Player player = event.getPlayer();
+	public boolean onOptionClick(final OptionClickEvent event) {		
+		final int slot = event.getPosition();
+		final Player player = event.getPlayer();
 		
-		String action = config.getString("menu." + slot + ".action");
+		String action = this.config.getString("menu." + slot + ".action");
 		
 		if (action == null) {
 			//If the action is null (so 'slot' is not found in the config) it is probably a wildcard
-			action = config.getString("menu.-1.action");
+			action = this.config.getString("menu.-1.action");
 			
 			if (action == null) { //If it is still null it must be missing
 				action = "msg:Action missing";
@@ -158,8 +166,8 @@ public class SelectorMenu extends IconMenu {
 		}
 		
 		if (action.startsWith("url:")){ //Send url message
-			String url = action.substring(4);
-			String message = Colors.parseColors(config.getString("url-message", "&3&lClick here"));
+			final String url = action.substring(4);
+			final String message = Colors.parseColors(this.config.getString("url-message", "&3&lClick here"));
 			
 			player.spigot().sendMessage(
 					new ComponentBuilder(message)
@@ -168,20 +176,16 @@ public class SelectorMenu extends IconMenu {
 					);
 			return true;
 		} else if (action.startsWith("cmd:")){ //Execute command
-			String command = action.substring(4);
+			final String command = action.substring(4);
 			
 			//Send command 2 ticks later to let the GUI close first (for commands that open a GUI)
 			Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), () -> {
 				Bukkit.dispatchCommand(player, Main.PLACEHOLDER_API.parsePlaceholders(player, command));
 			}, 2);
 			return true;
-		} else if (action.startsWith("bungeecmd:")) { //BungeeCord command
-			String command = action.substring(10);
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), String.format("sync player bungee %s %s", player.getName(), Main.PLACEHOLDER_API.parsePlaceholders(player, command)));
-			return true;
 		} else if (action.startsWith("sel:")){ //Open selector
-			String configName = action.substring(4);
-			FileConfiguration config = Main.getConfigurationManager().getByName(configName);
+			final String configName = action.substring(4);
+			final FileConfiguration config = Main.getConfigurationManager().getByName(configName);
 			if (config == null){
 				player.sendMessage(ChatColor.RED + "This server selector does not exist.");
 				return true;
@@ -191,8 +195,8 @@ public class SelectorMenu extends IconMenu {
 				return false;
 			}
 		} else if (action.startsWith("world:")){ //Teleport to world
-			String worldName = action.substring(6);
-			World world = Bukkit.getWorld(worldName);
+			final String worldName = action.substring(6);
+			final World world = Bukkit.getWorld(worldName);
 			if (world == null){
 				player.sendMessage(ChatColor.RED + "A world with the name " + worldName + " does not exist.");
 				return true;
@@ -201,11 +205,11 @@ public class SelectorMenu extends IconMenu {
 				return true;
 			}
 		} else if (action.startsWith("srv:")){ //Teleport to server
-			String serverName = action.substring(4);
+			final String serverName = action.substring(4);
 			Main.teleportPlayerToServer(player, serverName);
 			return true;
 		} else if (action.startsWith("msg:")){ //Send message
-			String message = action.substring(4);
+			final String message = action.substring(4);
 			player.sendMessage(Main.PLACEHOLDER_API.parsePlaceholders(player, message));
 			return true;
 		} else if (action.equals("close")){ //Close selector

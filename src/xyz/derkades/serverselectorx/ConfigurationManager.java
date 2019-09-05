@@ -19,11 +19,11 @@ public class ConfigurationManager {
 	private final Map<String, FileConfiguration> files = new ConcurrentHashMap<>();
 	
 	public Collection<FileConfiguration> getAll() {
-		return files.values();
+		return this.files.values();
 	}
 	
-	public FileConfiguration getByName(String name) {
-		return files.get(name);
+	public FileConfiguration getByName(final String name) {
+		return this.files.get(name);
 	}
 	
 	public FileConfiguration getConfig() {
@@ -36,38 +36,35 @@ public class ConfigurationManager {
 		
 		Main.getPlugin().saveDefaultConfig();
 		
-		File dir = new File(Main.getPlugin().getDataFolder() + File.separator + "menu");
+		final File dir = new File(Main.getPlugin().getDataFolder() + File.separator + "menu");
 		dir.mkdirs();
 		if (dir.listFiles().length == 0){
-			URL inputUrl = getClass().getResource("/xyz/derkades/serverselectorx/default-selector.yml");
+			final URL inputUrl = getClass().getResource("/default.yml");
 			try {
-				File defaultConfig = new File(dir, "default.yml");
+				final File defaultConfig = new File(dir, "default.yml");
 				FileUtils.copyURLToFile(inputUrl, defaultConfig);
-			} catch (IOException e){
+			} catch (final IOException e){
 				e.printStackTrace();
 			}
 		}
-		
 		
 		//Reload configuration files
 		
 		Main.getPlugin().reloadConfig();
 		
-		files.clear();
-		for (File file : new File(Main.getPlugin().getDataFolder() + File.separator + "menu").listFiles()){
+		this.files.clear();
+		for (final File file : new File(Main.getPlugin().getDataFolder() + File.separator + "menu").listFiles()){
 			if (!file.getName().endsWith(".yml"))
 				continue;
 
-			String name = file.getName().replace(".yml", "");
-			FileConfiguration config = YamlConfiguration.loadConfiguration(file);
-			files.put(name, config);
+			final String name = file.getName().replace(".yml", "");
+			final FileConfiguration config = YamlConfiguration.loadConfiguration(file);
+			this.files.put(name, config);
 		}
 		
 		//Initialize variables
 		ItemMoveDropCancelListener.DROP_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-drop", false);
 		ItemMoveDropCancelListener.MOVE_PERMISSION_ENABLED = getConfig().getBoolean("cancel-item-move", false);
-		
-
 	}
 
 }

@@ -6,7 +6,7 @@
 
 
 server-teleport-message-enabled: true
-server-teleport-message: '&7You are being connected to &7&l{x}&r&7.'
+server-teleport-message: '&7Conecting you to &7&l{x}&r&7.'
 
 # Clear chat before sending player to server? 
 # Note: the chat will be cleared before sending server teleport message, so the server teleport message will still be visible.
@@ -59,12 +59,3 @@ cancel-item-drop: false
 
 # Cancel item move for players that do not have the permission ssx.move (this includes swapping items between hands for 1.9+)
 cancel-item-move: false
-
-
-# Please only disable the updater if it is causing issues or you cannot use a newer version of the plugin.
-# New versions will not be downloaded or installed automatically, it just checks if a new version is available.
-# Keep in mind that you will get limited or no support for older versions.
-updater: true
-
-# Do not touch this
-version: 8
