@@ -23,6 +23,7 @@ import com.google.gson.GsonBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
 import xyz.derkades.serverselectorx.placeholders.GlobalPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.PlayerPlaceholder;
+import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class WebServlet extends HttpServlet {
 
