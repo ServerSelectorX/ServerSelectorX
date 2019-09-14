@@ -14,15 +14,15 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
+import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
 import xyz.derkades.serverselectorx.placeholders.GlobalPlaceholder;
-import xyz.derkades.serverselectorx.placeholders.Placeholder;
 import xyz.derkades.serverselectorx.placeholders.PlayerPlaceholder;
-import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class WebServlet extends HttpServlet {
 
@@ -109,8 +109,6 @@ public class WebServlet extends HttpServlet {
 			return;
 		}
 
-		final Gson gson = new GsonBuilder().setPrettyPrinting().create();
-
 		if (request.getRequestURI().equalsIgnoreCase("/config")) {
 			final Map<Object, Object> json = new HashMap<>();
 
@@ -128,14 +126,19 @@ public class WebServlet extends HttpServlet {
 			}
 			json.put("item", itemFiles);
 
-			response.getOutputStream().println(gson.toJson(json));
+			response.getOutputStream().println(new Gson().toJson(json));
+		} else if (request.getRequestURI().equalsIgnoreCase("/players")) {
+			final Gson gson = new Gson();
+			final Map<UUID, String> players = new HashMap<>();
+			Bukkit.getOnlinePlayers().forEach((p) -> players.put(p.getUniqueId(), p.getName()));
+			response.getOutputStream().println(gson.toJson(players));
 		} else {
 			final Map<Object, Object> map = new HashMap<>();
 			map.put("version", Main.getPlugin().getDescription().getVersion());
 			map.put("api_version", 2);
 			map.put("servers", Server.getServers());
 
-			final String json = gson.toJson(map);
+			final String json = new GsonBuilder().setPrettyPrinting().create().toJson(map);
 			response.getOutputStream().println(json);
 		}
 	}
