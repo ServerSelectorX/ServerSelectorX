@@ -7,7 +7,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
@@ -36,16 +35,13 @@ import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
 import xyz.derkades.serverselectorx.configuration.ConfigSync;
 import xyz.derkades.serverselectorx.configuration.ConfigurationManager;
 import xyz.derkades.serverselectorx.effects.Effects;
+import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class Main extends JavaPlugin {
 
 	public static boolean BETA = false;
 
 	public static final String PREFIX = DARK_GRAY + "[" + DARK_AQUA + "ServerSelectorX" + DARK_GRAY + "]";
-
-	/* <serverName, <player uuid (null for global placeholders), <placeholder, result>>> */
-	public static final Map<String, Map<UUID, Map<String, String>>> PLACEHOLDERS = new HashMap<>();
-	public static final Map<String, Long> LAST_INFO_TIME = new HashMap<>();
 
 	private static ConfigurationManager configurationManager;
 
@@ -64,7 +60,6 @@ public class Main extends JavaPlugin {
 		plugin = this;
 
 		configurationManager = new ConfigurationManager();
-
 
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
@@ -238,25 +233,18 @@ public class Main extends JavaPlugin {
 		}
 	}
 
-	public static boolean isOnline(final String serverName) {
-		if (Main.LAST_INFO_TIME.containsKey(serverName)) {
-			// If the server has not sent a message for 7 seconds (usually the server sends a message every 5 seconds)
-
-			final long timeSinceLastPing = System.currentTimeMillis() - Main.LAST_INFO_TIME.get(serverName);
-
-			final long timeout = configurationManager.getGlobalConfig().getLong("server-offline-timeout", 6000);
-
-			return timeSinceLastPing < timeout;
-		} else
-			//If the server has not sent a message at all it is offline
-			return false;
-	}
-
 	public static int getGlobalPlayerCount() {
-		int online = 0;
+		/*int online = 0;
 		for (final Map<UUID, Map<String, String>> serverPlaceholders : Main.PLACEHOLDERS.values()) {
 			online += Integer.parseInt(serverPlaceholders.get(null).get("online"));
 		}
+		return online;*/
+
+		int online = 0;
+		for (final Server server : Server.getServers()) {
+			online += server.getOnlinePlayers();
+		}
+
 		return online;
 	}
 

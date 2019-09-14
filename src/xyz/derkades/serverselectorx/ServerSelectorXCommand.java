@@ -2,11 +2,16 @@ package xyz.derkades.serverselectorx;
 
 import static org.bukkit.ChatColor.AQUA;
 
+import java.util.List;
+import java.util.stream.Collectors;
+
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 
 import net.md_5.bungee.api.ChatColor;
+import xyz.derkades.serverselectorx.placeholders.Placeholder;
+import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class ServerSelectorXCommand implements CommandExecutor {
 
@@ -24,6 +29,14 @@ public class ServerSelectorXCommand implements CommandExecutor {
 			Main.server.stop();
 			Main.server.start();
 			return true;
+		}
+
+		if (args.length == 1 && args[0].equalsIgnoreCase("placeholders")) {
+			for (final Server server : Server.getServers()) {
+				final List<String> placeholderKeys = server.getPlaceholders().stream()
+						.map(Placeholder::getKey).collect(Collectors.toList());
+				sender.sendMessage(server.getName() + ": " + String.join(", ", placeholderKeys));
+			}
 		}
 
 		return false;

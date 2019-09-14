@@ -19,6 +19,10 @@ import xyz.derkades.derkutils.bukkit.menu.IconMenu;
 import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
 import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 import xyz.derkades.serverselectorx.actions.Action;
+import xyz.derkades.serverselectorx.placeholders.GlobalPlaceholder;
+import xyz.derkades.serverselectorx.placeholders.Placeholder;
+import xyz.derkades.serverselectorx.placeholders.PlayerPlaceholder;
+import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class Menu extends IconMenu {
 
@@ -64,29 +68,31 @@ public class Menu extends IconMenu {
 				if (section.contains("connector")) {
 					// Advanced server section. Use online, offline, dynamic sections.
 					final String serverName = section.getString("connector");
+					final Server server = Server.getServer(serverName);
 
-					if (Main.isOnline(serverName)) {
-						final Map<UUID, Map<String, String>> playerPlaceholders = Main.PLACEHOLDERS.get(serverName);
-
+					if (server != null && server.isOnline()) {
 						builder = null;
 						actions = null;
 
 						if (section.contains("dynamic")) {
 							for (final String dynamicKey : section.getConfigurationSection("dynamic").getKeys(false)) {
-								final String placeholder = dynamicKey.split(":")[0];
+								final String placeholderKeyInConfig = dynamicKey.split(":")[0];
 								final String placeholderValueInConfig = dynamicKey.split(":")[1];
+
+								final Placeholder placeholder = server.getPlaceholder(placeholderKeyInConfig);
+								if (placeholder == null) {
+									Main.getPlugin().getLogger().warning("Dynamic feature contains rule with placeholder " + placeholder + " which has not been received from the server.");
+									continue;
+								}
 
 								final String placeholderValueFromConnector;
 
-								if (playerPlaceholders.get(null).containsKey(placeholder))
-								{ // Global placeholder
-									placeholderValueFromConnector = playerPlaceholders.get(null).get(placeholder);
-								} else if (playerPlaceholders.containsKey(this.player.getUniqueId()) && playerPlaceholders.get(this.player.getUniqueId()).containsKey(placeholder))
-								{ // Player specific placeholder
-									placeholderValueFromConnector = playerPlaceholders.get(this.player.getUniqueId()).get(placeholder);
+								if (placeholder instanceof GlobalPlaceholder) {
+									final GlobalPlaceholder global = (GlobalPlaceholder) placeholder;
+									placeholderValueFromConnector = global.getValue();
 								} else {
-									Main.getPlugin().getLogger().warning("Dynamic feature contains rule with placeholder " + placeholder + " which has not been received from the server.");
-									continue;
+									final PlayerPlaceholder playerPlaceholder = (PlayerPlaceholder) placeholder;
+									placeholderValueFromConnector = playerPlaceholder.getValue(this.player);
 								}
 
 								final ConfigurationSection dynamicSection = section.getConfigurationSection("dynamic." + dynamicKey);
@@ -136,11 +142,16 @@ public class Menu extends IconMenu {
 						final Map<String, String> placeholders = new HashMap<>();
 
 						// Add global placeholders to list (uuid = null)
-						playerPlaceholders.get(null).forEach((k, v) -> placeholders.put("{" + k + "}", v));
-
-						// If there are any player specific placeholders for this player, parse them too
-						if (playerPlaceholders.containsKey(this.player.getUniqueId())) {
-							playerPlaceholders.get(this.player.getUniqueId()).forEach((k, v) -> placeholders.put("{" + k + "}", v));
+						for (final Placeholder placeholder : server.getPlaceholders()) {
+							final String value;
+							if (placeholder instanceof GlobalPlaceholder) {
+								final GlobalPlaceholder global = (GlobalPlaceholder) placeholder;
+								value = global.getValue();
+							} else {
+								final PlayerPlaceholder playerPlaceholder = (PlayerPlaceholder) placeholder;
+								value = playerPlaceholder.getValue(this.player);
+							}
+							placeholders.put("{" + placeholder.getKey() + "}", value);
 						}
 
 						// Now parse the collected placeholders and papi placeholders in name and lore
@@ -148,7 +159,7 @@ public class Menu extends IconMenu {
 
 						// Set item amount if dynamic item count is enabled
 						if (section.getBoolean("dynamic-item-count", false)) {
-							final int amount = Integer.parseInt(playerPlaceholders.get(null).get("online"));
+							final int amount = server.getOnlinePlayers();
 							builder.amount(amount < 1 || amount > 64 ? 1 : amount);
 						}
 					} else {
