@@ -20,8 +20,8 @@ import org.bukkit.configuration.file.FileConfiguration;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
 import xyz.derkades.serverselectorx.placeholders.GlobalPlaceholder;
+import xyz.derkades.serverselectorx.placeholders.Placeholder;
 import xyz.derkades.serverselectorx.placeholders.PlayerPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
