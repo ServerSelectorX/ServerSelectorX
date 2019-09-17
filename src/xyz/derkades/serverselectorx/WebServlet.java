@@ -49,7 +49,7 @@ public class WebServlet extends HttpServlet {
 
 		final FileConfiguration config = Main.getConfigurationManager().getSSXConfig();
 
-		if (config.getString("password", "a").equals(password)) {
+		if (!config.getString("password", "a").equals(password)) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			logger.warning("Received request with invalid password from " + request.getRemoteAddr());
 			logger.warning("Provided password: " + password);
