@@ -34,6 +34,8 @@ public class WebServlet extends HttpServlet {
 	protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 
+		System.out.println("test receive");
+
 		final String password = request.getParameter("password");
 		final String serverName = request.getParameter("server");
 		final String placeholdersJsonString = request.getParameter("data");
@@ -49,14 +51,22 @@ public class WebServlet extends HttpServlet {
 
 		final FileConfiguration config = Main.getConfigurationManager().getSSXConfig();
 
-		if (!config.getString("password", "a").equals(password)) {
+		final String correctPassword = config.getString("password", "a");
+
+		if (!correctPassword.equals(password)) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			logger.warning("Received request with invalid password from " + request.getRemoteAddr());
-			logger.warning("Provided password: " + password);
+			logger.warning(String.format("Provided=['%s'] Correct=['%s'] ", password, correctPassword));
 			return;
 		}
 
 		response.setStatus(HttpServletResponse.SC_OK);
+
+		if (serverName.equals("")) {
+			logger.warning("Ignoring request with empty server name from " + request.getRemoteAddr());
+			logger.warning("Set the server name in the connector configuration file.");
+			return;
+		}
 
 		if (Main.getConfigurationManager().getGlobalConfig().getBoolean("log-pinger", true)) {
 			logger.info("Recieved message from " + serverName + ": " + placeholdersJsonString);
@@ -103,10 +113,12 @@ public class WebServlet extends HttpServlet {
 
 		final FileConfiguration config = Main.getConfigurationManager().getSSXConfig();
 
-		if (config.getString("password", "a").equals(password)) {
+		final String correctPassword = config.getString("password", "a");
+
+		if (!correctPassword.equals(password)) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			logger.warning("Received request with invalid password from " + request.getRemoteAddr());
-			logger.warning("Provided password: " + password);
+			logger.warning(String.format("Provided=['%s'] Correct=['%s'] ", password, correctPassword));
 			return;
 		}
 
