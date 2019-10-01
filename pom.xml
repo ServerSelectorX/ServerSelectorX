@@ -14,25 +14,15 @@
 		
 		<resources>
 			<resource>
-				<directory>src/</directory>
+				<directory>resources/</directory>
 				<includes>
-					<include>**/*.yml</include>
+					<include>*</include>
 				</includes>
 				<filtering>true</filtering>
 			</resource>
 		</resources>
 
 		<plugins>
-
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-eclipse-plugin</artifactId>
-				<version>2.10</version>
-				<configuration>
-					<downloadSources>true</downloadSources>
-					<downloadJavadocs>false</downloadJavadocs>
-				</configuration>
-			</plugin>
 
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
@@ -55,23 +45,9 @@
 					<relocations>
 						<relocation>
 							<pattern>org.bstats.bukkit</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.ext.bstats</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>org.inventivetalent.update.spiget</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.ext.spiget_update</shadedPattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.bstats</shadedPattern>
 						</relocation>
 					</relocations>
-
-					<artifactSet>
-						<excludes>
-							<exclude>org.apache.commons:commons-lang3</exclude>
-							<exclude>org.bukkit:bukkit</exclude>
-							<exclude>org.yaml:snakeyaml</exclude>
-							<exclude>com.google.guava:guava</exclude>
-							<exclude>commons-lang:commons-lang</exclude>
-						</excludes>
-					  </artifactSet>
 				</configuration>
 			</plugin>
 
@@ -82,8 +58,9 @@
 
 		<dependency>
 			<groupId>org.spigotmc</groupId>
-			<artifactId>spigot</artifactId>
-			<version>1.8.8-R0.1-SNAPSHOT</version>
+			<artifactId>spigot-api</artifactId>
+			 <!-- using a higher version than the actual target version is required for the OffHandMoveCancel listener-->
+			<version>1.12.2-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
 
@@ -106,12 +83,6 @@
 			<scope>provided</scope>
 		</dependency>
 
-		<dependency>
-			<groupId>org.inventivetalent.spiget-update</groupId>
-			<artifactId>bukkit</artifactId>
-			<version>1.4.1</version>
-		</dependency>
-
 	</dependencies>
 
 	<repositories>
@@ -122,11 +93,6 @@
 		</repository>
 
 		<repository>
-			<id>derkades</id>
-			<url>https://derkades.xyz/maven</url>
-		</repository>
-
-		<repository>
 			<id>bstats-repo</id>
 			<url>http://repo.bstats.org/content/repositories/releases/</url>
 		</repository>
@@ -134,11 +100,6 @@
 		<repository>
 			<id>placeholderapi</id>
 			<url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
-		</repository>
-
-		<repository>
-			<id>inventive-repo</id>
-			<url>https://repo.inventivetalent.org/content/groups/public/</url>
 		</repository>
 
 	</repositories>
