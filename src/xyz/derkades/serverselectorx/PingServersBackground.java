@@ -23,33 +23,26 @@ public class PingServersBackground extends Thread {
 						} catch (final InterruptedException e) {
 							e.printStackTrace();
 						}
-						
+
 						final ConfigurationSection section = config.getConfigurationSection("menu." + key);
-						
-						final String action = section.getString("action");
-						
-						if (!action.startsWith("srv:")) {
-							continue;
-						}
-						
+
 						if (!section.getBoolean("ping-server", false)) {
 							continue;
 						}
-						
-						final String serverName = action.substring(4);
-	
+
 						final String ip = section.getString("ip");
 						final int port = section.getInt("port");
-	
+						final String serverId = ip + port;
+
 						Server server;
-						
+
 						if (Main.getPlugin().getConfig().getBoolean("external-query", true)) {
 							server = new ServerPinger.ExternalServer(ip, port);
 						} else {
 							final int timeout = section.getInt("ping-timeout", 100);
 							server = new ServerPinger.InternalServer(ip, port, timeout);
 						}
-						
+
 						final Map<String, Object> serverInfo = new HashMap<>();
 						serverInfo.put("isOnline", server.isOnline());
 						if (server.isOnline()) {
@@ -58,8 +51,8 @@ public class PingServersBackground extends Thread {
 							serverInfo.put("motd", server.getMotd());
 							serverInfo.put("ping", server.getResponseTimeMillis());
 						}
-						
-						Main.SERVER_PLACEHOLDERS.put(serverName, serverInfo);
+
+						Main.SERVER_PLACEHOLDERS.put(serverId, serverInfo);
 					}
 				}
 			} catch (final Exception e) {
@@ -73,5 +66,5 @@ public class PingServersBackground extends Thread {
 			}
 		}
 	}
-	
+
 }

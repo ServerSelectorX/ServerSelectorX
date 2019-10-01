@@ -30,7 +30,7 @@ public class ConfigurationManager {
 		return Main.getPlugin().getConfig();
 	}
 	
-	public void reloadAll() {
+	public void reload() {
 		
 		//Create default configuration files
 		

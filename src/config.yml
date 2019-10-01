@@ -1,39 +1,21 @@
-# Please note that if you want to use color codes or special characters 
-# you have to enclose your string into quotation marks, for example:
-#
-# name: '&aFancy &cColors!'
-
-
-
-server-teleport-message-enabled: true
+# Show message when player teleports to a server.
+# Remove/comment this option to disable the message
 server-teleport-message: '&7Conecting you to &7&l{x}&r&7.'
 
-# Clear chat before sending player to server? 
-# Note: the chat will be cleared before sending server teleport message, so the server teleport message will still be visible.
-chat-clear: false
+# Cancel item dropping for players that do not have the permission ssx.drop
+cancel-item-drop: false
 
-
-# -------------------- Sounds -------------------- #
-
-# Latest sound names (currently for 1.12.1): https://hub.spigotmc.org/javadocs/bukkit/org/bukkit/Sound.html
-# 1.7.10 sound names: https://jd.bukkit.org/org/bukkit/Sound.html or http://docs.codelanx.com/Bukkit/1.7.10/org/bukkit/Sound.html
-# 1.8 sound names: http://docs.codelanx.com/Bukkit/1.8/org/bukkit/Sound.html
-
-# Please use sound names corresponding to your server version.
-# If you don't want any sound to play put 'NONE' without ''
-
-selector-open-sound: NONE
+# Cancel item move for players that do not have the permission ssx.move (this includes swapping items between hands for 1.9+)
+cancel-item-move: false
 
 
 # -------------------- Server Pinging -------------------- #
 
-# A premium version is available which among other things has a way better system of
-# getting server information to replace server pinging.
-# https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium
-
 # Use an external query API for pinging servers. This is recommended.
-# The internal query has a lot of problems, one of which is that it doesn't work when there are color codes anywhere in the motd. Version support is terrible as well.
-# If you have your spigot servers behind a firewall (which you should) allow the domain api.minetools.eu to ping your server.
+# The internal query has a lot of problems, one of which is that it doesn't
+# work when there are color codes anywhere in the motd. Version support is 
+# terrible as well. If you have your spigot servers behind a firewall (which 
+# you should) allow the domain api.minetools.eu to ping your server.
 external-query: true
 
 # How long a server needs to be pinged for before giving up. (in milliseconds)
@@ -44,18 +26,10 @@ ping-timeout: 500
 # Cooldown for opening the selector menu in milliseconds.
 # This can be used as workaround for a bug where players are able to take out items if they
 # click the selector again while it is still waiting for servers to be pinged from the first time they clicked.
-# You will probably only need this if you have background-pinging set to off.
 # This value is in milliseconds. Any value less than 1000 = cooldown off.
-selector-open-cooldown: 0
+selector-open-cooldown: 2000
 
-# Specify empty string for no message -> cooldown-message: ''
+# Remove/comment this option to disable the message. Disabling the message
+# does not disable the cooldown.
 cooldown-message: '&cYou cannot use this yet, please wait {x} seconds.'
 
-
-# -------------------- Items -------------------- #
-
-# Cancel item dropping for players that do not have the permission ssx.drop
-cancel-item-drop: false
-
-# Cancel item move for players that do not have the permission ssx.move (this includes swapping items between hands for 1.9+)
-cancel-item-move: false

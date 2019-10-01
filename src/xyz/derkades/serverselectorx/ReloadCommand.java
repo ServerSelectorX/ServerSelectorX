@@ -22,7 +22,7 @@ public class ReloadCommand implements CommandExecutor {
 				return true;
 			}
 			
-			Main.getConfigurationManager().reloadAll();
+			Main.getConfigurationManager().reload();
 			sender.sendMessage(AQUA + "The configuration file has been reloaded.");
 			return true;
 		}
