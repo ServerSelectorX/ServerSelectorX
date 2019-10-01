@@ -8,7 +8,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -20,13 +19,13 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
-import xyz.derkades.serverselectorx.placeholders.Placeholders;
-import xyz.derkades.serverselectorx.placeholders.PlaceholdersDisabled;
-import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
+import xyz.derkades.serverselectorx.placeholders.Papi;
+import xyz.derkades.serverselectorx.placeholders.PapiDisabled;
+import xyz.derkades.serverselectorx.placeholders.PapiEnabled;
 
 public class Main extends JavaPlugin {
 
-	public static Placeholders PLACEHOLDER_API;
+	public static Papi PLACEHOLDER_API;
 
 	public static Map<String, Map<String, Object>> SERVER_PLACEHOLDERS = new HashMap<>();
 
@@ -50,6 +49,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new OnJoinListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemMoveDropCancelListener(), this);
 
+		// Only register OffHandMoveCancel listener if server is a version with offhand
 		final List<String> offHandVersions = Arrays.asList("1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15");
 		for (final String version : offHandVersions) {
 			if (Bukkit.getBukkitVersion().contains(version)) {
@@ -73,11 +73,9 @@ public class Main extends JavaPlugin {
 
 		//Check if PlaceHolderAPI is installed
 		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")){
-			Main.PLACEHOLDER_API = new PlaceholdersEnabled();
-			this.getLogger().log(Level.INFO, "PlaceholderAPI is found. Placeholders will work!");
+			Main.PLACEHOLDER_API = new PapiEnabled();
 		} else {
-			Main.PLACEHOLDER_API = new PlaceholdersDisabled();
-			this.getLogger().log(Level.INFO, "PlaceholderAPI is not installed. The plugin will still work.");
+			Main.PLACEHOLDER_API = new PapiDisabled();
 		}
 
 		this.getLogger().info("Thank you for using ServerSelectorX. If you enjoy using this plugin, please consider buying the premium version. It has more features and placeholders update instantly. https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium");

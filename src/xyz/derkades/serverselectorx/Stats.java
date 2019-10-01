@@ -7,14 +7,14 @@ import org.bstats.bukkit.Metrics;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
-import xyz.derkades.serverselectorx.placeholders.PlaceholdersEnabled;
+import xyz.derkades.serverselectorx.placeholders.PapiEnabled;
 
 public class Stats {
 
 	public static void initialize() {
 		final Metrics metrics = new Metrics(Main.getPlugin());
 
-		metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", () -> Main.PLACEHOLDER_API instanceof PlaceholdersEnabled ? "yes" : "no"));
+		metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", () -> Main.PLACEHOLDER_API instanceof PapiEnabled ? "yes" : "no"));
 
 		metrics.addCustomChart(new Metrics.SimplePie("number_of_selectors", () -> {
 			return Main.getConfigurationManager().getAll().size() + "";

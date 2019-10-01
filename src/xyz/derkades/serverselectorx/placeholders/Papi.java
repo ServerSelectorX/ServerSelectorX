@@ -4,7 +4,7 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
-public interface Placeholders {
+public interface Papi {
 	
 	public String parsePlaceholders(Player player, String string);
 	

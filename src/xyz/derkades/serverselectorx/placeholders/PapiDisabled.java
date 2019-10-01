@@ -4,19 +4,18 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
-import me.clip.placeholderapi.PlaceholderAPI;
+import xyz.derkades.derkutils.bukkit.Colors;
 
-public class PlaceholdersEnabled implements Placeholders {
+public class PapiDisabled implements Papi {
 
 	@Override
 	public String parsePlaceholders(Player player, String string) {
-		String parsed = PlaceholderAPI.setPlaceholders(player, string);
-		return parsed;
+		return Colors.parseColors(string);
 	}
 
 	@Override
 	public List<String> parsePlaceholders(Player player, List<String> text) {
-		return PlaceholderAPI.setPlaceholders(player, text);
+		return Colors.parseColors(text);
 	}
 
 }
