@@ -8,6 +8,11 @@ port: 9782
 # Warning: enabling this will delete whitelisted configuration files
 # and ALL menu files, regardless of the whitelist setting
 config-sync:
+
+  # IMPORTANT
+  # Do not set this to true without understanding what this feature does. I've noticed 
+  # that many people have enabled this when they don't even have multiple servers. If
+  # configured incorrectly, the plugin may delete your configuration files.
   enabled: false
   
   # Server to retrieve configuration files from
