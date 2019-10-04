@@ -123,7 +123,7 @@ public class Main extends JavaPlugin {
 
 	public static void openSelector(final Player player, final FileConfiguration config) {
 		final long cooldown = Cooldown.getCooldown(config.getName() + player.getName());
-		if (cooldown > 900) {
+		if (cooldown > 0) {
 			String cooldownMessage = Main.getPlugin().getConfig().getString("cooldown-message");
 			if (cooldownMessage != null) {
 				cooldownMessage = cooldownMessage.replace("{x}", String.valueOf((cooldown / 1000) + 1));
