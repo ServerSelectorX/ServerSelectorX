@@ -68,10 +68,6 @@ public class WebServlet extends HttpServlet {
 			return;
 		}
 
-		if (Main.getConfigurationManager().getGlobalConfig().getBoolean("log-pinger", true)) {
-			logger.info("Recieved message from " + serverName + ": " + placeholdersJsonString);
-		}
-
 		final Gson gson = new Gson();
 
 		final Map<String, Object> receivedPlaceholders = gson.fromJson(placeholdersJsonString, Map.class);
