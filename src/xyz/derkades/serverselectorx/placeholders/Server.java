@@ -32,9 +32,11 @@ public class Server {
 	}
 
 	public Placeholder getPlaceholder(final String name) {
-		for (final Placeholder placeholder : this.getPlaceholders()) {
-			if (placeholder.getKey().equals(name))
-				return placeholder;
+		if (this.getPlaceholders() != null) {
+			for (final Placeholder placeholder : this.getPlaceholders()) {
+				if (placeholder.getKey().equals(name))
+					return placeholder;
+			}
 		}
 
 		Main.getPlugin().getLogger().warning("Placeholder " + name + " was requested but not received from the server (" + this.getName() + ").");
