@@ -12,7 +12,6 @@ public abstract class Action {
 			new CloseAction(),
 			new ConsoleCommandAction(),
 			new MessageAction(),
-			new NoneAction(),
 			new OpenMenuAction(),
 			new PlayerCommandAction(),
 			new ServerAction(),

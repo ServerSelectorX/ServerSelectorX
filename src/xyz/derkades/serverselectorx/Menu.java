@@ -243,6 +243,10 @@ public class Menu extends IconMenu {
 		@SuppressWarnings("unchecked")
 		final List<String> actions = nbt.getObject("SSXActions", List.class);
 
+		if (actions.isEmpty()) {
+			return false;
+		}
+
 		return Action.runActions(player, actions);
 	}
 
