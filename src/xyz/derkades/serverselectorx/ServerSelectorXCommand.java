@@ -35,7 +35,8 @@ public class ServerSelectorXCommand implements CommandExecutor {
 			for (final Server server : Server.getServers()) {
 				final List<String> placeholderKeys = server.getPlaceholders().stream()
 						.map(Placeholder::getKey).collect(Collectors.toList());
-				sender.sendMessage(server.getName() + ": " + String.join(", ", placeholderKeys));
+				final String status = server.isOnline() ? "ONLINE" : "OFFLINE";
+				sender.sendMessage(server.getName() + " (" + status + "): " + String.join(", ", placeholderKeys));
 			}
 		}
 
