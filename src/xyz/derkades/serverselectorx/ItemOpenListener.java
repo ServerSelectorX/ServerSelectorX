@@ -45,7 +45,7 @@ public class ItemOpenListener implements Listener {
 		final String itemName = nbt.getString("SSXItem");
 
 		if (!Main.getConfigurationManager().getItems().containsKey(itemName)) {
-			player.sendMessage("An item with the name '" + itemName + "' does not exist.");
+			player.sendMessage("An configuration file does not exist for an item with the name '" + itemName + "'.");
 			return;
 		}
 
