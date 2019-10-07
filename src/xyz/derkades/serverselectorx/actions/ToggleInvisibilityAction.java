@@ -18,7 +18,7 @@ public class ToggleInvisibilityAction extends Action {
 		if (Effects.INVIS.contains(uuid)) {
 			Effects.INVIS.remove(uuid);
 		} else {
-			Effects.INVIS.add(uuid);		
+			Effects.INVIS.add(uuid);
 		}
 		return false;
 	}

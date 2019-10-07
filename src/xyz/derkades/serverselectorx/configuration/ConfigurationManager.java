@@ -21,9 +21,9 @@ public class ConfigurationManager {
 	private final Map<String, FileConfiguration> items = new ConcurrentHashMap<>();
 	private FileConfiguration global;
 	private FileConfiguration ssx;
-	
+
 	public ConfigurationManager() {
-		this.reload();
+		reload();
 	}
 
 	public Map<String, FileConfiguration> getMenus() {
@@ -33,7 +33,7 @@ public class ConfigurationManager {
 	public Map<String, FileConfiguration> getItems(){
 		return this.items;
 	}
-	
+
 	public FileConfiguration getGlobalConfig() {
 		return this.global;
 	}
@@ -44,20 +44,20 @@ public class ConfigurationManager {
 
 	public void reload() {
 		final File dataFolder = Main.getPlugin().getDataFolder();
-		
-		this.global = this.saveDefaultAndLoad("global", new File(dataFolder, "global.yml"));
-		this.ssx = this.saveDefaultAndLoad("ssx", new File(dataFolder, "ssx.yml"));
-		
+
+		this.global = saveDefaultAndLoad("global", new File(dataFolder, "global.yml"));
+		this.ssx = saveDefaultAndLoad("ssx", new File(dataFolder, "ssx.yml"));
+
 		final File menuFolder = new File(dataFolder, "menu");
 		menuFolder.mkdirs();
 
 		this.menus.clear();
 		if (menuFolder.listFiles().length == 0) {
 			// Save default.yml file if menu folder is empty
-			this.menus.put("default", this.saveDefaultAndLoad("default-selector", new File(menuFolder, "default.yml")));
+			this.menus.put("default", saveDefaultAndLoad("default-selector", new File(menuFolder, "default.yml")));
 		} else {
 			// Load files from directory
-			for (final File file : this.getFilesFromFolder(menuFolder)) {
+			for (final File file : getFilesFromFolder(menuFolder)) {
 				this.menus.put(file.getName().replace(".yml", "").replace(".yaml", ""), YamlConfiguration.loadConfiguration(file));
 			}
 		}
@@ -68,10 +68,10 @@ public class ConfigurationManager {
 		this.items.clear();
 		if (itemFolder.listFiles().length == 0) {
 			// Save default.yml file if menu folder is empty
-			this.items.put("default", this.saveDefaultAndLoad("default-item", new File(itemFolder, "serverselector.yml")));
+			this.items.put("default", saveDefaultAndLoad("default-item", new File(itemFolder, "serverselector.yml")));
 		} else {
 			// Load files from directory
-			for (final File file : this.getFilesFromFolder(itemFolder)) {
+			for (final File file : getFilesFromFolder(itemFolder)) {
 				this.items.put(file.getName().replace(".yml", "").replace(".yaml", ""), YamlConfiguration.loadConfiguration(file));
 			}
 		}

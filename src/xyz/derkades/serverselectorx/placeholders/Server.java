@@ -32,19 +32,19 @@ public class Server {
 	}
 
 	public Placeholder getPlaceholder(final String name) {
-		if (this.getPlaceholders() != null) {
-			for (final Placeholder placeholder : this.getPlaceholders()) {
+		if (getPlaceholders() != null) {
+			for (final Placeholder placeholder : getPlaceholders()) {
 				if (placeholder.getKey().equals(name))
 					return placeholder;
 			}
 		}
 
-		Main.getPlugin().getLogger().warning("Placeholder " + name + " was requested but not received from the server (" + this.getName() + ").");
+		Main.getPlugin().getLogger().warning("Placeholder " + name + " was requested but not received from the server (" + getName() + ").");
 		return new GlobalPlaceholder(name, "0");
 	}
 
 	public int getOnlinePlayers() {
-		return Integer.parseInt(((GlobalPlaceholder) this.getPlaceholder("online")).getValue());
+		return Integer.parseInt(((GlobalPlaceholder) getPlaceholder("online")).getValue());
 	}
 
 	public void updatePlaceholders(final List<Placeholder> placeholders) {

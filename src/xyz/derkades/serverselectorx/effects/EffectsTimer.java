@@ -14,7 +14,7 @@ public class EffectsTimer extends BukkitRunnable {
 	private static final int TIMER_INTERVAL = 10;
 
 	public EffectsTimer() {
-		this.runTaskTimer(Main.getPlugin(), 0, TIMER_INTERVAL);
+		runTaskTimer(Main.getPlugin(), 0, TIMER_INTERVAL);
 	}
 
 	@Override

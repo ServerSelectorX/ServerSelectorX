@@ -38,9 +38,8 @@ public class ItemOpenListener implements Listener {
 
 		final NBTItem nbt = new NBTItem(item);
 
-		if (!nbt.hasKey("SSXItem")) {
+		if (!nbt.hasKey("SSXItem"))
 			return;
-		}
 
 		final String itemName = nbt.getString("SSXItem");
 

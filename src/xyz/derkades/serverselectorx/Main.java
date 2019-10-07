@@ -61,14 +61,14 @@ public class Main extends JavaPlugin {
 
 		configurationManager = new ConfigurationManager();
 
-		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		this.getCommand("serverselectorx").setExecutor(new ServerSelectorXCommand());
+		getCommand("serverselectorx").setExecutor(new ServerSelectorXCommand());
 
 		//Register custom selector commands
-		this.registerCommands();
+		registerCommands();
 
-		if (this.getDescription().getVersion().contains("beta")) {
+		if (getDescription().getVersion().contains("beta")) {
 			BETA = true;
 		}
 

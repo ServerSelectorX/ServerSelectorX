@@ -15,18 +15,18 @@ public class Stats extends Metrics {
 
 		final Map<String, FileConfiguration> menuConfigs = Main.getConfigurationManager().getMenus();
 
-		this.addCustomChart(new Metrics.SimplePie("placeholderapi", () -> {
+		addCustomChart(new Metrics.SimplePie("placeholderapi", () -> {
 			if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
 				return "yes";
 			else
 				return "no";
 		}));
 
-		this.addCustomChart(new Metrics.SimplePie("number_of_selectors", () -> {
+		addCustomChart(new Metrics.SimplePie("number_of_selectors", () -> {
 			return menuConfigs.entrySet().size() + "";
 		}));
 
-		this.addCustomChart(new Metrics.AdvancedPie("selector_item", () -> {
+		addCustomChart(new Metrics.AdvancedPie("selector_item", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final Map.Entry<String, FileConfiguration> menuConfigEntry : menuConfigs.entrySet()) {
@@ -55,7 +55,7 @@ public class Stats extends Metrics {
 			return map;
 		}));
 
-		this.addCustomChart(new Metrics.AdvancedPie("type", () -> {
+		addCustomChart(new Metrics.AdvancedPie("type", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final Map.Entry<String, FileConfiguration> menuConfigEntry : menuConfigs.entrySet()) {
@@ -74,15 +74,15 @@ public class Stats extends Metrics {
 			return map;
 		}));
 
-		this.addCustomChart(new Metrics.SimplePie("ping_api", () -> "Premium"));
+		addCustomChart(new Metrics.SimplePie("ping_api", () -> "Premium"));
 
-		this.addCustomChart(new Metrics.SimplePie("updater", () -> "Unavailable"));
+		addCustomChart(new Metrics.SimplePie("updater", () -> "Unavailable"));
 
-		this.addCustomChart(new Metrics.SimplePie("player_count_mode", () -> {
+		addCustomChart(new Metrics.SimplePie("player_count_mode", () -> {
 			return Main.getPlugin().getConfig().getString("item-count-mode", "absolute").toLowerCase();
 		}));
 
-		this.addCustomChart(new Metrics.AdvancedPie("server_pinging", () -> {
+		addCustomChart(new Metrics.AdvancedPie("server_pinging", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final Map.Entry<String, FileConfiguration> menuConfigEntry : menuConfigs.entrySet()) {
@@ -103,21 +103,21 @@ public class Stats extends Metrics {
 			return map;
 		}));
 
-		this.addCustomChart(new Metrics.SimplePie("item_drop", () -> {
+		addCustomChart(new Metrics.SimplePie("item_drop", () -> {
 			if (Main.getPlugin().getConfig().getBoolean("cancel-item-drop", false))
 				return "Cancel";
 			else
 				return "Allow";
 		}));
 
-		this.addCustomChart(new Metrics.SimplePie("item_move", () -> {
+		addCustomChart(new Metrics.SimplePie("item_move", () -> {
 			if (Main.getPlugin().getConfig().getBoolean("cancel-item-move", false))
 				return "Cancel";
 			else
 				return "Allow";
 		}));
 
-		this.addCustomChart(new Metrics.AdvancedPie("menu_item_slot", () -> {
+		addCustomChart(new Metrics.AdvancedPie("menu_item_slot", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final FileConfiguration config : Main.getConfigurationManager().getItems().values()) {
@@ -148,7 +148,7 @@ public class Stats extends Metrics {
 			return map;
 		}));
 
-		this.addCustomChart(new Metrics.AdvancedPie("rows", () -> {
+		addCustomChart(new Metrics.AdvancedPie("rows", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final Map.Entry<String, FileConfiguration> menuConfigEntry : menuConfigs.entrySet()) {

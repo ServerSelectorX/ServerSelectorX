@@ -33,20 +33,21 @@ public class Menu extends IconMenu {
 
 	public Menu(final Player player, final FileConfiguration config, final String configName) {
 		super(Main.getPlugin(), Colors.parseColors(config.getString("title", UUID.randomUUID().toString())), 9, player);
+
 		this.config = config;
 
 		this.slots = config.getInt("rows", 6) * 9;
-		this.setSize(this.slots);
+		setSize(this.slots);
 	}
 
 	@Override
 	public void open() {
-		this.addItems();
+		addItems();
 
 		super.open();
 
 		this.refreshTimer = Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), () -> {
-			this.addItems();
+			addItems();
 			super.refreshItems();
 		}, 1*20, 1*20);
 	}
@@ -100,9 +101,9 @@ public class Menu extends IconMenu {
 								final String mode = dynamicSection.getString("mode", "equals");
 
 								if (
-										(mode.equals("equals") && placeholderValueInConfig.equals(placeholderValueInConfig)) ||
-										(mode.equals("less") && Double.parseDouble(placeholderValueInConfig) < Double.parseDouble(placeholderValueFromConnector)) ||
-										(mode.equals("less") && Double.parseDouble(placeholderValueInConfig) > Double.parseDouble(placeholderValueFromConnector))
+										mode.equals("equals") && placeholderValueInConfig.equals(placeholderValueInConfig) ||
+										mode.equals("less") && Double.parseDouble(placeholderValueInConfig) < Double.parseDouble(placeholderValueFromConnector) ||
+										mode.equals("less") && Double.parseDouble(placeholderValueInConfig) > Double.parseDouble(placeholderValueFromConnector)
 										) {
 
 									if (dynamicSection.getString("material").equalsIgnoreCase("NONE")) {
@@ -243,9 +244,8 @@ public class Menu extends IconMenu {
 		@SuppressWarnings("unchecked")
 		final List<String> actions = nbt.getObject("SSXActions", List.class);
 
-		if (actions.isEmpty()) {
+		if (actions.isEmpty())
 			return false;
-		}
 
 		return Action.runActions(player, actions);
 	}

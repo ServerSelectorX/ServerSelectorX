@@ -39,23 +39,23 @@ public class GiveItemsListener implements Listener {
 			event.getPlayer().getInventory().clear();
 		}
 
-		this.giveItems(player, "join");
+		giveItems(player, "join");
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onWorldChange(final PlayerChangedWorldEvent event) {
-		this.giveItems(event.getPlayer(), "world-switch");
+		giveItems(event.getPlayer(), "world-switch");
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onRespawn(final PlayerRespawnEvent event) {
-		this.giveItems(event.getPlayer(), "death");
+		giveItems(event.getPlayer(), "death");
 	}
 
 	@EventHandler
 	public void onClear(final PlayerCommandPreprocessEvent event) {
 		if (event.getMessage().equalsIgnoreCase("/clear")) {
-			Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> this.giveItems(event.getPlayer(), "clear"), 1);
+			Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> giveItems(event.getPlayer(), "clear"), 1);
 		}
 	}
 

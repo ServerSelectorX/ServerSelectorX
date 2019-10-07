@@ -21,9 +21,11 @@ public class OpenMenuAction extends Action {
 			player.sendMessage("A menu with the name '" + value + "' does not exist");
 			return true;
 		}
-		
+
+		System.out.println("a");
+
 		final FileConfiguration config = menus.get(value);
-		
+
 		new Menu(player, config, value).open();
 		return false;
 	}
