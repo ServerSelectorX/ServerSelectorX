@@ -242,7 +242,9 @@ public class Main extends JavaPlugin {
 
 		int online = 0;
 		for (final Server server : Server.getServers()) {
-			online += server.getOnlinePlayers();
+			if (server.isOnline()) {
+				online += server.getOnlinePlayers();
+			}
 		}
 
 		return online;
