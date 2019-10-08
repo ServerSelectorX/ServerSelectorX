@@ -1,8 +1,5 @@
 package xyz.derkades.serverselectorx;
 
-import static org.bukkit.ChatColor.DARK_AQUA;
-import static org.bukkit.ChatColor.DARK_GRAY;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -40,8 +37,6 @@ import xyz.derkades.serverselectorx.placeholders.Server;
 public class Main extends JavaPlugin {
 
 	public static boolean BETA = false;
-
-	public static final String PREFIX = DARK_GRAY + "[" + DARK_AQUA + "ServerSelectorX" + DARK_GRAY + "]";
 
 	private static ConfigurationManager configurationManager;
 
