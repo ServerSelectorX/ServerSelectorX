@@ -15,7 +15,7 @@ import org.bukkit.inventory.ItemStack;
 
 import de.tr7zw.nbtapi.NBTItem;
 
-public class ItemOpenListener implements Listener {
+public class ItemClickListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onInteract(final PlayerInteractEvent event){

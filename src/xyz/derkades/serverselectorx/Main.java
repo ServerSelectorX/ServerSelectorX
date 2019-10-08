@@ -87,7 +87,7 @@ public class Main extends JavaPlugin {
 		new Stats();
 		new ItemMoveDropCancelListener();
 
-		Bukkit.getPluginManager().registerEvents(new ItemOpenListener(), this);
+		Bukkit.getPluginManager().registerEvents(new ItemClickListener(), this);
 		Bukkit.getPluginManager().registerEvents(new GiveItemsListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BetaMessageJoinListener(), this);
 
