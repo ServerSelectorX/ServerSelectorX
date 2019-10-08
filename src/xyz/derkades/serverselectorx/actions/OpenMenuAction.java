@@ -22,8 +22,6 @@ public class OpenMenuAction extends Action {
 			return true;
 		}
 
-		System.out.println("a");
-
 		final FileConfiguration config = menus.get(value);
 
 		new Menu(player, config, value).open();
