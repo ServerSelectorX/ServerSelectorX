@@ -36,8 +36,6 @@ import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class Main extends JavaPlugin {
 
-	public static boolean BETA = false;
-
 	private static ConfigurationManager configurationManager;
 
 	private static Main plugin;
@@ -62,10 +60,6 @@ public class Main extends JavaPlugin {
 
 		//Register custom selector commands
 		registerCommands();
-
-		if (getDescription().getVersion().contains("beta")) {
-			BETA = true;
-		}
 
 		// Disable annoying jetty warnings
 		if (!configurationManager.getSSXConfig().getBoolean("jetty-debug", false)){
