@@ -90,7 +90,7 @@ public class Main extends JavaPlugin {
 			if (configurationManager.getGlobalConfig().getBoolean("freeze-bukkit-thread", true)) {
 				// Freeze bukkit thread to give the server time to stop
 				try {
-					Thread.sleep(3000);
+					Thread.sleep(2000);
 				} catch (final InterruptedException e) {
 					e.printStackTrace();
 				}
