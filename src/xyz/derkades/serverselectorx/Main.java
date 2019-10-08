@@ -234,12 +234,6 @@ public class Main extends JavaPlugin {
 	}
 
 	public static int getGlobalPlayerCount() {
-		/*int online = 0;
-		for (final Map<UUID, Map<String, String>> serverPlaceholders : Main.PLACEHOLDERS.values()) {
-			online += Integer.parseInt(serverPlaceholders.get(null).get("online"));
-		}
-		return online;*/
-
 		int online = 0;
 		for (final Server server : Server.getServers()) {
 			if (server.isOnline()) {
