@@ -36,6 +36,9 @@ import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class Main extends JavaPlugin {
 
+	private static final int FREEZE_STEP_MS = 50;
+	private static final int FREEZE_MAX_MS = 5000;
+
 	private static ConfigurationManager configurationManager;
 
 	private static Main plugin;
@@ -87,10 +90,23 @@ public class Main extends JavaPlugin {
 	public void onDisable() {
 		if (server != null) {
 			server.stop();
-			if (configurationManager.getGlobalConfig().getBoolean("freeze-bukkit-thread", true)) {
-				// Freeze bukkit thread to give the server time to stop
+
+			// Freeze bukkit thread to give the server time to stop
+			int safetyLimit = 0;
+			final int max = FREEZE_MAX_MS / FREEZE_STEP_MS;
+			while(!server.isStopped()) {
+
+				// Don't freeze for longer than 5 seconds
+				if (safetyLimit > max) {
+					getLogger().severe("Webserver was still running after waiting for 5 seconds.");
+					getLogger().severe("Giving up, crashing the server is worse than breaking the menu.");
+					break;
+				}
+
+				safetyLimit++;
+
 				try {
-					Thread.sleep(2000);
+					Thread.sleep(FREEZE_STEP_MS);
 				} catch (final InterruptedException e) {
 					e.printStackTrace();
 				}

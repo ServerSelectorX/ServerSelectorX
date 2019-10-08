@@ -89,8 +89,3 @@ ignore-cancelled: false
 # 1.8+ supports effects without particles.
 # You have to set this to true for 1.7.10 servers.
 show-particles: false
-
-# Freeze bukkit thread when the plugin is unloaded (/stop or /reload) for 2 seconds
-# Disabling this will make reloads 2 seconds faster but all your servers may appear as offline
-# after doing /reload
-freeze-bukkit-thread: true

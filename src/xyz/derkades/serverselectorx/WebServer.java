@@ -53,4 +53,8 @@ public class WebServer {
 		}
 	}
 
+	boolean isStopped() {
+		return this.server.isStopped();
+	}
+
 }
