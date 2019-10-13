@@ -49,6 +49,7 @@ public class Server {
 
 	public void updatePlaceholders(final List<Placeholder> placeholders) {
 		this.lastInfoTime = System.currentTimeMillis();
+		this.placeholders = placeholders;
 	}
 
 	public static List<Server> getServers() {
