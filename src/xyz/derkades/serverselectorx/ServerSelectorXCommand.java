@@ -32,12 +32,36 @@ public class ServerSelectorXCommand implements CommandExecutor {
 		}
 
 		if (args.length == 1 && args[0].equalsIgnoreCase("placeholders")) {
-			for (final Server server : Server.getServers()) {
-				final List<String> placeholderKeys = server.getPlaceholders().stream()
-						.map(Placeholder::getKey).collect(Collectors.toList());
-				final String status = server.isOnline() ? "ONLINE" : "OFFLINE";
-				sender.sendMessage(server.getName() + " (" + status + "): " + String.join(", ", placeholderKeys));
+			if (Server.getServers().isEmpty()){
+				sender.sendMessage("No data has been received from servers.");
+				return true;
 			}
+
+			for (final Server server : Server.getServers()) {
+				if (server.isOnline()) {
+					final List<String> placeholderKeys = server.getPlaceholders().stream()
+							.map(Placeholder::getKey).collect(Collectors.toList());
+					sender.sendMessage(server.getName() + ": " + ChatColor.GREEN + "ONLINE" + ChatColor.WHITE +
+							":" + ChatColor.GRAY + String.join(", ", placeholderKeys));
+				} else {
+					sender.sendMessage(server.getName() + ": " + ChatColor.RED + "OFFLINE");
+				}
+			}
+			return true;
+		}
+
+		if (args.length == 1 && args[0].equalsIgnoreCase("items")) {
+			Main.getConfigurationManager().getItems().forEach((name, config) -> {
+				sender.sendMessage(name);
+			});
+			return true;
+		}
+
+		if (args.length == 1 && args[0].equalsIgnoreCase("menus")) {
+			Main.getConfigurationManager().getMenus().forEach((name, config) -> {
+				sender.sendMessage(name);
+			});
+			return true;
 		}
 
 		return false;
