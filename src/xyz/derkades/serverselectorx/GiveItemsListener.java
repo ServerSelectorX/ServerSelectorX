@@ -95,7 +95,7 @@ public class GiveItemsListener implements Listener {
 			nbt.setString("SSXItem", name);
 			item = nbt.getItem();
 
-			final int slot = config.getInt("on-join.inv-slot", 0);
+			final int slot = config.getInt("give.inv-slot", 0);
 			final PlayerInventory inv = player.getInventory();
 			if (slot < 0) {
 				if (!inv.containsAtLeast(item, item.getAmount())) {
