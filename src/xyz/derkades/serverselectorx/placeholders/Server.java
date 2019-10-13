@@ -21,10 +21,13 @@ public class Server {
 		return this.name;
 	}
 
+	public long getTimeSinceLastMessage() {
+		return System.currentTimeMillis() - this.lastInfoTime;
+	}
+
 	public boolean isOnline() {
-		final long timeSinceLastPing = System.currentTimeMillis() - this.lastInfoTime;
 		final long timeout = Main.getConfigurationManager().getGlobalConfig().getLong("server-offline-timeout", 6000);
-		return timeSinceLastPing < timeout;
+		return getTimeSinceLastMessage() < timeout;
 	}
 
 	public List<Placeholder> getPlaceholders() {

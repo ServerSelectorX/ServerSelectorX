@@ -38,13 +38,15 @@ public class ServerSelectorXCommand implements CommandExecutor {
 			}
 
 			for (final Server server : Server.getServers()) {
+				final long ms = server.getTimeSinceLastMessage();
+				final String lastInfo = ms < 999999 ? server.getTimeSinceLastMessage() + "ms" : "∞ ms";
 				if (server.isOnline()) {
 					final List<String> placeholderKeys = server.getPlaceholders().stream()
 							.map(Placeholder::getKey).collect(Collectors.toList());
-					sender.sendMessage(server.getName() + ": " + ChatColor.GREEN + "ONLINE" + ChatColor.WHITE +
+					sender.sendMessage(server.getName() + ": " + ChatColor.GREEN + "ONLINE (" + lastInfo + ") " + ChatColor.WHITE +
 							":" + ChatColor.GRAY + String.join(", ", placeholderKeys));
 				} else {
-					sender.sendMessage(server.getName() + ": " + ChatColor.RED + "OFFLINE");
+					sender.sendMessage(server.getName() + ": " + ChatColor.RED + "OFFLINE (" + lastInfo + ")");
 				}
 			}
 			return true;
