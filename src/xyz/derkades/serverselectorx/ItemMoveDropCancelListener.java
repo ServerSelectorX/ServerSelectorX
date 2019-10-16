@@ -8,7 +8,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
-import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
 public class ItemMoveDropCancelListener implements Listener {
 
@@ -37,13 +36,6 @@ public class ItemMoveDropCancelListener implements Listener {
 				@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 				public void onItemMove(final InventoryDragEvent event){
 					if (!event.getWhoClicked().hasPermission("ssx.move")) {
-						event.setCancelled(true);
-					}
-				}
-
-				@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-				public void onItemMove(final PlayerSwapHandItemsEvent event) {
-					if (!event.getPlayer().hasPermission("ssx.move")) {
 						event.setCancelled(true);
 					}
 				}
