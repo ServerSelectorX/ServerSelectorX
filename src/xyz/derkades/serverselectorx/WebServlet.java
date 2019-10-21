@@ -34,8 +34,6 @@ public class WebServlet extends HttpServlet {
 	protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws ServletException, IOException {
 		response.setContentType("text/html");
 
-		System.out.println("test receive");
-
 		final String password = request.getParameter("password");
 		final String serverName = request.getParameter("server");
 		final String placeholdersJsonString = request.getParameter("data");
@@ -72,25 +70,22 @@ public class WebServlet extends HttpServlet {
 
 		final Map<String, Object> receivedPlaceholders = gson.fromJson(placeholdersJsonString, Map.class);
 
-		final List<Placeholder> placeholders = new ArrayList<>();
-
-		final Map<String, String> globalMap = (Map<String, String>) receivedPlaceholders.remove("global");
-		globalMap.forEach((k, v) -> placeholders.add(new GlobalPlaceholder(k, v)));
+		final List<Placeholder> parsedPlaceholders = new ArrayList<>();
 
 		receivedPlaceholders.forEach((k, v) -> {
 			if (v instanceof String) {
-				placeholders.add(new GlobalPlaceholder(k, (String) v));
+				parsedPlaceholders.add(new GlobalPlaceholder(k, (String) v));
 			} else if (v instanceof Map) {
 				final Map<UUID, String> values = new HashMap<>();
 				((Map<String, String>) v).forEach((k2, v2) -> values.put(UUID.fromString(k2), v2));
-				placeholders.add(new PlayerPlaceholder(k, values));
+				parsedPlaceholders.add(new PlayerPlaceholder(k, values));
 			} else {
 				Main.getPlugin().getLogger().warning("Invalid placeholder value format (" + k + "; " + v + ")");
 			}
 		});
 
 		final Server server = Server.getServer(serverName);
-		server.updatePlaceholders(placeholders);
+		server.updatePlaceholders(parsedPlaceholders);
 	}
 
 	@Override
