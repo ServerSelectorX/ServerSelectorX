@@ -29,12 +29,6 @@ config-sync:
   disable-items: true
   
   
-# It is recommended that you configure your firewall so that only your Minecraft servers have access to 
-# the ServerSelectorX API (running on the port configured above). In that case, you do not need to
-# worry about setting a password.
-# If for some reason the ServerSelectorX port has to be open, you should set a password.
-# Please note that, since the API uses standard HTTP, there is no encryption so someone who
-# is able to perform a MITM attack will be able to get the password.
-#
-# TL;DR: The SSX port should not be accessible externally, and you don't need to worry about this password
+# You probably don't need to touch this.
+# Read more here: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium-security
 password: "a"
