@@ -37,17 +37,17 @@ public class Menu extends IconMenu {
 		this.config = config;
 
 		this.slots = config.getInt("rows", 6) * 9;
-		setSize(this.slots);
+		this.setSize(this.slots);
 	}
 
 	@Override
 	public void open() {
-		addItems();
+		this.addItems();
 
 		super.open();
 
 		this.refreshTimer = Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), () -> {
-			addItems();
+			this.addItems();
 			super.refreshItems();
 		}, 1*20, 1*20);
 	}
@@ -103,7 +103,7 @@ public class Menu extends IconMenu {
 								if (
 										mode.equals("equals") && placeholderValueInConfig.equals(placeholderValueInConfig) ||
 										mode.equals("less") && Double.parseDouble(placeholderValueInConfig) < Double.parseDouble(placeholderValueFromConnector) ||
-										mode.equals("less") && Double.parseDouble(placeholderValueInConfig) > Double.parseDouble(placeholderValueFromConnector)
+										mode.equals("more") && Double.parseDouble(placeholderValueInConfig) > Double.parseDouble(placeholderValueFromConnector)
 										) {
 
 									if (dynamicSection.getString("material").equalsIgnoreCase("NONE")) {
@@ -244,8 +244,9 @@ public class Menu extends IconMenu {
 		@SuppressWarnings("unchecked")
 		final List<String> actions = nbt.getObject("SSXActions", List.class);
 
-		if (actions.isEmpty())
+		if (actions.isEmpty()) {
 			return false;
+		}
 
 		return Action.runActions(player, actions);
 	}
