@@ -190,6 +190,7 @@ public class Menu extends IconMenu {
 						this.player.sendMessage("Error for item " + key);
 						this.player.sendMessage("Missing material option. Remember, this is not an advanced section, so don't use online/offline/dynamic sections in the config.");
 						this.player.sendMessage("If you want to use these sections, add a connector option.");
+						this.player.sendMessage("Read more here: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Menu-items-v2");
 					}
 
 					if (section.getString("material").equalsIgnoreCase("NONE")) {
@@ -215,7 +216,7 @@ public class Menu extends IconMenu {
 
 			final int slot = Integer.valueOf(key);
 
-			if (slot > this.slots - 1) {
+			if (slot >= this.slots) {
 				this.player.sendMessage("You put an item in slot " + slot + ", which is higher than the maximum number of slots in your menu.");
 				this.player.sendMessage("Increase the number of rows in the config");
 				return;

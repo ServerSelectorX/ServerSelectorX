@@ -15,18 +15,19 @@ public class Stats extends Metrics {
 
 		final Map<String, FileConfiguration> menuConfigs = Main.getConfigurationManager().getMenus();
 
-		addCustomChart(new Metrics.SimplePie("placeholderapi", () -> {
-			if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null)
+		this.addCustomChart(new Metrics.SimplePie("placeholderapi", () -> {
+			if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
 				return "yes";
-			else
+			} else {
 				return "no";
+			}
 		}));
 
-		addCustomChart(new Metrics.SimplePie("number_of_selectors", () -> {
+		this.addCustomChart(new Metrics.SimplePie("number_of_selectors", () -> {
 			return menuConfigs.entrySet().size() + "";
 		}));
 
-		addCustomChart(new Metrics.AdvancedPie("selector_item", () -> {
+		this.addCustomChart(new Metrics.AdvancedPie("selector_item", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final Map.Entry<String, FileConfiguration> menuConfigEntry : menuConfigs.entrySet()) {
@@ -55,7 +56,7 @@ public class Stats extends Metrics {
 			return map;
 		}));
 
-		addCustomChart(new Metrics.AdvancedPie("type", () -> {
+		this.addCustomChart(new Metrics.AdvancedPie("type", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final Map.Entry<String, FileConfiguration> menuConfigEntry : menuConfigs.entrySet()) {
@@ -74,50 +75,31 @@ public class Stats extends Metrics {
 			return map;
 		}));
 
-		addCustomChart(new Metrics.SimplePie("ping_api", () -> "Premium"));
+		this.addCustomChart(new Metrics.SimplePie("ping_api", () -> "Premium"));
 
-		addCustomChart(new Metrics.SimplePie("updater", () -> "Unavailable"));
+		this.addCustomChart(new Metrics.SimplePie("updater", () -> "Unavailable"));
 
-		addCustomChart(new Metrics.SimplePie("player_count_mode", () -> {
+		this.addCustomChart(new Metrics.SimplePie("player_count_mode", () -> {
 			return Main.getPlugin().getConfig().getString("item-count-mode", "absolute").toLowerCase();
 		}));
 
-		addCustomChart(new Metrics.AdvancedPie("server_pinging", () -> {
-			final Map<String, Integer> map = new HashMap<>();
-
-			for (final Map.Entry<String, FileConfiguration> menuConfigEntry : menuConfigs.entrySet()) {
-				final FileConfiguration config = menuConfigEntry.getValue();
-
-				for (final String slot : config.getConfigurationSection("menu").getKeys(false)) {
-					final String action = config.getString("menu." + slot + ".action").split(":")[0].toLowerCase();
-					if (action.equalsIgnoreCase("srv")) {
-						if (map.containsKey("Premium")) {
-							map.put("Premium", map.get("Enabled") + 1);
-						} else {
-							map.put("Premium", 1);
-						}
-					}
-				}
+		this.addCustomChart(new Metrics.SimplePie("item_drop", () -> {
+			if (Main.getPlugin().getConfig().getBoolean("cancel-item-drop", false)) {
+				return "Cancel";
+			} else {
+				return "Allow";
 			}
-
-			return map;
 		}));
 
-		addCustomChart(new Metrics.SimplePie("item_drop", () -> {
-			if (Main.getPlugin().getConfig().getBoolean("cancel-item-drop", false))
+		this.addCustomChart(new Metrics.SimplePie("item_move", () -> {
+			if (Main.getPlugin().getConfig().getBoolean("cancel-item-move", false)) {
 				return "Cancel";
-			else
+			} else {
 				return "Allow";
+			}
 		}));
 
-		addCustomChart(new Metrics.SimplePie("item_move", () -> {
-			if (Main.getPlugin().getConfig().getBoolean("cancel-item-move", false))
-				return "Cancel";
-			else
-				return "Allow";
-		}));
-
-		addCustomChart(new Metrics.AdvancedPie("menu_item_slot", () -> {
+		this.addCustomChart(new Metrics.AdvancedPie("menu_item_slot", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final FileConfiguration config : Main.getConfigurationManager().getItems().values()) {
@@ -148,7 +130,7 @@ public class Stats extends Metrics {
 			return map;
 		}));
 
-		addCustomChart(new Metrics.AdvancedPie("rows", () -> {
+		this.addCustomChart(new Metrics.AdvancedPie("rows", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final Map.Entry<String, FileConfiguration> menuConfigEntry : menuConfigs.entrySet()) {
