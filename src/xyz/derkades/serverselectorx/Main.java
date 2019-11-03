@@ -57,12 +57,12 @@ public class Main extends JavaPlugin {
 
 		configurationManager = new ConfigurationManager();
 
-		getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
+		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		getCommand("serverselectorx").setExecutor(new ServerSelectorXCommand());
+		this.getCommand("serverselectorx").setExecutor(new ServerSelectorXCommand());
 
 		//Register custom selector commands
-		registerCommands();
+		this.registerCommands();
 
 		// Disable annoying jetty warnings
 		if (!configurationManager.getSSXConfig().getBoolean("jetty-debug", false)){
@@ -98,8 +98,8 @@ public class Main extends JavaPlugin {
 
 				// Don't freeze for longer than 5 seconds
 				if (safetyLimit > max) {
-					getLogger().severe("Webserver was still running after waiting for 5 seconds.");
-					getLogger().severe("Giving up, crashing the server is worse than breaking the menu.");
+					this.getLogger().severe("Webserver was still running after waiting for 5 seconds.");
+					this.getLogger().severe("Giving up, crashing the server is worse than breaking the menu.");
 					break;
 				}
 
@@ -142,8 +142,9 @@ public class Main extends JavaPlugin {
 							if (sender instanceof Player){
 								final Player player = (Player) sender;
 								//Small cooldown to prevent weird bugs
-								if (Cooldown.getCooldown(player.getUniqueId() + "doubleopen") > 0)
+								if (Cooldown.getCooldown(player.getUniqueId() + "doubleopen") > 0) {
 									return true;
+								}
 
 								Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 1000); //Add cooldown for 1 second
 
@@ -206,8 +207,9 @@ public class Main extends JavaPlugin {
 	}
 
 	public static void teleportPlayerToServer(final Player player, final String server){
-		if (Cooldown.getCooldown("servertp" + player.getName() + server) > 0)
+		if (Cooldown.getCooldown("servertp" + player.getName() + server) > 0) {
 			return;
+		}
 
 		Cooldown.addCooldown("servertp" + player.getName() + server, 1000);
 
@@ -286,28 +288,25 @@ public class Main extends JavaPlugin {
     }
 
     public static ItemBuilder getItemBuilderFromMaterialString(final Player player, final String materialString) {
-		final ItemBuilder builder;
+		ItemBuilder builder;
 
 		if (materialString.startsWith("head:")) {
 			final String owner = materialString.split(":")[1];
 			if (owner.equals("auto")) {
 				builder = new ItemBuilder(player);
 			} else {
-				final OfflinePlayer ownerPlayer;
 				try {
-					ownerPlayer = Bukkit.getOfflinePlayer(UUID.fromString(owner));
+					final OfflinePlayer ownerPlayer = Bukkit.getOfflinePlayer(UUID.fromString(owner));
+					if (ownerPlayer == null) {
+						player.sendMessage("A player with the uuid " + ownerPlayer + " does not exist");
+						return new ItemBuilder(Material.COBBLESTONE);
+					}
+
+					builder = new ItemBuilder(ownerPlayer);
 				} catch (final IllegalArgumentException e) {
-					player.sendMessage("Invalid player uuid (for head item): " + owner);
-					e.printStackTrace();
-					return new ItemBuilder(Material.COBBLESTONE);
+					// Invalid UUID, parse as texture
+					builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(owner);
 				}
-
-				if (ownerPlayer == null) {
-					player.sendMessage("A player with the uuid " + ownerPlayer + " does not exist");
-					return new ItemBuilder(Material.COBBLESTONE);
-				}
-
-				builder = new ItemBuilder(ownerPlayer);
 			}
 		} else {
 			Material material;
