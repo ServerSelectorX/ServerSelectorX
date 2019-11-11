@@ -42,14 +42,12 @@ public class Menu extends IconMenu {
 
 	@Override
 	public void open() {
-		this.addItems();
-
 		super.open();
 
 		this.refreshTimer = Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), () -> {
 			this.addItems();
 			super.refreshItems();
-		}, 1*20, 1*20);
+		}, 0, 1*20);
 	}
 
 	private void addItems() {
