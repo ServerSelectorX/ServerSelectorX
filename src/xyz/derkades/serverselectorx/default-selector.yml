@@ -55,7 +55,7 @@ menu:
     offline:
       actions: 
        - 'message:&cSorry, you cannot connect to this server at the moment.'
-      material: WOODEN_SWORD
+      material: WOOD_SWORD
       hide-flags: true # hide attack damage info
       title: '&cKitPvP Server'
       lore:
@@ -119,5 +119,6 @@ menu:
        - '&7Only players with the VIP rank can join this server.'    
   
   -1: # -1 means all blank slots
-    material: GRAY_STAINED_GLASS_PANE
+    material: STAINED_GLASS_PANE
+    data: 8
     title: ' '
