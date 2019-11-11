@@ -45,8 +45,13 @@ public class Menu extends IconMenu {
 		super.open();
 
 		this.refreshTimer = Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), () -> {
+			final long start = System.currentTimeMillis();
 			this.addItems();
 			super.refreshItems();
+			if (Main.LAG_DEBUG) {
+				final long diff = System.currentTimeMillis() - start;
+				System.out.println("Reloaded menu for player " + this.player + " in " + diff + "ms. (one tick is 50ms)");
+			}
 		}, 0, 1*20);
 	}
 

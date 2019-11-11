@@ -39,6 +39,10 @@ public class Main extends JavaPlugin {
 	private static final int FREEZE_STEP_MS = 50;
 	private static final int FREEZE_MAX_MS = 5000;
 
+	// When set to true, lag-related debug information is printed to the console. This boolean
+	// is enabled using /ssx lagdebug
+	static boolean LAG_DEBUG = false;
+
 	private static ConfigurationManager configurationManager;
 
 	private static Main plugin;
