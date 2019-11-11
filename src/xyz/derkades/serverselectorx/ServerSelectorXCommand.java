@@ -31,7 +31,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 			return true;
 		}
 
-		if (args.length == 1 && args[0].equalsIgnoreCase("placeholders")) {
+		if (args.length == 1 && args[0].equalsIgnoreCase("status")) {
 			if (Server.getServers().isEmpty()){
 				sender.sendMessage("No data has been received from servers.");
 				return true;
