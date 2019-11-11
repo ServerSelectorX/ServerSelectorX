@@ -6,13 +6,11 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -302,18 +300,7 @@ public class Main extends JavaPlugin {
 			if (owner.equals("auto")) {
 				builder = new ItemBuilder(player);
 			} else {
-				try {
-					final OfflinePlayer ownerPlayer = Bukkit.getOfflinePlayer(UUID.fromString(owner));
-					if (ownerPlayer == null) {
-						player.sendMessage("A player with the uuid " + ownerPlayer + " does not exist");
-						return new ItemBuilder(Material.COBBLESTONE);
-					}
-
-					builder = new ItemBuilder(ownerPlayer);
-				} catch (final IllegalArgumentException e) {
-					// Invalid UUID, parse as texture
-					builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(owner);
-				}
+				builder = new ItemBuilder(owner);
 			}
 		} else {
 			Material material;
