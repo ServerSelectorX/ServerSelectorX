@@ -39,6 +39,10 @@ public class Main extends JavaPlugin {
 	private static final int FREEZE_STEP_MS = 50;
 	private static final int FREEZE_MAX_MS = 5000;
 
+	// When set to true, lag-related debug information is printed to the console. This boolean
+	// is enabled using /ssx lagdebug
+	static boolean LAG_DEBUG = false;
+
 	private static ConfigurationManager configurationManager;
 
 	private static Main plugin;
@@ -291,28 +295,25 @@ public class Main extends JavaPlugin {
     }
 
     public static ItemBuilder getItemBuilderFromMaterialString(final Player player, final String materialString) {
-		final ItemBuilder builder;
+		ItemBuilder builder;
 
 		if (materialString.startsWith("head:")) {
 			final String owner = materialString.split(":")[1];
 			if (owner.equals("auto")) {
 				builder = new ItemBuilder(player);
 			} else {
-				final OfflinePlayer ownerPlayer;
 				try {
-					ownerPlayer = Bukkit.getOfflinePlayer(UUID.fromString(owner));
+					final OfflinePlayer ownerPlayer = Bukkit.getOfflinePlayer(UUID.fromString(owner));
+					if (ownerPlayer == null) {
+						player.sendMessage("A player with the uuid " + ownerPlayer + " does not exist");
+						return new ItemBuilder(Material.COBBLESTONE);
+					}
+
+					builder = new ItemBuilder(ownerPlayer);
 				} catch (final IllegalArgumentException e) {
-					player.sendMessage("Invalid player uuid (for head item): " + owner);
-					e.printStackTrace();
-					return new ItemBuilder(Material.COBBLESTONE);
+					// Invalid UUID, parse as texture
+					builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(owner);
 				}
-
-				if (ownerPlayer == null) {
-					player.sendMessage("A player with the uuid " + ownerPlayer + " does not exist");
-					return new ItemBuilder(Material.COBBLESTONE);
-				}
-
-				builder = new ItemBuilder(ownerPlayer);
 			}
 		} else {
 			Material material;

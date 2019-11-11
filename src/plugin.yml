@@ -15,3 +15,7 @@ commands:
       Aliases: serverselectorx, ss, ssx, serversel, serverselector
       
       /ssx reload/rl - Reload configuration files
+      /ssx status - Show SSX-Connector status
+      /ssx items - List names of items
+      /ssx menus - List names of menus
+      /ssx lagdebug - Enable lag debug mode
