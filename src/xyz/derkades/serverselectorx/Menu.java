@@ -109,7 +109,12 @@ public class Menu extends IconMenu {
 										mode.equals("more") && Double.parseDouble(placeholderValueInConfig) > Double.parseDouble(placeholderValueFromConnector)
 										) {
 
-									if (dynamicSection.getString("material").equalsIgnoreCase("NONE")) {
+									if (!dynamicSection.contains("item")) {
+										this.player.sendMessage("Dynamic section '" + dynamicKey + "' is missing the item option");
+										return;
+									}
+
+									if (dynamicSection.getString("item").equalsIgnoreCase("NONE")) {
 										continue itemLoop;
 									}
 
