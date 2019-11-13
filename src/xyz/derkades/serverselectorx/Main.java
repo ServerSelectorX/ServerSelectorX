@@ -298,9 +298,15 @@ public class Main extends JavaPlugin {
 		if (materialString.startsWith("head:")) {
 			final String owner = materialString.split(":")[1];
 			if (owner.equals("auto")) {
-				builder = new ItemBuilder(player);
+				builder = new ItemBuilder(player.getName());
 			} else {
-				builder = new ItemBuilder(owner);
+				if (owner.length() > 16) {
+					// parse as texture
+					builder = new ItemBuilder("MHF_Question").skullTexture(owner);
+				} else {
+					// parse as player name
+					builder = new ItemBuilder(owner);
+				}
 			}
 		} else {
 			Material material;
