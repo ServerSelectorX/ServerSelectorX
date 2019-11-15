@@ -104,7 +104,7 @@ public class Menu extends IconMenu {
 								final String mode = dynamicSection.getString("mode", "equals");
 
 								if (
-										mode.equals("equals") && placeholderValueInConfig.equals(placeholderValueInConfig) ||
+										mode.equals("equals") && placeholderValueInConfig.equals(placeholderValueFromConnector) ||
 										mode.equals("less") && Double.parseDouble(placeholderValueInConfig) < Double.parseDouble(placeholderValueFromConnector) ||
 										mode.equals("more") && Double.parseDouble(placeholderValueInConfig) > Double.parseDouble(placeholderValueFromConnector)
 										) {
