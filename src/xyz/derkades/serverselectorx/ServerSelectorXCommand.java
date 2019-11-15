@@ -75,6 +75,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 		if (args.length == 1 && args[0].equalsIgnoreCase("lagdebug")) {
 			Main.LAG_DEBUG = true;
 			sender.sendMessage("Lag related debug console messages are now enabled until the next server restart/reload.");
+			return true;
 		}
 
 		return false;
