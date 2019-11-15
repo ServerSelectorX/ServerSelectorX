@@ -1,7 +1,5 @@
 package xyz.derkades.serverselectorx;
 
-import static org.bukkit.ChatColor.AQUA;
-
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -23,8 +21,16 @@ public class ServerSelectorXCommand implements CommandExecutor {
 		}
 
 		if (args.length == 1 && (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl"))){
-			Main.getConfigurationManager().reload();
-			sender.sendMessage(AQUA + "The configuration file has been reloaded.");
+			try {
+				Main.getConfigurationManager().reload();
+			} catch (final Exception e) {
+				sender.sendMessage(ChatColor.RED + "An error occured while trying to reload the configuration files, probably because of a YAML syntax error.");
+				sender.sendMessage("Error: " + e.getMessage());
+				sender.sendMessage("For a more detailed error message see the console.");
+				return true;
+			}
+
+			sender.sendMessage("The configuration file has been reloaded.");
 
 			Main.server.stop();
 			Main.server.start();
