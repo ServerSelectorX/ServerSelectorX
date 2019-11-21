@@ -42,7 +42,7 @@
 				<version>3.2.1</version>
 				<configuration>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
-					<minimizeJar>true</minimizeJar>
+					<!--<minimizeJar>true</minimizeJar>-->
 
 					<relocations>
 						<relocation>
