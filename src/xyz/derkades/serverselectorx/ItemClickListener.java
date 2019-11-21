@@ -13,33 +13,38 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
-import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 
 public class ItemClickListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onInteract(final PlayerInteractEvent event){
-		if (event.getAction() == Action.PHYSICAL)
+		if (event.getAction() == Action.PHYSICAL) {
 			return;
+		}
 
-		if (event.getHand() == EquipmentSlot.OFF_HAND)
+		if (event.getHand() == EquipmentSlot.OFF_HAND) {
 			return;
+		}
 
 		final FileConfiguration globalConfig = Main.getConfigurationManager().getGlobalConfig();
 
-		if (event.isCancelled() && globalConfig.getBoolean("ignore-cancelled", false))
+		if (event.isCancelled() && globalConfig.getBoolean("ignore-cancelled", false)) {
 			return;
+		}
 
 		final Player player = event.getPlayer();
 		final ItemStack item = player.getInventory().getItemInMainHand();
 
-		if (item == null || item.getType() == Material.AIR)
+		if (item == null || item.getType() == Material.AIR) {
 			return;
+		}
 
 		final NBTItem nbt = new NBTItem(item);
 
-		if (!nbt.hasKey("SSXItem"))
+		if (!nbt.hasKey("SSXItem")) {
 			return;
+		}
 
 		final String itemName = nbt.getString("SSXItem");
 

@@ -15,7 +15,7 @@ import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
-import de.tr7zw.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 
 public class GiveItemsListener implements Listener {
 
@@ -32,30 +32,31 @@ public class GiveItemsListener implements Listener {
 
 		final FileConfiguration ssx = Main.getConfigurationManager().getSSXConfig();
 
-		if (ssx.getBoolean("config-sync.enabled") && ssx.getBoolean("config-sync.disable-items"))
+		if (ssx.getBoolean("config-sync.enabled") && ssx.getBoolean("config-sync.disable-items")) {
 			return;
+		}
 
 		if (global.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
 			event.getPlayer().getInventory().clear();
 		}
 
-		giveItems(player, "join");
+		this.giveItems(player, "join");
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onWorldChange(final PlayerChangedWorldEvent event) {
-		giveItems(event.getPlayer(), "world-switch");
+		this.giveItems(event.getPlayer(), "world-switch");
 	}
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onRespawn(final PlayerRespawnEvent event) {
-		giveItems(event.getPlayer(), "death");
+		this.giveItems(event.getPlayer(), "death");
 	}
 
 	@EventHandler
 	public void onClear(final PlayerCommandPreprocessEvent event) {
 		if (event.getMessage().equalsIgnoreCase("/clear")) {
-			Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> giveItems(event.getPlayer(), "clear"), 1);
+			Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> this.giveItems(event.getPlayer(), "clear"), 1);
 		}
 	}
 
