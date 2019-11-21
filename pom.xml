@@ -50,10 +50,6 @@
 							<shadedPattern>xyz.derkades.serverselectorx.lib.bstats</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>org.inventivetalent.update.spiget</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.spiget_update</shadedPattern>
-						</relocation>
-						<relocation>
 							<pattern>org.eclipse.jetty</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.lib.jetty</shadedPattern>
 						</relocation>
