@@ -97,13 +97,24 @@ public class GiveItemsListener implements Listener {
 			item = nbt.getItem();
 
 			final int slot = config.getInt("give.inv-slot", 0);
+			final int delay = config.getInt("give.delay", 0);
 			final PlayerInventory inv = player.getInventory();
 			if (slot < 0) {
 				if (!inv.containsAtLeast(item, item.getAmount())) {
-					inv.addItem(item);
+					if (delay == 0) {
+						inv.addItem(item);
+					} else {
+						final ItemStack itemF = item;
+						Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> inv.addItem(itemF), delay);
+					}
 				}
 			} else {
-				inv.setItem(slot, item);
+				if (delay == 0) {
+					inv.setItem(slot, item);
+				} else {
+					final ItemStack itemF = item;
+					Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> inv.setItem(slot, itemF), delay);
+				}
 			}
 		}
 	}
