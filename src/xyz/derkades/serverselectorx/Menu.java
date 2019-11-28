@@ -27,17 +27,13 @@ import xyz.derkades.serverselectorx.placeholders.Server;
 public class Menu extends IconMenu {
 
 	private final FileConfiguration config;
-	private final int slots;
 
 	private final BukkitTask refreshTimer;
 
 	public Menu(final Player player, final FileConfiguration config, final String configName) {
-		super(Main.getPlugin(), Colors.parseColors(config.getString("title", UUID.randomUUID().toString())), 9, player);
+		super(Main.getPlugin(), Colors.parseColors(config.getString("title", UUID.randomUUID().toString())), config.getInt("rows", 6), player);
 
 		this.config = config;
-
-		this.slots = config.getInt("rows", 6) * 9;
-		this.setSize(this.slots);
 
 		this.refreshTimer = Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), () -> {
 			final long start = System.currentTimeMillis();
@@ -225,7 +221,7 @@ public class Menu extends IconMenu {
 
 			final int slot = Integer.valueOf(key);
 
-			if (slot >= this.slots) {
+			if (slot >= this.getInventory().getSize()) {
 				this.player.sendMessage("You put an item in slot " + slot + ", which is higher than the maximum number of slots in your menu.");
 				this.player.sendMessage("Increase the number of rows in the config");
 				return;
@@ -233,7 +229,7 @@ public class Menu extends IconMenu {
 
 			if (slot < 0) {
 				// Slot is set to -1 (or other negative value), fill all blank slots
-				for (int i = 0; i < this.slots; i++) {
+				for (int i = 0; i < this.getInventory().getSize(); i++) {
 					if (!this.hasItem(i)) {
 						this.addItem(i, item);
 					}
