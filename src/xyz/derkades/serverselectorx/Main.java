@@ -207,7 +207,7 @@ public class Main extends JavaPlugin {
 
 		// Open menu
 
-		new Menu(player, config, configName).open();
+		new Menu(player, config, configName);
 	}
 
 	public static void teleportPlayerToServer(final Player player, final String server){
