@@ -29,7 +29,7 @@ public class Menu extends IconMenu {
 	private final FileConfiguration config;
 	private final int slots;
 
-	private BukkitTask refreshTimer;
+	private final BukkitTask refreshTimer;
 
 	public Menu(final Player player, final FileConfiguration config, final String configName) {
 		super(Main.getPlugin(), Colors.parseColors(config.getString("title", UUID.randomUUID().toString())), 9, player);
@@ -38,24 +38,25 @@ public class Menu extends IconMenu {
 
 		this.slots = config.getInt("rows", 6) * 9;
 		this.setSize(this.slots);
-	}
-
-	@Override
-	public void open() {
-		super.open();
 
 		this.refreshTimer = Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), () -> {
 			final long start = System.currentTimeMillis();
 			this.addItems();
-			super.refreshItems();
 			if (Main.LAG_DEBUG) {
 				final long diff = System.currentTimeMillis() - start;
-				System.out.println("Reloaded menu for player " + this.player + " in " + diff + "ms. (one tick is 50ms)");
+				System.out.println("(Re)loaded menu for player " + this.player + " in " + diff + "ms. (one tick is 50ms)");
 			}
 		}, 0, 1*20);
 	}
 
 	private void addItems() {
+		if (this.config == null) {
+			this.player.sendMessage("The configuration file failed to load, probably due to a syntax error.");
+			this.player.sendMessage("Take a look at the console for any YAML errors, or paste your config in http://www.yamllint.com/");
+			this.player.sendMessage("Check for identation and balanced quotes. If you want to use quotation marks in strings, they must be escaped properly by putting two quotation marks (for example \"\" or '').");
+			return;
+		}
+
 		itemLoop:
 		for (final String key : this.config.getConfigurationSection("menu").getKeys(false)) {
 			final ConfigurationSection section = this.config.getConfigurationSection("menu." + key);
@@ -233,13 +234,13 @@ public class Menu extends IconMenu {
 			if (slot < 0) {
 				// Slot is set to -1 (or other negative value), fill all blank slots
 				for (int i = 0; i < this.slots; i++) {
-					if (!this.items.containsKey(i)) {
-						this.items.put(i, item);
+					if (!this.hasItem(i)) {
+						this.addItem(i, item);
 					}
 				}
 			} else {
 				// Slot is set to a positive value, put item in slot.
-				this.items.put(slot, item);
+				this.addItem(slot, item);
 			}
 		}
 	}
