@@ -32,13 +32,13 @@ menu:
 
   # Server item
   3:
-  
+
     # Server pinging help: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Free-%7C-Server-Pinging
     # With server pinging disabled, the placeholders don't work and the plugin will always use the offline section.
     ping-server: false
     ip: play.example.com
     port: 1234
-    
+
     # Action to run when the item is clicked
     action: 'srv:kitpvp'
 
@@ -65,7 +65,7 @@ menu:
       name: 'This is you!'
       lore:
        - This item does nothing
-  
+
   # No action item
   -1: # -1 means everything else
     action: 'none'

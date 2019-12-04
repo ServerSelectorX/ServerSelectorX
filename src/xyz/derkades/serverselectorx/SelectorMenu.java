@@ -23,13 +23,11 @@ import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 public class SelectorMenu extends IconMenu {
 
 	private final FileConfiguration config;
-	private final int slots;
 
 	public SelectorMenu(final Player player, final FileConfiguration config) {
-		super(Main.getPlugin(), Colors.parseColors(config.getString("title", "no title")), config.getInt("rows", 6) * 9, player);
+		super(Main.getPlugin(), Colors.parseColors(config.getString("title")), config.getInt("rows"), player);
 
 		this.config = config;
-		this.slots = config.getInt("rows", 6) * 9;
 
 		for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
 			final ConfigurationSection section = config.getConfigurationSection("menu." + key);
@@ -127,7 +125,7 @@ public class SelectorMenu extends IconMenu {
 
 			final int slot = Integer.valueOf(key);
 			if (slot < 0) {
-				for (int i = 0; i < this.slots; i++) {
+				for (int i = 0; i < this.getInventory().getSize(); i++) {
 					if (!this.hasItem(i)) {
 						this.addItem(i, item);
 					}
@@ -166,11 +164,7 @@ public class SelectorMenu extends IconMenu {
 			return true;
 		} else if (action.startsWith("cmd:")){ //Execute command
 			final String command = action.substring(4);
-
-			//Send command 2 ticks later to let the GUI close first (for commands that open a GUI)
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), () -> {
-				Bukkit.dispatchCommand(player, Main.PLACEHOLDER_API.parsePlaceholders(player, command));
-			}, 2);
+			Bukkit.dispatchCommand(player, Main.PLACEHOLDER_API.parsePlaceholders(player, command));
 			return true;
 		} else if (action.startsWith("sel:")){ //Open selector
 			final String configName = action.substring(4);
@@ -202,8 +196,7 @@ public class SelectorMenu extends IconMenu {
 			return true;
 		} else if (action.equals("close")) {
 			return true; //Return true = close
-		}
-		else {
+		} else {
 			return false; //Return false = stay open
 		}
 
