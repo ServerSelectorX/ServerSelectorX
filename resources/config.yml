@@ -8,6 +8,15 @@ cancel-item-drop: false
 # Cancel item move for players that do not have the permission ssx.move (this includes swapping items between hands for 1.9+)
 cancel-item-move: false
 
+# Cooldown for opening the selector menu in milliseconds.
+# This can be used as workaround for a bug where players are able to take out items if they
+# click the selector again while it is still waiting for servers to be pinged from the first time they clicked.
+# This value is in milliseconds. Any value less than 1000 = cooldown off.
+selector-open-cooldown: 2000
+
+# Remove/comment this option to disable the message. Disabling the message
+# does not disable the cooldown.
+cooldown-message: '&cYou cannot use this yet, please wait {x} seconds.'
 
 # -------------------- Server Pinging -------------------- #
 
@@ -23,13 +32,4 @@ external-query: true
 # This setting has effect on the internal query only.
 ping-timeout: 500
 
-# Cooldown for opening the selector menu in milliseconds.
-# This can be used as workaround for a bug where players are able to take out items if they
-# click the selector again while it is still waiting for servers to be pinged from the first time they clicked.
-# This value is in milliseconds. Any value less than 1000 = cooldown off.
-selector-open-cooldown: 2000
-
-# Remove/comment this option to disable the message. Disabling the message
-# does not disable the cooldown.
-cooldown-message: '&cYou cannot use this yet, please wait {x} seconds.'
 
