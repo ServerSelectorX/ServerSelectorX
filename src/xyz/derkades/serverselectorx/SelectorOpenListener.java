@@ -32,7 +32,7 @@ public class SelectorOpenListener implements Listener {
 				material = Material.STONE;
 			}
 
-			if (player.getInventory().getItemInMainHand().getType() != material){
+			if (player.getItemInHand().getType() != material){
 				continue;
 			}
 
