@@ -162,11 +162,7 @@ public class SelectorMenu extends IconMenu {
 			return true;
 		} else if (action.startsWith("cmd:")){ //Execute command
 			final String command = action.substring(4);
-
-			//Send command 2 ticks later to let the GUI close first (for commands that open a GUI)
-			Bukkit.getScheduler().scheduleSyncDelayedTask(Main.getPlugin(), () -> {
-				Bukkit.dispatchCommand(player, Main.PLACEHOLDER_API.parsePlaceholders(player, command));
-			}, 2);
+			Bukkit.dispatchCommand(player, Main.PLACEHOLDER_API.parsePlaceholders(player, command));
 			return true;
 		} else if (action.startsWith("sel:")){ //Open selector
 			final String configName = action.substring(4);
@@ -198,8 +194,7 @@ public class SelectorMenu extends IconMenu {
 			return true;
 		} else if (action.equals("close")) {
 			return true; //Return true = close
-		}
-		else {
+		} else {
 			return false; //Return false = stay open
 		}
 
