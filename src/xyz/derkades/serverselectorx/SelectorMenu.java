@@ -92,6 +92,11 @@ public class SelectorMenu extends IconMenu {
 
 			final ItemBuilder builder;
 
+			if (materialString == null) {
+				player.sendMessage("Missing item option for item " + key);
+				return;
+			}
+
 			if (materialString.startsWith("head:")) {
 				final String owner = materialString.split(":")[1];
 				if (owner.equals("auto")) {
