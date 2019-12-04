@@ -2,6 +2,7 @@ package xyz.derkades.serverselectorx;
 
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -101,9 +102,14 @@ public class SelectorMenu extends IconMenu {
 			if (materialString.startsWith("head:")) {
 				final String owner = materialString.split(":")[1];
 				if (owner.equals("auto")) {
-					builder = new ItemBuilder(player.getName());
+					builder = new ItemBuilder(player);
 				} else {
-					builder = new ItemBuilder(owner);
+					try {
+						builder = new ItemBuilder(Bukkit.getOfflinePlayer(UUID.fromString(owner)));
+					} catch (final IllegalArgumentException e) {
+						player.sendMessage("Invalid head uuid " + owner);
+						return;
+					}
 				}
 			} else {
 				Material material = Material.valueOf(materialString);
