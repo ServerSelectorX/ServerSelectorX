@@ -98,7 +98,7 @@ public class ConfigurationManager {
 
 	private FileConfiguration saveDefaultAndLoad(final String name, final File destination) {
 		if (!destination.exists()) {
-			final URL inputUrl = this.getClass().getResource("/xyz/derkades/serverselectorx/" + name + ".yml");
+			final URL inputUrl = this.getClass().getResource("/" + name + ".yml");
 			try {
 				FileUtils.copyURLToFile(inputUrl, destination);
 			} catch (final IOException e) {
