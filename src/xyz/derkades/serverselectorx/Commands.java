@@ -12,6 +12,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import xyz.derkades.derkutils.Cooldown;
+import xyz.derkades.serverselectorx.actions.Action;
 
 public class Commands {
 
@@ -28,6 +29,7 @@ public class Commands {
 				final String description = config.getString("description", "Opens menu");
 				final String usage = config.getString("usage", "/<command>");
 				final List<String> aliases = config.getStringList("aliases");
+				final List<String> actions = config.getStringList("actions");
 
 				commandMap.register("ssx-custom", new Command(commandName, description, usage, aliases) {
 
@@ -42,7 +44,7 @@ public class Commands {
 
 							Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 1000); //Add cooldown for 1 second
 
-							Main.openSelector(player, commandName);
+							Action.runActions(player, actions);
 						}
 						return true;
 					}
