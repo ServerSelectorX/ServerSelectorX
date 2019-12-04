@@ -33,21 +33,23 @@ menu:
 
   # Server item
   3:
+  
+    # Server pinging help: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Free-%7C-Server-Pinging
+    # With server pinging disabled, the placeholders don't work and the plugin will always use the offline section.
     ping-server: false
     ip: play.example.com
     port: 1234
     
+    # Action to run when the item is clicked
     action: 'srv:kitpvp'
 
-    # Online is used when ping-server is turned off, or ping-server is turned on and the server is online.
     online:
       item: DIAMOND_SWORD
       name: '&aKitPvP Server'
       lore:
        - 'There are {online} out of {max} players online.'
        - 'Message of the day: {motd}'
-      
-    # Offline is used when ping-server is turned on and the server is offline.
+
     offline:
       item: WOODEN_SWORD
       name: '&cKitPvP Server'
@@ -59,7 +61,7 @@ menu:
   # Message item
   5:
     action: 'msg:Hello'
-    online:
+    offline:
       item: 'head:auto' # You can use head:auto to get the head of the player opening the menu, or head:SomethingElse to get the head of a specific player.
       name: 'This is you!'
       lore:

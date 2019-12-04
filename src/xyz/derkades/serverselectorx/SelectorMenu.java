@@ -38,14 +38,13 @@ public class SelectorMenu extends IconMenu {
 			String materialString;
 			String name;
 			List<String> lore;
-			int amount = section.getInt("item-count", 1);
+			int amount = 1;
 
 			if (!section.getBoolean("ping-server")) {
-				// Server pinging is turned off, get item info from 'online' section
-				materialString = section.getString("online.item");
-				name = section.getString("online.name", "");
-				lore = section.getStringList("online.lore");
-				amount = section.getInt("online.item-count", 1);
+				// Server pinging is turned off, get item info from 'offline' section
+				materialString = section.getString("offline.item");
+				name = section.getString("offline.name", " ");
+				lore = section.getStringList("offline.lore");
 			} else {
 				final String ip = config.getString("ip");
 				final int port = config.getInt("port");
@@ -75,6 +74,10 @@ public class SelectorMenu extends IconMenu {
 						amount = online;
 					}
 
+					if (amount > 64 || amount < 1) {
+						amount = 1;
+					}
+
 					// Replace placeholders in lore
 					lore = ListUtils.replaceInStringList(lore,
 							new Object[] { "{online}", "{max}", "{motd}", "{ping}", "{player}" },
@@ -84,12 +87,8 @@ public class SelectorMenu extends IconMenu {
 					final ConfigurationSection offlineSection = section.getConfigurationSection("offline");
 
 					materialString = offlineSection.getString("item");
-					name = offlineSection.getString("name");
+					name = offlineSection.getString("name", " ");
 					lore = offlineSection.getStringList("lore");
-				}
-
-				if (amount > 64 || amount < 1) {
-					amount = 1;
 				}
 			}
 

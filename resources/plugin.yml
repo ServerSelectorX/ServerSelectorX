@@ -2,16 +2,15 @@ name: ServerSelectorX
 main: xyz.derkades.serverselectorx.Main
 version: '@project.version@'
 author: Derkades
-description: 'A modern server selector plugin with an advanced but simple config file.'
+description: 'A simple server selector plugin'
 website: 'https://www.spigotmc.org/resources/serverselectorx.32853/'
 softdepend: [PlaceholderAPI]
 api-version: 1.13
 
 commands:
   serverselectorx:
-    aliases: [ss,ssx,serversel,serverselector]
-    description: The one and only command of the ServerSelectorX plugin.
+    aliases: [ssx]
     usage: |-
-      Aliases: serverselectorx, ss, ssx, serversel, serverselector
+      Aliases: serverselectorx, ssx
       
       /ssx reload/rl - reloads the config

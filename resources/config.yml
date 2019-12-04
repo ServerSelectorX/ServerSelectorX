@@ -1,6 +1,6 @@
 # Show message when player teleports to a server.
 # Remove/comment this option to disable the message
-server-teleport-message: '&7Conecting you to &7&l{x}&r&7.'
+server-teleport-message: '&7Connecting you to &7&l{x}&r&7.'
 
 # Cancel item dropping for players that do not have the permission ssx.drop
 cancel-item-drop: false
@@ -18,18 +18,13 @@ selector-open-cooldown: 2000
 # does not disable the cooldown.
 cooldown-message: '&cYou cannot use this yet, please wait {x} seconds.'
 
-# -------------------- Server Pinging -------------------- #
 
-# Use an external query API for pinging servers. This is recommended.
-# The internal query has a lot of problems, one of which is that it doesn't
-# work when there are color codes anywhere in the motd. Version support is 
-# terrible as well. If you have your spigot servers behind a firewall (which 
-# you should) allow the domain api.minetools.eu to ping your server.
+# -- Advanced options --
+
+# Use an external query API for pinging servers (recommended)
+# You can use the internal query system, but it can't handle
+# colored motds and it may not support all versions.
 external-query: true
 
-# How long a server needs to be pinged for before giving up. (in milliseconds)
-# Set this to a higher value if your servers are not responding in time.
-# This setting has effect on the internal query only.
+# Internal query only
 ping-timeout: 500
-
-
