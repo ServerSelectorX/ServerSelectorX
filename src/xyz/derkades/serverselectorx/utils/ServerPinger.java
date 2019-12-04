@@ -21,15 +21,15 @@ public class ServerPinger {
 
 	private static final String PING_API_URL = "https://api.minetools.eu/ping/%s/%s";
 
-	public static interface Server {
+	public interface Server {
 
-		public String getIp();
-		public int getPort();
-		public boolean isOnline();
-		public int getOnlinePlayers();
-		public int getMaximumPlayers();
-		public String getMotd();
-		public int getResponseTimeMillis();
+		String getIp();
+		int getPort();
+		boolean isOnline();
+		int getOnlinePlayers();
+		int getMaximumPlayers();
+		String getMotd();
+		int getResponseTimeMillis();
 
 	}
 
@@ -150,8 +150,9 @@ public class ServerPinger {
 
 				in.close();
 
-				if (connection.getResponseCode() != 200)
+				if (connection.getResponseCode() != 200) {
 					throw new PingException("Error while pinging API, HTTP error code " + connection.getResponseCode());
+				}
 
 				jsonString = response.toString();
 			} catch (final IOException e) {
@@ -195,24 +196,27 @@ public class ServerPinger {
 
 		@Override
 		public int getMaximumPlayers() {
-			if (!this.online)
+			if (!this.online) {
 				throw new UnsupportedOperationException("Can't get maximum players of a server that is offline.");
+			}
 
 			return this.maximumPlayers;
 		}
 
 		@Override
 		public String getMotd() {
-			if (!this.online)
+			if (!this.online) {
 				throw new UnsupportedOperationException("Can't get motd of a server that is offline.");
+			}
 
 			return this.motd;
 		}
 
 		@Override
 		public int getResponseTimeMillis() {
-			if (!this.online)
+			if (!this.online) {
 				throw new UnsupportedOperationException("Can't get response time of a server that is offline.");
+			}
 
 			return this.responseTimeMillis;
 		}
@@ -229,7 +233,7 @@ public class ServerPinger {
 			super(exception);
 		}
 
-		private static final long serialVersionUID = 5694501675795361821L;
+		private static final long serialVersionUID = 1L;
 
 	}
 
