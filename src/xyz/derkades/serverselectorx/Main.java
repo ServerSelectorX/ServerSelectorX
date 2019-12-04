@@ -15,7 +15,6 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.serverselectorx.placeholders.Papi;
 import xyz.derkades.serverselectorx.placeholders.PapiDisabled;
@@ -95,7 +94,7 @@ public class Main extends JavaPlugin {
 					public boolean execute(final CommandSender sender, final String label, final String[] args) {
 						if (sender instanceof Player){
 							final Player player = (Player) sender;
-							Main.openSelector(player, config);
+							new SelectorMenu(player, config);
 						}
 						return true;
 					}
@@ -112,34 +111,7 @@ public class Main extends JavaPlugin {
 		return configurationManager;
 	}
 
-	public static void openSelector(final Player player, final FileConfiguration config) {
-		final long cooldown = Cooldown.getCooldown(config.getName() + player.getName());
-		if (cooldown > 0) {
-			String cooldownMessage = Main.getPlugin().getConfig().getString("cooldown-message");
-			if (cooldownMessage != null) {
-				cooldownMessage = cooldownMessage.replace("{x}", String.valueOf(cooldown / 1000 + 1));
-				cooldownMessage = Colors.parseColors(cooldownMessage);
-				player.sendMessage(cooldownMessage);
-			}
-
-			return;
-		}
-
-		final long cooldownDuration = Main.getPlugin().getConfig().getLong("selector-open-cooldown", 0);
-		if (cooldownDuration >= 1000) {
-			Cooldown.addCooldown(config.getName() + player.getName(), cooldownDuration);
-		}
-
-		new SelectorMenu(player, config);
-	}
-
 	public static void teleportPlayerToServer(final Player player, final String server){
-		if (Cooldown.getCooldown("servertp" + player.getName() + server) > 0) {
-			return;
-		}
-
-		Cooldown.addCooldown("servertp" + player.getName() + server, 1000);
-
 		final String message = Main.getPlugin().getConfig().getString("server-teleport-message");
 		if (message != null) {
 			player.sendMessage(Colors.parseColors(message.replace("{x}", server)));
