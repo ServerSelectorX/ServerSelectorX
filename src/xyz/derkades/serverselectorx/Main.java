@@ -131,6 +131,11 @@ public class Main extends JavaPlugin {
 	 * Checks for cooldown, checks for permissions, plays sound
 	 */
 	public static void openSelector(final Player player, final String configName) {
+		if (!configurationManager.getMenus().containsKey(configName)) {
+			player.sendMessage("A menu with the name '" + configName + "' does not exist.");
+			return;
+		}
+
 		final FileConfiguration config = configurationManager.getMenus().get(configName);
 
 		// Check for permissions
