@@ -91,7 +91,7 @@ public class ConfigurationManager {
 		} else {
 			// Load files from directory
 			for (final File file : this.getFilesFromFolder(commandFolder)) {
-				this.items.put(file.getName().replace(".yml", "").replace(".yaml", ""), YamlConfiguration.loadConfiguration(file));
+				this.commands.put(file.getName().replace(".yml", "").replace(".yaml", ""), YamlConfiguration.loadConfiguration(file));
 			}
 		}
 	}
