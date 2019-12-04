@@ -87,7 +87,7 @@ public class ConfigurationManager {
 		this.commands.clear();
 		if (commandFolder.listFiles().length == 0) {
 			// Save menu.yml file if menu folder is empty
-			this.items.put("servers", this.saveDefaultAndLoad("default-command", new File(commandFolder, "servers.yml")));
+			this.commands.put("servers", this.saveDefaultAndLoad("default-command", new File(commandFolder, "servers.yml")));
 		} else {
 			// Load files from directory
 			for (final File file : this.getFilesFromFolder(commandFolder)) {
