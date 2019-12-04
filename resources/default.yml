@@ -14,7 +14,6 @@ item-lore:
 
 # The name of the server selector item.
 item: COMPASS
-data: 0
 
 # Give the item when a player joins?
 on-join: true
