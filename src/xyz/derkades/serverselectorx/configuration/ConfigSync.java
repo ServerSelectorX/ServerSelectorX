@@ -4,187 +4,135 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
-import java.util.Arrays;
+import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.InvalidConfigurationException;
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
 import xyz.derkades.serverselectorx.Main;
 
 public class ConfigSync {
 
+	private String address;
+	private ConfigurationSection config;
+	private final Logger logger = Main.getPlugin().getLogger();
+
 	public ConfigSync() {
 		final ConfigurationSection syncConfig = Main.getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
 
-		if (!syncConfig.getBoolean("enabled", false))
+		if (!syncConfig.getBoolean("enabled", false)) {
 			return;
+		}
 
 		// Run 1 second after server startup, then every hour
-		Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), new Task(), 20, 60*60*20);
+		Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getPlugin(), new Task(), 20, 60*60*20);
 	}
 
-	private static class Task implements Runnable {
+	private List<String> getFilesInDirectory(final String directory) throws IOException {
+		final URL url = new URL("http://" + this.address + "/listfiles?dir=" + directory);
+		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		final Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		final List<String> files = new ArrayList<>();
+		new JsonParser().parse(reader).getAsJsonArray().forEach((e) -> files.add(e.getAsString()));
+		return files;
+	}
+
+	private List<String> getFilesToSync() {
+		final List<String> filesToSync = new ArrayList<>();
+
+		// Add all files from the 'files'  option
+		filesToSync.addAll(this.config.getStringList("files"));
+
+		// Add all files from the 'directories' option
+		for (final String dir : this.config.getStringList("directories")) {
+			try {
+				ConfigSync.this.getFilesInDirectory(dir).forEach((s) -> filesToSync.add(dir + "/" + s));
+			} catch (final IOException e) {
+				this.logger.warning("An error occured while trying to get a list of files in the directory " + dir);
+				e.printStackTrace();
+			}
+		}
+
+		return filesToSync;
+	}
+
+	private String getFileContent(final String file) throws IOException {
+		// oneliner http request in java, it is so bad but so awesome at the same time.
+		return new BufferedReader(new InputStreamReader(new URL("http://" + this.address + "/getfiles?file=" + file).openConnection().getInputStream())).lines().collect(Collectors.joining("\n"));
+	}
+
+	private class Task implements Runnable {
 
 		@Override
 		public void run() {
-			final ConfigurationSection syncConfig = Main.getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
+			ConfigSync.this.logger.info("Starting config sync");
 
-			final Logger logger = Main.getPlugin().getLogger();
+			ConfigSync.this.config = Main.getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
+			ConfigSync.this.address = ConfigSync.this.config.getString("address");
 
-			logger.info("Starting config sync");
+			final File dataFolder = Main.getPlugin().getDataFolder(); // for convenience
 
-			final String address = syncConfig.getString("address");
-			final List<String> whitelist = syncConfig.getStringList("whitelist");
+			ConfigSync.this.logger.info("Deletion is enabled. Deleting directories");
+			final File[] toDelete = new File[] {
+					new File(dataFolder, "item"),
+					new File(dataFolder, "command"),
+					new File(dataFolder, "menu"),
+			};
+			for (final File dir : toDelete) {
+				try {
+					FileUtils.deleteDirectory(dir);
+				} catch (final IOException e) {
+					ConfigSync.this.logger.warning("Failed to delete directory" + dir.getPath());
+				}
+			}
 
-			URL url;
+			// Verify that the address is in the correct format
 			try {
-				url = new URL("http://" + address + "/config");
+				new URL("http://" + ConfigSync.this.address);
 			} catch (final MalformedURLException e) {
-				logger.severe("The address you entered seems to be incorrectly formatted.");
-				logger.severe("It must be formatted like this: 173.45.16.208:8888");
+				ConfigSync.this.logger.severe("The address you entered seems to be incorrectly formatted.");
+				ConfigSync.this.logger.severe("It must be formatted like this: 173.45.16.208:8888");
 				return;
 			}
 
-			Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> {
-				//logger.info("Making request to " + url.toString());
-				boolean error = false;
-				String jsonOutput = null;
+			for (final String fileName : ConfigSync.this.getFilesToSync()) {
+				String content;
 				try {
-					final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-					final BufferedReader streamReader = new BufferedReader(new InputStreamReader(connection.getInputStream(), StandardCharsets.UTF_8));
-					final StringBuilder responseBuilder = new StringBuilder();
-					String temp;
-					while ((temp = streamReader.readLine()) != null) {
-						responseBuilder.append(temp);
-					}
-					jsonOutput = responseBuilder.toString();
+					content = ConfigSync.this.getFileContent(fileName);
 				} catch (final IOException e) {
+					ConfigSync.this.logger.warning("An error occured while trying to get file content for " + fileName);
 					e.printStackTrace();
-					error = true;
+					continue;
 				}
 
-				if (error) {
-					logger.severe("An error occured while making the request. Are you using the right IP and port?");
-					return;
-				}
+				ConfigSync.this.logger.info("Succesfully retrieved content for file " + fileName);
 
-				if (jsonOutput == null) {
-					// it should only ever be null if error == true
-					logger.severe("Json output null. Report issue to developer");
-					return;
-				}
-
-				final File pluginDirectory = Main.getPlugin().getDataFolder();
-
-				final File serversYml = new File(pluginDirectory, "servers.yml");
-				final File globalYml = new File(pluginDirectory, "global.yml");
-				final File menuDirectory = new File(pluginDirectory, "menu");
-				final File itemDirectory = new File(pluginDirectory, "item");
-
-				final JsonParser parser = new JsonParser();
-				final JsonObject json = parser.parse(jsonOutput).getAsJsonObject();
-
-				logger.info("Writing to disk..");
+				// Write contents to file
 
 				try {
-					if (whitelist.contains("servers")) {
-						serversYml.delete();
-						final FileConfiguration config = new YamlConfiguration();
-						config.loadFromString(json.get("servers").getAsString());
-						config.save(serversYml);
-						logger.info("Replaced servers.yml");
-					}
-
-					if (whitelist.contains("global")) {
-						globalYml.delete();
-						final FileConfiguration config = new YamlConfiguration();
-						config.loadFromString(json.get("global").getAsString());
-						config.save(globalYml);
-						logger.info("Replaced global.yml");
-					}
-
-					if (whitelist.contains("menu:all")) {
-						Arrays.asList(menuDirectory.listFiles()).forEach(File::delete);
-
-						final JsonObject menuFilesJson = json.get("menu").getAsJsonObject();
-						for (final Entry<String, JsonElement> menuJson : menuFilesJson.entrySet()) {
-							final FileConfiguration config = new YamlConfiguration();
-							config.loadFromString(menuJson.getValue().getAsString());
-							config.save(new File(menuDirectory, menuJson.getKey() + ".yml"));
-							logger.info("Downloaded menu/" + menuJson.getKey() + ".yml");
-						}
-					} else {
-						for (final String string : whitelist) {
-							if (!string.startsWith("menu:")) {
-								continue;
-							}
-
-							final String menuName = string.substring(5);
-							if (!json.get("menu").getAsJsonObject().has(menuName)) {
-								logger.warning("Menu with name '" + menuName + "' is in the config sync whitelist, but was not sent by the server.");
-								continue;
-							}
-
-							final JsonElement menuJson = json.get("menu").getAsJsonObject().get(menuName);
-							final FileConfiguration config = new YamlConfiguration();
-							config.loadFromString(menuJson.getAsString());
-							config.save(new File(menuDirectory, menuName + ".yml"));
-						}
-					}
-
-					if (whitelist.contains("item:all")) {
-						Arrays.asList(itemDirectory.listFiles()).forEach(File::delete);
-
-						final JsonObject itemFilesJson = json.get("item").getAsJsonObject();
-						for (final Entry<String, JsonElement> itemJson : itemFilesJson.entrySet()) {
-							final FileConfiguration config = new YamlConfiguration();
-							config.loadFromString(itemJson.getValue().getAsString());
-							config.save(new File(itemDirectory, itemJson.getKey() + ".yml"));
-							logger.info("Downloaded item/" + itemJson.getKey() + ".yml");
-						}
-					} else {
-						for (final String string : whitelist) {
-							if (!string.startsWith("item:")) {
-								continue;
-							}
-
-							final String itemName = string.substring(5);
-							if (!json.get("item").getAsJsonObject().has(itemName)) {
-								logger.warning("Item with name '" + itemName + "' is in the config sync whitelist, but was not sent by the server.");
-								continue;
-							}
-
-							final JsonElement itemJson = json.get("item").getAsJsonObject().get(itemName);
-							final FileConfiguration config = new YamlConfiguration();
-							config.loadFromString(itemJson.getAsString());
-							config.save(new File(menuDirectory, itemName + ".yml"));
-						}
-					}
-				} catch (final InvalidConfigurationException e) {
-					throw new RuntimeException("The configuration received from the server is invalid", e);
+					final File file = new File(Main.getPlugin().getDataFolder(), fileName);
+					FileUtils.writeStringToFile(file, content, "UTF-8");
 				} catch (final IOException e) {
+					ConfigSync.this.logger.warning("An error occured while writing file " + fileName);
 					e.printStackTrace();
+					return;
 				}
+			}
 
-				logger.info("Done! The plugin will now reload.");
-				Main.getConfigurationManager().reload();
-				Main.server.stop();
-				Main.server.start();
-			});
+			ConfigSync.this.logger.info("File sync done! The plugin will now reload.");
+			Main.getConfigurationManager().reload();
+			Main.server.stop();
+			Main.server.start();
 		}
 
 	}
