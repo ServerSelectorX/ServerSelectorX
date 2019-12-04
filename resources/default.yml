@@ -7,7 +7,6 @@ title: 'Server Selector'
 # This will be the name of the server selector item
 item-name: 'Server Selector'
 
-# Item lore. For no lore, put 'none' in the first line.
 item-lore:
 - 'Line 1'
 - 'Line 2'

@@ -1,7 +1,5 @@
 package xyz.derkades.serverselectorx;
 
-import java.util.List;
-
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -37,11 +35,7 @@ public class OnJoinListener implements Listener {
 			final ItemBuilder builder = new ItemBuilder(material)
 					.coloredName(config.getString("item-name", "error"));
 
-			final List<String> lore = config.getStringList("item-lore");
-
-			if (!lore.isEmpty() && !lore.get(0).equalsIgnoreCase("none")) {
-				builder.coloredLore(lore);
-			}
+			builder.coloredLore(config.getStringList("item-lore"));
 
 			final int slot = config.getInt("inv-slot", 0);
 			final PlayerInventory inv = player.getInventory();
