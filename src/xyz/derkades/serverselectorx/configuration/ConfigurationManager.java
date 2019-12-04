@@ -50,6 +50,8 @@ public class ConfigurationManager {
 	public void reload() {
 		final File dataFolder = Main.getPlugin().getDataFolder();
 
+		final boolean generate = !new File(dataFolder, "ssx.yml").exists();
+
 		this.global = this.saveDefaultAndLoad("global", new File(dataFolder, "global.yml"));
 		this.ssx = this.saveDefaultAndLoad("ssx", new File(dataFolder, "ssx.yml"));
 
@@ -57,7 +59,7 @@ public class ConfigurationManager {
 		menuFolder.mkdirs();
 
 		this.menus.clear();
-		if (menuFolder.listFiles().length == 0) {
+		if (menuFolder.listFiles().length == 0 && generate) {
 			// Save default.yml file if menu folder is empty
 			this.menus.put("default", this.saveDefaultAndLoad("default-selector", new File(menuFolder, "default.yml")));
 		} else {
@@ -71,7 +73,7 @@ public class ConfigurationManager {
 		itemFolder.mkdirs();
 
 		this.items.clear();
-		if (itemFolder.listFiles().length == 0) {
+		if (itemFolder.listFiles().length == 0 && generate) {
 			// Save serverselector.yml file if menu folder is empty
 			this.items.put("default", this.saveDefaultAndLoad("default-item", new File(itemFolder, "serverselector.yml")));
 		} else {
@@ -85,7 +87,7 @@ public class ConfigurationManager {
 		commandFolder.mkdirs();
 
 		this.commands.clear();
-		if (commandFolder.listFiles().length == 0) {
+		if (commandFolder.listFiles().length == 0 && generate) {
 			// Save menu.yml file if menu folder is empty
 			this.commands.put("servers", this.saveDefaultAndLoad("default-command", new File(commandFolder, "servers.yml")));
 		} else {
