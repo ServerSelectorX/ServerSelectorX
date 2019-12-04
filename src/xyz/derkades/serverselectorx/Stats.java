@@ -57,8 +57,6 @@ public class Stats {
 			return map;
 		}));
 
-		metrics.addCustomChart(new Metrics.SimplePie("updater", () -> "Unavailable"));
-
 		metrics.addCustomChart(new Metrics.AdvancedPie("server_pinging", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
@@ -88,17 +86,19 @@ public class Stats {
 		}));
 
 		metrics.addCustomChart(new Metrics.SimplePie("item_drop", () -> {
-			if (Main.getPlugin().getConfig().getBoolean("cancel-item-drop", false))
+			if (Main.getPlugin().getConfig().getBoolean("cancel-item-drop", false)) {
 				return "Cancel";
-			else
+			} else {
 				return "Allow";
+			}
 		}));
 
 		metrics.addCustomChart(new Metrics.SimplePie("item_move", () -> {
-			if (Main.getPlugin().getConfig().getBoolean("cancel-item-move", false))
+			if (Main.getPlugin().getConfig().getBoolean("cancel-item-move", false)) {
 				return "Cancel";
-			else
+			} else {
 				return "Allow";
+			}
 		}));
 
 		metrics.addCustomChart(new Metrics.AdvancedPie("menu_item_slot", () -> {
