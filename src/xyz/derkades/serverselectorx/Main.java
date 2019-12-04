@@ -113,6 +113,14 @@ public class Main extends JavaPlugin {
 					e.printStackTrace();
 				}
 			}
+
+			// Sleep a little longer to give the internal jetty stuff time to shut down
+			// otherwise I still got a NoClassDefFoundError
+			try {
+				Thread.sleep(100);
+			} catch (final InterruptedException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 
