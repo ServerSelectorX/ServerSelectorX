@@ -2,7 +2,6 @@ package xyz.derkades.serverselectorx;
 
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -39,12 +38,14 @@ public class SelectorMenu extends IconMenu {
 			String name;
 			List<String> lore;
 			int amount = 1;
+			int data;
 
 			if (!section.getBoolean("ping-server")) {
 				// Server pinging is turned off, get item info from 'offline' section
 				materialString = section.getString("offline.item");
 				name = section.getString("offline.name", " ");
 				lore = section.getStringList("offline.lore");
+				data = section.getInt("offline.data");
 			} else {
 				final String ip = config.getString("ip");
 				final int port = config.getInt("port");
@@ -69,6 +70,7 @@ public class SelectorMenu extends IconMenu {
 					materialString = onlineSection.getString("item");
 					name = onlineSection.getString("name");
 					lore = onlineSection.getStringList("lore");
+					data = onlineSection.getInt("data");
 
 					if (section.getBoolean("change-item-count", true)) {
 						amount = online;
@@ -89,6 +91,7 @@ public class SelectorMenu extends IconMenu {
 					materialString = offlineSection.getString("item");
 					name = offlineSection.getString("name", " ");
 					lore = offlineSection.getStringList("lore");
+					data = offlineSection.getInt("data");
 				}
 			}
 
@@ -97,14 +100,9 @@ public class SelectorMenu extends IconMenu {
 			if (materialString.startsWith("head:")) {
 				final String owner = materialString.split(":")[1];
 				if (owner.equals("auto")) {
-					builder = new ItemBuilder(player);
+					builder = new ItemBuilder(player.getName());
 				} else {
-					try {
-						builder = new ItemBuilder(Bukkit.getOfflinePlayer(UUID.fromString(owner)));
-					} catch (final IllegalArgumentException e) {
-						player.sendMessage("Invalid head uuid " + owner);
-						return;
-					}
+					builder = new ItemBuilder(owner);
 				}
 			} else {
 				final Material material = Material.valueOf(materialString);
@@ -115,6 +113,10 @@ public class SelectorMenu extends IconMenu {
 				}
 
 				builder = new ItemBuilder(material);
+			}
+
+			if (data != 0) {
+				builder.damage(data);
 			}
 
 			builder.amount(amount);

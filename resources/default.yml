@@ -51,7 +51,7 @@ menu:
        - 'Message of the day: {motd}'
 
     offline:
-      item: WOODEN_SWORD
+      item: WOOD_SWORD
       name: '&cKitPvP Server'
       lore:
        - Ipsum lorem
@@ -71,4 +71,5 @@ menu:
   -1: # -1 means everything else
     action: 'none'
     online:
-      item: LIGHT_GRAY_STAINED_GLASS_PANE
+      item: STAINED_GLASS_PANE
+      data: 0

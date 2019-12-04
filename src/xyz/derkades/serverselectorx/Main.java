@@ -46,7 +46,6 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new SelectorOpenListener(), this);
 		Bukkit.getPluginManager().registerEvents(new OnJoinListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemMoveDropCancelListener(), this);
-		Bukkit.getPluginManager().registerEvents(new OffHandMoveCancel(), this);
 
 		//Register messaging channels
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
