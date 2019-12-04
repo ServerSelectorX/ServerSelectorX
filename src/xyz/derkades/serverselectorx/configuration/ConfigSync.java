@@ -39,17 +39,31 @@ public class ConfigSync {
 
 	private boolean testConnectivity() {
 		try {
-			new URL(String.format("http://%s?password=%s",
+			final HttpURLConnection conn = (HttpURLConnection) new URL(String.format("http://%s?password=%s",
 					this.config.getString("address"), this.config.getString("password")))
 					.openConnection();
-			return true;
+			conn.setConnectTimeout(1000);
+			conn.connect();
+			if (conn.getResponseCode() == 200) {
+				return true;
+			} else if (conn.getResponseCode() == 401) {
+				this.logger.warning("Invalid password");
+				return false;
+			} else {
+				this.logger.warning("Received bad request response code");
+				this.logger.warning("This is probably an issue with the plugin");
+				this.logger.warning("Make sure that you are using the latest and/or same version everywhere.");
+				return false;
+			}
 		} catch (final IOException e) {
-			this.logger.warning(e.getMessage());
+			this.logger.warning("Connection error.");
+			this.logger.warning("Is the server down? Is the address correct? Firewall?");
 			return false;
 		}
+	}
 
 	private List<String> getFilesInDirectory(final String directory) throws IOException {
-		final URL url = new URL(String.format("http://%s/listfiles?password=%s?dir=%s",
+		final URL url = new URL(String.format("http://%s/listfiles?password=%s&dir=%s",
 				this.config.getString("address"),
 				this.config.getString("password"),
 				directory
@@ -85,12 +99,11 @@ public class ConfigSync {
 	}
 
 	public void sync() {
-		this.logger.info("Starting config sync");
+		this.logger.info("Starting config sync..");
 
 		this.config = Main.getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
 
 		if (!this.testConnectivity()) {
-			this.logger.warning("Connectivity check failed: the server is down, or your settings are wrong. Aborting to avoid deleting files without syncing new ones.");
 			return;
 		}
 

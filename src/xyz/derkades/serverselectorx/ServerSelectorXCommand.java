@@ -3,6 +3,7 @@ package xyz.derkades.serverselectorx;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -80,7 +81,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 
 		if (args.length == 1 && args[0].equalsIgnoreCase("sync")) {
 			sender.sendMessage("Synchronising configuration files.. For more information have a look at the console.");
-			Main.getConfigSync().sync();
+			Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> Main.getConfigSync().sync());
 			return true;
 		}
 
