@@ -37,6 +37,11 @@ public class OnJoinListener implements Listener {
 
 			builder.coloredLore(config.getStringList("item-lore"));
 
+			final int data = config.getInt("data");
+			if (data != 0) {
+				builder.damage(data);
+			}
+
 			final int slot = config.getInt("inv-slot", 0);
 			final PlayerInventory inv = player.getInventory();
 			if (slot < 0) {
