@@ -24,13 +24,11 @@ import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 public class SelectorMenu extends IconMenu {
 
 	private final FileConfiguration config;
-	private final int slots;
 
 	public SelectorMenu(final Player player, final FileConfiguration config) {
-		super(Main.getPlugin(), Colors.parseColors(config.getString("title", "no title")), config.getInt("rows", 6) * 9, player);
+		super(Main.getPlugin(), Colors.parseColors(config.getString("title")), config.getInt("rows"), player);
 
 		this.config = config;
-		this.slots = config.getInt("rows", 6) * 9;
 
 		for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
 			final ConfigurationSection section = config.getConfigurationSection("menu." + key);
@@ -125,7 +123,7 @@ public class SelectorMenu extends IconMenu {
 
 			final int slot = Integer.valueOf(key);
 			if (slot < 0) {
-				for (int i = 0; i < this.slots; i++) {
+				for (int i = 0; i < this.getInventory().getSize(); i++) {
 					if (!this.hasItem(i)) {
 						this.addItem(i, item);
 					}
