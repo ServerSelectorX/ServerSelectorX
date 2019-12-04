@@ -11,7 +11,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.serverselectorx.actions.Action;
 
 public class Commands {
@@ -37,13 +36,6 @@ public class Commands {
 					public boolean execute(final CommandSender sender, final String label, final String[] args) {
 						if (sender instanceof Player){
 							final Player player = (Player) sender;
-							//Small cooldown to prevent weird bugs
-							if (Cooldown.getCooldown(player.getUniqueId() + "doubleopen") > 0) {
-								return true;
-							}
-
-							Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 1000); //Add cooldown for 1 second
-
 							Action.runActions(player, actions);
 						}
 						return true;
