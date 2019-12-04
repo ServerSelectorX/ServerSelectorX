@@ -124,19 +124,16 @@ public class SelectorMenu extends IconMenu {
 
 			final ItemStack item = builder.create();
 
-			this.addToMenu(Integer.valueOf(key), item);
-		}
-	}
-
-	private void addToMenu(final int slot, final ItemStack item) {
-		if (slot < 0) {
-			for (int i = 0; i < this.slots; i++) {
-				if (!this.items.containsKey(i)) {
-					this.items.put(i, item);
+			final int slot = Integer.valueOf(key);
+			if (slot < 0) {
+				for (int i = 0; i < this.slots; i++) {
+					if (!this.hasItem(i)) {
+						this.addItem(i, item);
+					}
 				}
+			} else {
+				this.addItem(slot, item);
 			}
-		} else {
-			this.items.put(slot, item);
 		}
 	}
 
@@ -181,8 +178,7 @@ public class SelectorMenu extends IconMenu {
 				player.sendMessage(ChatColor.RED + "This server selector does not exist.");
 				return true;
 			} else {
-				new SelectorMenu(player, config).open();
-
+				new SelectorMenu(player, config);
 				return false;
 			}
 		} else if (action.startsWith("world:")){ //Teleport to world
@@ -203,10 +199,12 @@ public class SelectorMenu extends IconMenu {
 			final String message = action.substring(4);
 			player.sendMessage(Main.PLACEHOLDER_API.parsePlaceholders(player, message));
 			return true;
-		} else if (action.equals("close"))
+		} else if (action.equals("close")) {
 			return true; //Return true = close
-		else
+		}
+		else {
 			return false; //Return false = stay open
+		}
 
 	}
 

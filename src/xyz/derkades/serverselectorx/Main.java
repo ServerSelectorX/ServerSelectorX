@@ -126,7 +126,7 @@ public class Main extends JavaPlugin {
 		if (cooldown > 0) {
 			String cooldownMessage = Main.getPlugin().getConfig().getString("cooldown-message");
 			if (cooldownMessage != null) {
-				cooldownMessage = cooldownMessage.replace("{x}", String.valueOf((cooldown / 1000) + 1));
+				cooldownMessage = cooldownMessage.replace("{x}", String.valueOf(cooldown / 1000 + 1));
 				cooldownMessage = Colors.parseColors(cooldownMessage);
 				player.sendMessage(cooldownMessage);
 			}
@@ -139,12 +139,13 @@ public class Main extends JavaPlugin {
 			Cooldown.addCooldown(config.getName() + player.getName(), cooldownDuration);
 		}
 
-		new SelectorMenu(player, config).open();
+		new SelectorMenu(player, config);
 	}
 
 	public static void teleportPlayerToServer(final Player player, final String server){
-		if (Cooldown.getCooldown("servertp" + player.getName() + server) > 0)
+		if (Cooldown.getCooldown("servertp" + player.getName() + server) > 0) {
 			return;
+		}
 
 		Cooldown.addCooldown("servertp" + player.getName() + server, 1000);
 
