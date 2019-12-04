@@ -39,7 +39,6 @@ public class SelectorMenu extends IconMenu {
 			String name;
 			List<String> lore;
 			int amount = section.getInt("item-count", 1);
-			int data = 0;
 
 			if (!section.getBoolean("ping-server")) {
 				// Server pinging is turned off, get item info from 'online' section
@@ -47,7 +46,6 @@ public class SelectorMenu extends IconMenu {
 				name = section.getString("online.name", "");
 				lore = section.getStringList("online.lore");
 				amount = section.getInt("online.item-count", 1);
-				data = section.getInt("online.data", 0);
 			} else {
 				final String ip = config.getString("ip");
 				final int port = config.getInt("port");
@@ -72,7 +70,6 @@ public class SelectorMenu extends IconMenu {
 					materialString = onlineSection.getString("item");
 					name = onlineSection.getString("name");
 					lore = onlineSection.getStringList("lore");
-					data = section.getInt("data");
 
 					if (section.getBoolean("change-item-count", true)) {
 						amount = online;
@@ -89,7 +86,6 @@ public class SelectorMenu extends IconMenu {
 					materialString = offlineSection.getString("item");
 					name = offlineSection.getString("name");
 					lore = offlineSection.getStringList("lore");
-					data = section.getInt("data");
 				}
 
 				if (amount > 64 || amount < 1) {
@@ -112,9 +108,11 @@ public class SelectorMenu extends IconMenu {
 					}
 				}
 			} else {
-				Material material = Material.valueOf(materialString);
+				final Material material = Material.valueOf(materialString);
 				if (material == null) {
-					material = Material.STONE;
+					player.sendMessage("Invalid item name " + material);
+					player.sendMessage("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Item-names");
+					return;
 				}
 
 				builder = new ItemBuilder(material);
@@ -123,10 +121,6 @@ public class SelectorMenu extends IconMenu {
 			builder.amount(amount);
 			builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
 			builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
-
-			if (data != 0) {
-				builder.damage(data);
-			}
 
 			final ItemStack item = builder.create();
 
