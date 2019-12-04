@@ -26,11 +26,12 @@ public class OnJoinListener implements Listener {
 			final Player player = event.getPlayer();
 
 			final String itemName = config.getString("item");
-			
+
 			final Material material = Material.getMaterial(itemName);
 
 			if (material == null) {
 				player.sendMessage("Invalid item name: '" + itemName + "'");
+				return;
 			}
 
 			final ItemBuilder builder = new ItemBuilder(material)
