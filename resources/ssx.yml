@@ -29,6 +29,8 @@ config-sync:
   # Do not enable if you have config files on this server that you don't have on other servers.
   delete: false
   
+  password: "a"
+  
   
 # You probably don't need to touch this.
 # Read more here: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium-security

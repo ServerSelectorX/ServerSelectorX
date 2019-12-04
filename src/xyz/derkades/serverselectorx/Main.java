@@ -39,6 +39,7 @@ public class Main extends JavaPlugin {
 	static boolean LAG_DEBUG = false;
 
 	private static ConfigurationManager configurationManager;
+	private static ConfigSync configSync;
 
 	private static Main plugin;
 
@@ -74,7 +75,7 @@ public class Main extends JavaPlugin {
 		server.start();
 
 		new Effects();
-		new ConfigSync();
+		configSync = new ConfigSync();
 		new Stats();
 		new ItemMoveDropCancelListener();
 
@@ -123,6 +124,10 @@ public class Main extends JavaPlugin {
 
 	public static ConfigurationManager getConfigurationManager() {
 		return configurationManager;
+	}
+
+	static ConfigSync getConfigSync() {
+		return configSync;
 	}
 
 	/**

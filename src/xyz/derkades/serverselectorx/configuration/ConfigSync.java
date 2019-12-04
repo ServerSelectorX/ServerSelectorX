@@ -23,7 +23,6 @@ import xyz.derkades.serverselectorx.Main;
 
 public class ConfigSync {
 
-	private String address;
 	private ConfigurationSection config;
 	private final Logger logger = Main.getPlugin().getLogger();
 
@@ -35,11 +34,15 @@ public class ConfigSync {
 		}
 
 		// Run 1 second after server startup, then every hour
-		Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getPlugin(), new Task(), 20, 60*60*20);
+		Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getPlugin(), this::sync, 20, 60*60*20);
 	}
 
 	private List<String> getFilesInDirectory(final String directory) throws IOException {
-		final URL url = new URL("http://" + this.address + "/listfiles?dir=" + directory);
+		final URL url = new URL(String.format("http://%s/listfiles?password=%s?dir=%s",
+				this.config.getString("address"),
+				this.config.getString("password"),
+				directory
+				));
 		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		final Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		final List<String> files = new ArrayList<>();
@@ -67,74 +70,67 @@ public class ConfigSync {
 	}
 
 	private String getFileContent(final String file) throws IOException {
-		// oneliner http request in java, it is so bad but so awesome at the same time.
-		return new BufferedReader(new InputStreamReader(new URL("http://" + this.address + "/getfiles?file=" + file).openConnection().getInputStream())).lines().collect(Collectors.joining("\n"));
+		return new BufferedReader(new InputStreamReader(new URL(String.format("http://%s/getfile?password=%s&file=%s", this.config.getString("address"), this.config.getString("password"), file)).openConnection().getInputStream())).lines().collect(Collectors.joining("\n")); // sorry lol
 	}
 
-	private class Task implements Runnable {
+	public void sync() {
+		this.logger.info("Starting config sync");
 
-		@Override
-		public void run() {
-			ConfigSync.this.logger.info("Starting config sync");
+		this.config = Main.getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
 
-			ConfigSync.this.config = Main.getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
-			ConfigSync.this.address = ConfigSync.this.config.getString("address");
+		final File dataFolder = Main.getPlugin().getDataFolder(); // for convenience
 
-			final File dataFolder = Main.getPlugin().getDataFolder(); // for convenience
-
-			ConfigSync.this.logger.info("Deletion is enabled. Deleting directories");
-			final File[] toDelete = new File[] {
-					new File(dataFolder, "item"),
-					new File(dataFolder, "command"),
-					new File(dataFolder, "menu"),
-			};
-			for (final File dir : toDelete) {
-				try {
-					FileUtils.deleteDirectory(dir);
-				} catch (final IOException e) {
-					ConfigSync.this.logger.warning("Failed to delete directory" + dir.getPath());
-				}
-			}
-
-			// Verify that the address is in the correct format
+		this.logger.info("Deletion is enabled. Deleting directories");
+		final File[] toDelete = new File[] {
+				new File(dataFolder, "item"),
+				new File(dataFolder, "command"),
+				new File(dataFolder, "menu"),
+		};
+		for (final File dir : toDelete) {
 			try {
-				new URL("http://" + ConfigSync.this.address);
-			} catch (final MalformedURLException e) {
-				ConfigSync.this.logger.severe("The address you entered seems to be incorrectly formatted.");
-				ConfigSync.this.logger.severe("It must be formatted like this: 173.45.16.208:8888");
-				return;
+				FileUtils.deleteDirectory(dir);
+			} catch (final IOException e) {
+				this.logger.warning("Failed to delete directory" + dir.getPath());
 			}
-
-			for (final String fileName : ConfigSync.this.getFilesToSync()) {
-				String content;
-				try {
-					content = ConfigSync.this.getFileContent(fileName);
-				} catch (final IOException e) {
-					ConfigSync.this.logger.warning("An error occured while trying to get file content for " + fileName);
-					e.printStackTrace();
-					continue;
-				}
-
-				ConfigSync.this.logger.info("Succesfully retrieved content for file " + fileName);
-
-				// Write contents to file
-
-				try {
-					final File file = new File(Main.getPlugin().getDataFolder(), fileName);
-					FileUtils.writeStringToFile(file, content, "UTF-8");
-				} catch (final IOException e) {
-					ConfigSync.this.logger.warning("An error occured while writing file " + fileName);
-					e.printStackTrace();
-					return;
-				}
-			}
-
-			ConfigSync.this.logger.info("File sync done! The plugin will now reload.");
-			Main.getConfigurationManager().reload();
-			Main.server.stop();
-			Main.server.start();
 		}
 
+		// Verify that the address is in the correct format
+		try {
+			new URL("http://" + this.config.getString("address"));
+		} catch (final MalformedURLException e) {
+			this.logger.severe("The address you entered seems to be incorrectly formatted.");
+			this.logger.severe("It must be formatted like this: 173.45.16.208:8888");
+			return;
+		}
+
+		for (final String fileName : this.getFilesToSync()) {
+			String content;
+			try {
+				content = ConfigSync.this.getFileContent(fileName);
+			} catch (final IOException e) {
+				this.logger.warning("An error occured while trying to get file content for " + fileName);
+				e.printStackTrace();
+				continue;
+			}
+
+			this.logger.info("Succesfully retrieved content for file " + fileName);
+
+			// Write contents to file
+
+			try {
+				final File file = new File(Main.getPlugin().getDataFolder(), fileName);
+				FileUtils.writeStringToFile(file, content, "UTF-8");
+			} catch (final IOException e) {
+				this.logger.warning("An error occured while writing file " + fileName);
+				e.printStackTrace();
+				return;
+			}
+		}
+
+		this.logger.info("File sync done! The plugin will now reload.");
+		Main.getConfigurationManager().reload();
+		Main.server.stop();
+		Main.server.start();
 	}
 
 }

@@ -78,6 +78,12 @@ public class ServerSelectorXCommand implements CommandExecutor {
 			return true;
 		}
 
+		if (args.length == 1 && args[0].equalsIgnoreCase("sync")) {
+			sender.sendMessage("Synchronising configuration files.. For more information have a look at the console.");
+			Main.getConfigSync().sync();
+			return true;
+		}
+
 		return false;
 	}
 

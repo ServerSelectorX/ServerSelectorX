@@ -97,6 +97,8 @@ public class WebServlet extends HttpServlet {
 
 		if (password == null) {
 			logger.warning("Received invalid request from " + request.getRemoteAddr());
+			logger.warning("No password was provided.");
+			logger.warning("Request URI: " + request.getRequestURI());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
@@ -108,7 +110,7 @@ public class WebServlet extends HttpServlet {
 		if (!correctPassword.equals(password)) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			logger.warning("Received request with invalid password from " + request.getRemoteAddr());
-			logger.warning(String.format("Provided=['%s'] Correct=['%s'] ", password, correctPassword));
+			logger.warning(String.format("Provided='%s' Correct='%s' ", password, correctPassword));
 			return;
 		}
 
@@ -118,7 +120,7 @@ public class WebServlet extends HttpServlet {
 			if (fileName.contains("..")) {
 				logger.warning("Received request with dangerous filename from " + request.getRemoteAddr());
 				logger.warning("File name: " + fileName);
-				logger.warning("This request has been blocked.");
+				logger.warning("The request has been blocked, no need to panic. Maybe do consider looking into where the request came from?");
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
@@ -128,21 +130,21 @@ public class WebServlet extends HttpServlet {
 			response.getOutputStream().print(contents);
 		}
 
-		else if (request.getRequestURI().equals("listfiles")) {
+		else if (request.getRequestURI().equals("/listfiles")) {
 			final String dirName = request.getParameter("dir");
 			// Do not allow going outside of the plugin directory for security reasons
 			if (dirName.contains("..")) {
 				logger.warning("Received request with dangerous directory name from " + request.getRemoteAddr());
 				logger.warning("Directory name: " + dirName);
-				logger.warning("This request has been blocked.");
+				logger.warning("The request has been blocked, no need to panic. Maybe do consider looking into where the request came from?");
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
 
 			final File dir = new File(Main.getPlugin().getDataFolder(), dirName);
 			if (!dir.isDirectory()) {
-				logger.warning("Received request from " + request.getRemoteAddr());
-				logger.warning("Requested to list files in " + dirName + ", but it is a file, not a directory.");
+				logger.warning("Received bad request from " + request.getRemoteAddr());
+				logger.warning("Requested to list files in " + dirName + ", but it is not a directory.");
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
