@@ -37,6 +37,17 @@ public class ConfigSync {
 		Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getPlugin(), this::sync, 20, 60*60*20);
 	}
 
+	private boolean testConnectivity() {
+		try {
+			new URL(String.format("http://%s?password=%s",
+					this.config.getString("address"), this.config.getString("password")))
+					.openConnection();
+			return true;
+		} catch (final IOException e) {
+			this.logger.warning(e.getMessage());
+			return false;
+		}
+
 	private List<String> getFilesInDirectory(final String directory) throws IOException {
 		final URL url = new URL(String.format("http://%s/listfiles?password=%s?dir=%s",
 				this.config.getString("address"),
@@ -77,6 +88,11 @@ public class ConfigSync {
 		this.logger.info("Starting config sync");
 
 		this.config = Main.getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
+
+		if (!this.testConnectivity()) {
+			this.logger.warning("Connectivity check failed: the server is down, or your settings are wrong. Aborting to avoid deleting files without syncing new ones.");
+			return;
+		}
 
 		final File dataFolder = Main.getPlugin().getDataFolder(); // for convenience
 
