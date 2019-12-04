@@ -8,7 +8,6 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<jdk.version>1.8</jdk.version>
 	</properties>
 
 	<build>
@@ -16,10 +15,7 @@
 
 		<resources>
 			<resource>
-				<directory>src/</directory>
-				<includes>
-					<include>**/*.yml</include>
-				</includes>
+				<directory>resources</directory>
 				<filtering>true</filtering>
 			</resource>
 		</resources>
@@ -31,8 +27,8 @@
 				<artifactId>maven-compiler-plugin</artifactId>
 				<version>3.8.1</version>
 				<configuration>
-					<source>${jdk.version}</source>
-					<target>${jdk.version}</target>
+					<source>1.8</source>
+					<target>1.8</target>
 				</configuration>
 			</plugin>
 
@@ -42,7 +38,7 @@
 				<version>3.2.1</version>
 				<configuration>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
-					<!--<minimizeJar>true</minimizeJar>-->
+					<minimizeJar>true</minimizeJar>
 
 					<relocations>
 						<relocation>
@@ -57,16 +53,23 @@
 							<pattern>de.tr7zw.changeme.nbtapi</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.lib.nbtapi</shadedPattern>
 						</relocation>
+						<relocation>
+							<pattern>com.google.gson</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.gson</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>javax.servlet</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.servlet</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.apache.commons.io</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.commons-io</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>xyz.derkades.derkutils</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.derkutils</shadedPattern>
+						</relocation>
 					</relocations>
-
-					<artifactSet>
-						<excludes>
-							<exclude>org.apache.commons:commons-lang3</exclude>
-							<exclude>org.bukkit:bukkit</exclude>
-							<exclude>org.yaml:snakeyaml</exclude>
-							<exclude>commons-lang:commons-lang</exclude>
-						</excludes>
-					</artifactSet>
 
 					<filters>
 						<filter>
@@ -75,6 +78,9 @@
 								<exclude>META-INF/*.SF</exclude>
 								<exclude>META-INF/*.DSA</exclude>
 								<exclude>META-INF/*.RSA</exclude>
+								<exclude>jetty-dir.css</exclude>
+								<exclude>LICENSE</exclude>
+								<exclude>about.html</exclude>
 							</excludes>
 						</filter>
 					</filters>

@@ -23,7 +23,7 @@ give:
   permission: false
   
 actions:
- - 'openmenu:default' # Open default menu (config file in /menu/default.yml)
+ - 'openmenu:default' # Open default menu (config file in ../menu/default.yml)
  
 ## When the `left-cick-actions` option is set, the `actions` option is used for right click and the 
 ## `left-click-actions` option is used for left click. If the `left-click-actions` option is not set,

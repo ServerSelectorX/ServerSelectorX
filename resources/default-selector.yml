@@ -3,10 +3,6 @@
 
 title: 'Server Selector'
 rows: 1
-
-commands:
- - menu
- - servers
  
 #permission:
 #  open: true

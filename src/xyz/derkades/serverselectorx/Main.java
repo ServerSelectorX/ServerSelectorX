@@ -3,18 +3,15 @@ package xyz.derkades.serverselectorx;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 import java.util.logging.Level;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.Sound;
-import org.bukkit.command.Command;
-import org.bukkit.command.CommandMap;
-import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
@@ -64,7 +61,7 @@ public class Main extends JavaPlugin {
 		this.getCommand("serverselectorx").setExecutor(new ServerSelectorXCommand());
 
 		//Register custom selector commands
-		this.registerCommands();
+		Commands.registerCustomCommands();
 
 		// Disable annoying jetty warnings
 		if (!configurationManager.getSSXConfig().getBoolean("jetty-debug", false)){
@@ -124,54 +121,6 @@ public class Main extends JavaPlugin {
 		}
 	}
 
-	/**
-	 * Registers all custom commands by going through all menu files and adding commands
-	 */
-	private void registerCommands(){
-		try {
-			final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-
-			bukkitCommandMap.setAccessible(true);
-			final CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
-
-			for (final Map.Entry<String, FileConfiguration> menuConfigEntry : configurationManager.getMenus().entrySet()) {
-				final String configName = menuConfigEntry.getKey();
-				final FileConfiguration config = menuConfigEntry.getValue();
-
-				if (!config.contains("commands")) {
-					continue;
-				}
-
-				final List<String> commandNames = config.getStringList("commands");
-
-				for (final String commandName : commandNames) {
-					commandMap.register("ssx-custom", new Command(commandName){
-
-						@Override
-						public boolean execute(final CommandSender sender, final String label, final String[] args) {
-							if (sender instanceof Player){
-								final Player player = (Player) sender;
-								//Small cooldown to prevent weird bugs
-								if (Cooldown.getCooldown(player.getUniqueId() + "doubleopen") > 0) {
-									return true;
-								}
-
-								Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 1000); //Add cooldown for 1 second
-
-								Main.openSelector(player, configName);
-							}
-							return true;
-						}
-
-					});
-				}
-
-			}
-		} catch (NoSuchFieldException | IllegalAccessException e) {
-			e.printStackTrace();
-		}
-	}
-
 	public static ConfigurationManager getConfigurationManager() {
 		return configurationManager;
 	}
@@ -182,6 +131,11 @@ public class Main extends JavaPlugin {
 	 * Checks for cooldown, checks for permissions, plays sound
 	 */
 	public static void openSelector(final Player player, final String configName) {
+		if (!configurationManager.getMenus().containsKey(configName)) {
+			player.sendMessage("A menu with the name '" + configName + "' does not exist.");
+			return;
+		}
+
 		final FileConfiguration config = configurationManager.getMenus().get(configName);
 
 		// Check for permissions
