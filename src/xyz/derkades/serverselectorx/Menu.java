@@ -36,11 +36,11 @@ public class Menu extends IconMenu {
 		this.config = config;
 
 		this.refreshTimer = Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), () -> {
-			final long start = System.currentTimeMillis();
+			final long start = System.nanoTime();
 			this.addItems();
 			if (Main.LAG_DEBUG) {
-				final long diff = System.currentTimeMillis() - start;
-				System.out.println("(Re)loaded menu for player " + this.player + " in " + diff + "ms. (one tick is 50ms)");
+				final long diff = System.nanoTime() - start;
+				System.out.println("(Re)loaded menu for player " + this.player.getName() + " in " + diff / 1000 + "μs. (one tick is 50ms)");
 			}
 		}, 0, 1*20);
 	}
