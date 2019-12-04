@@ -69,8 +69,4 @@ menu:
   -1: # -1 means everything else
     action: 'none'
     online:
-      # On 1.13+, remove the data value and use LIGHT_GRAY_STAINED_GLASS_PANE
-      item: STAINED_GLASS_PANE
-      data: 8
-      name: ''
-      lore:
+      item: LIGHT_GRAY_STAINED_GLASS_PANE
