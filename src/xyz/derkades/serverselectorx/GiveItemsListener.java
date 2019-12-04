@@ -30,12 +30,6 @@ public class GiveItemsListener implements Listener {
 			InvisibilityToggle.hideOthers(player);
 		}
 
-		final FileConfiguration ssx = Main.getConfigurationManager().getSSXConfig();
-
-		if (ssx.getBoolean("config-sync.enabled") && ssx.getBoolean("config-sync.disable-items")) {
-			return;
-		}
-
 		if (global.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
 			event.getPlayer().getInventory().clear();
 		}

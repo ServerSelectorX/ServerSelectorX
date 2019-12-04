@@ -1,11 +1,11 @@
 package xyz.derkades.serverselectorx;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -14,6 +14,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
+import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -90,14 +91,14 @@ public class WebServlet extends HttpServlet {
 
 	@Override
 	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-		response.setContentType("text/json");
-
 		final String password = request.getParameter("password");
 
 		final Logger logger = Main.getPlugin().getLogger();
 
 		if (password == null) {
 			logger.warning("Received invalid request from " + request.getRemoteAddr());
+			logger.warning("No password was provided.");
+			logger.warning("Request URI: " + request.getRequestURI());
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
@@ -109,34 +110,67 @@ public class WebServlet extends HttpServlet {
 		if (!correctPassword.equals(password)) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 			logger.warning("Received request with invalid password from " + request.getRemoteAddr());
-			logger.warning(String.format("Provided=['%s'] Correct=['%s'] ", password, correctPassword));
+			logger.warning(String.format("Provided='%s' Correct='%s' ", password, correctPassword));
 			return;
 		}
 
-		if (request.getRequestURI().equalsIgnoreCase("/config")) {
-			final Map<Object, Object> json = new HashMap<>();
-
-			json.put("global", Main.getConfigurationManager().getGlobalConfig().saveToString());
-
-			final Map<Object, Object> menuFiles = new HashMap<>();
-			for (final Entry<String, FileConfiguration> menuFile : Main.getConfigurationManager().getMenus().entrySet()) {
-				menuFiles.put(menuFile.getKey(), menuFile.getValue().saveToString());
+		if (request.getRequestURI().equals("/getfile")) {
+			final String fileName = request.getParameter("file");
+			// Do not allow going outside of the plugin directory for security reasons
+			if (fileName.contains("..")) {
+				logger.warning("Received request with dangerous filename from " + request.getRemoteAddr());
+				logger.warning("File name: " + fileName);
+				logger.warning("The request has been blocked, no need to panic. Maybe do consider looking into where the request came from?");
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				return;
 			}
-			json.put("menu", menuFiles);
 
-			final Map<Object, Object> itemFiles = new HashMap<>();
-			for (final Entry<String, FileConfiguration> itemFile : Main.getConfigurationManager().getItems().entrySet()) {
-				itemFiles.put(itemFile.getKey(), itemFile.getValue().saveToString());
+			final File file = new File(Main.getPlugin().getDataFolder(), fileName);
+			final String contents = FileUtils.readFileToString(file, "UTF-8");
+			response.getOutputStream().print(contents);
+		}
+
+		else if (request.getRequestURI().equals("/listfiles")) {
+			final String dirName = request.getParameter("dir");
+			// Do not allow going outside of the plugin directory for security reasons
+			if (dirName.contains("..")) {
+				logger.warning("Received request with dangerous directory name from " + request.getRemoteAddr());
+				logger.warning("Directory name: " + dirName);
+				logger.warning("The request has been blocked, no need to panic. Maybe do consider looking into where the request came from?");
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				return;
 			}
-			json.put("item", itemFiles);
 
-			response.getOutputStream().println(new Gson().toJson(json));
-		} else if (request.getRequestURI().equalsIgnoreCase("/players")) {
+			final File dir = new File(Main.getPlugin().getDataFolder(), dirName);
+			if (!dir.isDirectory()) {
+				logger.warning("Received bad request from " + request.getRemoteAddr());
+				logger.warning("Requested to list files in " + dirName + ", but it is not a directory.");
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				return;
+			}
+
+			final List<String> fileNames = new ArrayList<>();
+			for (final File file : dir.listFiles()) {
+				if (!file.isDirectory()) {
+					fileNames.add(file.getName());
+				}
+			}
+
+			response.setContentType("text/json");
+			final String json = new GsonBuilder().setPrettyPrinting().create().toJson(fileNames);
+			response.getOutputStream().print(json);
+		}
+
+		else if (request.getRequestURI().equals("/players")) {
 			final Gson gson = new Gson();
 			final Map<UUID, String> players = new HashMap<>();
 			Bukkit.getOnlinePlayers().forEach((p) -> players.put(p.getUniqueId(), p.getName()));
 			response.getOutputStream().println(gson.toJson(players));
-		} else {
+		}
+
+		else if (request.getRequestURI().equals("/")) {
+			response.setContentType("text/json");
+
 			final Map<Object, Object> map = new HashMap<>();
 			map.put("version", Main.getPlugin().getDescription().getVersion());
 			map.put("api_version", 2);
@@ -144,6 +178,10 @@ public class WebServlet extends HttpServlet {
 
 			final String json = new GsonBuilder().setPrettyPrinting().create().toJson(map);
 			response.getOutputStream().println(json);
+		}
+
+		else {
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 		}
 	}
 

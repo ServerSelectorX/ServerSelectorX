@@ -5,8 +5,6 @@
 port: 9782
 
 # Retrieve configuration files from another server
-# Warning: enabling this will delete whitelisted configuration files
-# and ALL menu files, regardless of the whitelist setting
 config-sync:
 
   # IMPORTANT
@@ -18,15 +16,20 @@ config-sync:
   # Server to retrieve configuration files from
   address: '123.45.67.89:9782'
   
-  # To whitelist all menu files, add menu:all
-  whitelist:
-   - global
-   - menu:default
-   - item:default
+  files:
+   - global.yml
+   - command/servers.yml
+  
+  directories:
+   - menu # Sync all files in the menu directory
    
-  # Don't give the players any items (they will only be able to use commands to open menus).
-  # This will also disable inventory clearing on join
-  disable-items: true
+  # When set to true, delete ALL files in ALL configuration directories (menu, item, command)
+  # Files in the root directory will not be deleted (ssx.yml, global.yml)
+  # Useful if you want files deleted on one server to be automatically deleted on other servers as well.
+  # Do not enable if you have config files on this server that you don't have on other servers.
+  delete: false
+  
+  password: "a"
   
   
 # You probably don't need to touch this.
