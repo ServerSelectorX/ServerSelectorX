@@ -1,20 +1,18 @@
 # Number of rows of slots of your server selector menu. For example '2' will mean 2*9 = 18 slots. Max value is 6.
 rows: 2
 
-# This will be displayed as the title of the menu. You cannot have multiple menus with the same title!
+# This will be displayed as the title of the menu.
 title: 'Server Selector'
 
 # This will be the name of the server selector item
 item-name: 'Server Selector'
 
-# Item lore. For no lore, put 'none' in the first line.
 item-lore:
 - 'Line 1'
 - 'Line 2'
 
 # The name of the server selector item.
 item: COMPASS
-data: 0
 
 # Give the item when a player joins?
 on-join: true

@@ -9,8 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 
-import xyz.derkades.derkutils.Cooldown;
-
 public class SelectorOpenListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH)
@@ -21,14 +19,6 @@ public class SelectorOpenListener implements Listener {
 		}
 
 		final Player player = event.getPlayer();
-
-		// Small cooldown to prevent weird glitches when right clicking the item very quickly
-		// and because on 1.9+ interact event is called twice.
-		if (Cooldown.getCooldown(player.getUniqueId() + "doubleopen") > 0) {
-			return;
-		}
-
-		Cooldown.addCooldown(player.getUniqueId() + "doubleopen", 500);
 
 		for (final FileConfiguration config : Main.getConfigurationManager().getAll()){
 			if (config.getString("item").equalsIgnoreCase("NONE")){
@@ -42,11 +32,11 @@ public class SelectorOpenListener implements Listener {
 				material = Material.STONE;
 			}
 
-			if (player.getInventory().getItemInHand().getType() != material){
+			if (player.getInventory().getItemInMainHand().getType() != material){
 				continue;
 			}
 
-			Main.openSelector(player, config);
+			new SelectorMenu(player, config);
 			return;
 		}
 	}
