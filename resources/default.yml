@@ -61,7 +61,7 @@ menu:
   5:
     action: 'msg:Hello'
     offline:
-      item: 'head:auto' # You can use head:auto to get the head of the player opening the menu, or head:SomethingElse to get the head of a specific player.
+      item: 'head:auto' # You can use head:auto to get the head of the player opening the menu, or head:playername to get the head of a specific player.
       name: 'This is you!'
       lore:
        - This item does nothing
