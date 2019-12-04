@@ -4,9 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -48,14 +46,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new SelectorOpenListener(), this);
 		Bukkit.getPluginManager().registerEvents(new OnJoinListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemMoveDropCancelListener(), this);
-
-		// Only register OffHandMoveCancel listener if server is a version with offhand
-		final List<String> offHandVersions = Arrays.asList("1.9", "1.10", "1.11", "1.12", "1.13", "1.14", "1.15");
-		for (final String version : offHandVersions) {
-			if (Bukkit.getBukkitVersion().contains(version)) {
-				Bukkit.getPluginManager().registerEvents(new OffHandMoveCancel(), this);
-			}
-		}
+		Bukkit.getPluginManager().registerEvents(new OffHandMoveCancel(), this);
 
 		//Register messaging channels
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
