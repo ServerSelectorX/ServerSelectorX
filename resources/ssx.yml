@@ -29,6 +29,11 @@ config-sync:
   # Do not enable if you have config files on this server that you don't have on other servers.
   delete: false
   
+  # Sync interval in minutes. The server needs to be restarted for this option to take effect.
+  # When set to 30, the config will be synced at startup then every 30 minutes.
+  # Use /ssx sync to force sync
+  interval: 30
+  
   password: "a"
   
   
