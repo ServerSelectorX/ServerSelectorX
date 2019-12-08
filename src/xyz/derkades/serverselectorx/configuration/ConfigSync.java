@@ -160,8 +160,8 @@ public class ConfigSync {
 
 		this.logger.info("File sync done! The plugin will now reload.");
 		Main.getConfigurationManager().reload();
-		Main.server.stop();
-		Main.server.start();
+//		Main.server.stop();
+//		Main.server.start();
 	}
 
 }
