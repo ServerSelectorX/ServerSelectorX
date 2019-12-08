@@ -33,8 +33,10 @@ public class ConfigSync {
 			return;
 		}
 
+		final long interval = syncConfig.getInt("interval")*60*20;
+
 		// Run 1 second after server startup, then every hour
-		Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getPlugin(), this::sync, 20, 60*60*20);
+		Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getPlugin(), this::sync, 20, interval);
 	}
 
 	private boolean testConnectivity() {
