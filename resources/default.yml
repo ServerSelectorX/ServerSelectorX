@@ -69,6 +69,6 @@ menu:
   # No action item
   -1: # -1 means everything else
     action: 'none'
-    online:
+    offline:
       item: STAINED_GLASS_PANE
       data: 0
