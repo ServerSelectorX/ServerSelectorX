@@ -58,6 +58,7 @@ public class PingServersBackground extends Thread {
 			} catch (final Exception e) {
 				// So the loop doesn't break if an error occurs
 				// Print the error, sleep, try again.
+				e.printStackTrace();
 				try {
 					Thread.sleep(5000);
 				} catch (final InterruptedException e2) {
