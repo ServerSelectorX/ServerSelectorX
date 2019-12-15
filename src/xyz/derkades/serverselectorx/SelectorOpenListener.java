@@ -8,6 +8,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.inventory.EquipmentSlot;
 
 public class SelectorOpenListener implements Listener {
 
@@ -15,6 +16,10 @@ public class SelectorOpenListener implements Listener {
 	public void onInteract(final PlayerInteractEvent event){
 		if (!(event.getAction() == Action.RIGHT_CLICK_AIR ||
 				event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+			return;
+		}
+
+		if (!event.getHand().equals(EquipmentSlot.HAND)) {
 			return;
 		}
 
