@@ -28,12 +28,15 @@ public class PingServersBackground extends BukkitRunnable {
 						final ConfigurationSection section = config.getConfigurationSection("menu." + key);
 
 						if (!section.getBoolean("ping-server", false)) {
+							debug("Skipping, item " + key + " server pinging disabled. ");
 							continue;
 						}
 
 						final String ip = section.getString("ip");
 						final int port = section.getInt("port");
 						final String serverId = ip + port;
+
+						debug(String.format("Pinging item %s with address %s:%s", key, ip, port));
 
 						Server server;
 
@@ -43,6 +46,8 @@ public class PingServersBackground extends BukkitRunnable {
 							final int timeout = section.getInt("ping-timeout", 100);
 							server = new ServerPinger.InternalServer(ip, port, timeout);
 						}
+
+						debug("Online: " + server.isOnline());
 
 						final Map<String, Object> serverInfo = new HashMap<>();
 						serverInfo.put("isOnline", server.isOnline());
@@ -66,6 +71,12 @@ public class PingServersBackground extends BukkitRunnable {
 					e2.printStackTrace();
 				}
 			}
+		}
+	}
+
+	private void debug(final String message) {
+		if (Main.getPlugin().getConfig().getBoolean("ping-debug", false)) {
+			Main.getPlugin().getLogger().info("[Server Pinging] " + message);
 		}
 	}
 
