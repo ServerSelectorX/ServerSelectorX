@@ -44,8 +44,8 @@ public class SelectorMenu extends IconMenu {
 				name = section.getString("offline.name", " ");
 				lore = section.getStringList("offline.lore");
 			} else {
-				final String ip = config.getString("ip");
-				final int port = config.getInt("port");
+				final String ip = section.getString("ip");
+				final int port = section.getInt("port");
 				final String serverId = ip + port;
 
 				Map<String, Object> placeholders = null;
