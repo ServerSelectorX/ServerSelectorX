@@ -50,7 +50,7 @@ public class Main extends JavaPlugin {
 		//Register messaging channels
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		new PingServersBackground().start();
+		new PingServersBackground().runTaskAsynchronously(this);
 
 		//Register command
 		this.getCommand("serverselectorx").setExecutor(new ReloadCommand());

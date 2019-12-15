@@ -5,11 +5,12 @@ import java.util.Map;
 
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import xyz.derkades.serverselectorx.utils.ServerPinger;
 import xyz.derkades.serverselectorx.utils.ServerPinger.Server;
 
-public class PingServersBackground extends Thread {
+public class PingServersBackground extends BukkitRunnable {
 
 	@Override
 	public void run() {
