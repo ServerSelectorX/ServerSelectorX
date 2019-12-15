@@ -17,3 +17,5 @@ external-query: true
 
 # Internal query only
 ping-timeout: 500
+
+ping-debug: false
