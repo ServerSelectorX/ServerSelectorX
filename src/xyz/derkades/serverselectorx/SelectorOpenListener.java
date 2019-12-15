@@ -14,8 +14,7 @@ public class SelectorOpenListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onInteract(final PlayerInteractEvent event){
-		if (!(event.getAction() == Action.RIGHT_CLICK_AIR ||
-				event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+		if (event.getAction() == Action.PHYSICAL) {
 			return;
 		}
 
