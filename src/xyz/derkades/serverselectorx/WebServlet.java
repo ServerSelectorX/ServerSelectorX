@@ -73,10 +73,19 @@ public class WebServlet extends HttpServlet {
 
 		final List<Placeholder> parsedPlaceholders = new ArrayList<>();
 
+		// If the code below doesn't make any sense to you, you should read the API documentation:
+		// https://github.com/ServerSelectorX/ServerSelectorX/wiki/ServerSelectorX-Premium-API
+
 		receivedPlaceholders.forEach((k, v) -> {
 			if (v instanceof String) {
+				// If the placeholder value received is a plain string, it is a global
+				// placeholder and the value received is the placeholder value.
 				parsedPlaceholders.add(new GlobalPlaceholder(k, (String) v));
 			} else if (v instanceof Map) {
+				// If the placeholder value received is a map with UUIDs and strings,
+				// it is a player-specific placeholder. The map contains placeholder
+				// values for each player. Every map entry is added as a unique
+				// player specific placeholder.
 				final Map<UUID, String> values = new HashMap<>();
 				((Map<String, String>) v).forEach((k2, v2) -> values.put(UUID.fromString(k2), v2));
 				parsedPlaceholders.add(new PlayerPlaceholder(k, values));
