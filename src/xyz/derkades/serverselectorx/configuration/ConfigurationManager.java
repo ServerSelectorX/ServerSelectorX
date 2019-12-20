@@ -29,6 +29,13 @@ public class ConfigurationManager {
 	public void reload() throws IOException {
 		final File dir = Main.getPlugin().getDataFolder();
 
+		boolean generate = false;
+		if (!dir.exists()) {
+			Main.getPlugin().getLogger().info("Plugin data folder does not exist. Copying default config files..");
+			dir.mkdirs();
+			generate = true;
+		}
+
 		// First copy all files to the config directory
 
 		// files needed to be listed manually because in
@@ -42,16 +49,12 @@ public class ConfigurationManager {
 		};
 
 		final File configDir = new File(dir, "config");
-		boolean generateMenuItemCommand = false;
-		if (!configDir.exists()) {
-			configDir.mkdirs();
-			generateMenuItemCommand = true;
-		}
+		configDir.mkdirs();
 
 		for (final String fileName : files) {
 			final File file = new File(configDir, fileName);
 			if (!file.exists()) {
-				FileUtils.copyURLToFile(this.getClass().getResource("/config/" + file), file);
+				FileUtils.copyURLToFile(this.getClass().getResource("/config/" + fileName), file);
 			}
 
 			if (fileName.equals("api.yml")) {
@@ -72,16 +75,11 @@ public class ConfigurationManager {
 		final File commandDir = new File(dir, "command");
 		final File itemDir = new File(dir, "item");
 		final File menuDir = new File(dir, "menu");
+		commandDir.mkdirs();
+		itemDir.mkdirs();
+		menuDir.mkdirs();
 
-		if (generateMenuItemCommand &&
-				!commandDir.exists() &&
-				!itemDir.exists() &&
-				!menuDir.exists()) {
-
-			commandDir.mkdirs();
-			itemDir.mkdirs();
-			menuDir.mkdirs();
-
+		if (generate) {
 			FileUtils.copyURLToFile(this.getClass().getResource("/command.yml"),
 					new File(commandDir, "servers.yml"));
 			FileUtils.copyURLToFile(this.getClass().getResource("/item.yml"),
@@ -98,14 +96,14 @@ public class ConfigurationManager {
 		}
 
 		this.items = new ConcurrentHashMap<>();
-		for (final File file : commandDir.listFiles()) {
+		for (final File file : itemDir.listFiles()) {
 			if (file.getName().endsWith(".yml")) {
 				this.items.put(configName(file), YamlConfiguration.loadConfiguration(file));
 			}
 		}
 
 		this.menus = new ConcurrentHashMap<>();
-		for (final File file : commandDir.listFiles()) {
+		for (final File file : menuDir.listFiles()) {
 			if (file.getName().endsWith(".yml")) {
 				this.menus.put(configName(file), YamlConfiguration.loadConfiguration(file));
 			}
