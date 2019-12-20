@@ -22,7 +22,7 @@ public class ItemClickListener implements Listener {
 			return;
 		}
 
-		final FileConfiguration globalConfig = Main.getConfigurationManager().getGlobalConfig();
+		final FileConfiguration inventory = Main.getConfigurationManager().inventory;
 
 		if (event.isCancelled() && inventory.getBoolean("ignore-cancelled", false)) {
 			return;
