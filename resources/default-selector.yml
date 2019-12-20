@@ -5,6 +5,8 @@ rows: 1
 #  open: true
 #  message: '&cYou do not have permission to open this menu.'
 
+# sound: ITEM_ARMOR_EQUIP_GENERIC
+
 menu:
 
   # Simple item that turns on or off a speed effect
