@@ -28,6 +28,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 				sender.sendMessage(ChatColor.RED + "An error occured while trying to reload the configuration files, probably because of a YAML syntax error.");
 				sender.sendMessage("Error: " + e.getMessage());
 				sender.sendMessage("For a more detailed error message see the console.");
+				e.printStackTrace();
 				return true;
 			}
 
