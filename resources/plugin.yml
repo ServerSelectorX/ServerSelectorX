@@ -9,11 +9,9 @@ api-version: 1.13
 
 commands:
   serverselectorx:
-    aliases: [ss,ssx,serversel,serverselector]
+    aliases: [ssx]
     description: The one and only command of the ServerSelectorX plugin.
-    usage: |-
-      Aliases: serverselectorx, ss, ssx, serversel, serverselector
-      
+    usage: |-      
       /ssx reload/rl - Reload configuration files
       /ssx status - Show SSX-Connector status
       /ssx items - List names of loaded items
