@@ -103,7 +103,7 @@ public class ConfigSync {
 	public void sync() {
 		this.logger.info("Starting config sync..");
 
-		this.config = Main.getConfigurationManager().sync.getConfigurationSection("config-sync");
+		this.config = Main.getConfigurationManager().sync;
 
 		if (!this.testConnectivity()) {
 			return;
