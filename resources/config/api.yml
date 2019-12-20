@@ -16,4 +16,9 @@ password: "a"
 # will consider a server as offline.
 server-offline-timeout: 6000
 
+# When set to false, you can sync files outside of the SSX data folder.
+# This will expose all your server files (possibly even system files) through the API!
+# Make sure the API is secured properly before disabling this.
+block-outside-directory: true
+
 jetty-debug: false

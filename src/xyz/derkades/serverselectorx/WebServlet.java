@@ -125,14 +125,15 @@ public class WebServlet extends HttpServlet {
 
 		if (request.getRequestURI().equals("/getfile")) {
 			final String fileName = request.getParameter("file");
+
 			// Do not allow going outside of the plugin directory for security reasons
-//			if (fileName.contains("..")) {
-//				logger.warning("Received request with dangerous filename from " + request.getRemoteAddr());
-//				logger.warning("File name: " + fileName);
-//				logger.warning("The request has been blocked, no need to panic. Maybe do consider looking into where the request came from?");
-//				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//				return;
-//			}
+			if (api.getBoolean("block-outside-directory", true) && fileName.contains("..")) {
+				logger.warning("Received request with dangerous filename from " + request.getRemoteAddr());
+				logger.warning("File name: " + fileName);
+				logger.warning("The request has been blocked, no need to panic. Maybe do consider looking into where the request came from?");
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				return;
+			}
 
 			final File file = new File(Main.getPlugin().getDataFolder(), fileName);
 			final String contents = FileUtils.readFileToString(file, "UTF-8");
@@ -142,7 +143,7 @@ public class WebServlet extends HttpServlet {
 		else if (request.getRequestURI().equals("/listfiles")) {
 			final String dirName = request.getParameter("dir");
 			// Do not allow going outside of the plugin directory for security reasons
-			if (dirName.contains("..")) {
+			if (api.getBoolean("block-outside-directory", true) && dirName.contains("..")) {
 				logger.warning("Received request with dangerous directory name from " + request.getRemoteAddr());
 				logger.warning("Directory name: " + dirName);
 				logger.warning("The request has been blocked, no need to panic. Maybe do consider looking into where the request came from?");
