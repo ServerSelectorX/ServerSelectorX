@@ -16,6 +16,7 @@ commands:
       
       /ssx reload/rl - Reload configuration files
       /ssx status - Show SSX-Connector status
-      /ssx items - List names of items
-      /ssx menus - List names of menus
+      /ssx items - List names of loaded items
+      /ssx menus - List names of loaded menus
+      /ssx commands - List names of loaded commands
       /ssx lagdebug - Enable lag debug mode

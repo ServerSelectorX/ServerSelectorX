@@ -1,0 +1,26 @@
+# Clear inventory before adding items on join? 
+# This may not work with other plugins that also add items on join.
+# Players with the permission ssx.clearinvbypass will not get their inventory cleared.
+clear-inv: false
+
+# Cancel item dropping for players that do not have the permission ssx.drop
+cancel-item-drop: false
+
+# Cancel item move for players that do not have the permission ssx.move
+# this includes swapping items between hands for 1.9+)
+cancel-item-move: false
+
+
+# -------------------- Advanced -------------------- #
+
+# When this is set to true, stuff that would normally happen when you click an item will not happen.
+# For example, right clicking with a hoe will not turn dirt into farmland.
+# (only for items that open a menu)
+# This is useful if you use certain items, but can cause problems
+# with some plugins which is why it's disabled by default.
+cancel-click-event: false
+
+# Ignore player right click on server selector item if another plugin has cancelled the event
+# When this is set to true, players will no longer be able to open the server selector if plugins
+# such as WorldGuard don't allow it.
+ignore-cancelled: false

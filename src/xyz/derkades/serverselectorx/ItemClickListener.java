@@ -24,7 +24,7 @@ public class ItemClickListener implements Listener {
 
 		final FileConfiguration globalConfig = Main.getConfigurationManager().getGlobalConfig();
 
-		if (event.isCancelled() && globalConfig.getBoolean("ignore-cancelled", false)) {
+		if (event.isCancelled() && inventory.getBoolean("ignore-cancelled", false)) {
 			return;
 		}
 
@@ -43,12 +43,12 @@ public class ItemClickListener implements Listener {
 
 		final String itemName = nbt.getString("SSXItem");
 
-		if (!Main.getConfigurationManager().getItems().containsKey(itemName)) {
+		if (!Main.getConfigurationManager().items.containsKey(itemName)) {
 			player.sendMessage("An configuration file does not exist for an item with the name '" + itemName + "'.");
 			return;
 		}
 
-		final FileConfiguration config = Main.getConfigurationManager().getItems().get(itemName);
+		final FileConfiguration config = Main.getConfigurationManager().items.get(itemName);
 
 		final List<String> actions;
 
@@ -64,7 +64,7 @@ public class ItemClickListener implements Listener {
 
 		xyz.derkades.serverselectorx.actions.Action.runActions(player, actions);
 
-		final boolean cancel = globalConfig.getBoolean("cancel-click-event", false);
+		final boolean cancel = inventory.getBoolean("cancel-click-event", false);
 		if (cancel) {
 			event.setCancelled(true);
 		}

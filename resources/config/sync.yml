@@ -1,0 +1,36 @@
+# IMPORTANT
+
+# Read into what this is about before touching these options
+# https://github.com/ServerSelectorX/ServerSelectorX/wiki/Config-sync-v2
+
+# If configured incorrectly, this WILL DELETE YOUR CONFIG FILES.
+
+enabled: false
+
+# Server to retrieve configuration files from
+address: '123.45.67.89:9782'
+
+files:
+ - global.yml
+ - command/servers.yml
+
+directories:
+ - menu # Sync all files in the menu directory
+
+
+
+# -------------------- Advanced -------------------- #
+ 
+# When set to true, delete ALL files in ALL configuration directories (menu, item, command)
+# Files in the root directory will not be deleted (ssx.yml, global.yml)
+# Useful if you want files deleted on one server to be automatically deleted on other servers as well.
+# Do not enable if you have config files on this server that you don't have on other servers.
+delete: false
+
+# Sync interval in minutes. The server needs to be restarted for this option to take effect.
+# When set to 30, the config will be synced at startup then every 30 minutes.
+# Use /ssx sync to force sync
+interval: 30
+
+# If you don't know what this is you don't need to change it.
+password: "a"

@@ -26,7 +26,7 @@ public class Server {
 	}
 
 	public boolean isOnline() {
-		final long timeout = Main.getConfigurationManager().getGlobalConfig().getLong("server-offline-timeout", 6000);
+		final int timeout = Main.getConfigurationManager().api.getInt("server-offline-timeout", 6000);
 		return getTimeSinceLastMessage() < timeout;
 	}
 
@@ -37,8 +37,9 @@ public class Server {
 	public Placeholder getPlaceholder(final String name) {
 		if (getPlaceholders() != null) {
 			for (final Placeholder placeholder : getPlaceholders()) {
-				if (placeholder.getKey().equals(name))
+				if (placeholder.getKey().equals(name)) {
 					return placeholder;
+				}
 			}
 		}
 
@@ -61,8 +62,9 @@ public class Server {
 
 	public static Server getServer(final String name) {
 		for (final Server server : SERVERS) {
-			if (server.getName().equalsIgnoreCase(name))
+			if (server.getName().equalsIgnoreCase(name)) {
 				return server;
+			}
 		}
 
 		final Server server = new Server(name);

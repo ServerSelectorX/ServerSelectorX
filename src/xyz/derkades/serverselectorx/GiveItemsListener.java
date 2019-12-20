@@ -24,13 +24,9 @@ public class GiveItemsListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onJoin(final PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-		final FileConfiguration global = Main.getConfigurationManager().getGlobalConfig();
+		final FileConfiguration config = Main.getConfigurationManager().inventory;
 
-		if (global.getBoolean("hide-others-on-join", false)) {
-			InvisibilityToggle.hideOthers(player);
-		}
-
-		if (global.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
+		if (config.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
 			event.getPlayer().getInventory().clear();
 		}
 
@@ -56,7 +52,7 @@ public class GiveItemsListener implements Listener {
 
 	public void giveItems(final Player player, final String type) {
 		itemLoop:
-		for (final Map.Entry<String, FileConfiguration> itemConfigEntry : Main.getConfigurationManager().getItems().entrySet()) {
+		for (final Map.Entry<String, FileConfiguration> itemConfigEntry : Main.getConfigurationManager().items.entrySet()) {
 			final String name = itemConfigEntry.getKey();
 			final FileConfiguration config = itemConfigEntry.getValue();
 

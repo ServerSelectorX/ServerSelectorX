@@ -22,7 +22,7 @@ public class Commands {
 			bukkitCommandMap.setAccessible(true);
 			final CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
 
-			for (final Map.Entry<String, FileConfiguration> configEntry : Main.getConfigurationManager().getCommands().entrySet()) {
+			for (final Map.Entry<String, FileConfiguration> configEntry : Main.getConfigurationManager().commands.entrySet()) {
 				final String commandName = configEntry.getKey();
 				final FileConfiguration config = configEntry.getValue();
 				final String description = config.getString("description", "Opens menu");

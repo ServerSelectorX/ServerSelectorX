@@ -16,9 +16,7 @@ public abstract class Action {
 			new PlayerCommandAction(),
 			new ServerAction(),
 			new TeleportAction(),
-			new ToggleHideOthersAction(),
-			new ToggleInvisibilityAction(),
-			new ToggleSpeedAction(),
+			new ToggleEffectAction(),
 			new UrlAction(),
 	};
 
@@ -68,9 +66,9 @@ public abstract class Action {
 						return true;
 					}
 				} else {
-					if (!hasValue)
+					if (!hasValue) {
 						return action.apply(player, null);
-					else {
+					} else {
 						player.sendMessage("Action '" + actionName + "' does not require a value");
 						return true;
 					}

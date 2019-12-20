@@ -48,9 +48,9 @@ public class WebServlet extends HttpServlet {
 			return;
 		}
 
-		final FileConfiguration config = Main.getConfigurationManager().getSSXConfig();
+		final FileConfiguration api = Main.getConfigurationManager().api;
 
-		final String correctPassword = config.getString("password", "a");
+		final String correctPassword = api.getString("password", "a");
 
 		if (!correctPassword.equals(password)) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -73,10 +73,19 @@ public class WebServlet extends HttpServlet {
 
 		final List<Placeholder> parsedPlaceholders = new ArrayList<>();
 
+		// If the code below doesn't make any sense to you, you should read the API documentation:
+		// https://github.com/ServerSelectorX/ServerSelectorX/wiki/ServerSelectorX-Premium-API
+
 		receivedPlaceholders.forEach((k, v) -> {
 			if (v instanceof String) {
+				// If the placeholder value received is a plain string, it is a global
+				// placeholder and the value received is the placeholder value.
 				parsedPlaceholders.add(new GlobalPlaceholder(k, (String) v));
 			} else if (v instanceof Map) {
+				// If the placeholder value received is a map with UUIDs and strings,
+				// it is a player-specific placeholder. The map contains placeholder
+				// values for each player. Every map entry is added as a unique
+				// player specific placeholder.
 				final Map<UUID, String> values = new HashMap<>();
 				((Map<String, String>) v).forEach((k2, v2) -> values.put(UUID.fromString(k2), v2));
 				parsedPlaceholders.add(new PlayerPlaceholder(k, values));
@@ -103,9 +112,9 @@ public class WebServlet extends HttpServlet {
 			return;
 		}
 
-		final FileConfiguration config = Main.getConfigurationManager().getSSXConfig();
+		final FileConfiguration api = Main.getConfigurationManager().api;
 
-		final String correctPassword = config.getString("password", "a");
+		final String correctPassword = api.getString("password", "a");
 
 		if (!correctPassword.equals(password)) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -116,14 +125,15 @@ public class WebServlet extends HttpServlet {
 
 		if (request.getRequestURI().equals("/getfile")) {
 			final String fileName = request.getParameter("file");
+
 			// Do not allow going outside of the plugin directory for security reasons
-//			if (fileName.contains("..")) {
-//				logger.warning("Received request with dangerous filename from " + request.getRemoteAddr());
-//				logger.warning("File name: " + fileName);
-//				logger.warning("The request has been blocked, no need to panic. Maybe do consider looking into where the request came from?");
-//				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-//				return;
-//			}
+			if (api.getBoolean("block-outside-directory", true) && fileName.contains("..")) {
+				logger.warning("Received request with dangerous filename from " + request.getRemoteAddr());
+				logger.warning("File name: " + fileName);
+				logger.warning("The request has been blocked, no need to panic. Maybe do consider looking into where the request came from?");
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				return;
+			}
 
 			final File file = new File(Main.getPlugin().getDataFolder(), fileName);
 			final String contents = FileUtils.readFileToString(file, "UTF-8");
@@ -133,7 +143,7 @@ public class WebServlet extends HttpServlet {
 		else if (request.getRequestURI().equals("/listfiles")) {
 			final String dirName = request.getParameter("dir");
 			// Do not allow going outside of the plugin directory for security reasons
-			if (dirName.contains("..")) {
+			if (api.getBoolean("block-outside-directory", true) && dirName.contains("..")) {
 				logger.warning("Received request with dangerous directory name from " + request.getRemoteAddr());
 				logger.warning("Directory name: " + dirName);
 				logger.warning("The request has been blocked, no need to panic. Maybe do consider looking into where the request came from?");

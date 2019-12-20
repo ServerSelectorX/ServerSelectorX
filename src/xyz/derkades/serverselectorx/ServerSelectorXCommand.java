@@ -28,6 +28,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 				sender.sendMessage(ChatColor.RED + "An error occured while trying to reload the configuration files, probably because of a YAML syntax error.");
 				sender.sendMessage("Error: " + e.getMessage());
 				sender.sendMessage("For a more detailed error message see the console.");
+				e.printStackTrace();
 				return true;
 			}
 
@@ -60,14 +61,21 @@ public class ServerSelectorXCommand implements CommandExecutor {
 		}
 
 		if (args.length == 1 && args[0].equalsIgnoreCase("items")) {
-			Main.getConfigurationManager().getItems().forEach((name, config) -> {
+			Main.getConfigurationManager().items.forEach((name, config) -> {
 				sender.sendMessage(name);
 			});
 			return true;
 		}
 
 		if (args.length == 1 && args[0].equalsIgnoreCase("menus")) {
-			Main.getConfigurationManager().getMenus().forEach((name, config) -> {
+			Main.getConfigurationManager().menus.forEach((name, config) -> {
+				sender.sendMessage(name);
+			});
+			return true;
+		}
+
+		if (args.length == 1 && args[0].equalsIgnoreCase("commands")) {
+			Main.getConfigurationManager().commands.forEach((name, config) -> {
 				sender.sendMessage(name);
 			});
 			return true;
