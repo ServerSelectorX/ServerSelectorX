@@ -37,7 +37,9 @@ public class Menu extends IconMenu {
 		this.config = config;
 
 		try {
-			player.playSound(player.getLocation(), Sound.valueOf(config.getString("sound")), 1.0f, 1.0f);
+			if (config.contains("sound")) {
+				player.playSound(player.getLocation(), Sound.valueOf(config.getString("sound")), 1.0f, 1.0f);
+			}
 		} catch (final IllegalArgumentException e) {
 			Main.getPlugin().getLogger().warning("Invalid sound name in config file '" + configName + "'");
 			Main.getPlugin().getLogger().warning("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Sound-names");
