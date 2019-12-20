@@ -27,7 +27,7 @@ public class ConfigSync {
 	private final Logger logger = Main.getPlugin().getLogger();
 
 	public ConfigSync() {
-		final ConfigurationSection syncConfig = Main.getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
+		final ConfigurationSection syncConfig = Main.getConfigurationManager().sync;
 
 		if (!syncConfig.getBoolean("enabled", false)) {
 			return;
@@ -103,7 +103,7 @@ public class ConfigSync {
 	public void sync() {
 		this.logger.info("Starting config sync..");
 
-		this.config = Main.getConfigurationManager().getSSXConfig().getConfigurationSection("config-sync");
+		this.config = Main.getConfigurationManager().sync.getConfigurationSection("config-sync");
 
 		if (!this.testConnectivity()) {
 			return;
@@ -159,9 +159,14 @@ public class ConfigSync {
 		}
 
 		this.logger.info("File sync done! The plugin will now reload.");
-		Main.getConfigurationManager().reload();
-//		Main.server.stop();
-//		Main.server.start();
+
+		try {
+			Main.getConfigurationManager().reload();
+		} catch (final IOException e) {
+			Main.getPlugin().getLogger().warning("Oh no! There was a syntax error in the config file pulled"
+					+ "from the other server. The plugin will probably stop working. For a detailed error "
+					+ "report, use /ssx reload on the other server.");
+		}
 	}
 
 }

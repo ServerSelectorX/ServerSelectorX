@@ -48,9 +48,9 @@ public class WebServlet extends HttpServlet {
 			return;
 		}
 
-		final FileConfiguration config = Main.getConfigurationManager().getSSXConfig();
+		final FileConfiguration api = Main.getConfigurationManager().api;
 
-		final String correctPassword = config.getString("password", "a");
+		final String correctPassword = api.getString("password", "a");
 
 		if (!correctPassword.equals(password)) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
@@ -112,9 +112,9 @@ public class WebServlet extends HttpServlet {
 			return;
 		}
 
-		final FileConfiguration config = Main.getConfigurationManager().getSSXConfig();
+		final FileConfiguration api = Main.getConfigurationManager().api;
 
-		final String correctPassword = config.getString("password", "a");
+		final String correctPassword = api.getString("password", "a");
 
 		if (!correctPassword.equals(password)) {
 			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);

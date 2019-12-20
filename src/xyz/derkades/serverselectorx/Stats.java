@@ -13,8 +13,6 @@ public class Stats extends Metrics {
 	public Stats() {
 		super(Main.getPlugin());
 
-		final Map<String, FileConfiguration> menuConfigs = Main.getConfigurationManager().getMenus();
-
 		this.addCustomChart(new Metrics.SimplePie("placeholderapi", () -> {
 			if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
 				return "yes";
@@ -24,56 +22,46 @@ public class Stats extends Metrics {
 		}));
 
 		this.addCustomChart(new Metrics.SimplePie("number_of_selectors", () -> {
-			return menuConfigs.entrySet().size() + "";
+			return Main.getConfigurationManager().menus.size() + "";
 		}));
 
 		this.addCustomChart(new Metrics.AdvancedPie("selector_item", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
-			for (final Map.Entry<String, FileConfiguration> menuConfigEntry : menuConfigs.entrySet()) {
-				final FileConfiguration config = menuConfigEntry.getValue();
-
-				String materialString;
-
-				if (!config.getBoolean("item.enabled")) {
-					materialString = "disabled";
-				} else {
-					final Material material = Material.getMaterial(config.getString("item.material"));
-					if (material == null)
-					 {
-						continue; //Do not count invalid items
-					}
-					materialString = material.toString();
+			for (final FileConfiguration item : Main.getConfigurationManager().items.values()) {
+				final Material material = Material.getMaterial(item.getString("item.material"));
+				if (material == null) {
+					continue; //Do not count invalid items
 				}
 
-				if (map.containsKey(materialString)) {
-					map.put(materialString, map.get(materialString + 1));
+				if (map.containsKey(material.toString())) {
+					map.put(material.toString(), map.get(material.toString() + 1));
 				} else {
-					map.put(materialString, 1);
+					map.put(material.toString(), 1);
 				}
 			}
 
 			return map;
 		}));
 
-		this.addCustomChart(new Metrics.AdvancedPie("type", () -> {
-			final Map<String, Integer> map = new HashMap<>();
-
-			for (final Map.Entry<String, FileConfiguration> menuConfigEntry : menuConfigs.entrySet()) {
-				final FileConfiguration config = menuConfigEntry.getValue();
-
-				for (final String slot : config.getConfigurationSection("menu").getKeys(false)) {
-					final String action = config.getString("menu." + slot + ".action").split(":")[0].toLowerCase();
-					if (map.containsKey(action)) {
-						map.put(action, map.get(action) + 1);
-					} else {
-						map.put(action, 1);
-					}
-				}
-			}
-
-			return map;
-		}));
+//		this.addCustomChart(new Metrics.AdvancedPie("type", () -> {
+//			final Map<String, Integer> map = new HashMap<>();
+//
+//			for (final Map.Entry<String, FileConfiguration> menuConfigEntry : menuConfigs.entrySet()) {
+//				final FileConfiguration config = menuConfigEntry.getValue();
+//
+//				for (final String slot : config.getConfigurationSection("menu").getKeys(false)) {
+//					final String action = config.getString("menu." + slot + ".action").split(":")[0].toLowerCase();
+//					if (map.containsKey(action)) {
+//						map.put(action, map.get(action) + 1);
+//					} else {
+//						map.put(action, 1);
+//					}
+//				}
+//			}
+//
+//			return map;
+//		}));
 
 		this.addCustomChart(new Metrics.SimplePie("ping_api", () -> "Premium"));
 
@@ -102,15 +90,15 @@ public class Stats extends Metrics {
 		this.addCustomChart(new Metrics.AdvancedPie("menu_item_slot", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
-			for (final FileConfiguration config : Main.getConfigurationManager().getItems().values()) {
-				if (!config.getBoolean("give.join")) {
+			for (final FileConfiguration item : Main.getConfigurationManager().items.values()) {
+				if (!item.getBoolean("give.join")) {
 					if (map.containsKey("Disabled")) {
 						map.put("Disabled", map.get("Disabled") + 1);
 					} else {
 						map.put("Disabled", 1);
 					}
 				} else {
-					final int slot = config.getInt("give.inv-slot", 0);
+					final int slot = item.getInt("give.inv-slot", 0);
 					if (slot < 0) {
 						if (map.containsKey("Auto")) {
 							map.put("Auto", map.get("Auto") + 1);
@@ -133,10 +121,8 @@ public class Stats extends Metrics {
 		this.addCustomChart(new Metrics.AdvancedPie("rows", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
-			for (final Map.Entry<String, FileConfiguration> menuConfigEntry : menuConfigs.entrySet()) {
-				final FileConfiguration config = menuConfigEntry.getValue();
-
-				final int rows = config.getInt("rows", 1);
+			for (final FileConfiguration menu : Main.getConfigurationManager().menus.values()) {
+				final int rows = menu.getInt("rows", 1);
 				if (map.containsKey(rows + "")) {
 					map.put(rows + "", map.get(rows + "") + 1);
 				} else {

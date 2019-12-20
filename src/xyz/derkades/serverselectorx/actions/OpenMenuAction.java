@@ -16,7 +16,7 @@ public class OpenMenuAction extends Action {
 
 	@Override
 	public boolean apply(final Player player, final String value) {
-		final Map<String, FileConfiguration> menus = Main.getConfigurationManager().getMenus();
+		final Map<String, FileConfiguration> menus = Main.getConfigurationManager().menus;
 		if (!menus.containsKey(value)) {
 			player.sendMessage("A menu with the name '" + value + "' does not exist");
 			return true;

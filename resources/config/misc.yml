@@ -1,0 +1,4 @@
+url-message: '&3&lClick here'
+
+# Send message to console when players don't have the required permission
+permission-debug: true

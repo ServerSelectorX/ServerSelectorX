@@ -2,7 +2,6 @@ package xyz.derkades.serverselectorx.configuration;
 
 import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -17,102 +16,104 @@ import xyz.derkades.serverselectorx.Main;
  */
 public class ConfigurationManager {
 
-	private final Map<String, FileConfiguration> commands = new ConcurrentHashMap<>();
-	private final Map<String, FileConfiguration> menus = new ConcurrentHashMap<>();
-	private final Map<String, FileConfiguration> items = new ConcurrentHashMap<>();
-	private FileConfiguration global;
-	private FileConfiguration ssx;
+	public Map<String, FileConfiguration> commands;
+	public Map<String, FileConfiguration> menus;
+	public Map<String, FileConfiguration> items;
 
-	public ConfigurationManager() {
-		this.reload();
-	}
+	public FileConfiguration api;
+	public FileConfiguration effects;
+	public FileConfiguration inventory;
+	public FileConfiguration misc;
+	public FileConfiguration sync;
 
-	public Map<String, FileConfiguration> getCommands() {
-		return this.commands;
-	}
+	public void reload() throws IOException {
+		final File dir = Main.getPlugin().getDataFolder();
 
-	public Map<String, FileConfiguration> getMenus() {
-		return this.menus;
-	}
+		// First copy all files to the config directory
 
-	public Map<String, FileConfiguration> getItems(){
-		return this.items;
-	}
+		// files needed to be listed manually because in
+		// java we can't list files in a jar
+		final String[] files = {
+				"api.yml",
+				"effects.yml",
+				"inventory.yml",
+				"misc.yml",
+				"sync.yml",
+		};
 
-	public FileConfiguration getGlobalConfig() {
-		return this.global;
-	}
+		final File configDir = new File(dir, "config");
+		boolean generateMenuItemCommand = false;
+		if (!configDir.exists()) {
+			configDir.mkdirs();
+			generateMenuItemCommand = true;
+		}
 
-	public FileConfiguration getSSXConfig() {
-		return this.ssx;
-	}
+		for (final String fileName : files) {
+			final File file = new File(configDir, fileName);
+			if (!file.exists()) {
+				FileUtils.copyURLToFile(this.getClass().getResource("/config/" + file), file);
+			}
 
-	public void reload() {
-		final File dataFolder = Main.getPlugin().getDataFolder();
-
-		final boolean generate = !new File(dataFolder, "ssx.yml").exists();
-
-		this.global = this.saveDefaultAndLoad("global", new File(dataFolder, "global.yml"));
-		this.ssx = this.saveDefaultAndLoad("ssx", new File(dataFolder, "ssx.yml"));
-
-		final File menuFolder = new File(dataFolder, "menu");
-		menuFolder.mkdirs();
-
-		this.menus.clear();
-		if (menuFolder.listFiles().length == 0 && generate) {
-			// Save default.yml file if menu folder is empty
-			this.menus.put("default", this.saveDefaultAndLoad("default-selector", new File(menuFolder, "default.yml")));
-		} else {
-			// Load files from directory
-			for (final File file : this.getFilesFromFolder(menuFolder)) {
-				this.menus.put(file.getName().replace(".yml", "").replace(".yaml", ""), YamlConfiguration.loadConfiguration(file));
+			if (fileName.equals("api.yml")) {
+				this.api = YamlConfiguration.loadConfiguration(file);
+			} else if (fileName.equals("effects.yml")) {
+				this.effects = YamlConfiguration.loadConfiguration(file);
+			} else if (fileName.equals("inventory.yml")) {
+				this.inventory = YamlConfiguration.loadConfiguration(file);
+			} else if (fileName.equals("misc.yml")) {
+				this.misc = YamlConfiguration.loadConfiguration(file);
+			} else if (fileName.equals("sync.yml")) {
+				this.sync = YamlConfiguration.loadConfiguration(file);
+			} else {
+				throw new AssertionError();
 			}
 		}
 
-		final File itemFolder = new File(dataFolder, "item");
-		itemFolder.mkdirs();
+		final File commandDir = new File(dir, "command");
+		final File itemDir = new File(dir, "item");
+		final File menuDir = new File(dir, "menu");
 
-		this.items.clear();
-		if (itemFolder.listFiles().length == 0 && generate) {
-			// Save serverselector.yml file if menu folder is empty
-			this.items.put("default", this.saveDefaultAndLoad("default-item", new File(itemFolder, "serverselector.yml")));
-		} else {
-			// Load files from directory
-			for (final File file : this.getFilesFromFolder(itemFolder)) {
-				this.items.put(file.getName().replace(".yml", "").replace(".yaml", ""), YamlConfiguration.loadConfiguration(file));
+		if (generateMenuItemCommand &&
+				!commandDir.exists() &&
+				!itemDir.exists() &&
+				!menuDir.exists()) {
+
+			commandDir.mkdirs();
+			itemDir.mkdirs();
+			menuDir.mkdirs();
+
+			FileUtils.copyURLToFile(this.getClass().getResource("/command.yml"),
+					new File(commandDir, "servers.yml"));
+			FileUtils.copyURLToFile(this.getClass().getResource("/item.yml"),
+					new File(itemDir, "compass.yml"));
+			FileUtils.copyURLToFile(this.getClass().getResource("/menu.yml"),
+					new File(menuDir, "default.yml"));
+		}
+
+		this.commands = new ConcurrentHashMap<>();
+		for (final File file : commandDir.listFiles()) {
+			if (file.getName().endsWith(".yml")) {
+				this.commands.put(configName(file), YamlConfiguration.loadConfiguration(file));
 			}
 		}
 
-		final File commandFolder = new File(dataFolder, "command");
-		commandFolder.mkdirs();
+		this.items = new ConcurrentHashMap<>();
+		for (final File file : commandDir.listFiles()) {
+			if (file.getName().endsWith(".yml")) {
+				this.items.put(configName(file), YamlConfiguration.loadConfiguration(file));
+			}
+		}
 
-		this.commands.clear();
-		if (commandFolder.listFiles().length == 0 && generate) {
-			// Save menu.yml file if menu folder is empty
-			this.commands.put("servers", this.saveDefaultAndLoad("default-command", new File(commandFolder, "servers.yml")));
-		} else {
-			// Load files from directory
-			for (final File file : this.getFilesFromFolder(commandFolder)) {
-				this.commands.put(file.getName().replace(".yml", "").replace(".yaml", ""), YamlConfiguration.loadConfiguration(file));
+		this.menus = new ConcurrentHashMap<>();
+		for (final File file : commandDir.listFiles()) {
+			if (file.getName().endsWith(".yml")) {
+				this.menus.put(configName(file), YamlConfiguration.loadConfiguration(file));
 			}
 		}
 	}
 
-	private FileConfiguration saveDefaultAndLoad(final String name, final File destination) {
-		if (!destination.exists()) {
-			final URL inputUrl = this.getClass().getResource("/" + name + ".yml");
-			try {
-				FileUtils.copyURLToFile(inputUrl, destination);
-			} catch (final IOException e) {
-				e.printStackTrace();
-			}
-		}
-
-		return YamlConfiguration.loadConfiguration(destination);
-	}
-
-	private File[] getFilesFromFolder(final File folder) {
-		return folder.listFiles((f) -> f.getName().endsWith(".yml") || f.getName().endsWith(".yaml"));
+	private static String configName(final File file) {
+		return file.getName().substring(0, file.getName().length() - 4);
 	}
 
 }

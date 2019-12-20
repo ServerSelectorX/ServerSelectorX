@@ -13,8 +13,9 @@ import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 public class ItemMoveDropCancelListener implements Listener {
 
 	public ItemMoveDropCancelListener() {
-		final FileConfiguration global = Main.getConfigurationManager().getGlobalConfig();
-		if (global.getBoolean("cancel-item-drop", false)) {
+		final FileConfiguration inventory = Main.getConfigurationManager().inventory;
+
+		if (inventory.getBoolean("cancel-item-drop", false)) {
 			Bukkit.getPluginManager().registerEvents(new Listener() {
 				@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 				public void onDrop(final PlayerDropItemEvent event){
@@ -25,7 +26,7 @@ public class ItemMoveDropCancelListener implements Listener {
 			}, Main.getPlugin());
 		}
 
-		if (global.getBoolean("cancel-item-move", false)) {
+		if (inventory.getBoolean("cancel-item-move", false)) {
 			Bukkit.getPluginManager().registerEvents(new Listener() {
 				@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 				public void onItemMove(final InventoryClickEvent event){

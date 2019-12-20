@@ -60,14 +60,21 @@ public class ServerSelectorXCommand implements CommandExecutor {
 		}
 
 		if (args.length == 1 && args[0].equalsIgnoreCase("items")) {
-			Main.getConfigurationManager().getItems().forEach((name, config) -> {
+			Main.getConfigurationManager().items.forEach((name, config) -> {
 				sender.sendMessage(name);
 			});
 			return true;
 		}
 
 		if (args.length == 1 && args[0].equalsIgnoreCase("menus")) {
-			Main.getConfigurationManager().getMenus().forEach((name, config) -> {
+			Main.getConfigurationManager().menus.forEach((name, config) -> {
+				sender.sendMessage(name);
+			});
+			return true;
+		}
+
+		if (args.length == 1 && args[0].equalsIgnoreCase("commands")) {
+			Main.getConfigurationManager().commands.forEach((name, config) -> {
 				sender.sendMessage(name);
 			});
 			return true;
