@@ -68,7 +68,7 @@ public class Server {
 		}
 
 		final Server server = new Server(name);
-		SERVERS.add(server);
+//		SERVERS.add(server);
 		return server;
 	}
 
