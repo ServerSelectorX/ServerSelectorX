@@ -17,6 +17,7 @@ public abstract class Action {
 			new ServerAction(),
 			new TeleportAction(),
 			new ToggleEffectAction(),
+			new ToggleHideOthersAction(),
 			new UrlAction(),
 	};
 
