@@ -51,6 +51,10 @@ public class Server {
 		return Integer.parseInt(((GlobalPlaceholder) getPlaceholder("online")).getValue());
 	}
 
+	public int getMaximumPlayers() {
+		return Integer.parseInt(((GlobalPlaceholder) getPlaceholder("max")).getValue());
+	}
+
 	public void updatePlaceholders(final List<Placeholder> placeholders) {
 		this.lastInfoTime = System.currentTimeMillis();
 		this.placeholders = placeholders;
@@ -68,7 +72,7 @@ public class Server {
 		}
 
 		final Server server = new Server(name);
-		SERVERS.add(server);
+//		SERVERS.add(server);
 		return server;
 	}
 

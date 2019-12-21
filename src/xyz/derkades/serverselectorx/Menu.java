@@ -81,7 +81,7 @@ public class Menu extends IconMenu {
 					final String serverName = section.getString("connector");
 					final Server server = Server.getServer(serverName);
 
-					if (server != null && server.isOnline()) {
+					if (server.isOnline()) {
 						builder = null;
 						actions = null;
 
