@@ -12,6 +12,7 @@ public abstract class Action {
 			new CloseAction(),
 			new ConsoleCommandAction(),
 			new MessageAction(),
+			new MultiServerAction(),
 			new OpenMenuAction(),
 			new PlayerCommandAction(),
 			new ServerAction(),
