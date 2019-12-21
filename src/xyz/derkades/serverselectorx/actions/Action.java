@@ -59,7 +59,8 @@ public abstract class Action {
 			if (action.getName().equals(actionName)) {
 				if (action.requiresValue()) {
 					if (hasValue) {
-						final String value = actionString.split(":")[1];
+//						final String value = actionString.split(":")[1];
+						final String value = actionString.substring(actionName.length() + 1); // remove action name and :
 						return action.apply(player, value);
 					} else {
 						player.sendMessage("Action '" + actionName + "' requires a value");
