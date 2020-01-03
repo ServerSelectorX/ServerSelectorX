@@ -230,8 +230,6 @@ public class Menu extends IconMenu {
 
 			final ItemStack item = nbt.getItem();
 
-			Main.illegalItems.setIllegal(item, true);
-
 			final int slot = Integer.valueOf(key);
 
 			if (slot >= this.getInventory().getSize()) {

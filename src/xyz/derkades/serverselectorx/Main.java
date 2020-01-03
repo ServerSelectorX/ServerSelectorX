@@ -16,7 +16,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import xyz.derkades.derkutils.Cooldown;
-import xyz.derkades.derkutils.bukkit.IllegalItems;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
@@ -40,8 +39,6 @@ public class Main extends JavaPlugin {
 	private static Main plugin;
 
 	public static WebServer server;
-
-	public static IllegalItems illegalItems;
 
 	public static Main getPlugin(){
 		return plugin;
@@ -83,8 +80,6 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new ItemClickListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemGiveListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BetaMessageJoinListener(), this);
-
-		illegalItems = new IllegalItems(Main.getPlugin());
 	}
 
 	@Override
