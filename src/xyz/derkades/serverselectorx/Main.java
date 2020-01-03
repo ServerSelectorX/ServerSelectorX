@@ -81,7 +81,7 @@ public class Main extends JavaPlugin {
 		new ItemMoveDropCancelListener();
 
 		Bukkit.getPluginManager().registerEvents(new ItemClickListener(), this);
-		Bukkit.getPluginManager().registerEvents(new GiveItemsListener(), this);
+		Bukkit.getPluginManager().registerEvents(new ItemGiveListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BetaMessageJoinListener(), this);
 
 		illegalItems = new IllegalItems(Main.getPlugin());

@@ -17,7 +17,7 @@ import org.bukkit.inventory.PlayerInventory;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
 
-public class GiveItemsListener implements Listener {
+public class ItemGiveListener implements Listener {
 
 	// Event priorities are set to high so the items are given after other plugins clear the player's inventory.
 
