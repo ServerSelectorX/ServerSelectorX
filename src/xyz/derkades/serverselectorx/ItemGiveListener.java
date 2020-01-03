@@ -17,7 +17,7 @@ import org.bukkit.inventory.PlayerInventory;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
 
-public class GiveItemsListener implements Listener {
+public class ItemGiveListener implements Listener {
 
 	// Event priorities are set to high so the items are given after other plugins clear the player's inventory.
 
@@ -73,10 +73,8 @@ public class GiveItemsListener implements Listener {
 
 			if (config.contains("worlds")) {
 				// World whitelisting option is present
-				for (final String worldName : config.getStringList("worlds")) {
-					if (!player.getWorld().getName().equalsIgnoreCase(worldName)) {
-						continue itemLoop;
-					}
+				if (!config.getStringList("worlds").contains(player.getWorld().getName())) {
+					continue itemLoop;
 				}
 			}
 
