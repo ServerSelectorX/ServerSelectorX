@@ -73,10 +73,8 @@ public class ItemGiveListener implements Listener {
 
 			if (config.contains("worlds")) {
 				// World whitelisting option is present
-				for (final String worldName : config.getStringList("worlds")) {
-					if (!player.getWorld().getName().equalsIgnoreCase(worldName)) {
-						continue itemLoop;
-					}
+				if (!config.getStringList("worlds").contains(player.getWorld().getName())) {
+					continue itemLoop;
 				}
 			}
 
