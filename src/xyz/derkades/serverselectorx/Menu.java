@@ -45,6 +45,16 @@ public class Menu extends IconMenu {
 			Main.getPlugin().getLogger().warning("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Sound-names");
 		}
 
+		if (this.config == null ||
+				this.config.getConfigurationSection("menu") == null) {
+			this.player.sendMessage("The configuration file failed to load, probably due to a syntax error.");
+			this.player.sendMessage("Take a look at the console for any YAML errors, or paste your config in http://www.yamllint.com/");
+			this.player.sendMessage("Check for identation and balanced quotes. If you want to use quotation marks in strings, they must be escaped properly by putting two quotation marks (for example \"\" or '').");
+			this.player.sendMessage("Menu name: " + configName);
+			this.refreshTimer = null;
+			return;
+		}
+
 		this.refreshTimer = Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), () -> {
 			final long start = System.nanoTime();
 			this.addItems();
@@ -56,13 +66,6 @@ public class Menu extends IconMenu {
 	}
 
 	private void addItems() {
-		if (this.config == null) {
-			this.player.sendMessage("The configuration file failed to load, probably due to a syntax error.");
-			this.player.sendMessage("Take a look at the console for any YAML errors, or paste your config in http://www.yamllint.com/");
-			this.player.sendMessage("Check for identation and balanced quotes. If you want to use quotation marks in strings, they must be escaped properly by putting two quotation marks (for example \"\" or '').");
-			return;
-		}
-
 		itemLoop:
 		for (final String key : this.config.getConfigurationSection("menu").getKeys(false)) {
 			final ConfigurationSection section = this.config.getConfigurationSection("menu." + key);
