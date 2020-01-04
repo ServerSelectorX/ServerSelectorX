@@ -13,7 +13,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
-import me.clip.placeholderapi.PlaceholderAPI;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
@@ -21,7 +20,7 @@ import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
 import xyz.derkades.serverselectorx.configuration.ConfigSync;
 import xyz.derkades.serverselectorx.configuration.ConfigurationManager;
 import xyz.derkades.serverselectorx.effects.EffectsOnJoin;
-import xyz.derkades.serverselectorx.placeholders.PapiExpansion;
+import xyz.derkades.serverselectorx.placeholders.PapiExpansionRegistrar;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class Main extends JavaPlugin {
@@ -82,7 +81,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new BetaMessageJoinListener(), this);
 
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-			PlaceholderAPI.registerExpansion(new PapiExpansion());
+			PapiExpansionRegistrar.register();
 		}
 	}
 
