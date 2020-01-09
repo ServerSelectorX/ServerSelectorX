@@ -90,6 +90,18 @@ public class Menu extends IconMenu {
 
 						if (section.contains("dynamic")) {
 							for (final String dynamicKey : section.getConfigurationSection("dynamic").getKeys(false)) {
+								int colons = 0;
+								for (final char c : dynamicKey.toCharArray()) {
+									if (c == ':') {
+										colons++;
+									}
+								}
+
+								if (colons != 1) {
+									this.player.sendMessage("Invalid dynamic section '" + dynamicKey + "'. Dynamic section identifiers should contain exactly one colon, this one contains " + colons + ".");
+									return;
+								}
+
 								final String placeholderKeyInConfig = dynamicKey.split(":")[0];
 								final String placeholderValueInConfig = dynamicKey.split(":")[1];
 
