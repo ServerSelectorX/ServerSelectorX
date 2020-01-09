@@ -2,3 +2,6 @@ url-message: '&3&lClick here'
 
 # Send message to console when players don't have the required permission
 permission-debug: true
+
+# Set a server name here if you wish to use the `connected` section
+#server-name: ''
