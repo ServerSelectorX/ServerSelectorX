@@ -13,6 +13,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import xyz.derkades.derkutils.Cooldown;
 
 public class ItemClickListener implements Listener {
 
@@ -61,6 +62,17 @@ public class ItemClickListener implements Listener {
 		} else {
 			actions = config.getStringList("actions");
 		}
+
+		/*
+		 * On 1.9-1.12, this event is sometimes called twice (once for each hand). Bukkit
+		 * has a proper method of checking which hand is used, but since this version is
+		 * compiled against 1.8 I can't use that here. Unless I use reflection, which I am
+		 * not going to, because I'm lazy. A cooldown of 200ms does the same thing.
+		 */
+		if (Cooldown.getCooldown("ssxclick" + player.getName()) > 0) {
+			return;
+		}
+		Cooldown.addCooldown("ssxclick" + player.getName(), 200);
 
 		xyz.derkades.serverselectorx.actions.Action.runActions(player, actions);
 
