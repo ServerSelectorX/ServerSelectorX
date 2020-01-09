@@ -88,74 +88,93 @@ public class Menu extends IconMenu {
 						builder = null;
 						actions = null;
 
-						if (section.contains("dynamic")) {
-							for (final String dynamicKey : section.getConfigurationSection("dynamic").getKeys(false)) {
-								final String placeholderKeyInConfig = dynamicKey.split(":")[0];
-								final String placeholderValueInConfig = dynamicKey.split(":")[1];
+						if (Main.getConfigurationManager().misc.contains("server-name") &&
+								serverName.equalsIgnoreCase(Main.getConfigurationManager().misc.getString("server-name"))) {
+							final ConfigurationSection connectedSection = section.getConfigurationSection("connected");
+							builder = Main.getItemBuilderFromItemSection(this.player, connectedSection);
+							actions = connectedSection.getStringList("actions");
+						} else {
+							if (section.contains("dynamic")) {
+								for (final String dynamicKey : section.getConfigurationSection("dynamic").getKeys(false)) {
+									int colons = 0;
+									for (final char c : dynamicKey.toCharArray()) {
+										if (c == ':') {
+											colons++;
+										}
+									}
 
-								final Placeholder placeholder = server.getPlaceholder(placeholderKeyInConfig);
-								if (placeholder == null) {
-									Main.getPlugin().getLogger().warning("Dynamic feature contains rule with placeholder " + placeholder + " which has not been received from the server.");
-									continue;
-								}
-
-								final String placeholderValueFromConnector;
-
-								if (placeholder instanceof GlobalPlaceholder) {
-									final GlobalPlaceholder global = (GlobalPlaceholder) placeholder;
-									placeholderValueFromConnector = global.getValue();
-								} else {
-									final PlayerPlaceholder playerPlaceholder = (PlayerPlaceholder) placeholder;
-									placeholderValueFromConnector = playerPlaceholder.getValue(this.player);
-								}
-
-								final ConfigurationSection dynamicSection = section.getConfigurationSection("dynamic." + dynamicKey);
-
-								final String mode = dynamicSection.getString("mode", "equals");
-
-								if (
-										mode.equals("equals") && placeholderValueInConfig.equals(placeholderValueFromConnector) ||
-										mode.equals("less") && Double.parseDouble(placeholderValueInConfig) < Double.parseDouble(placeholderValueFromConnector) ||
-										mode.equals("more") && Double.parseDouble(placeholderValueInConfig) > Double.parseDouble(placeholderValueFromConnector)
-										) {
-
-									if (!dynamicSection.contains("material")) {
-										this.player.sendMessage("Dynamic section '" + dynamicKey + "' is missing the material option");
+									if (colons != 1) {
+										this.player.sendMessage("Invalid dynamic section '" + dynamicKey + "'. Dynamic section identifiers should contain exactly one colon, this one contains " + colons + ".");
 										return;
 									}
 
-									if (dynamicSection.getString("material").equalsIgnoreCase("NONE")) {
-										continue itemLoop;
+									final String placeholderKeyInConfig = dynamicKey.split(":")[0];
+									final String placeholderValueInConfig = dynamicKey.split(":")[1];
+
+									final Placeholder placeholder = server.getPlaceholder(placeholderKeyInConfig);
+									if (placeholder == null) {
+										Main.getPlugin().getLogger().warning("Dynamic feature contains rule with placeholder " + placeholder + " which has not been received from the server.");
+										continue;
 									}
 
-									builder = Main.getItemBuilderFromItemSection(this.player, dynamicSection);
-									actions = dynamicSection.getStringList("actions");
-									break;
+									final String placeholderValueFromConnector;
+
+									if (placeholder instanceof GlobalPlaceholder) {
+										final GlobalPlaceholder global = (GlobalPlaceholder) placeholder;
+										placeholderValueFromConnector = global.getValue();
+									} else {
+										final PlayerPlaceholder playerPlaceholder = (PlayerPlaceholder) placeholder;
+										placeholderValueFromConnector = playerPlaceholder.getValue(this.player);
+									}
+
+									final ConfigurationSection dynamicSection = section.getConfigurationSection("dynamic." + dynamicKey);
+
+									final String mode = dynamicSection.getString("mode", "equals");
+
+									if (
+											mode.equals("equals") && placeholderValueInConfig.equals(placeholderValueFromConnector) ||
+											mode.equals("less") && Double.parseDouble(placeholderValueInConfig) < Double.parseDouble(placeholderValueFromConnector) ||
+											mode.equals("more") && Double.parseDouble(placeholderValueInConfig) > Double.parseDouble(placeholderValueFromConnector)
+											) {
+
+										if (!dynamicSection.contains("material")) {
+											this.player.sendMessage("Dynamic section '" + dynamicKey + "' is missing the material option");
+											return;
+										}
+
+										if (dynamicSection.getString("material").equalsIgnoreCase("NONE")) {
+											continue itemLoop;
+										}
+
+										builder = Main.getItemBuilderFromItemSection(this.player, dynamicSection);
+										actions = dynamicSection.getStringList("actions");
+										break;
+									}
 								}
 							}
-						}
 
-						if (builder == null) {
-							//No dynamic rule matched, fall back to online
-							if (!section.isConfigurationSection("online")) {
-								this.player.sendMessage("Error for item " + key);
-								this.player.sendMessage("Online section does not exist");
-								return;
+							if (builder == null) {
+								//No dynamic rule matched, fall back to online
+								if (!section.isConfigurationSection("online")) {
+									this.player.sendMessage("Error for item " + key);
+									this.player.sendMessage("Online section does not exist");
+									return;
+								}
+
+								final ConfigurationSection onlineSection = section.getConfigurationSection("online");
+
+								if (!onlineSection.contains("material")) {
+									this.player.sendMessage("Error for item " + key);
+									this.player.sendMessage("Online section does not have a material option");
+								}
+
+								if (onlineSection.getString("material").equalsIgnoreCase("NONE")) {
+									continue itemLoop;
+								}
+
+								builder = Main.getItemBuilderFromItemSection(this.player, onlineSection);
+								actions = onlineSection.getStringList("actions");
 							}
-
-							final ConfigurationSection onlineSection = section.getConfigurationSection("online");
-
-							if (!onlineSection.contains("material")) {
-								this.player.sendMessage("Error for item " + key);
-								this.player.sendMessage("Online section does not have a material option");
-							}
-
-							if (onlineSection.getString("material").equalsIgnoreCase("NONE")) {
-								continue itemLoop;
-							}
-
-							builder = Main.getItemBuilderFromItemSection(this.player, onlineSection);
-							actions = onlineSection.getStringList("actions");
 						}
 
 						final Map<String, String> placeholders = new HashMap<>();
