@@ -29,7 +29,12 @@ public class ItemGiveListener implements Listener {
 		if (config.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
 			final PlayerInventory inv = player.getInventory();
 			inv.setContents(new ItemStack[inv.getContents().length]);
-			inv.setStorageContents(new ItemStack[inv.getStorageContents().length]);
+			try {
+				final int length = ((ItemStack[]) inv.getClass().getMethod("getStorageContents").invoke(inv)).length;
+				inv.getClass().getMethod("setStorageContents", ItemStack[].class).invoke(inv, (Object) new ItemStack[length]);
+			} catch (final Exception e) {
+				e.printStackTrace(); // TODO remove this when I know it's working
+			}
 			inv.setArmorContents(new ItemStack[inv.getArmorContents().length]);
 		}
 
