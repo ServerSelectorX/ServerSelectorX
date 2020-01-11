@@ -14,6 +14,10 @@ public class Server {
 	private List<Placeholder> placeholders;
 
 	public Server(final String name) {
+		if (name == null) {
+			throw new NullPointerException("Server name can't be null");
+		}
+
 		this.name = name;
 	}
 
@@ -65,6 +69,10 @@ public class Server {
 	}
 
 	public static Server getServer(final String name) {
+		if (name == null) {
+			throw new NullPointerException("Name can't be null");
+		}
+
 		for (final Server server : SERVERS) {
 			if (server.getName().equalsIgnoreCase(name)) {
 				return server;
