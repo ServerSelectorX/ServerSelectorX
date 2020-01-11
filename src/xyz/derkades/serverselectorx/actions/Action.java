@@ -16,6 +16,7 @@ public abstract class Action {
 			new OpenMenuAction(),
 			new PlayerCommandAction(),
 			new ServerAction(),
+			new SoundAction(),
 			new TeleportAction(),
 			new ToggleEffectAction(),
 			new ToggleHideOthersAction(),
