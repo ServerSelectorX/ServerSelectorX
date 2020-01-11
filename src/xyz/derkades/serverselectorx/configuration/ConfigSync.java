@@ -27,13 +27,13 @@ public class ConfigSync {
 	private final Logger logger = Main.getPlugin().getLogger();
 
 	public ConfigSync() {
-		final ConfigurationSection syncConfig = Main.getConfigurationManager().sync;
+		this.config = Main.getConfigurationManager().sync;
 
-		if (!syncConfig.getBoolean("enabled", false)) {
+		if (!this.config.getBoolean("enabled", false)) {
 			return;
 		}
 
-		final long interval = syncConfig.getInt("interval")*60*20;
+		final long interval = this.config.getInt("interval")*60*20;
 
 		// Run 1 second after server startup, then every hour
 		Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getPlugin(), this::sync, 20, interval);

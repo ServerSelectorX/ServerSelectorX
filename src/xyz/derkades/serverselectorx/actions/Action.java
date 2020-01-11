@@ -11,11 +11,13 @@ public abstract class Action {
 	private static final Action[] DEFAULT_ACTIONS = {
 			new CloseAction(),
 			new ConsoleCommandAction(),
+			new DelayAction(),
 			new MessageAction(),
 			new MultiServerAction(),
 			new OpenMenuAction(),
 			new PlayerCommandAction(),
 			new ServerAction(),
+			new SoundAction(),
 			new TeleportAction(),
 			new ToggleEffectAction(),
 			new ToggleHideOthersAction(),
