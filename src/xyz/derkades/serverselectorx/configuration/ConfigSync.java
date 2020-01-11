@@ -40,10 +40,9 @@ public class ConfigSync {
 	}
 
 	private boolean testConnectivity() {
+		final String url = String.format("http://%s?password=%s", this.config.getString("address"), this.config.getString("password"));
 		try {
-			final HttpURLConnection conn = (HttpURLConnection) new URL(String.format("http://%s?password=%s",
-					this.config.getString("address"), this.config.getString("password")))
-					.openConnection();
+			final HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
 			conn.setConnectTimeout(1000);
 			conn.connect();
 			if (conn.getResponseCode() == 200) {
@@ -60,6 +59,7 @@ public class ConfigSync {
 		} catch (final IOException e) {
 			this.logger.warning("Connection error.");
 			this.logger.warning("Is the server down? Is the address correct? Firewall?");
+			this.logger.warning("URL: " + url);
 			return false;
 		}
 	}
