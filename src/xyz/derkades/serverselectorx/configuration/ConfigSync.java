@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
 
 import com.google.gson.JsonParser;
 
@@ -23,24 +22,23 @@ import xyz.derkades.serverselectorx.Main;
 
 public class ConfigSync {
 
-	private ConfigurationSection config;
 	private final Logger logger = Main.getPlugin().getLogger();
 
 	public ConfigSync() {
-		this.config = Main.getConfigurationManager().sync;
-
-		if (!this.config.getBoolean("enabled", false)) {
+		if (!Main.getConfigurationManager().sync.getBoolean("enabled", false)) {
 			return;
 		}
 
-		final long interval = this.config.getInt("interval")*60*20;
+		final long interval = Main.getConfigurationManager().sync.getInt("interval")*60*20;
 
 		// Run 1 second after server startup, then every hour
 		Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getPlugin(), this::sync, 20, interval);
 	}
 
 	private boolean testConnectivity() {
-		final String url = String.format("http://%s?password=%s", this.config.getString("address"), this.config.getString("password"));
+		final String url = String.format("http://%s?password=%s",
+				Main.getConfigurationManager().sync.getString("address"),
+				Main.getConfigurationManager().sync.getString("password"));
 		try {
 			final HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
 			conn.setConnectTimeout(1000);
@@ -66,8 +64,8 @@ public class ConfigSync {
 
 	private List<String> getFilesInDirectory(final String directory) throws IOException {
 		final URL url = new URL(String.format("http://%s/listfiles?password=%s&dir=%s",
-				this.config.getString("address"),
-				this.config.getString("password"),
+				Main.getConfigurationManager().sync.getString("address"),
+				Main.getConfigurationManager().sync.getString("password"),
 				directory
 				));
 		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
@@ -81,10 +79,10 @@ public class ConfigSync {
 		final List<String> filesToSync = new ArrayList<>();
 
 		// Add all files from the 'files'  option
-		filesToSync.addAll(this.config.getStringList("files"));
+		filesToSync.addAll(Main.getConfigurationManager().sync.getStringList("files"));
 
 		// Add all files from the 'directories' option
-		for (final String dir : this.config.getStringList("directories")) {
+		for (final String dir : Main.getConfigurationManager().sync.getStringList("directories")) {
 			try {
 				ConfigSync.this.getFilesInDirectory(dir).forEach((s) -> filesToSync.add(dir + "/" + s));
 			} catch (final IOException e) {
@@ -97,13 +95,11 @@ public class ConfigSync {
 	}
 
 	private String getFileContent(final String file) throws IOException {
-		return new BufferedReader(new InputStreamReader(new URL(String.format("http://%s/getfile?password=%s&file=%s", this.config.getString("address"), this.config.getString("password"), file)).openConnection().getInputStream())).lines().collect(Collectors.joining("\n")); // sorry lol
+		return new BufferedReader(new InputStreamReader(new URL(String.format("http://%s/getfile?password=%s&file=%s", Main.getConfigurationManager().sync.getString("address"), Main.getConfigurationManager().sync.getString("password"), file)).openConnection().getInputStream())).lines().collect(Collectors.joining("\n")); // sorry lol
 	}
 
 	public void sync() {
 		this.logger.info("Starting config sync..");
-
-		this.config = Main.getConfigurationManager().sync;
 
 		if (!this.testConnectivity()) {
 			return;
@@ -127,7 +123,7 @@ public class ConfigSync {
 
 		// Verify that the address is in the correct format
 		try {
-			new URL("http://" + this.config.getString("address"));
+			new URL("http://" + Main.getConfigurationManager().sync.getString("address"));
 		} catch (final MalformedURLException e) {
 			this.logger.severe("The address you entered seems to be incorrectly formatted.");
 			this.logger.severe("It must be formatted like this: 173.45.16.208:8888");
