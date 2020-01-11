@@ -11,7 +11,7 @@ enabled: false
 address: '123.45.67.89:9782'
 
 files:
- - global.yml
+ - config/effects.yml
  - command/servers.yml
 
 directories:
