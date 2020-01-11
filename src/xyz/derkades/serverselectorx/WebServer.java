@@ -6,13 +6,7 @@ import org.eclipse.jetty.servlet.ServletHandler;
 
 public class WebServer {
 
-	private final int port;
-
 	private Server server;
-
-	public WebServer(final int port) {
-		this.port = port;
-	}
 
 	public void start() {
 		this.server = new Server();
@@ -24,7 +18,8 @@ public class WebServer {
         this.server.setHandler(handler);
 
         final ServerConnector connector = new ServerConnector(this.server);
-        connector.setPort(this.port);
+        final int port = Main.getConfigurationManager().api.getInt("port");
+        connector.setPort(port);
         this.server.addConnector(connector);
 
 		new Thread() {
@@ -33,7 +28,7 @@ public class WebServer {
 			public void run() {
 				try {
 					WebServer.this.server.start();
-					Main.getPlugin().getLogger().info("Listening on port " + WebServer.this.port);
+					Main.getPlugin().getLogger().info("Listening on port " + port);
 					WebServer.this.server.join(); //Join with main thread
 				} catch (final Exception e) {
 					Main.getPlugin().getLogger().severe("An error occured while starting webserver: " + e.getMessage());

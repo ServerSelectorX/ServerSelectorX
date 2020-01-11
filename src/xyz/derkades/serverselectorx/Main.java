@@ -67,8 +67,7 @@ public class Main extends JavaPlugin {
 			System.setProperty("org.eclipse.jetty.LEVEL", "OFF");
 		}
 
-		final int port = configurationManager.api.getInt("port");
-		server = new WebServer(port);
+		server = new WebServer();
 		server.start();
 
 		new EffectsOnJoin();
