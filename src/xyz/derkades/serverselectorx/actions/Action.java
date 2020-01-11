@@ -11,6 +11,7 @@ public abstract class Action {
 	private static final Action[] DEFAULT_ACTIONS = {
 			new CloseAction(),
 			new ConsoleCommandAction(),
+			new DelayAction(),
 			new MessageAction(),
 			new MultiServerAction(),
 			new OpenMenuAction(),
