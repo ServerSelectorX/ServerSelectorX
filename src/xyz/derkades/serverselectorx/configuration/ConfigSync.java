@@ -54,6 +54,9 @@ public class ConfigSync {
 				this.logger.warning("Make sure that you are using the latest and/or same version everywhere.");
 				return false;
 			}
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+			return false;
 		} catch (final IOException e) {
 			this.logger.warning("Connection error.");
 			this.logger.warning("Is the server down? Is the address correct? Firewall?");
