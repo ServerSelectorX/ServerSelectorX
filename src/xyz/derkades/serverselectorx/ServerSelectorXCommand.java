@@ -24,6 +24,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 		if (args.length == 1 && (args[0].equalsIgnoreCase("reload") || args[0].equalsIgnoreCase("rl"))){
 			try {
 				Main.getConfigurationManager().reload();
+				sender.sendMessage("The configuration file has been reloaded.");
 			} catch (final Exception e) {
 				sender.sendMessage(ChatColor.RED + "An error occured while trying to reload the configuration files, probably because of a YAML syntax error.");
 				sender.sendMessage("Error: " + e.getMessage());
@@ -31,8 +32,6 @@ public class ServerSelectorXCommand implements CommandExecutor {
 				e.printStackTrace();
 				return true;
 			}
-
-			sender.sendMessage("The configuration file has been reloaded.");
 
 			Main.server.stop();
 			Main.server.start();

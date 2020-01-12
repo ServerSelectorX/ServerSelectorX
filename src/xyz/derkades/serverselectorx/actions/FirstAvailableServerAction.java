@@ -5,10 +5,10 @@ import org.bukkit.entity.Player;
 import xyz.derkades.serverselectorx.Main;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
-public class MultiServerAction extends Action {
+public class FirstAvailableServerAction extends Action {
 
-	public MultiServerAction() {
-		super("multiserver", true);
+	public FirstAvailableServerAction() {
+		super("firstavailableserver", true);
 	}
 
 	@Override
@@ -19,12 +19,12 @@ public class MultiServerAction extends Action {
 			final Server server = Server.getServer(serverName);
 
 			if (!server.isOnline()) {
-				System.out.println("[multiserver - debug] Skipping " + serverName + ", the server is offline.");
+				System.out.println("[firstavailableserver - debug] Skipping " + serverName + ", the server is offline.");
 				continue;
 			}
 
 			if (server.getOnlinePlayers() >= server.getMaximumPlayers()) {
-				System.out.println("[multiserver - debug] Skipping " + serverName + ", player count is too high.");
+				System.out.println("[firstavailableserver - debug] Skipping " + serverName + ", player count is too high.");
 				continue;
 			}
 
