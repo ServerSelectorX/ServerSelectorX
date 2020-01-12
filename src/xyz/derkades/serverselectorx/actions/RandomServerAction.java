@@ -9,9 +9,9 @@ import org.bukkit.entity.Player;
 import xyz.derkades.serverselectorx.Main;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
-public class RandomServer extends Action {
+public class RandomServerAction extends Action {
 
-	public RandomServer() {
+	public RandomServerAction() {
 		super("randomserver", true);
 	}
 
