@@ -16,6 +16,8 @@ public abstract class Action {
 			new MultiServerAction(),
 			new OpenMenuAction(),
 			new PlayerCommandAction(),
+			new RandomServerAction(),
+			new RoundRobinServerAction(),
 			new ServerAction(),
 			new SoundAction(),
 			new TeleportAction(),
