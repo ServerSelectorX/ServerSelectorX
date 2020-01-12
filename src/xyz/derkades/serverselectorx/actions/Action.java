@@ -13,7 +13,7 @@ public abstract class Action {
 			new ConsoleCommandAction(),
 			new DelayAction(),
 			new MessageAction(),
-			new MultiServerAction(),
+			new FirstAvailableServerAction(),
 			new OpenMenuAction(),
 			new PlayerCommandAction(),
 			new RandomServerAction(),
