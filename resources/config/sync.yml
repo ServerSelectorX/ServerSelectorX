@@ -21,15 +21,15 @@ directories:
 
 # -------------------- Advanced -------------------- #
  
-# When set to true, delete ALL files in ALL configuration directories (menu, item, command)
-# Files in the root directory will not be deleted (ssx.yml, global.yml)
+# When set to true, delete ALL files in the menu, item and command directories.
+# Files in the config directory will not be deleted (api.yml, effects.yml, etc.)
 # Useful if you want files deleted on one server to be automatically deleted on other servers as well.
 # Do not enable if you have config files on this server that you don't have on other servers.
 delete: false
 
 # Sync interval in minutes. The server needs to be restarted for this option to take effect.
 # When set to 30, the config will be synced at startup then every 30 minutes.
-# Use /ssx sync to force sync
+# Use /ssx sync to force sync (/ssx sync will work even if sync is disabled)
 interval: 30
 
 # If you don't know what this is you don't need to change it.
