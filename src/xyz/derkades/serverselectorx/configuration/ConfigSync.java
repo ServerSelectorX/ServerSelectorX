@@ -172,6 +172,12 @@ public class ConfigSync {
 					+ "from the other server. The plugin will probably stop working. For a detailed error "
 					+ "report, use /ssx reload on the other server.");
 		}
+		
+		List<String> commands = Main.getConfigurationManager().sync.getStringList("after-sync-commands");
+		if (!commands.isEmpty()) {
+			logger.info("Running after-sync-commands");
+			commands.forEach((c) -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), c));
+		}
 	}
 
 }
