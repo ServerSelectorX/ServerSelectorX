@@ -81,18 +81,22 @@ public class ConfigSync {
 	private List<String> getFilesToSync() {
 		final List<String> filesToSync = new ArrayList<>();
 
-		// Add all files from the 'files'  option
+		// Add all files from the 'files' option
 		filesToSync.addAll(Main.getConfigurationManager().sync.getStringList("files"));
 
 		// Add all files from the 'directories' option
 		for (final String dir : Main.getConfigurationManager().sync.getStringList("directories")) {
 			try {
+				logger.info("Listing files in directory " + dir);
 				ConfigSync.this.getFilesInDirectory(dir).forEach((s) -> filesToSync.add(dir + "/" + s));
 			} catch (final IOException e) {
 				this.logger.warning("An error occured while trying to get a list of files in the directory " + dir);
 				e.printStackTrace();
 			}
 		}
+		
+		logger.info("Files to sync (" + filesToSync.size() + "): ");
+		filesToSync.forEach((f) -> logger.info(" - " + f));
 
 		return filesToSync;
 	}
@@ -103,6 +107,15 @@ public class ConfigSync {
 
 	public void sync() {
 		this.logger.info("Starting config sync..");
+		
+		// Verify that the address is in the correct format
+		try {
+			new URL("http://" + Main.getConfigurationManager().sync.getString("address"));
+		} catch (final MalformedURLException e) {
+			this.logger.severe("The address you entered seems to be incorrectly formatted.");
+			this.logger.severe("It must be formatted like this: 173.45.16.208:8888");
+			return;
+		}
 
 		if (!this.testConnectivity()) {
 			return;
@@ -119,18 +132,10 @@ public class ConfigSync {
 		for (final File dir : toDelete) {
 			try {
 				FileUtils.deleteDirectory(dir);
+				logger.info("Deleted directory " + dir);
 			} catch (final IOException e) {
 				this.logger.warning("Failed to delete directory" + dir.getPath());
 			}
-		}
-
-		// Verify that the address is in the correct format
-		try {
-			new URL("http://" + Main.getConfigurationManager().sync.getString("address"));
-		} catch (final MalformedURLException e) {
-			this.logger.severe("The address you entered seems to be incorrectly formatted.");
-			this.logger.severe("It must be formatted like this: 173.45.16.208:8888");
-			return;
 		}
 
 		for (final String fileName : this.getFilesToSync()) {
@@ -161,6 +166,7 @@ public class ConfigSync {
 
 		try {
 			Main.getConfigurationManager().reload();
+			logger.info("Reload complete.");
 		} catch (final IOException e) {
 			Main.getPlugin().getLogger().warning("Oh no! There was a syntax error in the config file pulled"
 					+ "from the other server. The plugin will probably stop working. For a detailed error "
