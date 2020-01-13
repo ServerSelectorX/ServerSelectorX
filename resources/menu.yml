@@ -89,7 +89,7 @@ menu:
     permission: 'ssx.vip' # require permission ssx.vip to click on the icon
     online:
       actions:
-       - 'srv:vip'
+       - 'server:vip'
       material: DIAMOND
       enchanted: true
       hide-flags: true # hide the enchantment
