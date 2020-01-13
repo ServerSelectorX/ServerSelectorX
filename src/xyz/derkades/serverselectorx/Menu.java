@@ -96,7 +96,8 @@ public class Menu extends IconMenu {
 						actions = null;
 
 						if (Main.getConfigurationManager().misc.contains("server-name") &&
-								serverName.equalsIgnoreCase(Main.getConfigurationManager().misc.getString("server-name"))) {
+								serverName.equalsIgnoreCase(Main.getConfigurationManager().misc.getString("server-name")) &&
+								section.isConfigurationSection("connected")) {
 							final ConfigurationSection connectedSection = section.getConfigurationSection("connected");
 							builder = Main.getItemBuilderFromItemSection(this.player, connectedSection);
 							actions = connectedSection.getStringList("actions");
