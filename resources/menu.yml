@@ -13,7 +13,7 @@ menu:
   0:
     actions:
      - 'message:Toggled speed effect'
-     - 'togglespeed'
+     - 'toggleeffect:SPEED'
      - 'close'
     material: FEATHER
     title: 'Toggle speed'
