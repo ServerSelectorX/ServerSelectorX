@@ -11,7 +11,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import xyz.derkades.derkutils.bukkit.Colors;
@@ -29,7 +29,7 @@ public class Menu extends IconMenu {
 
 	private final FileConfiguration config;
 
-	private final BukkitTask refreshTimer;
+	private boolean closed = false;
 
 	public Menu(final Player player, final FileConfiguration config, final String configName) {
 		super(Main.getPlugin(), Colors.parseColors(config.getString("title", UUID.randomUUID().toString())), config.getInt("rows", 6), player);
@@ -51,18 +51,25 @@ public class Menu extends IconMenu {
 			this.player.sendMessage("Take a look at the console for any YAML errors, or paste your config in http://www.yamllint.com/");
 			this.player.sendMessage("Check for identation and balanced quotes. If you want to use quotation marks in strings, they must be escaped properly by putting two quotation marks (for example \"\" or '').");
 			this.player.sendMessage("Menu name: " + configName);
-			this.refreshTimer = null;
 			return;
 		}
-
-		this.refreshTimer = Bukkit.getScheduler().runTaskTimer(Main.getPlugin(), () -> {
-			final long start = System.nanoTime();
-			this.addItems();
-			if (Main.LAG_DEBUG) {
-				final long diff = System.nanoTime() - start;
-				System.out.println("(Re)loaded menu for player " + this.player.getName() + " in " + diff / 1000 + "μs. (one tick is 50ms)");
+		
+		new BukkitRunnable() {
+			public void run() {
+				if (closed || // menu has been closed
+						Bukkit.getPlayer(player.getName()) == null // player is offline
+						) {
+					this.cancel();
+				}
+				
+				final long start = System.nanoTime();
+				addItems();
+				if (Main.LAG_DEBUG) {
+					final long diff = System.nanoTime() - start;
+					System.out.println("(Re)loaded menu for player " + player.getName() + " in " + diff / 1000 + "μs. (one tick is 50ms)");
+				}
 			}
-		}, 0, 1*20);
+		}.runTaskTimer(Main.getPlugin(), 0, 20);
 	}
 
 	private void addItems() {
@@ -289,9 +296,7 @@ public class Menu extends IconMenu {
 
 	@Override
 	public void onClose(final MenuCloseEvent event) {
-		if (this.refreshTimer != null) {
-			this.refreshTimer.cancel();
-		}
+		closed = true;
 	}
 
 }
