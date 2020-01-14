@@ -8,8 +8,9 @@ import xyz.derkades.serverselectorx.Main;
 public class PapiExpansion extends PlaceholderExpansion {
 
 	@Override
-	public String onPlaceholderRequest(final Player player, final String identifier) {
+	public String onPlaceholderRequest(final Player player, String identifier) {
 		if (identifier.startsWith("server_")) {
+			identifier = identifier.substring(7); // Remove 'server_'
 			String serverName = "";
 			for (final char c : identifier.toCharArray()) {
 				if (c == '_') {
@@ -18,8 +19,8 @@ public class PapiExpansion extends PlaceholderExpansion {
 				serverName += c;
 			}
 
-			// Remove 'server_' (length 7), the server name and the underscore after it
-			final String placeholderName = identifier.substring(7 + serverName.length() + 1);
+			// Remove the server name and the underscore after it
+			final String placeholderName = identifier.substring(serverName.length() + 1);
 
 			final Server server = Server.getServer(serverName);
 
