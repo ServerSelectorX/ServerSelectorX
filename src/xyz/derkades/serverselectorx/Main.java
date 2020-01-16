@@ -13,6 +13,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
@@ -193,8 +194,27 @@ public class Main extends JavaPlugin {
 			builder.amount(section.getInt("amount"));
 		}
 
-		final int data = section.getInt("data", 0);
-		builder.damage(data);
+		if (section.isInt("data")) {
+			final int data = section.getInt("data");
+			builder.damage(data);
+		}
+
+		if (section.isConfigurationSection("nbt")) {
+			final NBTItem nbt = new NBTItem(builder.create());
+			final ConfigurationSection nbtSection = section.getConfigurationSection("nbt");
+			for (final String key : section.getKeys(false)) {
+				if (nbtSection.isBoolean(key)) {
+					nbt.setBoolean(key, nbtSection.getBoolean(key));
+				} else if (nbtSection.isString(key)) {
+					nbt.setString(key, nbtSection.getString(key));
+				} else if (nbtSection.isInt(key)) {
+					nbt.setInteger(key, nbtSection.getInt(key));
+				} else {
+					player.sendMessage("Unsupported NBT option '" + key + "'");
+				}
+			}
+			return new ItemBuilder(nbt.getItem());
+		}
 
 		return builder;
     }
