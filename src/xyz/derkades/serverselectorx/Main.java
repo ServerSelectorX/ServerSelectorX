@@ -229,7 +229,7 @@ public class Main extends JavaPlugin {
 			} else {
 				if (owner.length() > 16) {
 					// parse as texture
-					builder = new ItemBuilder("MHF_Question").skullTexture(owner);
+					builder = new ItemBuilder(Material.SKULL_ITEM).damage(3).skullTexture(owner);
 				} else {
 					// parse as player name
 					builder = new ItemBuilder(owner);
