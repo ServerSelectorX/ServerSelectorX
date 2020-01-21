@@ -1,5 +1,7 @@
 url-message: '&3&lClick here'
 
+cooldown-message: 'Please wait %.1fs before using this again.'
+
 # Send message to console when players don't have the required permission
 permission-debug: true
 

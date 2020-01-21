@@ -39,7 +39,9 @@ public class Commands {
 							final Player player = (Player) sender;
 
 							if (config.isInt("cooldown")) {
-								if (Cooldown.getCooldown("ssxcommand" + commandName) > 0) {
+								final long timeLeft = Cooldown.getCooldown("ssxcommand" + commandName);
+								if (timeLeft > 0) {
+									player.sendMessage(String.format(Main.getConfigurationManager().misc.getString("cooldown-message"), timeLeft / 1000.0));
 									return true;
 								}
 
