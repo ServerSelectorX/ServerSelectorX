@@ -17,3 +17,6 @@ aliases:
 description: 'Opens the servers menu'
 usage: "/<command>"
 
+# Cooldown in milliseconds. Not recommended to set lower than 500ms.
+cooldown: 500
+

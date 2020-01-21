@@ -14,6 +14,7 @@ import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import xyz.derkades.derkutils.Cooldown;
 
 public class ItemClickListener implements Listener {
 
@@ -54,6 +55,14 @@ public class ItemClickListener implements Listener {
 		}
 
 		final FileConfiguration config = Main.getConfigurationManager().items.get(itemName);
+
+		if (config.isInt("cooldown")) {
+			if (Cooldown.getCooldown("ssxitem" + itemName) > 0) {
+				return;
+			}
+
+			Cooldown.addCooldown("ssxitem" + itemName, config.getInt("cooldown"));
+		}
 
 		final List<String> actions;
 

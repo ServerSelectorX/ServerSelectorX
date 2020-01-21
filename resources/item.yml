@@ -35,3 +35,6 @@ actions:
 # below will not receive the item on join and will not be able use the item.
 #worlds:
 # - hub
+
+# Click cooldown in milliseconds. Not recommended to set lower than 500ms.
+cooldown: 500
