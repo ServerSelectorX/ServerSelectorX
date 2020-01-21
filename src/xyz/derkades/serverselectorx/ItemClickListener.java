@@ -51,6 +51,16 @@ public class ItemClickListener implements Listener {
 
 		final FileConfiguration config = Main.getConfigurationManager().items.get(itemName);
 
+		if (config.isInt("cooldown")) {
+			final long timeLeft = Cooldown.getCooldown("ssxitem" + itemName);
+			if (timeLeft > 0) {
+				player.sendMessage(String.format(Main.getConfigurationManager().misc.getString("cooldown-message"), timeLeft / 1000.0));
+				return;
+			}
+
+			Cooldown.addCooldown("ssxitem" + itemName, config.getInt("cooldown"));
+		}
+
 		final List<String> actions;
 
 		if (config.isList("left-click-actions")) {

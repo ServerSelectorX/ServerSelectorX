@@ -11,7 +11,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 public class Stats extends Metrics {
 
 	public Stats() {
-		super(Main.getPlugin());
+		super(Main.getPlugin(), 1061);
 
 		this.addCustomChart(new Metrics.SimplePie("placeholderapi", () -> {
 			if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
