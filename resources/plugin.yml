@@ -13,6 +13,7 @@ commands:
     description: The one and only command of the ServerSelectorX plugin.
     usage: |-      
       /ssx reload/rl - Reload configuration files
+      /ssx reloadcommands/rlcmd - Reloads commands (sort of)
       /ssx status - Show SSX-Connector status
       /ssx items - List names of loaded items
       /ssx menus - List names of loaded menus

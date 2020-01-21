@@ -31,6 +31,11 @@ public class Commands {
 				final List<String> aliases = config.getStringList("aliases");
 				final List<String> actions = config.getStringList("actions");
 
+				if (commandMap.getCommand(commandName) != null) {
+					Main.getPlugin().getLogger().warning("Skipped registering command /" + commandName + ", it already exists.");
+					continue;
+				}
+
 				commandMap.register("ssx-custom", new Command(commandName, description, usage, aliases) {
 
 					@Override
