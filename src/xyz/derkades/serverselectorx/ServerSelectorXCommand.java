@@ -38,6 +38,13 @@ public class ServerSelectorXCommand implements CommandExecutor {
 			return true;
 		}
 
+		if (args.length == 1 && (args[0].equalsIgnoreCase("reloadcommands") || args[0].equalsIgnoreCase("rlcmd"))){
+			Commands.registerCustomCommands();
+			sender.sendMessage("Re-registered custom commands.");
+			sender.sendMessage("Keep in mind that commands are not unregistered, so if you disabled or renamed a command the old command will still work until the server is restarted.");
+			return true;
+		}
+
 		if (args.length == 1 && args[0].equalsIgnoreCase("status")) {
 			if (Server.getServers().isEmpty()){
 				sender.sendMessage("No data has been received from servers.");

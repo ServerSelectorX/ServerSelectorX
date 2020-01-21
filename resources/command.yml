@@ -1,3 +1,15 @@
+# Note when making changes to command names without restarting the server:
+#
+# /ssx reload does not reload command properties (command name, aliases, 
+# description, usage). It does reload does reload actions, permissions, etc.
+#
+# /ssx reloadcommands loads new commands. If you change a command name or add
+# a new command, you will be able to use it with the new command name. The old
+# command will still work. Reloading aliases, command description and usage is
+# not supported. Restart the server.
+
+
+
 # Actions to perform when the command is executed
 actions:
   - 'openmenu:serverselector' # Open default menu (config file in ../menu/default.yml)
