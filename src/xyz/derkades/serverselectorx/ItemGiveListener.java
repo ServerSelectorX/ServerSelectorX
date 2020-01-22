@@ -27,6 +27,7 @@ public class ItemGiveListener implements Listener {
 		final FileConfiguration config = Main.getConfigurationManager().inventory;
 
 		if (config.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
+			debug("Clearning inventory for " + player.getName());
 			final PlayerInventory inv = player.getInventory();
 			inv.setContents(new ItemStack[inv.getContents().length]);
 			try {
@@ -59,32 +60,38 @@ public class ItemGiveListener implements Listener {
 	}
 
 	public void giveItems(final Player player, final String type) {
-		itemLoop:
+		debug("Giving items to " + player + ". Reason: " + type);
+		
 		for (final Map.Entry<String, FileConfiguration> itemConfigEntry : Main.getConfigurationManager().items.entrySet()) {
 			final String name = itemConfigEntry.getKey();
 			final FileConfiguration config = itemConfigEntry.getValue();
+			
+			debug("Giving item '" + name + ".");
 
 			if (!config.getBoolean("give." + type)) {
+				debug("Item skipped, give is disabled");
 				continue;
 			}
 
 			if (config.getBoolean("give.permission")) {
+				debug("Permissions are enabled, checking permission");
 				final String permission = "ssx.item." + name;
 				if (!player.hasPermission(permission)) {
-					if (config.getBoolean("permission.debug")) {
-						Main.getPlugin().getLogger().info(String.format("%s did not receive an item because they don't have the permission %s",
-								player.getName(), permission));
-					}
+					debug("Player does not have permission '" + permission + "', skipping item");
 					continue;
 				}
 			}
 
-			if (config.contains("worlds")) {
+			if (config.isList("worlds")) {
+				debug("World whitelisting is enabled");
 				// World whitelisting option is present
 				if (!config.getStringList("worlds").contains(player.getWorld().getName())) {
-					continue itemLoop;
+					debug("Player is in a world that is not whitelisted (" + player.getWorld().getName() + ")");
+					continue;
 				}
 			}
+			
+			debug("All checks done, giving item");
 
 			ItemStack item = Main.getItemBuilderFromItemSection(player, config.getConfigurationSection("item")).create();
 
@@ -94,6 +101,7 @@ public class ItemGiveListener implements Listener {
 
 			final int slot = config.getInt("give.inv-slot", 0);
 			final int delay = config.getInt("give.delay", 0);
+			debug("Give delay: " + delay);
 			final PlayerInventory inv = player.getInventory();
 			if (slot < 0) {
 				if (!inv.containsAtLeast(item, item.getAmount())) {
@@ -112,6 +120,12 @@ public class ItemGiveListener implements Listener {
 					Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> inv.setItem(slot, itemF), delay);
 				}
 			}
+		}
+	}
+	
+	private void debug(String message) {
+		if (Main.ITEM_DEBUG) {
+			Main.getPlugin().getLogger().info("[item debug]" + message);
 		}
 	}
 

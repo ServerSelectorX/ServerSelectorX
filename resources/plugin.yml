@@ -19,3 +19,5 @@ commands:
       /ssx menus - List names of loaded menus
       /ssx commands - List names of loaded commands
       /ssx lagdebug - Enable lag debug mode
+      /ssx itemdebug - Enable item debug mode
+      /ssx sync - Force config sync (even if disabled)
