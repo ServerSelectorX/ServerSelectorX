@@ -1,10 +1,8 @@
 package xyz.derkades.serverselectorx;
 
-import java.lang.reflect.Field;
 import java.util.List;
 import java.util.Map;
 
-import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
@@ -12,20 +10,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import xyz.derkades.derkutils.Cooldown;
+import xyz.derkades.derkutils.bukkit.reflection.ReflectionUtil;
 import xyz.derkades.serverselectorx.actions.Action;
 
 public class Commands {
 
 	static void registerCustomCommands() {
-		final CommandMap commandMap;
-		try {
-			final Field bukkitCommandMap = Bukkit.getServer().getClass().getDeclaredField("commandMap");
-			bukkitCommandMap.setAccessible(true);
-			commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
-		} catch (NoSuchFieldException | IllegalAccessException e) {
-			e.printStackTrace();
-			return;
-		}
+		final CommandMap commandMap = ReflectionUtil.getCommandMap();
 
 		for (final Map.Entry<String, FileConfiguration> configEntry : Main.getConfigurationManager().commands.entrySet()) {
 			final String commandName = configEntry.getKey();
