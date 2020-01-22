@@ -34,6 +34,10 @@ public class Main extends JavaPlugin {
 	// When set to true, lag-related debug information is printed to the console. This boolean
 	// is enabled using /ssx lagdebug
 	static boolean LAG_DEBUG = false;
+	
+	// When set to true, debug information related to giving items on join is printed to the 
+	// console. This boolean is enabled using /ssx lagdebug
+	static boolean ITEM_DEBUG = false;
 
 	private static ConfigurationManager configurationManager;
 	private static ConfigSync configSync;
