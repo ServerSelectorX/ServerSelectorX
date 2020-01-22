@@ -2,7 +2,7 @@ package xyz.derkades.serverselectorx.actions;
 
 import org.bukkit.entity.Player;
 
-import xyz.derkades.serverselectorx.Main;
+import xyz.derkades.serverselectorx.ServerSelectorX;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class FirstAvailableServerAction extends Action {
@@ -28,7 +28,7 @@ public class FirstAvailableServerAction extends Action {
 				continue;
 			}
 
-			Main.teleportPlayerToServer(player, serverName);
+			ServerSelectorX.teleportPlayerToServer(player, serverName);
 		}
 
 		return false;

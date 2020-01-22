@@ -5,7 +5,7 @@ import java.util.Map;
 
 import org.bukkit.entity.Player;
 
-import xyz.derkades.serverselectorx.Main;
+import xyz.derkades.serverselectorx.ServerSelectorX;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class RoundRobinServerAction extends Action {
@@ -67,7 +67,7 @@ public class RoundRobinServerAction extends Action {
 		}
 
 		System.out.println("[roundrobinserver - debug] Teleporting to " + serverName);
-		Main.teleportPlayerToServer(player, serverName);
+		ServerSelectorX.teleportPlayerToServer(player, serverName);
 	}
 
 }

@@ -1,7 +1,5 @@
 package xyz.derkades.serverselectorx;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
 import java.util.UUID;
@@ -16,7 +14,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
-import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
@@ -24,7 +21,6 @@ import xyz.derkades.serverselectorx.configuration.ConfigSync;
 import xyz.derkades.serverselectorx.configuration.ConfigurationManager;
 import xyz.derkades.serverselectorx.effects.EffectsOnJoin;
 import xyz.derkades.serverselectorx.placeholders.PapiExpansionRegistrar;
-import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class Main extends JavaPlugin {
 
@@ -133,38 +129,6 @@ public class Main extends JavaPlugin {
 
 	static ConfigSync getConfigSync() {
 		return configSync;
-	}
-
-	public static void teleportPlayerToServer(final Player player, final String server){
-		if (Cooldown.getCooldown("servertp" + player.getName() + server) > 0) {
-			return;
-		}
-
-		Cooldown.addCooldown("servertp" + player.getName() + server, 1000);
-
-		// Send message to bungeecord
-		try (
-				ByteArrayOutputStream baos = new ByteArrayOutputStream();
-				DataOutputStream dos = new DataOutputStream(baos)
-			){
-
-	        dos.writeUTF("Connect");
-	        dos.writeUTF(server);
-	        player.sendPluginMessage(getPlugin(), "BungeeCord", baos.toByteArray());
-		} catch (final IOException e){
-			e.printStackTrace();
-		}
-	}
-
-	public static int getGlobalPlayerCount() {
-		int online = 0;
-		for (final Server server : Server.getServers()) {
-			if (server.isOnline()) {
-				online += server.getOnlinePlayers();
-			}
-		}
-
-		return online;
 	}
 
     public static ItemBuilder getItemBuilderFromItemSection(final Player player, final ConfigurationSection section) {
