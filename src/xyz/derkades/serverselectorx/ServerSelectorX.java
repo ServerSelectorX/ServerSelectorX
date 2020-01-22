@@ -4,6 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 
@@ -27,6 +28,14 @@ public class ServerSelectorX {
 	
 	public static Server getServer(String name) {
 		return Server.getServer(name);
+	}
+	
+	public static List<Server> getServers() {
+		return Server.getServers();
+	}
+	
+	public static List<Server> getOnlineServers() {
+		return Server.getServers().stream().filter(Server::isOnline).collect(Collectors.toList());
 	}
 	
 	public static int getGlobalPlayerCount() {
