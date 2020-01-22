@@ -45,7 +45,7 @@ public class ItemClickListener implements Listener {
 		final String itemName = nbt.getString("SSXItem");
 
 		if (!Main.getConfigurationManager().items.containsKey(itemName)) {
-			player.sendMessage("An configuration file does not exist for an item with the name '" + itemName + "'.");
+			player.sendMessage("No configuration file exists for an item with the name '" + itemName + "'.");
 			return;
 		}
 

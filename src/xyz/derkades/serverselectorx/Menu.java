@@ -249,7 +249,7 @@ public class Menu extends IconMenu {
 
 			builder.papi(this.player)
 				.placeholder("{player}", this.player.getName())
-				.placeholder("{globalOnline}", Main.getGlobalPlayerCount() + "");
+				.placeholder("{globalOnline}", ServerSelectorX.getGlobalPlayerCount() + "");
 
 			// Add actions to item as NBT
 			final NBTItem nbt = new NBTItem(builder.create());

@@ -66,7 +66,7 @@ public class ItemGiveListener implements Listener {
 			final String name = itemConfigEntry.getKey();
 			final FileConfiguration config = itemConfigEntry.getValue();
 			
-			debug("Giving item '" + name + ".");
+			debug("Preparing to give item '" + name + ".");
 
 			if (!config.getBoolean("give." + type)) {
 				debug("Item skipped, give is disabled");

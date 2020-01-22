@@ -6,7 +6,7 @@ import java.util.List;
 
 import org.bukkit.entity.Player;
 
-import xyz.derkades.serverselectorx.Main;
+import xyz.derkades.serverselectorx.ServerSelectorX;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class RandomServerAction extends Action {
@@ -34,7 +34,7 @@ public class RandomServerAction extends Action {
 			}
 
 			System.out.println("[randomserver - debug] Teleporting to " + serverName);
-			Main.teleportPlayerToServer(player, serverName);
+			ServerSelectorX.teleportPlayerToServer(player, serverName);
 			return false;
 		}
 

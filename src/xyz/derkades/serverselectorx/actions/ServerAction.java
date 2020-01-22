@@ -2,7 +2,7 @@ package xyz.derkades.serverselectorx.actions;
 
 import org.bukkit.entity.Player;
 
-import xyz.derkades.serverselectorx.Main;
+import xyz.derkades.serverselectorx.ServerSelectorX;
 
 public class ServerAction extends Action {
 
@@ -12,7 +12,7 @@ public class ServerAction extends Action {
 
 	@Override
 	public boolean apply(final Player player, final String value) {
-		Main.teleportPlayerToServer(player, value);
+		ServerSelectorX.teleportPlayerToServer(player, value);
 		return false;
 	}
 
