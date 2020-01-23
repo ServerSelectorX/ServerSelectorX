@@ -22,6 +22,8 @@ give:
   # If set to true, require permission ssx.item.<name> to receive the item.
   permission: false
   
+  # delay: 1
+  
 actions:
  - 'openmenu:default' # Open default menu (config file in ../menu/default.yml)
  
