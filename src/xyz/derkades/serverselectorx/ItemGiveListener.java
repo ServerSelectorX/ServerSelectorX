@@ -55,13 +55,13 @@ public class ItemGiveListener implements Listener {
 	}
 
 	public void giveItems(final Player player, final String type) {
-		debug("Giving items to " + player + ". Reason: " + type);
-		
+		debug("Giving items to " + player.getName() + ". Reason: " + type);
+
 		for (final Map.Entry<String, FileConfiguration> itemConfigEntry : Main.getConfigurationManager().items.entrySet()) {
 			final String name = itemConfigEntry.getKey();
 			final FileConfiguration config = itemConfigEntry.getValue();
-			
-			debug("Preparing to give item '" + name + ".");
+
+			debug("Preparing to give item '" + name + "'");
 
 			if (!config.getBoolean("give." + type)) {
 				debug("Item skipped, give is disabled");
@@ -85,7 +85,7 @@ public class ItemGiveListener implements Listener {
 					continue;
 				}
 			}
-			
+
 			debug("All checks done, giving item");
 
 			ItemStack item = Main.getItemBuilderFromItemSection(player, config.getConfigurationSection("item")).create();
@@ -117,10 +117,10 @@ public class ItemGiveListener implements Listener {
 			}
 		}
 	}
-	
-	private void debug(String message) {
+
+	private void debug(final String message) {
 		if (Main.ITEM_DEBUG) {
-			Main.getPlugin().getLogger().info("[item debug]" + message);
+			Main.getPlugin().getLogger().info("[item debug] " + message);
 		}
 	}
 
