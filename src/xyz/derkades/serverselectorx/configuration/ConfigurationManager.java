@@ -85,7 +85,7 @@ public class ConfigurationManager {
 			FileUtils.copyURLToFile(this.getClass().getResource("/item.yml"),
 					new File(itemDir, "compass.yml"));
 			FileUtils.copyURLToFile(this.getClass().getResource("/menu.yml"),
-					new File(menuDir, "default.yml"));
+					new File(menuDir, "serverselector.yml"));
 		}
 
 		this.commands = new ConcurrentHashMap<>();
