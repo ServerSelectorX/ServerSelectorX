@@ -92,10 +92,11 @@ public class ServerSelectorXCommand implements CommandExecutor {
 			sender.sendMessage("Lag related debug console messages are now enabled until the next server restart/reload.");
 			return true;
 		}
-		
+
 		if (args.length == 1 && args[0].equalsIgnoreCase("itemdebug")) {
 			Main.ITEM_DEBUG = true;
 			sender.sendMessage("Debug messages related to items on join are now enabled until the next server restart/reload.");
+			return true;
 		}
 
 		if (args.length == 1 && args[0].equalsIgnoreCase("sync")) {
