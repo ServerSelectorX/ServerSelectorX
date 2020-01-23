@@ -12,7 +12,7 @@
 
 # Actions to perform when the command is executed
 actions:
-  - 'openmenu:serverselector' # Open default menu (config file in ../menu/default.yml)
+  - 'openmenu:serverselector' # Open default menu (config file in ../menu/serverselector.yml)
 
 # Require the permission ssx.command.<command> to run the command
 # This command is called 'servers' so the permission ssx.command.servers would be required.
