@@ -19,7 +19,7 @@ public class ItemMoveDropCancelListener implements Listener {
 				@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 				public void onDrop(final PlayerDropItemEvent event){
 					if (!event.getPlayer().hasPermission("ssx.drop")) {
-						event.getItemDrop().setItemStack(null);
+//						event.getItemDrop().setItemStack(null);
 						event.getItemDrop().remove();
 						event.setCancelled(true);
 					}
