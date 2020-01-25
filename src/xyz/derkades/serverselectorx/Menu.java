@@ -68,6 +68,10 @@ public class Menu extends IconMenu {
 					final long diff = System.nanoTime() - start;
 					System.out.println("(Re)loaded menu for player " + player.getName() + " in " + diff / 1000 + "μs. (one tick is 50ms)");
 				}
+				
+				if (config.getBoolean("disable-updates", false)) {
+					this.cancel();
+				}
 			}
 		}.runTaskTimer(Main.getPlugin(), 0, 20);
 	}
