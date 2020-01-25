@@ -122,19 +122,21 @@ public class ConfigSync {
 		}
 
 		final File dataFolder = Main.getPlugin().getDataFolder(); // for convenience
-
-		this.logger.info("Deletion is enabled. Deleting directories");
-		final File[] toDelete = new File[] {
-				new File(dataFolder, "item"),
-				new File(dataFolder, "command"),
-				new File(dataFolder, "menu"),
-		};
-		for (final File dir : toDelete) {
-			try {
-				FileUtils.deleteDirectory(dir);
-				logger.info("Deleted directory " + dir);
-			} catch (final IOException e) {
-				this.logger.warning("Failed to delete directory" + dir.getPath());
+		
+		if (Main.getConfigurationManager().sync.getBoolean("delete", false)) {
+			this.logger.info("Deletion is enabled. Deleting directories");
+			final File[] toDelete = new File[] {
+					new File(dataFolder, "item"),
+					new File(dataFolder, "command"),
+					new File(dataFolder, "menu"),
+			};
+			for (final File dir : toDelete) {
+				try {
+					FileUtils.deleteDirectory(dir);
+					logger.info("Deleted directory " + dir);
+				} catch (final IOException e) {
+					this.logger.warning("Failed to delete directory" + dir.getPath());
+				}
 			}
 		}
 
