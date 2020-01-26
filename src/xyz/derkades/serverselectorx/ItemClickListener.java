@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import xyz.derkades.derkutils.Cooldown;
+import xyz.derkades.derkutils.bukkit.Colors;
 
 public class ItemClickListener implements Listener {
 
@@ -54,7 +55,7 @@ public class ItemClickListener implements Listener {
 		if (config.isInt("cooldown")) {
 			final long timeLeft = Cooldown.getCooldown("ssxitem" + itemName);
 			if (timeLeft > 0) {
-				player.sendMessage(String.format(Main.getConfigurationManager().misc.getString("cooldown-message"), timeLeft / 1000.0));
+				player.sendMessage(Colors.parseColors(String.format(Main.getConfigurationManager().misc.getString("cooldown-message"), timeLeft / 1000.0)));
 				return;
 			}
 

@@ -10,6 +10,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import xyz.derkades.derkutils.Cooldown;
+import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.reflection.ReflectionUtil;
 import xyz.derkades.serverselectorx.actions.Action;
 
@@ -41,7 +42,7 @@ public class Commands {
 						if (config.isInt("cooldown")) {
 							final long timeLeft = Cooldown.getCooldown("ssxcommand" + commandName);
 							if (timeLeft > 0) {
-								player.sendMessage(String.format(Main.getConfigurationManager().misc.getString("cooldown-message"), timeLeft / 1000.0));
+								player.sendMessage(Colors.parseColors(String.format(Main.getConfigurationManager().misc.getString("cooldown-message"), timeLeft / 1000.0)));
 								return true;
 							}
 
