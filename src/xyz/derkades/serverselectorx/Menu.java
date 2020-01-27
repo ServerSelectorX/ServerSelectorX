@@ -86,8 +86,19 @@ public class Menu extends IconMenu {
 
 			if (section.contains("permission") && !this.player.hasPermission(section.getString("permission"))) {
 				// Use no-permission section
-				builder = Main.getItemBuilderFromItemSection(this.player, section.getConfigurationSection("no-permission"));
-				actions = section.getConfigurationSection("no-permission").getStringList("actions");
+				ConfigurationSection noPermissionSection = section.getConfigurationSection("no-permission");
+				
+				if (!noPermissionSection.contains("material")) {
+					this.player.sendMessage("No permission section is missing the material option");
+					return;
+				}
+
+				if (noPermissionSection.getString("material").equalsIgnoreCase("NONE")) {
+					continue itemLoop;
+				}
+				
+				builder = Main.getItemBuilderFromItemSection(this.player, noPermissionSection);
+				actions = noPermissionSection.getStringList("actions");
 			} else {
 				// Player has permission, use other sections
 				if (section.contains("connector")) {
