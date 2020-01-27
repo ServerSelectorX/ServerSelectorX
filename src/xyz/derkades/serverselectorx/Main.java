@@ -170,7 +170,7 @@ public class Main extends JavaPlugin {
 		if (section.isConfigurationSection("nbt")) {
 			final NBTItem nbt = new NBTItem(builder.create());
 			final ConfigurationSection nbtSection = section.getConfigurationSection("nbt");
-			for (final String key : section.getKeys(false)) {
+			for (final String key : nbtSection.getKeys(false)) {
 				if (nbtSection.isBoolean(key)) {
 					nbt.setBoolean(key, nbtSection.getBoolean(key));
 				} else if (nbtSection.isString(key)) {
