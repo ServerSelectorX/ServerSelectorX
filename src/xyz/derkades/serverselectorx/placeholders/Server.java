@@ -74,7 +74,7 @@ public class Server {
 		}
 
 		for (final Server server : SERVERS) {
-			if (server.getName().equalsIgnoreCase(name)) {
+			if (name.equalsIgnoreCase(server.getName())) {
 				return server;
 			}
 		}
