@@ -54,6 +54,8 @@ public class Menu extends IconMenu {
 			return;
 		}
 		
+		int updateInterval = config.getInt("update-interval", 100);
+		
 		new BukkitRunnable() {
 			public void run() {
 				if (closed || // menu has been closed
@@ -73,7 +75,7 @@ public class Menu extends IconMenu {
 					this.cancel();
 				}
 			}
-		}.runTaskTimer(Main.getPlugin(), 0, 20);
+		}.runTaskTimer(Main.getPlugin(), 0, updateInterval);
 	}
 
 	private void addItems() {
