@@ -62,6 +62,7 @@ public class Menu extends IconMenu {
 						Bukkit.getPlayer(player.getName()) == null // player is offline
 						) {
 					this.cancel();
+					return;
 				}
 				
 				final long start = System.nanoTime();
