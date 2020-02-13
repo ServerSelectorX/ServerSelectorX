@@ -1,5 +1,6 @@
 package xyz.derkades.serverselectorx;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
@@ -33,8 +34,9 @@ public class ItemGiveListener implements Listener {
 			try {
 				final int length = ((ItemStack[]) inv.getClass().getMethod("getStorageContents").invoke(inv)).length;
 				inv.getClass().getMethod("setStorageContents", ItemStack[].class).invoke(inv, (Object) new ItemStack[length]);
-			} catch (final Exception e) {
-				e.printStackTrace(); // TODO remove this when I know it's working
+			} catch (final NoSuchMethodException ignored) { // This method does not exist on <1.9
+			} catch (final InvocationTargetException | IllegalAccessException e) {
+				e.printStackTrace();
 			}
 			inv.setArmorContents(new ItemStack[inv.getArmorContents().length]);
 		}
