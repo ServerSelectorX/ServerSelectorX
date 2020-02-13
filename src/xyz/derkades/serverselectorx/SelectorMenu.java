@@ -108,14 +108,14 @@ public class SelectorMenu extends IconMenu {
 					builder = new ItemBuilder(owner);
 				}
 			} else {
-				final Material material = Material.valueOf(materialString);
-				if (material == null) {
-					player.sendMessage("Invalid item name " + material);
+				try {
+					final Material material = Material.valueOf(materialString);
+					builder = new ItemBuilder(material);
+				} catch (IllegalArgumentException e) {
+					player.sendMessage("Invalid item name " + materialString);
 					player.sendMessage("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Item-names");
 					return;
 				}
-
-				builder = new ItemBuilder(material);
 			}
 
 			if (data != 0) {
