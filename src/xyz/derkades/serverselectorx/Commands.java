@@ -48,6 +48,14 @@ public class Commands {
 
 							Cooldown.addCooldown("ssxcommand" + commandName, config.getInt("cooldown"));
 						}
+						
+						if (config.getBoolean("permission", false) && !player.hasPermission("ssx.command." + commandName)) {
+							FileConfiguration misc = Main.getConfigurationManager().misc;
+							if (misc.isString("no-permission")) {
+								player.sendMessage(Colors.parseColors(misc.getString("no-permission")));
+							}
+							return true;
+						}
 
 						Action.runActions(player, actions);
 					}

@@ -2,6 +2,9 @@ url-message: '&3&lClick here'
 
 cooldown-message: 'Please wait %.1fs before using this again.'
 
+# A generic no permission message used throughout the plugin. Comment to disable.
+no-permission: 'You do not have permission to use this'
+
 # Send message to console when players don't have the required permission
 permission-debug: true
 
