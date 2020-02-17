@@ -1,0 +1,5 @@
+# Actions to run when a player joins the server
+
+actions:
+ - 'msg:Welcome to our server!'
+#- 'addeffect:SPEED:2'

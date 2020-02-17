@@ -31,7 +31,7 @@ public class Main extends JavaPlugin {
 	// is enabled using /ssx lagdebug
 	static boolean LAG_DEBUG = false;
 	
-	// When set to true, debug information related to giving items on join is printed to the 
+	// When set to true, debug information related to giving items on join is printed to the
 	// console. This boolean is enabled using /ssx lagdebug
 	static boolean ITEM_DEBUG = false;
 
@@ -81,6 +81,7 @@ public class Main extends JavaPlugin {
 		Bukkit.getPluginManager().registerEvents(new ItemClickListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemGiveListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BetaMessageJoinListener(), this);
+		Bukkit.getPluginManager().registerEvents(new ActionsOnJoinListener(), this);
 
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
 			PapiExpansionRegistrar.register();

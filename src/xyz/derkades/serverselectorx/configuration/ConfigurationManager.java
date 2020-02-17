@@ -23,6 +23,7 @@ public class ConfigurationManager {
 	public FileConfiguration api;
 	public FileConfiguration effects;
 	public FileConfiguration inventory;
+	public FileConfiguration join;
 	public FileConfiguration misc;
 	public FileConfiguration sync;
 
@@ -44,6 +45,7 @@ public class ConfigurationManager {
 				"api.yml",
 				"effects.yml",
 				"inventory.yml",
+				"join.yml",
 				"misc.yml",
 				"sync.yml",
 		};
@@ -63,6 +65,8 @@ public class ConfigurationManager {
 				this.effects = YamlConfiguration.loadConfiguration(file);
 			} else if (fileName.equals("inventory.yml")) {
 				this.inventory = YamlConfiguration.loadConfiguration(file);
+			} else if (fileName.equals("join.yml")) {
+				this.join = YamlConfiguration.loadConfiguration(file);
 			} else if (fileName.equals("misc.yml")) {
 				this.misc = YamlConfiguration.loadConfiguration(file);
 			} else if (fileName.equals("sync.yml")) {
