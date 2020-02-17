@@ -54,7 +54,7 @@ public class ConfigSync {
 				this.logger.warning("Make sure that you are using the latest and/or same version everywhere.");
 				return false;
 			}
-		} catch (MalformedURLException e) {
+		} catch (final MalformedURLException e) {
 			e.printStackTrace();
 			return false;
 		} catch (final IOException e) {
@@ -87,7 +87,7 @@ public class ConfigSync {
 		// Add all files from the 'directories' option
 		for (final String dir : Main.getConfigurationManager().sync.getStringList("directories")) {
 			try {
-				logger.info("Listing files in directory " + dir);
+				this.logger.info("Listing files in directory " + dir);
 				ConfigSync.this.getFilesInDirectory(dir).forEach((s) -> filesToSync.add(dir + "/" + s));
 			} catch (final IOException e) {
 				this.logger.warning("An error occured while trying to get a list of files in the directory " + dir);
@@ -95,8 +95,11 @@ public class ConfigSync {
 			}
 		}
 		
-		logger.info("Files to sync (" + filesToSync.size() + "): ");
-		filesToSync.forEach((f) -> logger.info(" - " + f));
+		// Remove excluded files
+		Main.getConfigurationManager().sync.getStringList("exclude").forEach(filesToSync::remove);
+		
+		this.logger.info("Files to sync (" + filesToSync.size() + "): ");
+		filesToSync.forEach((f) -> this.logger.info(" - " + f));
 
 		return filesToSync;
 	}
@@ -133,7 +136,7 @@ public class ConfigSync {
 			for (final File dir : toDelete) {
 				try {
 					FileUtils.deleteDirectory(dir);
-					logger.info("Deleted directory " + dir);
+					this.logger.info("Deleted directory " + dir);
 				} catch (final IOException e) {
 					this.logger.warning("Failed to delete directory" + dir.getPath());
 				}
@@ -168,16 +171,16 @@ public class ConfigSync {
 
 		try {
 			Main.getConfigurationManager().reload();
-			logger.info("Reload complete.");
+			this.logger.info("Reload complete.");
 		} catch (final IOException e) {
 			Main.getPlugin().getLogger().warning("Oh no! There was a syntax error in the config file pulled"
 					+ "from the other server. The plugin will probably stop working. For a detailed error "
 					+ "report, use /ssx reload on the other server.");
 		}
 		
-		List<String> commands = Main.getConfigurationManager().sync.getStringList("after-sync-commands");
+		final List<String> commands = Main.getConfigurationManager().sync.getStringList("after-sync-commands");
 		if (!commands.isEmpty()) {
-			logger.info("Running after-sync-commands");
+			this.logger.info("Running after-sync-commands");
 			commands.forEach((c) -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), c));
 		}
 	}
