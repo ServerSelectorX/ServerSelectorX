@@ -66,6 +66,8 @@ public class ConfigSync {
 	}
 
 	private List<String> getFilesInDirectory(final String directory) throws IOException {
+		this.logger.info("Listing files in directory " + directory);
+		
 		final URL url = new URL(String.format("http://%s/listfiles?password=%s&dir=%s",
 				Main.getConfigurationManager().sync.getString("address"),
 				Main.getConfigurationManager().sync.getString("password"),
@@ -75,7 +77,24 @@ public class ConfigSync {
 		final Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		final List<String> files = new ArrayList<>();
 		new JsonParser().parse(reader).getAsJsonArray().forEach((e) -> files.add(e.getAsString()));
+		
+		for (final String f : files) {
+			if (isDirectory(f)) {
+				files.addAll(getFilesInDirectory(f));
+			}
+		}
+		
 		return files;
+	}
+	
+	private boolean isDirectory(final String path) throws IOException {
+		final URL url = new URL(String.format("http://%s/fileinfo?password=%s&file=%s",
+				Main.getConfigurationManager().sync.getString("address"),
+				Main.getConfigurationManager().sync.getString("password"),
+				path));
+		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		final Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+		return new JsonParser().parse(reader).getAsJsonObject().get("directory").getAsBoolean();
 	}
 
 	private List<String> getFilesToSync() {
@@ -87,7 +106,6 @@ public class ConfigSync {
 		// Add all files from the 'directories' option
 		for (final String dir : Main.getConfigurationManager().sync.getStringList("directories")) {
 			try {
-				this.logger.info("Listing files in directory " + dir);
 				ConfigSync.this.getFilesInDirectory(dir).forEach((s) -> filesToSync.add(dir + "/" + s));
 			} catch (final IOException e) {
 				this.logger.warning("An error occured while trying to get a list of files in the directory " + dir);
