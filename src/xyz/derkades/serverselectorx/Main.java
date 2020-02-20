@@ -19,7 +19,6 @@ import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
 import xyz.derkades.serverselectorx.configuration.ConfigSync;
 import xyz.derkades.serverselectorx.configuration.ConfigurationManager;
-import xyz.derkades.serverselectorx.effects.EffectsOnJoin;
 import xyz.derkades.serverselectorx.placeholders.PapiExpansionRegistrar;
 
 public class Main extends JavaPlugin {
@@ -73,7 +72,6 @@ public class Main extends JavaPlugin {
 		server = new WebServer();
 		server.start();
 
-		new EffectsOnJoin();
 		configSync = new ConfigSync();
 		new Stats();
 		new ItemMoveDropCancelListener();
