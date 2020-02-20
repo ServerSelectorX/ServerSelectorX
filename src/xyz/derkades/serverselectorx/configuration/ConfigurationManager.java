@@ -21,7 +21,6 @@ public class ConfigurationManager {
 	public Map<String, FileConfiguration> items;
 
 	public FileConfiguration api;
-	public FileConfiguration effects;
 	public FileConfiguration inventory;
 	public FileConfiguration join;
 	public FileConfiguration misc;
@@ -43,7 +42,6 @@ public class ConfigurationManager {
 		// java we can't list files in a jar
 		final String[] files = {
 				"api.yml",
-				"effects.yml",
 				"inventory.yml",
 				"join.yml",
 				"misc.yml",
@@ -61,8 +59,6 @@ public class ConfigurationManager {
 
 			if (fileName.equals("api.yml")) {
 				this.api = YamlConfiguration.loadConfiguration(file);
-			} else if (fileName.equals("effects.yml")) {
-				this.effects = YamlConfiguration.loadConfiguration(file);
 			} else if (fileName.equals("inventory.yml")) {
 				this.inventory = YamlConfiguration.loadConfiguration(file);
 			} else if (fileName.equals("join.yml")) {

@@ -4,8 +4,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
-import xyz.derkades.serverselectorx.Main;
-
 public class ToggleEffectAction extends Action {
 
 	public ToggleEffectAction() {
@@ -14,13 +12,34 @@ public class ToggleEffectAction extends Action {
 
 	@Override
 	public boolean apply(final Player player, final String value) {
-		if (!Main.getConfigurationManager().effects.contains("effects." + value)) {
-			player.sendMessage("Effect '" + value + "' is not declared in the effects.yml file.");
-			player.sendMessage("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Effects");
+		final String[] split = value.split(":");
+		if (split.length < 2 || split.length > 3) {
+			player.sendMessage("Invalid effect format. It should be toggleeffect:name:amplifier or toggleeffect:name:amplifier:duration");
 			return true;
 		}
+		
+		final String effectName = split[0];
+		final int amplifier;
+		try {
+			amplifier = Integer.parseInt(split[1]);
+		} catch (final NumberFormatException e) {
+			player.sendMessage("'" + split[1] + "' is not a valid number");
+			return true;
+		}
+		
+		final int duration;
+		if (split.length == 3) {
+			try {
+				duration = Integer.parseInt(split[2]);
+			} catch (final NumberFormatException e) {
+				player.sendMessage("'" + split[2] + "' is not a valid number");
+				return true;
+			}
+		} else {
+			duration = Integer.MAX_VALUE;
+		}
 
-		final PotionEffectType effect = PotionEffectType.getByName(value);
+		final PotionEffectType effect = PotionEffectType.getByName(effectName);
 
 		if (effect == null) {
 			player.sendMessage("Invalid effect type '" + value + "'.");
@@ -31,8 +50,7 @@ public class ToggleEffectAction extends Action {
 		if (player.hasPotionEffect(effect)) {
 			player.removePotionEffect(effect);
 		} else {
-			final int amplifier = Main.getConfigurationManager().effects.getInt("effects." + value);
-			player.addPotionEffect(new PotionEffect(effect, Integer.MAX_VALUE, amplifier, true, true));
+			player.addPotionEffect(new PotionEffect(effect, duration, amplifier, true, true));
 		}
 
 		return false;
