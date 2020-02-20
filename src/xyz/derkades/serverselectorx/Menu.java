@@ -54,11 +54,12 @@ public class Menu extends IconMenu {
 			return;
 		}
 		
-		int updateInterval = config.getInt("update-interval", 100);
+		final int updateInterval = config.getInt("update-interval", 100);
 		
 		new BukkitRunnable() {
+			@Override
 			public void run() {
-				if (closed || // menu has been closed
+				if (Menu.this.closed || // menu has been closed
 						Bukkit.getPlayer(player.getName()) == null // player is offline
 						) {
 					this.cancel();
@@ -89,7 +90,7 @@ public class Menu extends IconMenu {
 
 			if (section.contains("permission") && !this.player.hasPermission(section.getString("permission"))) {
 				// Use no-permission section
-				ConfigurationSection noPermissionSection = section.getConfigurationSection("no-permission");
+				final ConfigurationSection noPermissionSection = section.getConfigurationSection("no-permission");
 				
 				if (!noPermissionSection.contains("material")) {
 					this.player.sendMessage("No permission section is missing the material option");
@@ -159,8 +160,8 @@ public class Menu extends IconMenu {
 
 									if (
 											mode.equals("equals") && placeholderValueInConfig.equals(placeholderValueFromConnector) ||
-											mode.equals("less") && Double.parseDouble(placeholderValueInConfig) < Double.parseDouble(placeholderValueFromConnector) ||
-											mode.equals("more") && Double.parseDouble(placeholderValueInConfig) > Double.parseDouble(placeholderValueFromConnector)
+											mode.equals("less") && Double.parseDouble(placeholderValueInConfig) > Double.parseDouble(placeholderValueFromConnector) ||
+											mode.equals("more") && Double.parseDouble(placeholderValueInConfig) < Double.parseDouble(placeholderValueFromConnector)
 											) {
 
 										if (!dynamicSection.contains("material")) {
@@ -315,7 +316,7 @@ public class Menu extends IconMenu {
 
 	@Override
 	public void onClose(final MenuCloseEvent event) {
-		closed = true;
+		this.closed = true;
 	}
 
 }

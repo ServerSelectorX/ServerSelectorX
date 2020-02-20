@@ -170,6 +170,25 @@ public class WebServlet extends HttpServlet {
 			final String json = new GsonBuilder().setPrettyPrinting().create().toJson(fileNames);
 			response.getOutputStream().print(json);
 		}
+		
+		else if (request.getRequestURI().equals("/fileinfo")) {
+			final String fileName = request.getParameter("file");
+			// Do not allow going outside of the plugin directory for security reasons
+			if (api.getBoolean("block-outside-directory", true) && fileName.contains("..")) {
+				logger.warning("Received request with dangerous directory name from " + request.getRemoteAddr());
+				logger.warning("Directory name: " + fileName);
+				logger.warning("The request has been blocked, no need to panic. Maybe do consider looking into where the request came from?");
+				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+				return;
+			}
+			
+			final File file = new File(fileName);
+			
+			final Map<String, Boolean> info = new HashMap<>();
+			info.put("exists", file.exists());
+			info.put("directory", file.isDirectory());
+			response.getOutputStream().print(new Gson().toJson(info));
+		}
 
 		else if (request.getRequestURI().equals("/players")) {
 			final Gson gson = new Gson();

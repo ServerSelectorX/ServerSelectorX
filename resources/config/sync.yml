@@ -17,6 +17,9 @@ files:
 directories:
  - menu # Sync all files in the menu directory
 
+# Any files to exclude from the directories above
+exclude: []
+
 
 
 # -------------------- Advanced -------------------- #
