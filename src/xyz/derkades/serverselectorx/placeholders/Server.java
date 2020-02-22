@@ -41,6 +41,10 @@ public class Server {
 	}
 
 	public Placeholder getPlaceholder(final String name) {
+		if (!this.isOnline()) {
+			return new GlobalPlaceholder(name, "?");
+		}
+		
 		if (getPlaceholders() != null) {
 			for (final Placeholder placeholder : getPlaceholders()) {
 				if (placeholder.getKey().equals(name)) {
@@ -50,7 +54,7 @@ public class Server {
 		}
 
 		Main.getPlugin().getLogger().warning("Placeholder " + name + " was requested but not received from the server (" + getName() + ").");
-		return new GlobalPlaceholder(name, "0");
+		return new GlobalPlaceholder(name, "-");
 	}
 
 	public int getOnlinePlayers() {
