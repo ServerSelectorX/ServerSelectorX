@@ -53,7 +53,29 @@
 							<pattern>xyz.derkades.derkutils</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.lib.derkutils</shadedPattern>
 						</relocation>
+						<relocation>
+							<pattern>com.google.gson</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.gson</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.hamcrest</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.hamcrest</shadedPattern>
+						</relocation>
 					</relocations>
+					
+					<filters>
+						<filter>
+							<artifact>*:*</artifact>
+							<excludes>
+								<exclude>META-INF/*.SF</exclude>
+								<exclude>META-INF/*.DSA</exclude>
+								<exclude>META-INF/*.RSA</exclude>
+								<exclude>LICENSE.txt</exclude>
+								<exclude>junit/</exclude>
+								<exclude>org/junit/</exclude>
+							</excludes>
+						</filter>
+					</filters>
 				</configuration>
 			</plugin>
 
