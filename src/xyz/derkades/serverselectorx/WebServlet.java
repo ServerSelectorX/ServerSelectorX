@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -86,9 +87,8 @@ public class WebServlet extends HttpServlet {
 				// it is a player-specific placeholder. The map contains placeholder
 				// values for each player. Every map entry is added as a unique
 				// player specific placeholder.
-				final Map<UUID, String> values = new HashMap<>();
-				((Map<String, String>) v).forEach((k2, v2) -> values.put(UUID.fromString(k2), v2));
-				parsedPlaceholders.add(new PlayerPlaceholder(k, values));
+				parsedPlaceholders.add(new PlayerPlaceholder(k, ((Map<String, String>) v).entrySet().stream()
+						.collect(Collectors.toMap(e -> UUID.fromString(e.getKey()), e-> e.getValue()))));
 			} else {
 				Main.getPlugin().getLogger().warning("Invalid placeholder value format (" + k + "; " + v + ")");
 			}
