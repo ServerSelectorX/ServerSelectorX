@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>xyz.derkades</groupId>
 	<artifactId>ServerSelectorX</artifactId>
-	<version>3.5.3-legacy</version>
+	<version>3.5.4-legacy</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -35,7 +35,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.2.1</version>
+				<version>3.2.2</version>
 				<configuration>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
 					<minimizeJar>true</minimizeJar>
@@ -53,7 +53,29 @@
 							<pattern>xyz.derkades.derkutils</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.lib.derkutils</shadedPattern>
 						</relocation>
+						<relocation>
+							<pattern>com.google.gson</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.gson</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.hamcrest</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.hamcrest</shadedPattern>
+						</relocation>
 					</relocations>
+					
+					<filters>
+						<filter>
+							<artifact>*:*</artifact>
+							<excludes>
+								<exclude>META-INF/*.SF</exclude>
+								<exclude>META-INF/*.DSA</exclude>
+								<exclude>META-INF/*.RSA</exclude>
+								<exclude>LICENSE.txt</exclude>
+								<exclude>junit/</exclude>
+								<exclude>org/junit/</exclude>
+							</excludes>
+						</filter>
+					</filters>
 				</configuration>
 			</plugin>
 
@@ -87,6 +109,12 @@
 			<artifactId>placeholderapi</artifactId>
 			<version>2.10.4</version>
 			<scope>provided</scope>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.google.code.gson</groupId>
+			<artifactId>gson</artifactId>
+			<version>2.8.6</version>
 		</dependency>
 
 	</dependencies>
