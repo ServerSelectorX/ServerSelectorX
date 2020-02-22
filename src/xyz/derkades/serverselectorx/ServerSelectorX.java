@@ -31,15 +31,15 @@ public class ServerSelectorX {
 	}
 	
 	public static List<Server> getServers() {
-		return Server.getServers();
+		return Server.getServers().entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList());
 	}
 	
 	public static List<Server> getOnlineServers() {
-		return Server.getServers().stream().filter(Server::isOnline).collect(Collectors.toList());
+		return getServers().stream().filter(Server::isOnline).collect(Collectors.toList());
 	}
 	
 	public static int getGlobalPlayerCount() {
-		return Server.getServers().stream().filter(Server::isOnline).mapToInt(Server::getOnlinePlayers).sum();
+		return getServers().stream().filter(Server::isOnline).mapToInt(Server::getOnlinePlayers).sum();
 	}
 	
 	public static void teleportPlayerToServer(final Player player, final String server){

@@ -1,13 +1,15 @@
 package xyz.derkades.serverselectorx.placeholders;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import xyz.derkades.serverselectorx.Main;
 
 public class Server {
 
-	private static final List<Server> SERVERS = new ArrayList<>();
+//	private static final List<Server> SERVERS = new ArrayList<>();
+	private static final Map<String, Server> SERVERS = new HashMap<>();
 
 	private final String name;
 	private transient long lastInfoTime = 0;
@@ -64,7 +66,7 @@ public class Server {
 		this.placeholders = placeholders;
 	}
 
-	public static List<Server> getServers() {
+	public static Map<String, Server> getServers() {
 		return SERVERS;
 	}
 
@@ -72,16 +74,14 @@ public class Server {
 		if (name == null) {
 			throw new NullPointerException("Name can't be null");
 		}
-
-		for (final Server server : SERVERS) {
-			if (name.equalsIgnoreCase(server.getName())) {
-				return server;
-			}
+		
+		if (SERVERS.containsKey(name)) {
+			return SERVERS.get(name);
+		} else {
+			final Server server = new Server(name);
+			SERVERS.put(name, server);
+			return server;
 		}
-
-		final Server server = new Server(name);
-		SERVERS.add(server);
-		return server;
 	}
 
 }

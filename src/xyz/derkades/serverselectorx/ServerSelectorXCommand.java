@@ -51,7 +51,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 				return true;
 			}
 
-			for (final Server server : Server.getServers()) {
+			for (final Server server : ServerSelectorX.getServers()) {
 				final long ms = server.getTimeSinceLastMessage();
 				final String lastInfo = ms < 999999 ? server.getTimeSinceLastMessage() + "ms" : "∞ ms";
 				if (server.isOnline()) {
