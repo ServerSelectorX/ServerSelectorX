@@ -7,6 +7,10 @@ rows: 1
 
 # sound: ITEM_ARMOR_EQUIP_GENERIC
 
+# How often the menu should be refreshed.
+# Settings this too low can have a performance impact.
+# update-interval: 100
+
 menu:
 
   # Simple item that turns on or off a speed effect
