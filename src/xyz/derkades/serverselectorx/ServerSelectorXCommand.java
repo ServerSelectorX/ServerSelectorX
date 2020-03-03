@@ -58,7 +58,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 					final List<String> placeholderKeys = server.getPlaceholders().stream()
 							.map(Placeholder::getKey).collect(Collectors.toList());
 					sender.sendMessage(server.getName() + ": " + ChatColor.GREEN + "ONLINE (" + lastInfo + ") " + ChatColor.WHITE +
-							":" + ChatColor.GRAY + String.join(", ", placeholderKeys));
+							": " + ChatColor.GRAY + String.join(", ", placeholderKeys.stream().map(s -> "{" + s + "}").collect(Collectors.toList())));
 				} else {
 					sender.sendMessage(server.getName() + ": " + ChatColor.RED + "OFFLINE (" + lastInfo + ")");
 				}
