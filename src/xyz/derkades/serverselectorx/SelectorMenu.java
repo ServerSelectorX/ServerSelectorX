@@ -90,7 +90,7 @@ public class SelectorMenu extends IconMenu {
 				}
 			}
 
-			final ItemBuilder builder;
+			ItemBuilder builder;
 
 			if (materialString == null) {
 				player.sendMessage("Missing item option for item " + key);
@@ -103,9 +103,11 @@ public class SelectorMenu extends IconMenu {
 					builder = new ItemBuilder(player);
 				} else {
 					try {
-						builder = new ItemBuilder(Bukkit.getOfflinePlayer(UUID.fromString(owner)));
+						UUID uuid = UUID.fromString(owner);
+						builder = new ItemBuilder(Bukkit.getOfflinePlayer(uuid));
 					} catch (final IllegalArgumentException e) {
-						player.sendMessage("Invalid head uuid " + owner);
+						// Invalid UUID, interpret as custom texture
+						builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(owner);
 						return;
 					}
 				}
