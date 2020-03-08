@@ -2,8 +2,13 @@
 
 # Read into what this is about before touching these options
 # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Config-sync-v2
-
+#
 # If configured incorrectly, this WILL DELETE YOUR CONFIG FILES.
+#
+# Again, this is NOT related to SSX-Connector. Do NOT configure this
+# unless you are very sure you know what this does. I hate having
+# to put this giant comment here, but unfortunately too many people
+# keep turning this on and deleting their config files.
 
 enabled: false
 
