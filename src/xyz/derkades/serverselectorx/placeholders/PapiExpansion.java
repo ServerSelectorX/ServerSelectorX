@@ -46,7 +46,7 @@ public class PapiExpansion extends PlaceholderExpansion {
 
 	@Override
 	public String getIdentifier() {
-		return "serverselectorx";
+		return "ssx";
 	}
 
 	@Override

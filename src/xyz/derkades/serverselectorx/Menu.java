@@ -53,9 +53,9 @@ public class Menu extends IconMenu {
 			this.player.sendMessage("Menu name: " + configName);
 			return;
 		}
-		
+
 		final int updateInterval = config.getInt("update-interval", 100);
-		
+
 		new BukkitRunnable() {
 			@Override
 			public void run() {
@@ -65,14 +65,14 @@ public class Menu extends IconMenu {
 					this.cancel();
 					return;
 				}
-				
+
 				final long start = System.nanoTime();
 				addItems();
 				if (Main.LAG_DEBUG) {
 					final long diff = System.nanoTime() - start;
 					System.out.println("(Re)loaded menu for player " + player.getName() + " in " + diff / 1000 + "μs. (one tick is 50ms)");
 				}
-				
+
 				if (config.getBoolean("disable-updates", false)) {
 					this.cancel();
 				}
@@ -91,7 +91,12 @@ public class Menu extends IconMenu {
 			if (section.contains("permission") && !this.player.hasPermission(section.getString("permission"))) {
 				// Use no-permission section
 				final ConfigurationSection noPermissionSection = section.getConfigurationSection("no-permission");
-				
+
+				if (noPermissionSection == null) {
+					this.player.sendMessage("Missing no-permission section for item " + key + ". Remove the permission option or add a no-permission section.");
+					return;
+				}
+
 				if (!noPermissionSection.contains("material")) {
 					this.player.sendMessage("No permission section is missing the material option");
 					return;
@@ -100,7 +105,7 @@ public class Menu extends IconMenu {
 				if (noPermissionSection.getString("material").equalsIgnoreCase("NONE")) {
 					continue itemLoop;
 				}
-				
+
 				builder = Main.getItemBuilderFromItemSection(this.player, noPermissionSection);
 				actions = noPermissionSection.getStringList("actions");
 			} else {

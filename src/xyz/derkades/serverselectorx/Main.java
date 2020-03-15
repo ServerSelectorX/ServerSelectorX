@@ -27,7 +27,7 @@ public class Main extends JavaPlugin {
 	// When set to true, lag-related debug information is printed to the console. This boolean
 	// is enabled using /ssx lagdebug
 	static boolean LAG_DEBUG = false;
-	
+
 	// When set to true, debug information related to giving items on join is printed to the
 	// console. This boolean is enabled using /ssx lagdebug
 	static boolean ITEM_DEBUG = false;
@@ -63,8 +63,9 @@ public class Main extends JavaPlugin {
 
 		// Disable annoying jetty warnings
 		if (!configurationManager.api.getBoolean("jetty-debug", false)){
-			//System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");
+			System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");
 			System.setProperty("org.eclipse.jetty.LEVEL", "OFF");
+			System.setProperty("org.eclipse.jetty.util.log.announce", "false");
 		}
 
 		server = new WebServer();
