@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 import java.io.Reader;
@@ -18,6 +19,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
 
 import com.google.gson.JsonParser;
@@ -139,10 +141,10 @@ public class ConfigSync {
 		return filesToSync;
 	}
 
-	private byte[] getFileContent(final String file) throws IOException {
+	private InputStream getFileContent(final String file) throws IOException {
 //		return new BufferedReader(new InputStreamReader(new URL(getBaseUrl("getfile") + "&file=" + encode(file)).openConnection().getInputStream()))
 //				.lines().collect(Collectors.joining("\n"));
-		return new URL(getBaseUrl("getfile") + "&file=" + encode(file)).openConnection().getInputStream().readAllBytes();
+		return new URL(getBaseUrl("getfile") + "&file=" + encode(file)).openConnection().getInputStream();
 	}
 
 	public void sync() {
@@ -181,7 +183,7 @@ public class ConfigSync {
 		}
 
 		for (final String fileName : this.getFilesToSync()) {
-			byte[] content;
+			InputStream content;
 			try {
 				content = ConfigSync.this.getFileContent(fileName);
 			} catch (final IOException e) {
@@ -197,10 +199,8 @@ public class ConfigSync {
 			try {
 				final File file = new File(Main.getPlugin().getDataFolder(), fileName);
 //				FileUtils.writeStringToFile(file, content, "UTF-8");
-				final OutputStream stream = new FileOutputStream(file);
-				stream.write(content);
-				stream.flush();
-				stream.close();
+				final OutputStream output = new FileOutputStream(file);
+				IOUtils.copy(content, output);
 			} catch (final IOException e) {
 				this.logger.warning("An error occured while writing file " + fileName);
 				e.printStackTrace();
