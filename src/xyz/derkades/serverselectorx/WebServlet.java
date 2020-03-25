@@ -1,7 +1,9 @@
 package xyz.derkades.serverselectorx;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -15,7 +17,7 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -136,8 +138,10 @@ public class WebServlet extends HttpServlet {
 			}
 
 			final File file = new File(Main.getPlugin().getDataFolder(), fileName);
-			final String contents = FileUtils.readFileToString(file, "UTF-8");
-			response.getOutputStream().print(contents);
+//			final String contents = FileUtils.readFileToString(file, "UTF-8");
+			try (InputStream input = new FileInputStream(file)) {
+				IOUtils.copy(input, response.getOutputStream());
+			}
 		}
 
 		else if (request.getRequestURI().equals("/listfiles")) {
