@@ -2,8 +2,10 @@ package xyz.derkades.serverselectorx.configuration;
 
 import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -14,7 +16,6 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.bukkit.Bukkit;
@@ -138,9 +139,10 @@ public class ConfigSync {
 		return filesToSync;
 	}
 
-	private String getFileContent(final String file) throws IOException {
-		return new BufferedReader(new InputStreamReader(new URL(getBaseUrl("getfile") + "&file=" + encode(file)).openConnection().getInputStream()))
-				.lines().collect(Collectors.joining("\n"));
+	private byte[] getFileContent(final String file) throws IOException {
+//		return new BufferedReader(new InputStreamReader(new URL(getBaseUrl("getfile") + "&file=" + encode(file)).openConnection().getInputStream()))
+//				.lines().collect(Collectors.joining("\n"));
+		return new URL(getBaseUrl("getfile") + "&file=" + encode(file)).openConnection().getInputStream().readAllBytes();
 	}
 
 	public void sync() {
@@ -179,7 +181,7 @@ public class ConfigSync {
 		}
 
 		for (final String fileName : this.getFilesToSync()) {
-			String content;
+			byte[] content;
 			try {
 				content = ConfigSync.this.getFileContent(fileName);
 			} catch (final IOException e) {
@@ -194,7 +196,11 @@ public class ConfigSync {
 
 			try {
 				final File file = new File(Main.getPlugin().getDataFolder(), fileName);
-				FileUtils.writeStringToFile(file, content, "UTF-8");
+//				FileUtils.writeStringToFile(file, content, "UTF-8");
+				final OutputStream stream = new FileOutputStream(file);
+				stream.write(content);
+				stream.flush();
+				stream.close();
 			} catch (final IOException e) {
 				this.logger.warning("An error occured while writing file " + fileName);
 				e.printStackTrace();
