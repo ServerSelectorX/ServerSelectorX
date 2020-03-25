@@ -5,9 +5,12 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -29,18 +32,29 @@ public class ConfigSync {
 			return;
 		}
 
-		final long interval = Main.getConfigurationManager().sync.getInt("interval")*60*20;
+		final long interval = Main.getConfigurationManager().sync.getInt("interval") * 60 * 20;
 
 		// Run 1 second after server startup, then every hour
 		Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getPlugin(), this::sync, 20, interval);
 	}
+	
+    private static String encode(final String string) {
+        try {
+            return URLEncoder.encode(string, StandardCharsets.UTF_8.toString());
+        } catch (final UnsupportedEncodingException e) {
+            throw new RuntimeException(e);
+        }
+    }
+    
+    private static String getBaseUrl(final String method) {
+		return "http://%s" + (method.equals("") ? "" : "/" + method) +
+				Main.getConfigurationManager().sync.getString("address") + "?password=" +
+				encode(Main.getConfigurationManager().sync.getString("password"));
+    }
 
 	private boolean testConnectivity() {
-		final String url = String.format("http://%s?password=%s",
-				Main.getConfigurationManager().sync.getString("address"),
-				Main.getConfigurationManager().sync.getString("password"));
 		try {
-			final HttpURLConnection conn = (HttpURLConnection) new URL(url).openConnection();
+			final HttpURLConnection conn = (HttpURLConnection) new URL(getBaseUrl("")).openConnection();
 			conn.setConnectTimeout(1000);
 			conn.connect();
 			if (conn.getResponseCode() == 200) {
@@ -60,7 +74,7 @@ public class ConfigSync {
 		} catch (final IOException e) {
 			this.logger.warning("Connection error.");
 			this.logger.warning("Is the server down? Is the address correct? Firewall?");
-			this.logger.warning("URL: " + url);
+			this.logger.warning("URL: " + getBaseUrl(""));
 			return false;
 		}
 	}
@@ -68,11 +82,12 @@ public class ConfigSync {
 	private List<String> getFilesInDirectory(final String directory) throws IOException {
 		this.logger.info("Listing files in directory " + directory);
 		
-		final URL url = new URL(String.format("http://%s/listfiles?password=%s&dir=%s",
-				Main.getConfigurationManager().sync.getString("address"),
-				Main.getConfigurationManager().sync.getString("password"),
-				directory
-				));
+//		final URL url = new URL(String.format("http://%s/listfiles?password=%s&dir=%s",
+//				Main.getConfigurationManager().sync.getString("address"),
+//				Main.getConfigurationManager().sync.getString("password"),
+//				directory
+//				));
+		final URL url = new URL(getBaseUrl("listfiles") + "&dir=" + encode(directory));
 		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		final Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		final List<String> files = new ArrayList<>();
@@ -88,10 +103,11 @@ public class ConfigSync {
 	}
 	
 	private boolean isDirectory(final String path) throws IOException {
-		final URL url = new URL(String.format("http://%s/fileinfo?password=%s&file=%s",
-				Main.getConfigurationManager().sync.getString("address"),
-				Main.getConfigurationManager().sync.getString("password"),
-				path));
+//		final URL url = new URL(String.format("http://%s/fileinfo?password=%s&file=%s",
+//				Main.getConfigurationManager().sync.getString("address"),
+//				Main.getConfigurationManager().sync.getString("password"),
+//				path));
+		final URL url = new URL(getBaseUrl("fileinfo") + "&file=" + encode(path));
 		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		final Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		return new JsonParser().parse(reader).getAsJsonObject().get("directory").getAsBoolean();
@@ -123,7 +139,8 @@ public class ConfigSync {
 	}
 
 	private String getFileContent(final String file) throws IOException {
-		return new BufferedReader(new InputStreamReader(new URL(String.format("http://%s/getfile?password=%s&file=%s", Main.getConfigurationManager().sync.getString("address"), Main.getConfigurationManager().sync.getString("password"), file)).openConnection().getInputStream())).lines().collect(Collectors.joining("\n")); // sorry lol
+		return new BufferedReader(new InputStreamReader(new URL(getBaseUrl("getfile") + "&file=" + encode(file)).openConnection().getInputStream()))
+				.lines().collect(Collectors.joining("\n"));
 	}
 
 	public void sync() {
