@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>xyz.derkades</groupId>
 	<artifactId>ServerSelectorX</artifactId>
-	<version>3.5.4-legacy</version>
+	<version>3.5.5-legacy-beta</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -62,7 +62,7 @@
 							<shadedPattern>xyz.derkades.serverselectorx.lib.hamcrest</shadedPattern>
 						</relocation>
 					</relocations>
-					
+
 					<filters>
 						<filter>
 							<artifact>*:*</artifact>
@@ -110,7 +110,7 @@
 			<version>2.10.4</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
