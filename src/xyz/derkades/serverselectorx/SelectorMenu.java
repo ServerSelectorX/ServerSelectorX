@@ -76,7 +76,8 @@ public class SelectorMenu extends IconMenu {
 						amount = 1;
 					}
 
-					// Replace placeholders in lore
+					// Replace placeholders in lore and name
+					name = name.replace("{online}", online + "").replace("{max}", max + "").replace("{motd}", motd).replace("{ping}", ping + "").replace("{player}", player.getName());
 					lore = ListUtils.replaceInStringList(lore,
 							new Object[] { "{online}", "{max}", "{motd}", "{ping}", "{player}" },
 							new Object[] { online, max, motd, ping, player.getName() });
@@ -103,7 +104,7 @@ public class SelectorMenu extends IconMenu {
 					builder = new ItemBuilder(player);
 				} else {
 					try {
-						UUID uuid = UUID.fromString(owner);
+						final UUID uuid = UUID.fromString(owner);
 						builder = new ItemBuilder(Bukkit.getOfflinePlayer(uuid));
 					} catch (final IllegalArgumentException e) {
 						// Invalid UUID, interpret as custom texture
@@ -115,7 +116,7 @@ public class SelectorMenu extends IconMenu {
 				try {
 					final Material material = Material.valueOf(materialString);
 					builder = new ItemBuilder(material);
-				} catch (IllegalArgumentException e) {
+				} catch (final IllegalArgumentException e) {
 					player.sendMessage("Invalid item name " + materialString);
 					player.sendMessage("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Item-names");
 					return;
