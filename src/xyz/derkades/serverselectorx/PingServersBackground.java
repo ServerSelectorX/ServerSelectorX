@@ -17,6 +17,11 @@ public class PingServersBackground extends BukkitRunnable {
 		while(true) {
 			try {
 				for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
+					// Ignore if config failed to load
+					if (config == null) {
+						continue;
+					}
+					
 					for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
 						// Don't overload the CPU or the API
 						try {
