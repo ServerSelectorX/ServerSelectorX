@@ -19,7 +19,7 @@ public class PingServersBackground extends BukkitRunnable {
 				for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
 					// Ignore if config failed to load
 					if (config == null) {
-						continue;
+						return;
 					}
 					
 					for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
