@@ -69,10 +69,6 @@
 							<pattern>xyz.derkades.derkutils</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.lib.derkutils</shadedPattern>
 						</relocation>
-						<relocation>
-							<pattern>org.hamcrest</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.hamcrest</shadedPattern>
-						</relocation>
 					</relocations>
 
 					<filters>
