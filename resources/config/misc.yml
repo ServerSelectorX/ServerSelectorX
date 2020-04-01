@@ -8,5 +8,10 @@ no-permission: 'You do not have permission to use this'
 # Send message to console when players don't have the required permission
 permission-debug: true
 
+papi:
+  # What to display when using PlaceholderAPI status placeholders from SSX
+  status-true: 'ONLINE'
+  status-false: 'OFFLINE'
+
 # Set a server name here if you wish to use the `connected` section
 #server-name: ''

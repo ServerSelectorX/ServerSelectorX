@@ -25,7 +25,7 @@ public class PapiExpansion extends PlaceholderExpansion {
 			final Server server = Server.getServer(serverName);
 
 			if (placeholderName.equals("status")) {
-				return server.isOnline() ? "online" : "offline";
+				return Main.getConfigurationManager().misc.getString("papi.status-" + server.isOnline(), server.isOnline() + "");
 			} else {
 				final Placeholder placeholder = server.getPlaceholder(placeholderName);
 				if (placeholder instanceof PlayerPlaceholder) {
