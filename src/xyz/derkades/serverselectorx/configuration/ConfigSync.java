@@ -18,6 +18,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
+import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -110,11 +111,12 @@ public class ConfigSync {
 		final List<String> files = new ArrayList<>();
 		new JsonParser().parse(reader).getAsJsonArray().forEach((e) -> files.add(e.getAsString()));
 		
-		for (final String f : files) {
+		List<String> copy = files.stream().collect(Collectors.toList());
+		for (String f : copy) {
 			if (isDirectory(f)) {
 				files.addAll(getFilesInDirectory(directory + "/" + f));
 			}
-		}
+		};
 		
 		return files;
 	}
