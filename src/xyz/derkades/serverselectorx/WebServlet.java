@@ -165,9 +165,7 @@ public class WebServlet extends HttpServlet {
 
 			final List<String> fileNames = new ArrayList<>();
 			for (final File file : dir.listFiles()) {
-				if (!file.isDirectory()) {
-					fileNames.add(file.getName());
-				}
+				fileNames.add(file.getName());
 			}
 
 			response.setContentType("text/json");
