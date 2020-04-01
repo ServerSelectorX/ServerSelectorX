@@ -91,6 +91,12 @@ public class ConfigSync {
 //				Main.getConfigurationManager().sync.getString("password"),
 //				directory
 //				));
+		
+		if (directory.endsWith("/")) {
+			logger.warning("Skipped directory '" + directory + "', directories should not end with a slash.");
+			return new ArrayList<>();
+		}
+		
 		final URL url = new URL(getBaseUrl("listfiles") + "&dir=" + encode(directory));
 		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		
@@ -106,7 +112,7 @@ public class ConfigSync {
 		
 		for (final String f : files) {
 			if (isDirectory(f)) {
-				files.addAll(getFilesInDirectory(f));
+				files.addAll(getFilesInDirectory(directory + "/" + f));
 			}
 		}
 		
