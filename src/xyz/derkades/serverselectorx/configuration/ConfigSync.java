@@ -50,7 +50,7 @@ public class ConfigSync {
     }
     
     private static String getBaseUrl(final String method) {
-		return "http://%s" + (method.equals("") ? "" : "/" + method) +
+		return "http://" + (method.equals("") ? "" : "/" + method) +
 				Main.getConfigurationManager().sync.getString("address") + "?password=" +
 				encode(Main.getConfigurationManager().sync.getString("password"));
     }
