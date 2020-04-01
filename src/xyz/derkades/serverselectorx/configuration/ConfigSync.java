@@ -15,6 +15,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
 
@@ -92,6 +93,13 @@ public class ConfigSync {
 //				));
 		final URL url = new URL(getBaseUrl("listfiles") + "&dir=" + encode(directory));
 		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+		
+		if (directory.contains("..") && connection.getResponseCode() == 400) {
+			logger.warning("Got error 400 while trying to list files in directory with '..' in path.");
+			logger.warning("If you want to allow requests outside the plugin directory, enable it in api.yml");
+			return new ArrayList<>();
+		}
+		
 		final Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
 		final List<String> files = new ArrayList<>();
 		new JsonParser().parse(reader).getAsJsonArray().forEach((e) -> files.add(e.getAsString()));
