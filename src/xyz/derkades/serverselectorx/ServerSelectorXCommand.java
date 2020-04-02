@@ -104,6 +104,13 @@ public class ServerSelectorXCommand implements CommandExecutor {
 			Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> Main.getConfigSync().sync());
 			return true;
 		}
+		
+		if (args.length == 1 && args[0].equalsIgnoreCase("synclist")) {
+			Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> {
+				Main.getConfigSync().getFilesToSync().forEach(f -> sender.sendMessage(f));
+			});
+			return true;
+		}
 
 		return false;
 	}

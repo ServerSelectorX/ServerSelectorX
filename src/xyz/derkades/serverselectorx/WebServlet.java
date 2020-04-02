@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.UUID;
 import java.util.logging.Logger;
 import java.util.stream.Collectors;
@@ -137,8 +138,7 @@ public class WebServlet extends HttpServlet {
 				return;
 			}
 
-			final File file = new File(Main.getPlugin().getDataFolder(), fileName);
-//			final String contents = FileUtils.readFileToString(file, "UTF-8");
+			final File file = new File(fileName);
 			try (InputStream input = new FileInputStream(file)) {
 				IOUtils.copy(input, response.getOutputStream());
 			}
@@ -162,34 +162,28 @@ public class WebServlet extends HttpServlet {
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
-
-			final List<String> fileNames = new ArrayList<>();
-			for (final File file : dir.listFiles()) {
-				fileNames.add(file.getName());
+			
+			final Stack<File> directories = new Stack<>();
+			directories.push(dir);
+			
+			final List<String> filePaths = new ArrayList<>();
+			
+			while (!directories.isEmpty()) {
+				final File file = directories.pop();
+				if (file.isFile()) {
+					filePaths.add(file.getPath());
+				}
+				
+				if (file.isDirectory()) {
+					for (final File f : file.listFiles()) {
+						directories.push(f);
+					}
+				}
 			}
 
 			response.setContentType("text/json");
-			final String json = new GsonBuilder().setPrettyPrinting().create().toJson(fileNames);
+			final String json = new GsonBuilder().setPrettyPrinting().create().toJson(filePaths);
 			response.getOutputStream().print(json);
-		}
-		
-		else if (request.getRequestURI().equals("/fileinfo")) {
-			final String fileName = request.getParameter("file");
-			// Do not allow going outside of the plugin directory for security reasons
-			if (api.getBoolean("block-outside-directory", true) && fileName.contains("..")) {
-				logger.warning("Received request with dangerous directory name from " + request.getRemoteAddr());
-				logger.warning("Directory name: " + fileName);
-				logger.warning("The request has been blocked, no need to panic. Maybe do consider looking into where the request came from?");
-				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-				return;
-			}
-			
-			final File file = new File(fileName);
-			
-			final Map<String, Boolean> info = new HashMap<>();
-			info.put("exists", file.exists());
-			info.put("directory", file.isDirectory());
-			response.getOutputStream().print(new Gson().toJson(info));
 		}
 
 		else if (request.getRequestURI().equals("/players")) {
