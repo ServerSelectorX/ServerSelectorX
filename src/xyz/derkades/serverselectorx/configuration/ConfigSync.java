@@ -15,10 +15,8 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
@@ -84,64 +82,38 @@ public class ConfigSync {
 		}
 	}
 
-	private List<String> getFilesInDirectory(final String directory) throws IOException {
-		this.logger.info("Listing files in directory " + directory);
-		
-//		final URL url = new URL(String.format("http://%s/listfiles?password=%s&dir=%s",
-//				Main.getConfigurationManager().sync.getString("address"),
-//				Main.getConfigurationManager().sync.getString("password"),
-//				directory
-//				));
+	private void addFilesInDirectory(final String directory, final List<String> files) throws IOException {
+//		this.logger.info("Listing files in directory " + directory);
 		
 		if (directory.endsWith("/")) {
-			logger.warning("Skipped directory '" + directory + "', directories should not end with a slash.");
-			return new ArrayList<>();
+			this.logger.warning("Skipped directory '" + directory + "', directories should not end with a slash.");
+			return;
 		}
 		
 		final URL url = new URL(getBaseUrl("listfiles") + "&dir=" + encode(directory));
 		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 		
-		if (directory.contains("..") && connection.getResponseCode() == 400) {
-			logger.warning("Got error 400 while trying to list files in directory with '..' in path.");
-			logger.warning("If you want to allow requests outside the plugin directory, enable it in api.yml");
-			return new ArrayList<>();
+		if (connection.getResponseCode() != 200) {
+			this.logger.warning("Skipped directory '" + directory + "', received non-200 HTTP status.");
+			this.logger.warning("Status: " + connection.getResponseCode());
+			return;
 		}
 		
-		final Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-		final List<String> files = new ArrayList<>();
-		new JsonParser().parse(reader).getAsJsonArray().forEach((e) -> files.add(e.getAsString()));
-		
-		List<String> copy = files.stream().collect(Collectors.toList());
-		for (String f : copy) {
-			if (isDirectory(f)) {
-				files.addAll(getFilesInDirectory(directory + "/" + f));
-			}
-		};
-		
-		return files;
-	}
-	
-	private boolean isDirectory(final String path) throws IOException {
-//		final URL url = new URL(String.format("http://%s/fileinfo?password=%s&file=%s",
-//				Main.getConfigurationManager().sync.getString("address"),
-//				Main.getConfigurationManager().sync.getString("password"),
-//				path));
-		final URL url = new URL(getBaseUrl("fileinfo") + "&file=" + encode(path));
-		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		final Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-		return new JsonParser().parse(reader).getAsJsonObject().get("directory").getAsBoolean();
+		try (final Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
+			new JsonParser().parse(reader).getAsJsonArray().forEach((e) -> files.add(e.getAsString()));
+		}
 	}
 
-	private List<String> getFilesToSync() {
-		final List<String> filesToSync = new ArrayList<>();
+	public List<String> getFilesToSync() {
+		final List<String> files = new ArrayList<>();
 
 		// Add all files from the 'files' option
-		filesToSync.addAll(Main.getConfigurationManager().sync.getStringList("files"));
+		Main.getConfigurationManager().sync.getStringList("files").stream().map(s -> Main.getPlugin().getDataFolder().getPath() + s).forEach(files::add);
 
 		// Add all files from the 'directories' option
 		for (final String dir : Main.getConfigurationManager().sync.getStringList("directories")) {
 			try {
-				ConfigSync.this.getFilesInDirectory(dir).forEach((s) -> filesToSync.add(dir + "/" + s));
+				addFilesInDirectory(dir, files);
 			} catch (final IOException e) {
 				this.logger.warning("An error occured while trying to get a list of files in the directory " + dir);
 				e.printStackTrace();
@@ -149,17 +121,15 @@ public class ConfigSync {
 		}
 		
 		// Remove excluded files
-		Main.getConfigurationManager().sync.getStringList("exclude").forEach(filesToSync::remove);
+		Main.getConfigurationManager().sync.getStringList("exclude").forEach(files::remove);
 		
-		this.logger.info("Files to sync (" + filesToSync.size() + "): ");
-		filesToSync.forEach((f) -> this.logger.info(" - " + f));
+//		this.logger.info("Files to sync (" + files.size() + "): ");
+//		files.forEach((f) -> this.logger.info(" - " + f));
 
-		return filesToSync;
+		return files;
 	}
 
 	private InputStream getFileContent(final String file) throws IOException {
-//		return new BufferedReader(new InputStreamReader(new URL(getBaseUrl("getfile") + "&file=" + encode(file)).openConnection().getInputStream()))
-//				.lines().collect(Collectors.joining("\n"));
 		return new URL(getBaseUrl("getfile") + "&file=" + encode(file)).openConnection().getInputStream();
 	}
 
@@ -182,7 +152,7 @@ public class ConfigSync {
 		final File dataFolder = Main.getPlugin().getDataFolder(); // for convenience
 		
 		if (Main.getConfigurationManager().sync.getBoolean("delete", false)) {
-			this.logger.info("Deletion is enabled. Deleting directories");
+//			this.logger.info("Deletion is enabled. Deleting directories");
 			final File[] toDelete = new File[] {
 					new File(dataFolder, "item"),
 					new File(dataFolder, "command"),
@@ -191,7 +161,7 @@ public class ConfigSync {
 			for (final File dir : toDelete) {
 				try {
 					FileUtils.deleteDirectory(dir);
-					this.logger.info("Deleted directory " + dir);
+//					this.logger.info("Deleted directory " + dir);
 				} catch (final IOException e) {
 					this.logger.warning("Failed to delete directory" + dir.getPath());
 				}
@@ -208,13 +178,12 @@ public class ConfigSync {
 				continue;
 			}
 
-			this.logger.info("Succesfully retrieved content for file " + fileName);
+//			this.logger.info("Succesfully retrieved content for file " + fileName);
 
 			// Write contents to file
 
 			try {
-				final File file = new File(Main.getPlugin().getDataFolder(), fileName);
-//				FileUtils.writeStringToFile(file, content, "UTF-8");
+				final File file = new File(fileName);
 				final OutputStream output = new FileOutputStream(file);
 				IOUtils.copy(content, output);
 			} catch (final IOException e) {
@@ -235,11 +204,13 @@ public class ConfigSync {
 					+ "report, use /ssx reload on the other server.");
 		}
 		
-		final List<String> commands = Main.getConfigurationManager().sync.getStringList("after-sync-commands");
-		if (!commands.isEmpty()) {
-			this.logger.info("Running after-sync-commands");
-			commands.forEach((c) -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), c));
-		}
+		Bukkit.getScheduler().runTask(Main.getPlugin(), () -> {
+			final List<String> commands = Main.getConfigurationManager().sync.getStringList("after-sync-commands");
+			if (!commands.isEmpty()) {
+				this.logger.info("Running after-sync-commands");
+				commands.forEach((c) -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), c));
+			}
+		});
 	}
 
 }

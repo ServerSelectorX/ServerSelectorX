@@ -21,3 +21,4 @@ commands:
       /ssx lagdebug - Enable lag debug mode
       /ssx itemdebug - Enable item debug mode
       /ssx sync - Force config sync (even if disabled)
+      /ssx synclist - Get a list of files that would be synced by config sync
