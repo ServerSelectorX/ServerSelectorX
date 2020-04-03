@@ -169,27 +169,25 @@ public class ConfigSync {
 		}
 
 		for (final String fileName : this.getFilesToSync()) {
-			InputStream content;
+			final File file = new File(fileName);
 			try {
-				content = ConfigSync.this.getFileContent(fileName);
+				if (!file.exists()) {
+					file.createNewFile();
+				}
 			} catch (final IOException e) {
-				this.logger.warning("An error occured while trying to get file content for " + fileName);
 				e.printStackTrace();
 				continue;
 			}
-
-//			this.logger.info("Succesfully retrieved content for file " + fileName);
-
-			// Write contents to file
-
-			try {
-				final File file = new File(fileName);
-				final OutputStream output = new FileOutputStream(file);
-				IOUtils.copy(content, output);
+			
+			try (
+					InputStream input = ConfigSync.this.getFileContent(fileName);
+					final OutputStream output = new FileOutputStream(file);
+					){
+				IOUtils.copy(input, output);
 			} catch (final IOException e) {
-				this.logger.warning("An error occured while writing file " + fileName);
+				this.logger.warning("An error occured while trying sync file " + fileName);
 				e.printStackTrace();
-				return;
+				continue;
 			}
 		}
 
