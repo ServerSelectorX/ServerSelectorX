@@ -203,6 +203,9 @@ public class Main extends JavaPlugin {
 					builder = new ItemBuilder(owner);
 				}
 			}
+		} else if (materialString.startsWith("hdb")) {
+			final String id = materialString.substring(4);
+			builder = HDBHandler.getBuilder(id);
 		} else {
 			Material material;
 			try {

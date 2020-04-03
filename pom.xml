@@ -149,6 +149,13 @@
 			<version>2.2.0</version>
 		</dependency>
 
+		<dependency>
+			<groupId>com.github.shynixn.headdatabase</groupId>
+			<artifactId>hdb-api</artifactId>
+			<version>1.0</version>
+			<scope>provided</scope>
+		</dependency>
+
 	</dependencies>
 
 	<repositories>

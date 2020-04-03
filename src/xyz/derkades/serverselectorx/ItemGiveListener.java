@@ -94,6 +94,11 @@ public class ItemGiveListener implements Listener {
 			}
 
 			debug("All checks done, giving item");
+			
+			if (!config.isConfigurationSection("item")) {
+				player.sendMessage("Missing 'item' section in item config '" + name + "'");
+				continue;
+			}
 
 			ItemStack item = Main.getItemBuilderFromItemSection(player, config.getConfigurationSection("item")).create();
 

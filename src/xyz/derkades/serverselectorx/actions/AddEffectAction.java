@@ -1,5 +1,6 @@
 package xyz.derkades.serverselectorx.actions;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -50,8 +51,12 @@ public class AddEffectAction extends Action {
 		if (player.hasPotionEffect(effect)) {
 			player.removePotionEffect(effect);
 		}
-
-		player.addPotionEffect(new PotionEffect(effect, duration, amplifier, true, true));
+		
+		if (Bukkit.getVersion().contains("1.7")) {
+			player.addPotionEffect(new PotionEffect(effect, duration, amplifier, true));
+		} else {
+			player.addPotionEffect(new PotionEffect(effect, duration, amplifier, true, true));
+		}
 
 		return false;
 	}
