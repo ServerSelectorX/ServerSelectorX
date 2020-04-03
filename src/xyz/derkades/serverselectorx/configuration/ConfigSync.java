@@ -170,6 +170,14 @@ public class ConfigSync {
 
 		for (final String fileName : this.getFilesToSync()) {
 			final File file = new File(fileName);
+			try {
+				if (!file.exists()) {
+					file.createNewFile();
+				}
+			} catch (final IOException e) {
+				e.printStackTrace();
+				continue;
+			}
 			
 			try (
 					InputStream input = ConfigSync.this.getFileContent(fileName);
