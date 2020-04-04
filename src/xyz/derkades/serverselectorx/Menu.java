@@ -10,6 +10,7 @@ import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
@@ -86,6 +87,7 @@ public class Menu extends IconMenu {
 			final ConfigurationSection section = this.config.getConfigurationSection("menu." + key);
 
 			List<String> actions;
+			List<String> rightActions;
 			ItemBuilder builder;
 
 			if (section.contains("permission") && !this.player.hasPermission(section.getString("permission"))) {
@@ -108,6 +110,7 @@ public class Menu extends IconMenu {
 
 				builder = Main.getItemBuilderFromItemSection(this.player, noPermissionSection);
 				actions = noPermissionSection.getStringList("actions");
+				rightActions = noPermissionSection.getStringList("actions");
 			} else {
 				// Player has permission, use other sections
 				if (section.contains("connector")) {
@@ -116,8 +119,10 @@ public class Menu extends IconMenu {
 					final Server server = Server.getServer(serverName);
 
 					if (server.isOnline()) {
+						// to avoid "may not have been initialized" errors later
 						builder = null;
 						actions = null;
+						rightActions = null;
 
 						if (Main.getConfigurationManager().misc.contains("server-name") &&
 								serverName.equalsIgnoreCase(Main.getConfigurationManager().misc.getString("server-name")) &&
@@ -125,6 +130,7 @@ public class Menu extends IconMenu {
 							final ConfigurationSection connectedSection = section.getConfigurationSection("connected");
 							builder = Main.getItemBuilderFromItemSection(this.player, connectedSection);
 							actions = connectedSection.getStringList("actions");
+							rightActions = connectedSection.getStringList("actions");
 						} else {
 							if (section.contains("dynamic")) {
 								for (final String dynamicKey : section.getConfigurationSection("dynamic").getKeys(false)) {
@@ -180,6 +186,7 @@ public class Menu extends IconMenu {
 
 										builder = Main.getItemBuilderFromItemSection(this.player, dynamicSection);
 										actions = dynamicSection.getStringList("actions");
+										rightActions = dynamicSection.getStringList("actions");
 										break;
 									}
 								}
@@ -206,6 +213,7 @@ public class Menu extends IconMenu {
 
 								builder = Main.getItemBuilderFromItemSection(this.player, onlineSection);
 								actions = onlineSection.getStringList("actions");
+								rightActions = onlineSection.getStringList("actions");
 							}
 						}
 
@@ -252,6 +260,7 @@ public class Menu extends IconMenu {
 
 						builder = Main.getItemBuilderFromItemSection(this.player, offlineSection);
 						actions = offlineSection.getStringList("actions");
+						rightActions = offlineSection.getStringList("actions");
 					}
 				} else {
 					// Simple section
@@ -268,6 +277,7 @@ public class Menu extends IconMenu {
 
 					builder = Main.getItemBuilderFromItemSection(this.player, section);
 					actions = section.getStringList("actions");
+					rightActions = section.getStringList("actions");
 				}
 			}
 
@@ -278,6 +288,7 @@ public class Menu extends IconMenu {
 			// Add actions to item as NBT
 			final NBTItem nbt = new NBTItem(builder.create());
 			nbt.setObject("SSXActions", actions);
+			nbt.setObject("SSXActionsRight", rightActions);
 
 			final ItemStack item = nbt.getItem();
 
@@ -311,12 +322,18 @@ public class Menu extends IconMenu {
 
 		@SuppressWarnings("unchecked")
 		final List<String> actions = nbt.getObject("SSXActions", List.class);
-
-		if (actions.isEmpty()) {
-			return false;
+		@SuppressWarnings("unchecked")
+		final List<String> rightActions = nbt.getObject("SSXActionsRight", List.class);
+		
+		if (event.getClickType() == ClickType.RIGHT || event.getClickType() == ClickType.SHIFT_RIGHT) {
+			if (rightActions.isEmpty()) {
+				return Action.runActions(player, actions);
+			} else {
+				return Action.runActions(player, rightActions);
+			}
+		} else {
+			return Action.runActions(player, actions);
 		}
-
-		return Action.runActions(player, actions);
 	}
 
 	@Override
