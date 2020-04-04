@@ -32,8 +32,7 @@ menu:
   # Server item
   3:
   
-    # Server pinging help: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Free-%7C-Server-Pinging
-    # With server pinging disabled, the placeholders don't work and the plugin will always use the offline section.
+    # Enable to show server status and placeholders
     ping-server: false
     ip: play.example.com
     port: 1234
