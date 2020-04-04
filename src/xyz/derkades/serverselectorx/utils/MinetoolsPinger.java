@@ -10,12 +10,9 @@ import javax.net.ssl.HttpsURLConnection;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class ExternalPinger implements ServerPinger {
+public class MinetoolsPinger implements ServerPinger {
 	
 	private static final String PING_API_URL = "https://api.minetools.eu/ping/%s/%s";
-
-	private final String ip;
-	private final int port;
 
 	private boolean online;
 
@@ -24,10 +21,7 @@ public class ExternalPinger implements ServerPinger {
 	private String motd;
 	private int responseTimeMillis;
 
-	public ExternalPinger(final String ip, final int port) throws PingException {
-		this.ip = ip;
-		this.port = port;
-
+	public MinetoolsPinger(final String ip, final int port) throws PingException {
 		String jsonString;
 
 		try {
@@ -69,16 +63,6 @@ public class ExternalPinger implements ServerPinger {
 			this.motd = json.get("description").getAsString();
 			this.responseTimeMillis = (int) json.get("latency").getAsDouble();
 		}
-	}
-
-	@Override
-	public String getIp() {
-		return this.ip;
-	}
-
-	@Override
-	public int getPort() {
-		return this.port;
 	}
 
 	@Override

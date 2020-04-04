@@ -7,8 +7,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import xyz.derkades.serverselectorx.utils.ExternalPinger;
-import xyz.derkades.serverselectorx.utils.InternalPinger;
+import xyz.derkades.serverselectorx.utils.JamietePinger;
+import xyz.derkades.serverselectorx.utils.MinestatPinger;
+import xyz.derkades.serverselectorx.utils.MinetoolsPinger;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
 
 public class PingServersBackground extends BukkitRunnable {
@@ -42,17 +43,25 @@ public class PingServersBackground extends BukkitRunnable {
 
 						final String ip = section.getString("ip");
 						final int port = section.getInt("port");
+						final int timeout = section.getInt("ping-timeout", 100);
 						final String serverId = ip + port;
 
 						debug(String.format("Pinging item %s with address %s:%s", key, ip, port));
 
-						ServerPinger pinger;
+						ServerPinger pinger = null;
 
-						if (Main.getPlugin().getConfig().getBoolean("external-query", true)) {
-							pinger = new ExternalPinger(ip, port);
-						} else {
-							final int timeout = section.getInt("ping-timeout", 100);
-							pinger = new InternalPinger(ip, port, timeout);
+						switch (Main.getPlugin().getConfig().getString("ping-api", "minestat")) {
+						case "minetools":
+							pinger = new MinetoolsPinger(ip, port);
+						case "jamiete":
+							pinger = new JamietePinger(ip, port, timeout);
+						case "minestat":
+							pinger = new MinestatPinger(ip, port);
+						}
+						
+						if (pinger == null) {
+							Main.getPlugin().getLogger().warning("Invalid ping-api set in config.yml");
+							return;
 						}
 
 						debug("Online: " + pinger.isOnline());

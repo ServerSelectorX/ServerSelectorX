@@ -7,21 +7,15 @@ import ch.jamiete.mcping.MinecraftPingOptions;
 import ch.jamiete.mcping.MinecraftPingReply;
 import xyz.derkades.serverselectorx.Main;
 
-public class InternalPinger implements ServerPinger {
+public class JamietePinger implements ServerPinger {
 	
-	private final String ip;
-	private final int port;
-
 	private boolean online;
 
 	private String motd;
 	private int onlinePlayers;
 	private int maxPlayers;
 
-	public InternalPinger(final String ip, final int port, final int timeout) {
-		this.ip = ip;
-		this.port = port;
-		
+	public JamietePinger(final String ip, final int port, final int timeout) {
 		try {
 			final MinecraftPingReply data = new MinecraftPing().getPing(new MinecraftPingOptions().setHostname(ip).setPort(port).setTimeout(timeout));
 			this.onlinePlayers = data.getPlayers().getOnline();
@@ -35,16 +29,6 @@ public class InternalPinger implements ServerPinger {
 				e.printStackTrace();
 			}
 		}
-	}
-
-	@Override
-	public String getIp() {
-		return this.ip;
-	}
-
-	@Override
-	public int getPort() {
-		return this.port;
 	}
 
 	@Override
