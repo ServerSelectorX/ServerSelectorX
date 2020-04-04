@@ -13,17 +13,20 @@ public class ItemMoveDropCancelListener implements Listener {
 	public static boolean MOVE_PERMISSION_ENABLED = false;
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-	public void onDrop(PlayerDropItemEvent event){
-		event.setCancelled(DROP_PERMISSION_ENABLED && !event.getPlayer().hasPermission("ssx.drop"));
+	public void onDrop(final PlayerDropItemEvent event){
+		if (DROP_PERMISSION_ENABLED && !event.getPlayer().hasPermission("ssx.drop")) {
+			event.getItemDrop().remove();
+			event.setCancelled(true);
+		}
 	}
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-	public void onItemMove(InventoryClickEvent event){
+	public void onItemMove(final InventoryClickEvent event){
 		event.setCancelled(MOVE_PERMISSION_ENABLED && !event.getWhoClicked().hasPermission("ssx.move"));
 	}
 	
 	@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-	public void onItemMove(InventoryDragEvent event){
+	public void onItemMove(final InventoryDragEvent event){
 		event.setCancelled(MOVE_PERMISSION_ENABLED && !event.getWhoClicked().hasPermission("ssx.move"));
 	}
 
