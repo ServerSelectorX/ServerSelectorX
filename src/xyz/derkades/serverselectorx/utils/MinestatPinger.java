@@ -10,8 +10,9 @@ public class MinestatPinger implements ServerPinger {
 	private String motd;
 	private int ping;
 
-	public MinestatPinger(final String ip, final int port) {
+	public MinestatPinger(final String ip, final int port, final int timeout) {
 		final MineStat ms = new MineStat(ip, port);
+		ms.setTimeout(timeout);
 		if (ms.isServerUp()) {
 			this.isOnline = true;
 			this.online = Integer.parseInt(ms.getCurrentPlayers());
