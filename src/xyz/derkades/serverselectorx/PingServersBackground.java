@@ -7,8 +7,9 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import xyz.derkades.serverselectorx.utils.ExternalPinger;
+import xyz.derkades.serverselectorx.utils.InternalPinger;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
-import xyz.derkades.serverselectorx.utils.ServerPinger.Server;
 
 public class PingServersBackground extends BukkitRunnable {
 
@@ -45,24 +46,24 @@ public class PingServersBackground extends BukkitRunnable {
 
 						debug(String.format("Pinging item %s with address %s:%s", key, ip, port));
 
-						Server server;
+						ServerPinger pinger;
 
 						if (Main.getPlugin().getConfig().getBoolean("external-query", true)) {
-							server = new ServerPinger.ExternalServer(ip, port);
+							pinger = new ExternalPinger(ip, port);
 						} else {
 							final int timeout = section.getInt("ping-timeout", 100);
-							server = new ServerPinger.InternalServer(ip, port, timeout);
+							pinger = new InternalPinger(ip, port, timeout);
 						}
 
-						debug("Online: " + server.isOnline());
+						debug("Online: " + pinger.isOnline());
 
 						final Map<String, Object> serverInfo = new HashMap<>();
-						serverInfo.put("isOnline", server.isOnline());
-						if (server.isOnline()) {
-							serverInfo.put("online", server.getOnlinePlayers());
-							serverInfo.put("max", server.getMaximumPlayers());
-							serverInfo.put("motd", server.getMotd());
-							serverInfo.put("ping", server.getResponseTimeMillis());
+						serverInfo.put("isOnline", pinger.isOnline());
+						if (pinger.isOnline()) {
+							serverInfo.put("online", pinger.getOnlinePlayers());
+							serverInfo.put("max", pinger.getMaximumPlayers());
+							serverInfo.put("motd", pinger.getMotd());
+							serverInfo.put("ping", pinger.getResponseTimeMillis());
 						}
 
 						Main.SERVER_PLACEHOLDERS.put(serverId, serverInfo);
