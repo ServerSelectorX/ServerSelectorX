@@ -1,13 +1,11 @@
 package xyz.derkades.serverselectorx.utils;
 
-import java.io.DataInputStream;
-import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InterruptedIOException;
-import java.net.Socket;
-import java.net.UnknownHostException;
 
-import org.bukkit.ChatColor;
+import ch.jamiete.mcping.MinecraftPing;
+import ch.jamiete.mcping.MinecraftPingOptions;
+import ch.jamiete.mcping.MinecraftPingReply;
+import xyz.derkades.serverselectorx.Main;
 
 public class InternalPinger implements ServerPinger {
 	
@@ -23,34 +21,19 @@ public class InternalPinger implements ServerPinger {
 	public InternalPinger(final String ip, final int port, final int timeout) {
 		this.ip = ip;
 		this.port = port;
-
-		try (Socket socket = new Socket(ip, port)) {
-			socket.setSoTimeout(timeout);
-
-			final DataOutputStream out = new DataOutputStream(socket.getOutputStream());
-			final DataInputStream in = new DataInputStream(socket.getInputStream());
-
-			out.write(0xFE);
-
-			int b;
-			final StringBuffer str = new StringBuffer();
-			while ((b = in.read()) != -1) {
-				if (b != 0 && b > 16 && b != 255 && b != 23 && b != 24) {
-					str.append((char) b);
-				}
-			}
-
-			final String[] data = str.toString().split(ChatColor.COLOR_CHAR + "");
-
-			this.motd = data[0];
-			this.onlinePlayers = Integer.parseInt(data[1]);
-			this.maxPlayers = Integer.parseInt(data[2]);
-		} catch (final UnknownHostException e) {
-			this.online = false;
-		} catch (final InterruptedIOException e) {
-			this.online = false;
+		
+		try {
+			final MinecraftPingReply data = new MinecraftPing().getPing(new MinecraftPingOptions().setHostname(ip).setPort(port).setTimeout(timeout));
+			this.onlinePlayers = data.getPlayers().getOnline();
+			this.maxPlayers = data.getPlayers().getMax();
+			this.motd = data.getDescription().getText();
+			this.online = true;
 		} catch (final IOException e) {
 			this.online = false;
+			
+			if (Main.getPlugin().getConfig().getBoolean("ping-debug")) {
+				e.printStackTrace();
+			}
 		}
 	}
 
