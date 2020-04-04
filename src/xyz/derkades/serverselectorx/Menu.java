@@ -110,7 +110,7 @@ public class Menu extends IconMenu {
 
 				builder = Main.getItemBuilderFromItemSection(this.player, noPermissionSection);
 				actions = noPermissionSection.getStringList("actions");
-				rightActions = noPermissionSection.getStringList("actions");
+				rightActions = noPermissionSection.getStringList("actions-right");
 			} else {
 				// Player has permission, use other sections
 				if (section.contains("connector")) {
@@ -130,7 +130,7 @@ public class Menu extends IconMenu {
 							final ConfigurationSection connectedSection = section.getConfigurationSection("connected");
 							builder = Main.getItemBuilderFromItemSection(this.player, connectedSection);
 							actions = connectedSection.getStringList("actions");
-							rightActions = connectedSection.getStringList("actions");
+							rightActions = connectedSection.getStringList("actions-right");
 						} else {
 							if (section.contains("dynamic")) {
 								for (final String dynamicKey : section.getConfigurationSection("dynamic").getKeys(false)) {
@@ -186,7 +186,7 @@ public class Menu extends IconMenu {
 
 										builder = Main.getItemBuilderFromItemSection(this.player, dynamicSection);
 										actions = dynamicSection.getStringList("actions");
-										rightActions = dynamicSection.getStringList("actions");
+										rightActions = dynamicSection.getStringList("actions-right");
 										break;
 									}
 								}
@@ -213,7 +213,7 @@ public class Menu extends IconMenu {
 
 								builder = Main.getItemBuilderFromItemSection(this.player, onlineSection);
 								actions = onlineSection.getStringList("actions");
-								rightActions = onlineSection.getStringList("actions");
+								rightActions = onlineSection.getStringList("actions-right");
 							}
 						}
 
@@ -260,7 +260,7 @@ public class Menu extends IconMenu {
 
 						builder = Main.getItemBuilderFromItemSection(this.player, offlineSection);
 						actions = offlineSection.getStringList("actions");
-						rightActions = offlineSection.getStringList("actions");
+						rightActions = offlineSection.getStringList("actions-right");
 					}
 				} else {
 					// Simple section
@@ -277,7 +277,7 @@ public class Menu extends IconMenu {
 
 					builder = Main.getItemBuilderFromItemSection(this.player, section);
 					actions = section.getStringList("actions");
-					rightActions = section.getStringList("actions");
+					rightActions = section.getStringList("actions-right");
 				}
 			}
 
