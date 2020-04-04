@@ -56,7 +56,7 @@ public class PingServersBackground extends BukkitRunnable {
 						case "jamiete":
 							pinger = new JamietePinger(ip, port, timeout);
 						case "minestat":
-							pinger = new MinestatPinger(ip, port);
+							pinger = new MinestatPinger(ip, port, timeout);
 						}
 						
 						if (pinger == null) {
