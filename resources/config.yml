@@ -8,14 +8,11 @@ cancel-item-drop: false
 # Cancel item move for players that do not have the permission ssx.move (this includes swapping items between hands for 1.9+)
 cancel-item-move: false
 
-# -- Advanced options --
+# minestat: internal pinger (https://github.com/FragLand/minestat)
+# jamiete: internal pinger(https://github.com/jamietech/MinecraftServerPing)
+# minetools: external pinger (api.minetools.eu)
+ping-api: minestat
 
-# Use an external query API for pinging servers (recommended)
-# You can use the internal query system, but it can't handle
-# colored motds and it may not support all versions.
-external-query: true
-
-# Internal query only
 ping-timeout: 500
 
 ping-debug: false
