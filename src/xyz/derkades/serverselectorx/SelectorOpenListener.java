@@ -19,7 +19,15 @@ public class SelectorOpenListener implements Listener {
 
 		final Player player = event.getPlayer();
 
-		for (final FileConfiguration config : Main.getConfigurationManager().getAll()){
+		for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
+			if (config == null) {
+				continue;
+			}
+			
+			if (!config.isString("item")) {
+				continue;
+			}
+			
 			if (config.getString("item").equalsIgnoreCase("NONE")){
 				continue;
 			}
