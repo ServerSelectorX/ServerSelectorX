@@ -172,7 +172,7 @@ public class ConfigSync {
 			final File file = new File(fileName);
 			try {
 				if (!file.exists()) {
-					file.mkdirs();
+					file.getParentFile().mkdirs();
 					file.createNewFile();
 				}
 			} catch (final IOException e) {
