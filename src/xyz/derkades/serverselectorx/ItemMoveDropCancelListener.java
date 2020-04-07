@@ -7,6 +7,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 
@@ -32,6 +33,9 @@ public class ItemMoveDropCancelListener implements Listener {
 			Bukkit.getPluginManager().registerEvents(new Listener() {
 				@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 				public void onItemMove(final InventoryClickEvent event){
+					if (inventory.getBoolean("cancel-item-move-player-only")) {
+						if (!event.getClickedInventory().getType().equals(InventoryType.PLAYER)) return;
+					}
 					if (!event.getWhoClicked().hasPermission("ssx.move")) {
 						event.setCancelled(true);
 					}
