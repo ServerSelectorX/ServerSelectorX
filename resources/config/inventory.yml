@@ -10,6 +10,9 @@ cancel-item-drop: false
 # this includes swapping items between hands for 1.9+)
 cancel-item-move: false
 
+# Should cancel item move only cancel it if its from a players inventory?
+cancel-item-move-player-only: false
+
 
 # -------------------- Advanced -------------------- #
 
