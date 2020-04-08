@@ -33,6 +33,7 @@ public class ItemMoveDropCancelListener implements Listener {
 			Bukkit.getPluginManager().registerEvents(new Listener() {
 				@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 				public void onItemMove(final InventoryClickEvent event){
+					if (event.getClickedInventory() == null) return;
 					if (inventory.getBoolean("cancel-item-move-player-only") && !event.getClickedInventory().getType().equals(InventoryType.PLAYER)) return;
 					if (!event.getWhoClicked().hasPermission("ssx.move")) {
 						event.setCancelled(true);
