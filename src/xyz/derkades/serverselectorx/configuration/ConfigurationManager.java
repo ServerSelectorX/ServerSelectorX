@@ -28,18 +28,10 @@ public class ConfigurationManager {
 
 	public void reload() throws IOException {
 		final File dir = Main.getPlugin().getDataFolder();
-
-		boolean generate = false;
-		if (!dir.exists()) {
-			Main.getPlugin().getLogger().info("Plugin data folder does not exist. Copying default config files..");
-			dir.mkdirs();
-			generate = true;
-		}
+		dir.mkdirs();
 
 		// First copy all files to the config directory
 
-		// files needed to be listed manually because in
-		// java we can't list files in a jar
 		final String[] files = {
 				"api.yml",
 				"inventory.yml",
@@ -73,17 +65,22 @@ public class ConfigurationManager {
 		}
 
 		final File commandDir = new File(dir, "command");
-		final File itemDir = new File(dir, "item");
-		final File menuDir = new File(dir, "menu");
-		commandDir.mkdirs();
-		itemDir.mkdirs();
-		menuDir.mkdirs();
-
-		if (generate) {
+		if (!commandDir.exists()) {
+			commandDir.mkdir();
 			FileUtils.copyURLToFile(this.getClass().getResource("/command.yml"),
 					new File(commandDir, "servers.yml"));
+		}
+			
+		final File itemDir = new File(dir, "item");
+		if (!itemDir.exists()) {
+			itemDir.mkdir();
 			FileUtils.copyURLToFile(this.getClass().getResource("/item.yml"),
 					new File(itemDir, "compass.yml"));
+		}
+		
+		final File menuDir = new File(dir, "menu");
+		if (!menuDir.exists()) {
+			menuDir.mkdir();
 			FileUtils.copyURLToFile(this.getClass().getResource("/menu.yml"),
 					new File(menuDir, "serverselector.yml"));
 		}

@@ -46,6 +46,8 @@ public class ServerSelectorXCommand implements CommandExecutor {
 		}
 
 		if (args.length == 1 && args[0].equalsIgnoreCase("status")) {
+			sender.sendMessage("Using port " + Main.getConfigurationManager().api.getInt("port"));
+			
 			if (Server.getServers().isEmpty()){
 				sender.sendMessage("No data has been received from servers.");
 				return true;
