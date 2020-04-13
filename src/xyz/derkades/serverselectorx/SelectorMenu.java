@@ -68,7 +68,7 @@ public class SelectorMenu extends IconMenu {
 					name = onlineSection.getString("name");
 					lore = onlineSection.getStringList("lore");
 
-					if (section.getBoolean("change-item-count", true)) {
+					if (section.getBoolean("change-item-count", false)) {
 						amount = online;
 					}
 
