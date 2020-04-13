@@ -70,7 +70,7 @@ public class SelectorMenu extends IconMenu {
 					lore = onlineSection.getStringList("lore");
 					data = onlineSection.getInt("data");
 
-					if (section.getBoolean("change-item-count", true)) {
+					if (section.getBoolean("change-item-count", false)) {
 						amount = online;
 					}
 
