@@ -16,7 +16,7 @@ import org.bukkit.configuration.file.YamlConfiguration;
  */
 public class ConfigurationManager {
 
-	private final Map<String, FileConfiguration> files = new ConcurrentHashMap<>();
+	final Map<String, FileConfiguration> files = new ConcurrentHashMap<>();
 	
 	public Collection<FileConfiguration> getAll() {
 		return this.files.values();
@@ -54,8 +54,9 @@ public class ConfigurationManager {
 		
 		this.files.clear();
 		for (final File file : new File(Main.getPlugin().getDataFolder() + File.separator + "menu").listFiles()){
-			if (!file.getName().endsWith(".yml"))
+			if (!file.getName().endsWith(".yml")) {
 				continue;
+			}
 
 			final String name = file.getName().replace(".yml", "");
 			final FileConfiguration config = YamlConfiguration.loadConfiguration(file);
