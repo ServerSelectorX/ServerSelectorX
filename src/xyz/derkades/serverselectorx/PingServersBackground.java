@@ -20,9 +20,10 @@ public class PingServersBackground extends BukkitRunnable {
 			try {
 				for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
 					// Ignore if config failed to load
-					if (config == null) {
+					if (config == null || config.getConfigurationSection("menu") == null) {
 						Main.getPlugin().getLogger().warning("Config is not loaded, stopping server ping thread.");
 						Main.getPlugin().getLogger().warning("There is probably a YAML syntax error in the menu configuration file. It may also be caused by using the /reload command, please avoid using this command.");
+						Main.getPlugin().getLogger().warning("Restart the server after fixing this issue.");
 						return;
 					}
 					
