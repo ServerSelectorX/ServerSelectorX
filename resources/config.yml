@@ -14,9 +14,10 @@ cancel-item-move: false
 # since those require you to port forward your spigot servers.
 #
 # minestat: internal pinger (https://github.com/FragLand/minestat)
-# jamiete: internal pinger(https://github.com/jamietech/MinecraftServerPing)
+# jamiete: internal pinger (https://github.com/jamietech/MinecraftServerPing)
+# hd: internal pinger (from holographic displays)
 # minetools: external pinger (api.minetools.eu)
-ping-api: minetools
+ping-api: hd
 
 ping-timeout: 500
 

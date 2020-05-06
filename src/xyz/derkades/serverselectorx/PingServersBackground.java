@@ -7,6 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
+import xyz.derkades.serverselectorx.utils.HolographicPinger;
 import xyz.derkades.serverselectorx.utils.JamietePinger;
 import xyz.derkades.serverselectorx.utils.MinestatPinger;
 import xyz.derkades.serverselectorx.utils.MinetoolsPinger;
@@ -58,6 +59,8 @@ public class PingServersBackground extends BukkitRunnable {
 							pinger = new JamietePinger(ip, port, timeout);
 						case "minestat":
 							pinger = new MinestatPinger(ip, port, timeout);
+						case "hd":
+							pinger = new HolographicPinger(ip, port, timeout);
 						}
 						
 						if (pinger == null) {
