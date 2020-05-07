@@ -8,6 +8,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import xyz.derkades.serverselectorx.utils.HolographicPinger;
+import xyz.derkades.serverselectorx.utils.MinetoolsPinger;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
 
 public class PingServersBackground extends BukkitRunnable {
@@ -47,25 +48,9 @@ public class PingServersBackground extends BukkitRunnable {
 
 						debug(String.format("Pinging item %s with address %s:%s", key, ip, port));
 
-						ServerPinger pinger = null;
-
-//						switch (Main.getPlugin().getConfig().getString("ping-api", "minestat")) {
-//						case "minetools":
-//							pinger = new MinetoolsPinger(ip, port);
-//						case "jamiete":
-//							pinger = new JamietePinger(ip, port, timeout);
-//						case "minestat":
-//							pinger = new MinestatPinger(ip, port, timeout);
-//						case "hd":
-//							pinger = new HolographicPinger(ip, port, timeout);
-//						}
-						
-						pinger = new HolographicPinger(ip, port, timeout);
-						
-//						if (pinger == null) {
-//							Main.getPlugin().getLogger().warning("Invalid ping-api set in config.yml");
-//							return;
-//						}
+						final ServerPinger pinger = Main.getPlugin().getConfig().getBoolean("external-pinger", false) ?
+								new MinetoolsPinger(ip, port) :
+								new HolographicPinger(ip, port, timeout);
 
 						debug("Online: " + pinger.isOnline());
 

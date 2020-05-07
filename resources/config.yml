@@ -8,6 +8,12 @@ cancel-item-drop: false
 # Cancel item move for players that do not have the permission ssx.move (this includes swapping items between hands for 1.9+)
 cancel-item-move: false
 
+# When set to true, the plugin uses api.minetools.eu for pinging the servers.
+# You can use this if the internal pinger is not working for you, but it is not
+# recommended since it means your servers have to be accessible externally and
+# you will encounter issues if minetools temporarily or permanently stops working.
+external-pinger: false
+
 ping-timeout: 500
 
 ping-debug: false
