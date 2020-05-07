@@ -5,7 +5,6 @@ author: Derkades
 description: 'A simple server selector plugin'
 website: 'https://www.spigotmc.org/resources/serverselectorx.32853/'
 softdepend: [PlaceholderAPI]
-api-version: 1.13
 
 commands:
   serverselectorx:
