@@ -8,17 +8,6 @@ cancel-item-drop: false
 # Cancel item move for players that do not have the permission ssx.move (this includes swapping items between hands for 1.9+)
 cancel-item-move: false
 
-
-# Set a ping API. If server pinging is giving errors, choose a different ping API.
-# I recommend trying all internal pinging APIs before moving on to external ones,
-# since those require you to port forward your spigot servers.
-#
-# minestat: internal pinger (https://github.com/FragLand/minestat)
-# jamiete: internal pinger (https://github.com/jamietech/MinecraftServerPing)
-# hd: internal pinger (from holographic displays)
-# minetools: external pinger (api.minetools.eu)
-ping-api: hd
-
 ping-timeout: 500
 
 ping-debug: false
