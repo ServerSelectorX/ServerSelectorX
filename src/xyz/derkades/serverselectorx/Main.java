@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -80,12 +81,14 @@ public class Main extends JavaPlugin {
 			bukkitCommandMap.setAccessible(true);
 			final CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
 
-			for (final FileConfiguration config : configurationManager.getAll()){
-				final String commandName = config.getString("command");
+			for (final Entry<String, FileConfiguration> config : configurationManager.files.entrySet()){
+				final String commandName = config.getValue().getString("command");
 
 				if (commandName == null || commandName.equalsIgnoreCase("none")) {
 					continue;
 				}
+				
+				final String configName = config.getKey();
 
 				commandMap.register("ssx-custom", new Command(commandName){
 
@@ -93,7 +96,12 @@ public class Main extends JavaPlugin {
 					public boolean execute(final CommandSender sender, final String label, final String[] args) {
 						if (sender instanceof Player){
 							final Player player = (Player) sender;
-							new SelectorMenu(player, config);
+							final FileConfiguration config = configurationManager.getByName(configName);
+							if (config == null) {
+								player.sendMessage("The menu '" + configName + "' has disappeared? Restart to remove this command.");
+							} else {
+								new SelectorMenu(player, config);
+							}
 						}
 						return true;
 					}

@@ -7,9 +7,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import xyz.derkades.serverselectorx.utils.JamietePinger;
-import xyz.derkades.serverselectorx.utils.MinestatPinger;
-import xyz.derkades.serverselectorx.utils.MinetoolsPinger;
+import xyz.derkades.serverselectorx.utils.HolographicPinger;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
 
 public class PingServersBackground extends BukkitRunnable {
@@ -20,9 +18,10 @@ public class PingServersBackground extends BukkitRunnable {
 			try {
 				for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
 					// Ignore if config failed to load
-					if (config == null) {
+					if (config == null || config.getConfigurationSection("menu") == null) {
 						Main.getPlugin().getLogger().warning("Config is not loaded, stopping server ping thread.");
 						Main.getPlugin().getLogger().warning("There is probably a YAML syntax error in the menu configuration file. It may also be caused by using the /reload command, please avoid using this command.");
+						Main.getPlugin().getLogger().warning("Restart the server after fixing this issue.");
 						return;
 					}
 					
@@ -50,19 +49,23 @@ public class PingServersBackground extends BukkitRunnable {
 
 						ServerPinger pinger = null;
 
-						switch (Main.getPlugin().getConfig().getString("ping-api", "minestat")) {
-						case "minetools":
-							pinger = new MinetoolsPinger(ip, port);
-						case "jamiete":
-							pinger = new JamietePinger(ip, port, timeout);
-						case "minestat":
-							pinger = new MinestatPinger(ip, port, timeout);
-						}
+//						switch (Main.getPlugin().getConfig().getString("ping-api", "minestat")) {
+//						case "minetools":
+//							pinger = new MinetoolsPinger(ip, port);
+//						case "jamiete":
+//							pinger = new JamietePinger(ip, port, timeout);
+//						case "minestat":
+//							pinger = new MinestatPinger(ip, port, timeout);
+//						case "hd":
+//							pinger = new HolographicPinger(ip, port, timeout);
+//						}
 						
-						if (pinger == null) {
-							Main.getPlugin().getLogger().warning("Invalid ping-api set in config.yml");
-							return;
-						}
+						pinger = new HolographicPinger(ip, port, timeout);
+						
+//						if (pinger == null) {
+//							Main.getPlugin().getLogger().warning("Invalid ping-api set in config.yml");
+//							return;
+//						}
 
 						debug("Online: " + pinger.isOnline());
 
