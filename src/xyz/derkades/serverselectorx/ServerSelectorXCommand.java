@@ -36,7 +36,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 			Main.server.stop();
 			Main.server.start();
 			
-			sender.sendMessage("Run " ChatColor.GRAY + "/ssx reloadcommands" + ChatColor.RESET + " to reload commands.");
+			sender.sendMessage("Run " + ChatColor.GRAY + "/ssx reloadcommands" + ChatColor.RESET + " to reload commands.");
 			return true;
 		}
 
