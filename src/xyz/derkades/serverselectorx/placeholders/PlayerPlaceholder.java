@@ -23,8 +23,9 @@ public class PlayerPlaceholder extends Placeholder {
 	}
 
 	public String getValue(final OfflinePlayer player) {
-		if (!this.values.containsKey(player.getUniqueId()))
-			return "0";
+		if (!this.values.containsKey(player.getUniqueId())) {
+			return "?";
+		}
 
 		return this.values.get(player.getUniqueId());
 	}
