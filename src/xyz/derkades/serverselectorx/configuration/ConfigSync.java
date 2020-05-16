@@ -83,8 +83,6 @@ public class ConfigSync {
 	}
 
 	private void addFilesInDirectory(final String directory, final List<String> files) throws IOException {
-//		this.logger.info("Listing files in directory " + directory);
-		
 		if (directory.endsWith("/")) {
 			this.logger.warning("Skipped directory '" + directory + "', directories should not end with a slash.");
 			return;
@@ -122,9 +120,6 @@ public class ConfigSync {
 		
 		// Remove excluded files
 		Main.getConfigurationManager().sync.getStringList("exclude").forEach(files::remove);
-		
-//		this.logger.info("Files to sync (" + files.size() + "): ");
-//		files.forEach((f) -> this.logger.info(" - " + f));
 
 		return files;
 	}
@@ -152,7 +147,6 @@ public class ConfigSync {
 		final File dataFolder = Main.getPlugin().getDataFolder(); // for convenience
 		
 		if (Main.getConfigurationManager().sync.getBoolean("delete", false)) {
-//			this.logger.info("Deletion is enabled. Deleting directories");
 			final File[] toDelete = new File[] {
 					new File(dataFolder, "item"),
 					new File(dataFolder, "command"),
@@ -161,7 +155,6 @@ public class ConfigSync {
 			for (final File dir : toDelete) {
 				try {
 					FileUtils.deleteDirectory(dir);
-//					this.logger.info("Deleted directory " + dir);
 				} catch (final IOException e) {
 					this.logger.warning("Failed to delete directory" + dir.getPath());
 				}
