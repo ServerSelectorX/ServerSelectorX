@@ -87,5 +87,9 @@ public class Server {
 			return server;
 		}
 	}
+	
+	public static void clear() {
+		SERVERS.clear();
+	}
 
 }
