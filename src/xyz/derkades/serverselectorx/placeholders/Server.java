@@ -42,7 +42,7 @@ public class Server {
 
 	public Placeholder getPlaceholder(final String name) {
 		if (!this.isOnline()) {
-			return new GlobalPlaceholder(name, "?");
+			return new GlobalPlaceholder(name, Main.getConfigurationManager().misc.getString("placeholders.offline"));
 		}
 		
 		if (getPlaceholders() != null) {
@@ -54,7 +54,7 @@ public class Server {
 		}
 
 		Main.getPlugin().getLogger().warning("Placeholder " + name + " was requested but not received from the server (" + getName() + ").");
-		return new GlobalPlaceholder(name, "-");
+		return new GlobalPlaceholder(name, Main.getConfigurationManager().misc.getString("placeholders.missing"));
 	}
 
 	public int getOnlinePlayers() {
@@ -86,6 +86,10 @@ public class Server {
 			SERVERS.put(name, server);
 			return server;
 		}
+	}
+	
+	public static void clear() {
+		SERVERS.clear();
 	}
 
 }

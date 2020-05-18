@@ -25,6 +25,7 @@ import org.bukkit.Bukkit;
 import com.google.gson.JsonParser;
 
 import xyz.derkades.serverselectorx.Main;
+import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class ConfigSync {
 
@@ -195,6 +196,9 @@ public class ConfigSync {
 					+ "from the other server. The plugin will probably stop working. For a detailed error "
 					+ "report, use /ssx reload on the other server.");
 		}
+
+		// Clear server status cache to remove any old server names
+		Server.clear();
 		
 		Bukkit.getScheduler().runTask(Main.getPlugin(), () -> {
 			final List<String> commands = Main.getConfigurationManager().sync.getStringList("after-sync-commands");
