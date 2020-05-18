@@ -5,6 +5,8 @@ import java.util.UUID;
 
 import org.bukkit.OfflinePlayer;
 
+import xyz.derkades.serverselectorx.Main;
+
 public class PlayerPlaceholder extends Placeholder {
 
 	private final Map<UUID, String> values;
@@ -24,7 +26,7 @@ public class PlayerPlaceholder extends Placeholder {
 
 	public String getValue(final OfflinePlayer player) {
 		if (!this.values.containsKey(player.getUniqueId())) {
-			return "?";
+			return Main.getConfigurationManager().misc.getString("placeholders.player-missing", "...");
 		}
 
 		return this.values.get(player.getUniqueId());

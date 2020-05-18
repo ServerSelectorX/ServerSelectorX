@@ -9,6 +9,7 @@ no-permission: 'You do not have permission to use this'
 permission-debug: true
 
 placeholders:
+  player-missing: '...' # Value to display when SSX-Connector has not sent a value for a specific player yet, but the placeholder exists
   missing: '?' # Value to display when requesting a placeholder that was not sent by the server
   offline: '-' # Value to display when requesting a placeholder while the server is offline
   # Values for the status placeholder
