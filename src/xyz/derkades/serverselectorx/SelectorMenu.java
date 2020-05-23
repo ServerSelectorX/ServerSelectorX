@@ -176,6 +176,10 @@ public class SelectorMenu extends IconMenu {
 			final String command = action.substring(4);
 			Bukkit.dispatchCommand(player, Main.PLACEHOLDER_API.parsePlaceholders(player, command));
 			return true;
+		} else if (action.startsWith("consolecmd:")) {
+			final String command = action.substring(11).replace("{player}", player.getName());
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Main.PLACEHOLDER_API.parsePlaceholders(player, command));
+			return true;
 		} else if (action.startsWith("sel:")){ //Open selector
 			final String configName = action.substring(4);
 			final FileConfiguration config = Main.getConfigurationManager().getByName(configName);

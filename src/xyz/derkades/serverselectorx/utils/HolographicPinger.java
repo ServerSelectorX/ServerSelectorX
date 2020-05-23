@@ -19,7 +19,6 @@ public class HolographicPinger implements ServerPinger {
 			this.maxPlayers = response.getMaxPlayers();
 		} catch (final Exception e) {
 			this.online = false;
-			e.printStackTrace();
 		}
 	}
 
