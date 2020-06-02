@@ -1,5 +1,6 @@
 package xyz.derkades.serverselectorx;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.bukkit.Material;
@@ -67,16 +68,18 @@ public class ItemClickListener implements Listener {
 			Cooldown.addCooldown("ssxitem" + itemName, config.getInt("cooldown"));
 		}
 
-		final List<String> actions;
+		final List<String> actions = new ArrayList<>();
+		
+		actions.addAll(config.getStringList("actions"));
 
-		if (config.isList("left-click-actions")) {
-			if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-				actions = config.getStringList("left-click-actions");
-			} else {
-				actions = config.getStringList("actions");
-			}
-		} else {
-			actions = config.getStringList("actions");
+		if (config.isList("left-click-actions") &&
+				(event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
+			actions.addAll(config.getStringList("left-click-actions"));
+		}
+		
+		if (config.isList("right-click-actions") &&
+				(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
+			actions.addAll(config.getStringList("right-click-actions"));
 		}
 
 		xyz.derkades.serverselectorx.actions.Action.runActions(player, actions);
