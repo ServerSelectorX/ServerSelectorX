@@ -16,9 +16,13 @@ password: "a"
 # will consider a server as offline.
 server-offline-timeout: 6000
 
-# When set to false, you can sync files outside of the SSX data folder.
-# This will expose all your server files (possibly even system files) through the API!
-# Make sure the API is secured properly before disabling this.
+# Normally, you can access files in the ServerSelectorX plugin folder through the
+# SSX API. This is used by the config sync feature to get files from another
+# server. By default, SSX prevents accessing other directories. By turning this
+# off, SSX will allow accessing any file through the API. ANY file!! Your databases,
+# passwords, any file readable by the user running the server. If you want
+# to sync files from different plugins between servers you're probably better
+# off using an external tool like rsync.
 block-outside-directory: true
 
 jetty-debug: false

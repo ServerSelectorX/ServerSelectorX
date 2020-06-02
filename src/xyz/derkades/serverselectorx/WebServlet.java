@@ -33,6 +33,7 @@ import xyz.derkades.serverselectorx.placeholders.Server;
 public class WebServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -7682997363243721686L;
+	private static final int DIR_LIST_FILE_LIMIT = 1000;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -150,7 +151,7 @@ public class WebServlet extends HttpServlet {
 			if (api.getBoolean("block-outside-directory", true) && dirName.contains("..")) {
 				logger.warning("Received request with dangerous directory name from " + request.getRemoteAddr());
 				logger.warning("Directory name: " + dirName);
-				logger.warning("The request has been blocked, no need to panic. Maybe do consider looking into where the request came from?");
+				logger.warning("If this is your doing and you want to allow it, have a look at config/api.yml");
 				response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 				return;
 			}
@@ -168,7 +169,20 @@ public class WebServlet extends HttpServlet {
 			
 			final List<String> filePaths = new ArrayList<>();
 			
+			int i = 0;
 			while (!directories.isEmpty()) {
+				i++;
+				if (i > DIR_LIST_FILE_LIMIT) {
+					logger.warning("Listing too many files! Received a request to list files in directory " + dir
+							+ ", but there are a lot of files in this directory, apparently. To avoid crashing "
+							+ "the server from running out of memory, SSX will only list "
+							+ DIR_LIST_FILE_LIMIT + " in a directory.");
+					logger.warning("If you're seeing this you're either doing something dumb with paths in the "
+							+ "config sync configuration file, or your SSX API is not secured properly and "
+							+ "someone else is having a look at the files on your server.");
+					break;
+				}
+					
 				final File file = directories.pop();
 				if (file.isFile()) {
 					filePaths.add(file.getPath());

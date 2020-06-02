@@ -24,14 +24,15 @@ give:
   
   # delay: 1
   
+# Actions to run when clicking the item (right or left click)
 actions:
  - 'openmenu:serverselector' # Open default menu (config file in ../menu/default.yml)
- 
-## When the `left-cick-actions` option is set, the `actions` option is used for right click and the 
-## `left-click-actions` option is used for left click. If the `left-click-actions` option is not set,
-## `actions` used for right cilck and left click
-# left-click-actions:
-# - 'server:survival'
+
+# Actions to run when right clicking the item
+right-click-actions: []
+
+# Actions to run when left clicking the item
+left-click-actions: []
   
 # Uncomment to define a world whitelist. Players who are not in one of the worlds defined 
 # below will not receive the item on join and will not be able use the item.
