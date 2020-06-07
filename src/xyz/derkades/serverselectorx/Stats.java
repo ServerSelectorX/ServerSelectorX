@@ -12,7 +12,7 @@ import xyz.derkades.serverselectorx.placeholders.PapiEnabled;
 public class Stats {
 
 	public static void initialize() {
-		final Metrics metrics = new Metrics(Main.getPlugin());
+		final Metrics metrics = new Metrics(Main.getPlugin(), 1061);
 
 		metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", () -> Main.PLACEHOLDER_API instanceof PapiEnabled ? "yes" : "no"));
 
