@@ -29,6 +29,7 @@ public class FirstAvailableServerAction extends Action {
 			}
 
 			ServerSelectorX.teleportPlayerToServer(player, serverName);
+			return false;
 		}
 
 		return false;
