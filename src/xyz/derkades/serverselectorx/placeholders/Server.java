@@ -1,19 +1,22 @@
 package xyz.derkades.serverselectorx.placeholders;
 
+import java.util.Collection;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import xyz.derkades.serverselectorx.Main;
 
 public class Server {
-
+	
+//	private static final GlobalPlaceholder ONLINE_0 = new GlobalPlaceholder("online", "0");
+//	private static final GlobalPlaceholder MAX_0 = new GlobalPlaceholder("max", "0");
+	
 //	private static final List<Server> SERVERS = new ArrayList<>();
 	private static final Map<String, Server> SERVERS = new HashMap<>();
 
 	private final String name;
 	private transient long lastInfoTime = 0;
-	private List<Placeholder> placeholders;
+	private Map<String, Placeholder> placeholders;
 
 	public Server(final String name) {
 		if (name == null) {
@@ -36,8 +39,12 @@ public class Server {
 		return getTimeSinceLastMessage() < timeout;
 	}
 
-	public List<Placeholder> getPlaceholders() {
-		return this.placeholders;
+	public Collection<Placeholder> getPlaceholders() {
+		return this.placeholders.values();
+	}
+	
+	public boolean hasPlaceholder(final String name) {
+		return this.placeholders != null && this.placeholders.containsKey(name);
 	}
 
 	public Placeholder getPlaceholder(final String name) {
@@ -45,12 +52,8 @@ public class Server {
 			return new GlobalPlaceholder(name, Main.getConfigurationManager().misc.getString("placeholders.offline", "-"));
 		}
 		
-		if (getPlaceholders() != null) {
-			for (final Placeholder placeholder : getPlaceholders()) {
-				if (placeholder.getKey().equals(name)) {
-					return placeholder;
-				}
-			}
+		if (this.hasPlaceholder(name)) {
+			return this.placeholders.get(name);
 		}
 
 		Main.getPlugin().getLogger().warning("Placeholder " + name + " was requested but not received from the server (" + getName() + ").");
@@ -58,16 +61,16 @@ public class Server {
 	}
 
 	public int getOnlinePlayers() {
-		return Integer.parseInt(((GlobalPlaceholder) getPlaceholder("online")).getValue());
+		return hasPlaceholder("online") ? Integer.parseInt(((GlobalPlaceholder) getPlaceholder("online")).getValue()) : 0;
 	}
 
 	public int getMaximumPlayers() {
-		return Integer.parseInt(((GlobalPlaceholder) getPlaceholder("max")).getValue());
+		return hasPlaceholder("max") ? Integer.parseInt(((GlobalPlaceholder) getPlaceholder("max")).getValue()) : 0;
 	}
-
-	public void updatePlaceholders(final List<Placeholder> placeholders) {
-		this.lastInfoTime = System.currentTimeMillis();
+	
+	public void updatePlaceholders(final Map<String, Placeholder> placeholders) {
 		this.placeholders = placeholders;
+		this.lastInfoTime = System.currentTimeMillis();
 	}
 
 	public static Map<String, Server> getServers() {
