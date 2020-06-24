@@ -76,7 +76,7 @@ public class WebServlet extends HttpServlet {
 
 		final Map<String, Object> receivedPlaceholders = gson.fromJson(placeholdersJsonString, Map.class);
 
-		final List<Placeholder> parsedPlaceholders = new ArrayList<>();
+		final Map<String, Placeholder> parsedPlaceholders = new HashMap<>();
 
 		// If the code below doesn't make any sense to you, you should read the API documentation:
 		// https://github.com/ServerSelectorX/ServerSelectorX/wiki/ServerSelectorX-Premium-API
@@ -85,13 +85,13 @@ public class WebServlet extends HttpServlet {
 			if (v instanceof String) {
 				// If the placeholder value received is a plain string, it is a global
 				// placeholder and the value received is the placeholder value.
-				parsedPlaceholders.add(new GlobalPlaceholder(k, (String) v));
+				parsedPlaceholders.put(k, new GlobalPlaceholder(k, (String) v));
 			} else if (v instanceof Map) {
 				// If the placeholder value received is a map with UUIDs and strings,
 				// it is a player-specific placeholder. The map contains placeholder
 				// values for each player. Every map entry is added as a unique
 				// player specific placeholder.
-				parsedPlaceholders.add(new PlayerPlaceholder(k, ((Map<String, String>) v).entrySet().stream()
+				parsedPlaceholders.put(k, new PlayerPlaceholder(k, ((Map<String, String>) v).entrySet().stream()
 						.collect(Collectors.toMap(e -> UUID.fromString(e.getKey()), e-> e.getValue()))));
 			} else {
 				Main.getPlugin().getLogger().warning("Invalid placeholder value format (" + k + "; " + v + ")");

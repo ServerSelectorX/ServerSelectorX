@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
@@ -83,6 +84,9 @@ public class Main extends JavaPlugin {
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
 			PapiExpansionRegistrar.register();
 		}
+		
+		// Disable NBT API update checker
+		MinecraftVersion.disableUpdateCheck();
 	}
 
 	@Override
