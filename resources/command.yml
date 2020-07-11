@@ -1,12 +1,12 @@
 # Note when making changes to command names without restarting the server:
 #
 # /ssx reload does not reload command properties (command name, aliases, 
-# description, usage). It does reload does reload actions, permissions, etc.
+# description, usage). It does reload actions and permissions.
 #
 # /ssx reloadcommands loads new commands. If you change a command name or add
 # a new command, you will be able to use it with the new command name. The old
-# command will still work. Reloading aliases, command description and usage is
-# not supported. Restart the server.
+# command will still work until the server is restarted. Reloading aliases, 
+# command description and usage is not supported. Restart the server.
 
 
 
