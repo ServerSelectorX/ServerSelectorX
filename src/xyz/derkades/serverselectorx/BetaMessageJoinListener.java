@@ -12,8 +12,8 @@ public class BetaMessageJoinListener implements Listener {
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void sendAnnoyingMessage(final PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-		if (player.hasPermission("ssx.reload") && Main.getPlugin().getDescription().getVersion().contains("beta")) {
-			player.sendMessage("You are using a beta version of ServerSelectorX. Please update to a stable version as soon as the functionality or bugfix you require is available in a stable release version. " + ChatColor.GRAY + "(only players with the ssx.reload permission will see this message)");
+		if (player.hasPermission("ssx.admin") && Main.getPlugin().getDescription().getVersion().contains("beta")) {
+			player.sendMessage("You are using a beta version of ServerSelectorX. Please update to a stable version as soon as the functionality or bugfix you require is available in a stable release version. " + ChatColor.GRAY + "(only players with the ssx.admin permission will see this message)");
 		}
 	}
 
