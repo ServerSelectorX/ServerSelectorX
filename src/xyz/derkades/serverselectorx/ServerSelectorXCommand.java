@@ -17,7 +17,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 	@Override
 	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args){
 		if (!sender.hasPermission("ssx.admin")) {
-			sender.sendMessage(ChatColor.RED + "You need the permission 'ssx.reload' to execute this command.");
+			sender.sendMessage(ChatColor.RED + "You need the permission 'ssx.admin' to execute this command.");
 			return true;
 		}
 

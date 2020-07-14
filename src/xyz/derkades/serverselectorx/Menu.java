@@ -84,6 +84,11 @@ public class Menu extends IconMenu {
 	private void addItems() {
 		itemLoop:
 		for (final String key : this.config.getConfigurationSection("menu").getKeys(false)) {
+			if (!this.config.isConfigurationSection("menu." + key)) {
+				this.player.sendMessage("Invalid item " + key + ", check indentation.");
+				continue;
+			}
+			
 			final ConfigurationSection section = this.config.getConfigurationSection("menu." + key);
 
 			List<String> actions;
