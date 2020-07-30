@@ -115,20 +115,20 @@
 		<dependency>
 			<groupId>me.clip</groupId>
 			<artifactId>placeholderapi</artifactId>
-			<version>2.10.6</version>
+			<version>2.10.7</version>
 			<scope>provided</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>9.4.30.v20200611</version>
+			<version>9.4.31.v20200723</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-servlet</artifactId>
-			<version>9.4.30.v20200611</version>
+			<version>9.4.31.v20200723</version>
 		</dependency>
 
 		<dependency>
