@@ -8,6 +8,9 @@ port: 9782
 # If set to "127.0.0.1", the ServerSelectorX API will not be accessible externally.
 host: "127.0.0.1"
 
+# IPv6 should be supported but I can't test it since of course my ISP hasn't rolled
+# that out yet. If it works for you please let me know!
+
 
 # -------------------- Advanced -------------------- #
 

@@ -13,6 +13,8 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import com.google.gson.Gson;
+
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
@@ -41,6 +43,8 @@ public class Main extends JavaPlugin {
 	private static Main plugin;
 
 	public static WebServer server;
+	
+	public static final Gson GSON = new Gson();
 
 	public static Main getPlugin(){
 		return plugin;
