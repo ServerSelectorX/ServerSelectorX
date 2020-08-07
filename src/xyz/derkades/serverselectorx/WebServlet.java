@@ -4,9 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.Stack;
 import java.util.UUID;
@@ -21,9 +19,10 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
 
 import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
+import com.google.gson.stream.JsonWriter;
 
 import xyz.derkades.serverselectorx.placeholders.GlobalPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.Placeholder;
@@ -34,6 +33,8 @@ public class WebServlet extends HttpServlet {
 
 	private static final long serialVersionUID = -7682997363243721686L;
 	private static final int DIR_LIST_FILE_LIMIT = 1000;
+	
+	private static final Gson gson = new Gson();
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -71,9 +72,7 @@ public class WebServlet extends HttpServlet {
 			logger.warning("Set the server name in the connector configuration file.");
 			return;
 		}
-
-		final Gson gson = new Gson();
-
+	
 		final Map<String, Object> receivedPlaceholders = gson.fromJson(placeholdersJsonString, Map.class);
 
 		final Map<String, Placeholder> parsedPlaceholders = new HashMap<>();
@@ -167,7 +166,9 @@ public class WebServlet extends HttpServlet {
 			final Stack<File> directories = new Stack<>();
 			directories.push(dir);
 			
-			final List<String> filePaths = new ArrayList<>();
+			response.setContentType("text/json");
+			final JsonWriter writer = gson.newJsonWriter(response.getWriter());
+			writer.beginArray();
 			
 			int i = 0;
 			while (!directories.isEmpty()) {
@@ -185,7 +186,7 @@ public class WebServlet extends HttpServlet {
 					
 				final File file = directories.pop();
 				if (file.isFile()) {
-					filePaths.add(file.getPath());
+					writer.value(file.getPath());
 				}
 				
 				if (file.isDirectory()) {
@@ -194,17 +195,19 @@ public class WebServlet extends HttpServlet {
 					}
 				}
 			}
-
-			response.setContentType("text/json");
-			final String json = new GsonBuilder().setPrettyPrinting().create().toJson(filePaths);
-			response.getOutputStream().print(json);
+			
+			writer.endArray();
 		}
 
 		else if (request.getRequestURI().equals("/players")) {
-			final Gson gson = new Gson();
-			final Map<UUID, String> players = new HashMap<>();
-			Bukkit.getOnlinePlayers().forEach((p) -> players.put(p.getUniqueId(), p.getName()));
-			response.getOutputStream().println(gson.toJson(players));
+			response.setContentType("text/json");
+			final JsonWriter writer = gson.newJsonWriter(response.getWriter());
+			writer.beginObject();
+			for (final Player player : Bukkit.getOnlinePlayers()) {
+				writer.name(player.getUniqueId().toString());
+				writer.value(player.getName());
+			}
+			writer.endObject();
 		}
 
 		else if (request.getRequestURI().equals("/")) {
@@ -215,7 +218,7 @@ public class WebServlet extends HttpServlet {
 			map.put("api_version", 2);
 			map.put("servers", Server.getServers());
 
-			final String json = new GsonBuilder().setPrettyPrinting().create().toJson(map);
+			final String json = gson.toJson(map);
 			response.getOutputStream().println(json);
 		}
 
