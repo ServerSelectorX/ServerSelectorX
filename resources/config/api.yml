@@ -3,14 +3,16 @@
 # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Installing-SSX-Connector
 port: 9782
 
+# If you are using shared hosting, you may need to set this to "0.0.0.0"
+# Using shared hosting is not recommended since it is usually not secure!
+# If set to "127.0.0.1", the ServerSelectorX API will not be accessible externally.
+host: "127.0.0.1"
 
-
+# IPv6 should be supported but I can't test it since of course my ISP hasn't rolled
+# that out yet. If it works for you please let me know!
 
 
 # -------------------- Advanced -------------------- #
-
-# https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium-security
-password: "a"
 
 # The number of milliseconds without a ping until ServerSelectorX
 # will consider a server as offline.
@@ -22,7 +24,7 @@ server-offline-timeout: 6000
 # off, SSX will allow accessing any file through the API. ANY file!! Your databases,
 # passwords, any file readable by the user running the server. If you want
 # to sync files from different plugins between servers you're probably better
-# off using an external tool like rsync.
+# off using an external tool like rsync. SECURE YOUR API PROPERLY!
 block-outside-directory: true
 
 jetty-debug: false

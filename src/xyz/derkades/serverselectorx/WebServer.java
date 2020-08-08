@@ -2,7 +2,12 @@ package xyz.derkades.serverselectorx;
 
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+
+import xyz.derkades.serverselectorx.servlet.GetFile;
+import xyz.derkades.serverselectorx.servlet.ListFiles;
+import xyz.derkades.serverselectorx.servlet.Players;
+import xyz.derkades.serverselectorx.servlet.Root;
 
 public class WebServer {
 
@@ -11,13 +16,17 @@ public class WebServer {
 	public void start() {
 		this.server = new Server();
 
-        final ServletHandler handler = new ServletHandler();
-
-        handler.addServletWithMapping(WebServlet.class, "/*");
+		final ServletContextHandler handler = new ServletContextHandler(ServletContextHandler.SESSIONS);
+		handler.addServlet(GetFile.class, "/getfile");
+		handler.addServlet(ListFiles.class, "/listfiles");
+		handler.addServlet(Root.class, "/");
+		handler.addServlet(Players.class, "/players");
+		
 
         this.server.setHandler(handler);
 
         final ServerConnector connector = new ServerConnector(this.server);
+        connector.setHost(Main.getConfigurationManager().api.getString("host", "127.0.0.1"));
         final int port = Main.getConfigurationManager().api.getInt("port");
         connector.setPort(port);
         this.server.addConnector(connector);

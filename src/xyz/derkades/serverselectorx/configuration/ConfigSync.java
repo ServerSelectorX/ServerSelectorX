@@ -41,7 +41,7 @@ public class ConfigSync {
 		// Run 1 second after server startup, then every hour
 		Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getPlugin(), this::sync, 20, interval);
 	}
-	
+
     private static String encode(final String string) {
         try {
             return URLEncoder.encode(string, StandardCharsets.UTF_8.toString());
@@ -49,7 +49,7 @@ public class ConfigSync {
             throw new RuntimeException(e);
         }
     }
-    
+
     private static String getBaseUrl(final String method) {
 		return "http://" + Main.getConfigurationManager().sync.getString("address") +
 				(method.equals("") ? "" : "/" + method) + "?password=" +
@@ -88,18 +88,18 @@ public class ConfigSync {
 			this.logger.warning("Skipped directory '" + directory + "', directories should not end with a slash.");
 			return;
 		}
-		
+
 		final URL url = new URL(getBaseUrl("listfiles") + "&dir=" + encode(directory));
 		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
-		
+
 		if (connection.getResponseCode() != 200) {
 			this.logger.warning("Skipped directory '" + directory + "', received non-200 HTTP status.");
 			this.logger.warning("Status: " + connection.getResponseCode());
 			return;
 		}
-		
+
 		try (final Reader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()))) {
-			new JsonParser().parse(reader).getAsJsonArray().forEach((e) -> files.add(e.getAsString()));
+			JsonParser.parseReader(reader).getAsJsonArray().forEach((e) -> files.add(e.getAsString()));
 		}
 	}
 
@@ -118,7 +118,7 @@ public class ConfigSync {
 				e.printStackTrace();
 			}
 		}
-		
+
 		// Remove excluded files
 		Main.getConfigurationManager().sync.getStringList("exclude").forEach(files::remove);
 
@@ -131,7 +131,7 @@ public class ConfigSync {
 
 	public void sync() {
 		this.logger.info("Starting config sync..");
-		
+
 		// Verify that the address is in the correct format
 		try {
 			new URL("http://" + Main.getConfigurationManager().sync.getString("address"));
@@ -146,7 +146,7 @@ public class ConfigSync {
 		}
 
 		final File dataFolder = Main.getPlugin().getDataFolder(); // for convenience
-		
+
 		if (Main.getConfigurationManager().sync.getBoolean("delete", false)) {
 			final File[] toDelete = new File[] {
 					new File(dataFolder, "item"),
@@ -173,7 +173,7 @@ public class ConfigSync {
 				e.printStackTrace();
 				continue;
 			}
-			
+
 			try (
 					InputStream input = ConfigSync.this.getFileContent(fileName);
 					final OutputStream output = new FileOutputStream(file);
@@ -199,7 +199,7 @@ public class ConfigSync {
 
 		// Clear server status cache to remove any old server names
 		Server.clear();
-		
+
 		Bukkit.getScheduler().runTask(Main.getPlugin(), () -> {
 			final List<String> commands = Main.getConfigurationManager().sync.getStringList("after-sync-commands");
 			if (!commands.isEmpty()) {
