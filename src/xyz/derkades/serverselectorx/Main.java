@@ -144,7 +144,7 @@ public class Main extends JavaPlugin {
     	final ItemBuilder builder = getItemBuilderFromMaterialString(player, materialString);
 
     	if (section.contains("title")) {
-	    	String title = "&r" + section.getString("title");
+	    	String title = "&r&f" + section.getString("title");
 	    	title = title.replace("{player}", player.getName());
 	    	title = PlaceholderUtil.parsePapiPlaceholders(player, title);
 	    	builder.coloredName(title);
@@ -154,7 +154,7 @@ public class Main extends JavaPlugin {
 
 		if (section.contains("lore")) {
 			List<String> lore = section.getStringList("lore");
-			lore = lore.stream().map((s) -> "&r" + s).collect(Collectors.toList());
+			lore = lore.stream().map((s) -> "&r&f" + s).collect(Collectors.toList());
 			final Placeholder playerPlaceholder = new Placeholder("{player}", player.getName());
 			lore = PlaceholderUtil.parsePapiPlaceholders(player, lore, playerPlaceholder);
 			builder.coloredLore(lore);
