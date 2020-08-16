@@ -296,25 +296,32 @@ public class Menu extends IconMenu {
 			nbt.setObject("SSXActionsRight", rightActions);
 
 			final ItemStack item = nbt.getItem();
-
-			final int slot = Integer.valueOf(key);
-
-			if (slot >= this.getInventory().getSize()) {
-				this.player.sendMessage("You put an item in slot " + slot + ", which is higher than the maximum number of slots in your menu.");
-				this.player.sendMessage("Increase the number of rows in the config");
-				return;
-			}
-
-			if (slot < 0) {
-				// Slot is set to -1 (or other negative value), fill all blank slots
+			
+			if (key.equals("fill") || key.equals("-1")) { // -1 for backwards compatibility
+				// Fill all blank slots
 				for (int i = 0; i < this.getInventory().getSize(); i++) {
 					if (!this.hasItem(i)) {
 						this.addItem(i, item);
 					}
 				}
 			} else {
-				// Slot is set to a positive value, put item in slot.
-				this.addItem(slot, item);
+				for (final String split : key.split(",")) {
+					int slot;
+					try {
+						slot = Integer.valueOf(split);
+					} catch (final NumberFormatException e) {
+						this.player.sendMessage("Invalid slot number " + split);
+						return;
+					}
+					
+					if (slot >= this.getInventory().getSize() || slot < 0) {
+						this.player.sendMessage("You put an item in slot " + slot + ", which is higher than the maximum number of slots in your menu.");
+						this.player.sendMessage("Use numbers 0 to " + (this.getInventory().getSize() - 1) + "or increase the number of rows in the config");
+						return;
+					}
+					
+					this.addItem(slot, item);
+				}
 			}
 		}
 	}
