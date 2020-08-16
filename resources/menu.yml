@@ -113,6 +113,6 @@ menu:
       lore:
        - '&7Only players with the VIP rank can join this server.'    
   
-  -1: # -1 means all blank slots
+  fill:
     material: GRAY_STAINED_GLASS_PANE
     title: ' '
