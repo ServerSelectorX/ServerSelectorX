@@ -52,8 +52,7 @@ public class ConfigSync {
 
     private static String getBaseUrl(final String method) {
 		return "http://" + Main.getConfigurationManager().sync.getString("address") +
-				(method.equals("") ? "" : "/" + method) + "?password=" +
-				encode(Main.getConfigurationManager().sync.getString("password"));
+				(method.equals("") ? "" : "/" + method);
     }
 
 	private boolean testConnectivity() {
@@ -89,7 +88,7 @@ public class ConfigSync {
 			return;
 		}
 
-		final URL url = new URL(getBaseUrl("listfiles") + "&dir=" + encode(directory));
+		final URL url = new URL(getBaseUrl("listfiles") + "?dir=" + encode(directory));
 		final HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
 		if (connection.getResponseCode() != 200) {
@@ -126,7 +125,7 @@ public class ConfigSync {
 	}
 
 	private InputStream getFileContent(final String file) throws IOException {
-		return new URL(getBaseUrl("getfile") + "&file=" + encode(file)).openConnection().getInputStream();
+		return new URL(getBaseUrl("getfile") + "?file=" + encode(file)).openConnection().getInputStream();
 	}
 
 	public void sync() {
