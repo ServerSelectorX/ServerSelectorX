@@ -43,6 +43,3 @@ interval: 30
 # Run commands when config sync is complete, for example to
 # reload other plugins if you sync other plugin config files.
 after-sync-commands: []
-
-# If you don't know what this is you don't need to change it.
-password: "a"
