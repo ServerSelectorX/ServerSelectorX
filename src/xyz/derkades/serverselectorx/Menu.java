@@ -1,5 +1,6 @@
 package xyz.derkades.serverselectorx;
 
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -109,7 +110,7 @@ public class Menu extends IconMenu {
 					return;
 				}
 
-				if (noPermissionSection.getString("material").equalsIgnoreCase("NONE")) {
+				if (Arrays.asList("NONE", "AIR").contains(noPermissionSection.getString("material"))) {
 					continue itemLoop;
 				}
 
@@ -185,7 +186,7 @@ public class Menu extends IconMenu {
 											return;
 										}
 
-										if (dynamicSection.getString("material").equalsIgnoreCase("NONE")) {
+										if (Arrays.asList("NONE", "AIR").contains(dynamicSection.getString("material"))) {
 											continue itemLoop;
 										}
 
@@ -212,7 +213,7 @@ public class Menu extends IconMenu {
 									this.player.sendMessage("Online section does not have a material option");
 								}
 
-								if (onlineSection.getString("material").equalsIgnoreCase("NONE")) {
+								if (Arrays.asList("NONE", "AIR").contains(onlineSection.getString("material"))) {
 									continue itemLoop;
 								}
 
@@ -259,7 +260,7 @@ public class Menu extends IconMenu {
 							this.player.sendMessage("Offline section does not have a material option");
 						}
 
-						if (offlineSection.getString("material").equalsIgnoreCase("NONE")) {
+						if (Arrays.asList("NONE", "AIR").contains(offlineSection.getString("material"))) {
 							continue;
 						}
 
@@ -276,7 +277,7 @@ public class Menu extends IconMenu {
 						this.player.sendMessage("Read more here: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Menu-items-v2");
 					}
 
-					if (section.getString("material").equalsIgnoreCase("NONE")) {
+					if (Arrays.asList("NONE", "AIR").contains(section.getString("material"))) {
 						continue itemLoop;
 					}
 
