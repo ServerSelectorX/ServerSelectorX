@@ -18,13 +18,10 @@ host: "127.0.0.1"
 # will consider a server as offline.
 server-offline-timeout: 6000
 
-# Normally, you can access files in the ServerSelectorX plugin folder through the
-# SSX API. This is used by the config sync feature to get files from another
-# server. By default, SSX prevents accessing other directories. By turning this
-# off, SSX will allow accessing any file through the API. ANY file!! Your databases,
-# passwords, any file readable by the user running the server. If you want
-# to sync files from different plugins between servers you're probably better
-# off using an external tool like rsync. SECURE YOUR API PROPERLY!
-block-outside-directory: true
+# Enable this to allow config sync to retrieve files from this API.
+# WARNING: This will expose ALL files on your system that the user
+# running the server process has access to. Only enable this if
+# your API is not open to the internet!!
+files-api: false
 
 jetty-debug: false
