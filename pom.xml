@@ -75,13 +75,10 @@
 						<filter>
 							<artifact>*:*</artifact>
 							<excludes>
-								<exclude>jetty-dir.css</exclude>
-								<exclude>LICENSE</exclude>
-								<exclude>about.html</exclude>
-								<exclude>junit/</exclude>
-								<exclude>org/junit/</exclude>
 								<exclude>META-INF/</exclude>
-								<exclude>LICENSE.txt</exclude>
+								<exclude>LICENSE</exclude>
+								<exclude>jetty-dir.css</exclude>
+								<exclude>about.html</exclude>
 							</excludes>
 						</filter>
 					</filters>
