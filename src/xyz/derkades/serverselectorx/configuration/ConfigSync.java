@@ -18,6 +18,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
@@ -57,13 +59,13 @@ public class ConfigSync {
 
 	private boolean testConnectivity() {
 		try {
-			final HttpURLConnection conn = (HttpURLConnection) new URL(getBaseUrl("")).openConnection();
+			final HttpURLConnection conn = (HttpURLConnection) new URL(getBaseUrl("listfiles") + "?dir=.").openConnection();
 			conn.setConnectTimeout(1000);
 			conn.connect();
-			if (conn.getResponseCode() == 200) {
+			if (conn.getResponseCode() == HttpServletResponse.SC_OK) {
 				return true;
-			} else if (conn.getResponseCode() == 401) {
-				this.logger.warning("Invalid password");
+			} else if (conn.getResponseCode() == HttpServletResponse.SC_FORBIDDEN) {
+				this.logger.warning("Failed to sync files, is files-api enabled on the other server?");
 				return false;
 			} else {
 				this.logger.warning("Received bad request response code");
