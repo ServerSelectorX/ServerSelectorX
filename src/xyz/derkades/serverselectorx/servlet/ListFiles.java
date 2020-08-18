@@ -24,17 +24,15 @@ public class ListFiles extends HttpServlet {
 	@Override
 	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
 		final FileConfiguration api = Main.getConfigurationManager().api;
-		final Logger logger = Main.getPlugin().getLogger();
 		
-		final String dirName = request.getParameter("dir");
-		// Do not allow going outside of the plugin directory for security reasons
-		if (api.getBoolean("block-outside-directory", true) && dirName.contains("..")) {
-			logger.warning("Received request with dangerous directory name from " + request.getRemoteAddr());
-			logger.warning("Directory name: " + dirName);
-			logger.warning("If this is your doing and you want to allow it, have a look at config/api.yml");
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+		if (!api.getBoolean("files-api")) {
+			response.getWriter().println("Files API disabled");
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
+
+		final Logger logger = Main.getPlugin().getLogger();
+		final String dirName = request.getParameter("dir");
 
 		final File dir = new File(Main.getPlugin().getDataFolder(), dirName);
 		if (!dir.isDirectory()) {
