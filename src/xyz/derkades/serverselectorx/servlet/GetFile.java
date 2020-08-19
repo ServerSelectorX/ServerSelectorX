@@ -27,6 +27,8 @@ public class GetFile extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
+		
+		response.setStatus(HttpServletResponse.SC_OK);
 
 		final String fileName = request.getParameter("file");
 		final File file = new File(fileName);
