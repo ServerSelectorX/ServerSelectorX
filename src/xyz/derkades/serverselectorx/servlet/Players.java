@@ -27,6 +27,7 @@ public class Players extends HttpServlet {
 			writer.value(player.getName());
 		}
 		writer.endObject();
+		response.setStatus(HttpServletResponse.SC_OK);
 	}
 
 }

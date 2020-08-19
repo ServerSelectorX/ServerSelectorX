@@ -42,6 +42,8 @@ public class ListFiles extends HttpServlet {
 			return;
 		}
 		
+		response.setStatus(HttpServletResponse.SC_OK);
+		
 		final Stack<File> directories = new Stack<>();
 		directories.push(dir);
 		
