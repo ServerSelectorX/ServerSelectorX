@@ -1,6 +1,6 @@
 # ServerSelectorX Premium
 
-https://www.spigotmc.org/resources/serverselectorx.32853/
+https://www.spigotmc.org/resources/serverselectorx-premium.63855/
 
 Builds are available at https://ci.derkad.es/
 
