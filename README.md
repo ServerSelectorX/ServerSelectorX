@@ -1,5 +1,8 @@
-# ServerSelectorX
+# ServerSelectorX Premium
 
-***A modern server selector plugin with an advanced but simple config file.***
+https://www.spigotmc.org/resources/serverselectorx-premium.63855/
 
-https://www.spigotmc.org/resources/serverselectorx.32853/
+Builds are available at https://ci.derkad.es/
+
+* master (1.13+) = Premium
+* v2-legacy (<1.13) = Premium legacy
