@@ -1,5 +1,15 @@
-# ServerSelectorX
+# ServerSelectorX Free
 
-***A modern server selector plugin with an advanced but simple config file.***
+https://www.spigotmc.org/resources/serverselectorx-free.32853/
 
-https://www.spigotmc.org/resources/serverselectorx.32853/
+Beta builds are available at https://ci.derkad.es
+
+
+## Branches
+
+branch | name | minecraft version
+| - | - | -
+free | SSX Free | 1.13+
+free-legacy | SSX Free legacy | <1.13
+master | SSX Premium | 1.13+
+v2-legacy | SSX Premium legacy | <1.13
