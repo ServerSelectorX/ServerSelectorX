@@ -195,7 +195,10 @@ public class Main extends JavaPlugin {
     public static ItemBuilder getItemBuilderFromMaterialString(final Player player, final String materialString) {
 		ItemBuilder builder;
 
-		if (materialString.startsWith("head:")) {
+		if (materialString == null) {
+			player.sendMessage("Material is null, either specify a material or remove the material option completely");
+			return new ItemBuilder(Material.COBBLESTONE);
+		} else if (materialString.startsWith("head:")) {
 			final String owner = materialString.split(":")[1];
 			if (owner.equals("auto")) {
 				builder = new ItemBuilder(player);
