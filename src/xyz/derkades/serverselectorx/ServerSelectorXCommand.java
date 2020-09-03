@@ -52,6 +52,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 
 		if (args.length == 1 && args[0].equalsIgnoreCase("status")) {
 			sender.sendMessage("Using port " + Main.getConfigurationManager().api.getInt("port"));
+			sender.sendMessage("Listening on " + Main.getConfigurationManager().api.getString("host", "127.0.0.1 (no host specified in config)"));
 			
 			if (Server.getServers().isEmpty()){
 				sender.sendMessage("No data has been received from servers.");
