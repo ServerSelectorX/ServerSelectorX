@@ -21,6 +21,7 @@ public class ReloadCommand implements CommandExecutor {
 			}
 
 			Main.getConfigurationManager().reload();
+			PingServersBackground.generatePingJobs();
 			sender.sendMessage("The configuration file has been reloaded.");
 			return true;
 		}

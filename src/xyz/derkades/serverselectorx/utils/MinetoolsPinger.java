@@ -10,22 +10,26 @@ import javax.net.ssl.HttpsURLConnection;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 
-public class MinetoolsPinger implements ServerPinger {
+public class MinetoolsPinger extends ServerPinger {
 	
+	public MinetoolsPinger(final String serverId, final String ip, final int port, final int timeout) {
+		super(serverId, ip, port, timeout);
+	}
+
 	private static final String PING_API_URL = "https://api.minetools.eu/ping/%s/%s";
 
 	private boolean online;
-
 	private int onlinePlayers;
 	private int maximumPlayers;
 	private String motd;
-	private int responseTimeMillis;
-
-	public MinetoolsPinger(final String ip, final int port) throws PingException {
+//	private int responseTimeMillis;
+	
+	@Override
+	public void ping() {
 		String jsonString;
 
 		try {
-			final String url = String.format(PING_API_URL, ip, port);
+			final String url = String.format(PING_API_URL, this.ip, this.port);
 
 			final HttpsURLConnection connection = (HttpsURLConnection) new URL(url).openConnection();
 
@@ -42,16 +46,15 @@ public class MinetoolsPinger implements ServerPinger {
 			in.close();
 
 			if (connection.getResponseCode() != 200) {
-				throw new PingException("Error while pinging API, HTTP error code " + connection.getResponseCode());
+				throw new RuntimeException("Error while pinging API, HTTP error code " + connection.getResponseCode());
 			}
 
 			jsonString = response.toString();
 		} catch (final IOException e) {
-			throw new PingException(e);
+			throw new RuntimeException(e);
 		}
 
-		final JsonParser parser = new JsonParser();
-		final JsonObject json = parser.parse(jsonString).getAsJsonObject();
+		final JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
 
 		if (json.has("error")) {
 			this.online = false;
@@ -61,7 +64,7 @@ public class MinetoolsPinger implements ServerPinger {
 			this.onlinePlayers = players.get("online").getAsInt();
 			this.maximumPlayers = players.get("max").getAsInt();
 			this.motd = json.get("description").getAsString();
-			this.responseTimeMillis = (int) json.get("latency").getAsDouble();
+//			this.responseTimeMillis = (int) json.get("latency").getAsDouble();
 		}
 	}
 
@@ -77,29 +80,29 @@ public class MinetoolsPinger implements ServerPinger {
 
 	@Override
 	public int getMaximumPlayers() {
-		if (!this.online) {
-			throw new UnsupportedOperationException("Can't get maximum players of a server that is offline.");
-		}
+//		if (!this.online) {
+//			throw new UnsupportedOperationException("Can't get maximum players of a server that is offline.");
+//		}
 
 		return this.maximumPlayers;
 	}
 
 	@Override
 	public String getMotd() {
-		if (!this.online) {
-			throw new UnsupportedOperationException("Can't get motd of a server that is offline.");
-		}
+//		if (!this.online) {
+//			throw new UnsupportedOperationException("Can't get motd of a server that is offline.");
+//		}
 
 		return this.motd;
 	}
-
-	@Override
-	public int getResponseTimeMillis() {
-		if (!this.online) {
-			throw new UnsupportedOperationException("Can't get response time of a server that is offline.");
-		}
-
-		return this.responseTimeMillis;
-	}
+//
+//	@Override
+//	public int getResponseTimeMillis() {
+//		if (!this.online) {
+//			throw new UnsupportedOperationException("Can't get response time of a server that is offline.");
+//		}
+//
+//		return this.responseTimeMillis;
+//	}
 	
 }

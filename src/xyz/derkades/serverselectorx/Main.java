@@ -4,8 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -15,6 +13,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.serverselectorx.placeholders.Papi;
@@ -25,7 +24,7 @@ public class Main extends JavaPlugin {
 
 	public static Papi PLACEHOLDER_API;
 
-	public static Map<String, Map<String, Object>> SERVER_PLACEHOLDERS = new HashMap<>();
+//	public static Map<String, Map<String, Object>> SERVER_PLACEHOLDERS = new HashMap<>();
 
 	private static ConfigurationManager configurationManager;
 
@@ -34,6 +33,8 @@ public class Main extends JavaPlugin {
 	public static JavaPlugin getPlugin(){
 		return plugin;
 	}
+	
+	public static BukkitTask pingTask;
 
 	@Override
 	public void onEnable(){
@@ -50,7 +51,8 @@ public class Main extends JavaPlugin {
 		//Register messaging channels
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		new PingServersBackground().runTaskAsynchronously(this);
+		PingServersBackground.generatePingJobs();
+		pingTask = Bukkit.getScheduler().runTaskLaterAsynchronously(this, new PingServersBackground(), 40);
 
 		//Register command
 		this.getCommand("serverselectorx").setExecutor(new ReloadCommand());
@@ -69,6 +71,28 @@ public class Main extends JavaPlugin {
 		}
 
 		this.getLogger().info("Thank you for using ServerSelectorX. If you enjoy using this plugin, please consider buying the premium version. It has more features and placeholders update instantly. https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium");
+	}
+	
+	@Override
+	public void onDisable() {
+		if (pingTask != null) {
+			int attempts = 0;
+			while (!pingTask.isCancelled()) {
+				attempts++;
+				if (attempts > 30) {
+					getLogger().warning("Was not able to stop ping task, giving up. You may see a \"Nag author\" warning.");
+					break;
+				}
+				
+				pingTask.cancel();
+				
+				try {
+					Thread.sleep(100);
+				} catch (final InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	/**

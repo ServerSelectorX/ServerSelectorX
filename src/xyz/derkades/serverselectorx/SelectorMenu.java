@@ -1,7 +1,6 @@
 package xyz.derkades.serverselectorx;
 
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -19,6 +18,7 @@ import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.menu.IconMenu;
 import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
+import xyz.derkades.serverselectorx.utils.ServerPinger;
 
 public class SelectorMenu extends IconMenu {
 
@@ -49,19 +49,13 @@ public class SelectorMenu extends IconMenu {
 				final int port = section.getInt("port");
 				final String serverId = ip + port;
 
-				Map<String, Object> placeholders = null;
-				if (Main.SERVER_PLACEHOLDERS.containsKey(serverId)) {
-					placeholders = Main.SERVER_PLACEHOLDERS.get(serverId);
-					if (!(boolean) placeholders.get("isOnline")) {
-						placeholders = null;
-					}
-				}
+				final ServerPinger pinger = PingServersBackground.SERVER_INFO.get(serverId);
 
-				if (placeholders != null) {
-					final int online = (int) placeholders.get("online");
-					final int max = (int) placeholders.get("max");
-					final int ping = (int) placeholders.get("ping");
-					final String motd = (String) placeholders.get("motd");
+				// If server is online
+				if (pinger != null && pinger.isOnline()) {
+					final int online = pinger.getOnlinePlayers();
+					final int max = pinger.getMaximumPlayers();
+					final String motd = pinger.getMotd();
 
 					// Server is online, use online section
 					final ConfigurationSection onlineSection = section.getConfigurationSection("online");
@@ -79,10 +73,10 @@ public class SelectorMenu extends IconMenu {
 					}
 
 					// Replace placeholders in lore and name
-					name = name.replace("{online}", online + "").replace("{max}", max + "").replace("{motd}", motd).replace("{ping}", ping + "").replace("{player}", player.getName());
+					name = name.replace("{online}", online + "").replace("{max}", max + "").replace("{motd}", motd).replace("{player}", player.getName());
 					lore = ListUtils.replaceInStringList(lore,
-							new Object[] { "{online}", "{max}", "{motd}", "{ping}", "{player}" },
-							new Object[] { online, max, motd, ping, player.getName() });
+							new Object[] { "{online}", "{max}", "{motd}", "{player}" },
+							new Object[] { online, max, motd, player.getName() });
 				} else {
 					// Server is offline, use offline section
 					final ConfigurationSection offlineSection = section.getConfigurationSection("offline");
@@ -106,11 +100,7 @@ public class SelectorMenu extends IconMenu {
 				if (owner.equals("auto")) {
 					builder = new ItemBuilder(player.getName());
 				} else {
-					if (owner.length() > 16) {
-						builder = new ItemBuilder(Material.SKULL).damage(3).skullTexture(owner);
-					} else {
-						builder = new ItemBuilder(owner);
-					}
+					builder = new ItemBuilder(owner);
 				}
 			} else {
 				try {

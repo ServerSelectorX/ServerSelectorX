@@ -1,88 +1,79 @@
 package xyz.derkades.serverselectorx;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.scheduler.BukkitRunnable;
 
 import xyz.derkades.serverselectorx.utils.HolographicPinger;
 import xyz.derkades.serverselectorx.utils.MinetoolsPinger;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
 
-public class PingServersBackground extends BukkitRunnable {
+public class PingServersBackground implements Runnable {
 
+	public static final Map<String, ServerPinger> SERVER_INFO = new HashMap<>();
+	private static final List<ServerPinger> PING_JOBS = new ArrayList<>();
+	private static int pos = 0;
+	
 	@Override
 	public void run() {
-		while(true) {
-			try {
-				for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
-					// Ignore if config failed to load
-					if (config == null || config.getConfigurationSection("menu") == null) {
-						Main.getPlugin().getLogger().warning("Config is not loaded, stopping server ping thread.");
-						Main.getPlugin().getLogger().warning("There is probably a YAML syntax error in the menu configuration file. It may also be caused by using the /reload command, please avoid using this command.");
-						Main.getPlugin().getLogger().warning("Restart the server after fixing this issue.");
-						return;
-					}
-					
-					for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
-						// Don't overload the CPU or the API
-						try {
-							Thread.sleep(1000);
-						} catch (final InterruptedException e) {
-							e.printStackTrace();
-						}
+		if (PING_JOBS.isEmpty()) {
+			reschedule(10*20);
+			return;
+		}
+		
+		if (pos >= PING_JOBS.size()) {
+			pos = 0;
+			reschedule(5*20);
+			return;
+		}
 
-						final ConfigurationSection section = config.getConfigurationSection("menu." + key);
+		PING_JOBS.get(pos++).ping();
+		
+		reschedule(20);
+	}
 
-						if (!section.getBoolean("ping-server", false)) {
-							debug("Skipping, item " + key + " server pinging disabled. ");
-							continue;
-						}
+	public static void generatePingJobs() {
+		PING_JOBS.clear();
+		SERVER_INFO.clear();
+		for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
+			// Ignore if config failed to load
+			if (config == null || config.getConfigurationSection("menu") == null) {
+				Main.getPlugin().getLogger().warning("Config is not loaded, stopping server ping thread.");
+				Main.getPlugin().getLogger().warning("There is probably a YAML syntax error in the menu configuration "
+						+ "file. It can also be caused by using the /reload command, please avoid using this command.");
+				Main.getPlugin().getLogger().warning("Restart the server after fixing this issue.");
+				return;
+			}
+			
+			for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
+				final ConfigurationSection section = config.getConfigurationSection("menu." + key);
 
-						final String ip = section.getString("ip");
-						final int port = section.getInt("port");
-						final int timeout = section.getInt("ping-timeout", 100);
-						final String serverId = ip + port;
-
-						debug(String.format("Pinging item %s with address %s:%s", key, ip, port));
-
-						final ServerPinger pinger = Main.getPlugin().getConfig().getBoolean("external-pinger", false) ?
-								new MinetoolsPinger(ip, port) :
-								new HolographicPinger(ip, port, timeout);
-
-						debug("Online: " + pinger.isOnline());
-
-						final Map<String, Object> serverInfo = new HashMap<>();
-						serverInfo.put("isOnline", pinger.isOnline());
-						if (pinger.isOnline()) {
-							serverInfo.put("online", pinger.getOnlinePlayers());
-							serverInfo.put("max", pinger.getMaximumPlayers());
-							serverInfo.put("motd", pinger.getMotd());
-							serverInfo.put("ping", pinger.getResponseTimeMillis());
-						}
-
-						Main.SERVER_PLACEHOLDERS.put(serverId, serverInfo);
-					}
+				if (!section.getBoolean("ping-server", false)) {
+					continue;
 				}
-			} catch (final Exception e) {
-				// So the loop doesn't break if an error occurs
-				// Print the error, sleep, try again.
-				e.printStackTrace();
-				try {
-					Thread.sleep(5000);
-				} catch (final InterruptedException e2) {
-					e2.printStackTrace();
-				}
+
+				final String ip = section.getString("ip");
+				final int port = section.getInt("port");
+				final int timeout = Main.getConfigurationManager().getConfig().getInt("ping-timeout", 1000);
+				final String serverId = ip + port;
+
+				final ServerPinger pinger = Main.getPlugin().getConfig().getBoolean("external-pinger", false) ?
+						new MinetoolsPinger(serverId, ip, port, timeout) :
+						new HolographicPinger(serverId, ip, port, timeout);
+				
+				PING_JOBS.add(pinger);
+				SERVER_INFO.put(serverId, pinger);
 			}
 		}
 	}
-
-	private void debug(final String message) {
-		if (Main.getPlugin().getConfig().getBoolean("ping-debug", false)) {
-			Main.getPlugin().getLogger().info("[Server Pinging] " + message);
-		}
+	
+	private void reschedule(final int delay) {
+		Main.pingTask = Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), this, delay);
 	}
 
 }
