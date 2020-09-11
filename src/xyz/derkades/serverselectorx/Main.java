@@ -4,8 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
@@ -26,7 +24,7 @@ public class Main extends JavaPlugin {
 
 	public static Papi PLACEHOLDER_API;
 
-	public static Map<String, Map<String, Object>> SERVER_PLACEHOLDERS = new HashMap<>();
+//	public static Map<String, Map<String, Object>> SERVER_PLACEHOLDERS = new HashMap<>();
 
 	private static ConfigurationManager configurationManager;
 
@@ -36,7 +34,7 @@ public class Main extends JavaPlugin {
 		return plugin;
 	}
 	
-	private BukkitTask pingTask;
+	public static BukkitTask pingTask;
 
 	@Override
 	public void onEnable(){
@@ -54,7 +52,8 @@ public class Main extends JavaPlugin {
 		//Register messaging channels
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		this.pingTask = new PingServersBackground().runTaskAsynchronously(this);
+		PingServersBackground.generatePingJobs();
+		pingTask = Bukkit.getScheduler().runTaskLaterAsynchronously(this, new PingServersBackground(), 40);
 
 		//Register command
 		this.getCommand("serverselectorx").setExecutor(new ReloadCommand());
@@ -77,15 +76,16 @@ public class Main extends JavaPlugin {
 	
 	@Override
 	public void onDisable() {
-		if (this.pingTask != null) {
+		if (pingTask != null) {
 			int attempts = 0;
-			while (!this.pingTask.isCancelled()) {
+			while (!pingTask.isCancelled()) {
 				attempts++;
 				if (attempts > 30) {
+					getLogger().warning("Was not able to stop ping task, giving up. You may see a \"Nag author\" warning.");
 					break;
 				}
 				
-				this.pingTask.cancel();
+				pingTask.cancel();
 				
 				try {
 					Thread.sleep(100);

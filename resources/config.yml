@@ -14,6 +14,4 @@ cancel-item-move: false
 # you will encounter issues if minetools temporarily or permanently stops working.
 external-pinger: false
 
-ping-timeout: 500
-
-ping-debug: false
+ping-timeout: 1500
