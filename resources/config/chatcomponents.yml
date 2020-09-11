@@ -1,0 +1,14 @@
+# For very advanced chat messages using the Spigot ChatComponent API.
+# Add messages below, then use then using the action 'chatcomponent:<messagename>`
+# Documentation here: https://github.com/Derkades/Derkutils/wiki/Chat-component-YAML
+
+examplemessage:
+  - text: 'This part is blue and bold. '
+    bold: true
+    color: BLUE
+  - text: 'This part has a hover effect and a link.'
+    hover: 'Click me!'
+    url: 'https://example.com'
+    underlined: true
+  - text: 'Click me to run a command'
+    run_command: 'say hi'
