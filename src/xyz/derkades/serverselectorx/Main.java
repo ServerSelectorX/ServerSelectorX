@@ -15,6 +15,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitTask;
 
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.serverselectorx.placeholders.Papi;
@@ -34,6 +35,8 @@ public class Main extends JavaPlugin {
 	public static JavaPlugin getPlugin(){
 		return plugin;
 	}
+	
+	private BukkitTask pingTask;
 
 	@Override
 	public void onEnable(){
@@ -51,7 +54,7 @@ public class Main extends JavaPlugin {
 		//Register messaging channels
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		new PingServersBackground().runTaskAsynchronously(this);
+		this.pingTask = new PingServersBackground().runTaskAsynchronously(this);
 
 		//Register command
 		this.getCommand("serverselectorx").setExecutor(new ReloadCommand());
@@ -70,6 +73,27 @@ public class Main extends JavaPlugin {
 		}
 
 		this.getLogger().info("Thank you for using ServerSelectorX. If you enjoy using this plugin, please consider buying the premium version. It has more features and placeholders update instantly. https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium");
+	}
+	
+	@Override
+	public void onDisable() {
+		if (this.pingTask != null) {
+			int attempts = 0;
+			while (!this.pingTask.isCancelled()) {
+				attempts++;
+				if (attempts > 30) {
+					break;
+				}
+				
+				this.pingTask.cancel();
+				
+				try {
+					Thread.sleep(100);
+				} catch (final InterruptedException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 	}
 
 	/**
