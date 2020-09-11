@@ -76,21 +76,14 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onDisable() {
 		if (pingTask != null) {
-			int attempts = 0;
-			while (!pingTask.isCancelled()) {
-				attempts++;
-				if (attempts > 30) {
-					getLogger().warning("Was not able to stop ping task, giving up. You may see a \"Nag author\" warning.");
-					break;
-				}
-				
-				pingTask.cancel();
-				
-				try {
-					Thread.sleep(100);
-				} catch (final InterruptedException e) {
-					e.printStackTrace();
-				}
+			// Unfortunately not possible to wait until ping task is cancelled,
+			// isCancelled() is missing in 1.8
+			pingTask.cancel();
+
+			try {
+				Thread.sleep(200);
+			} catch (final InterruptedException e) {
+				e.printStackTrace();
 			}
 		}
 	}
