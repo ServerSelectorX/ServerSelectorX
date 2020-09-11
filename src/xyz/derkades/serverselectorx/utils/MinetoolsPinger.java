@@ -50,8 +50,7 @@ public class MinetoolsPinger implements ServerPinger {
 			throw new PingException(e);
 		}
 
-		final JsonParser parser = new JsonParser();
-		final JsonObject json = parser.parse(jsonString).getAsJsonObject();
+		final JsonObject json = JsonParser.parseString(jsonString).getAsJsonObject();
 
 		if (json.has("error")) {
 			this.online = false;
