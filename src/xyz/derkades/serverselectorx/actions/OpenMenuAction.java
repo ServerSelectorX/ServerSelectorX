@@ -2,6 +2,7 @@ package xyz.derkades.serverselectorx.actions;
 
 import java.util.Map;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
@@ -24,7 +25,7 @@ public class OpenMenuAction extends Action {
 
 		final FileConfiguration config = menus.get(value);
 
-		new Menu(player, config, value);
+		Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> new Menu(player, config, value), 0);
 		return false;
 	}
 
