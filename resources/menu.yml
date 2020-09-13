@@ -60,7 +60,7 @@ menu:
 
   # Example of head items. You can use a UUID instead of auto if you want a specific player head.
   3:
-    action:
+    actions:
      - 'message:&8This is a message'
      - 'close'
     material: 'head:auto'

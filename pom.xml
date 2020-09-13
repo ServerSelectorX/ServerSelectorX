@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>xyz.derkades</groupId>
 	<artifactId>ServerSelectorX</artifactId>
-	<version>Premium-2.1.2-legacy</version>
+	<version>Premium-2.1.3-beta-legacy</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

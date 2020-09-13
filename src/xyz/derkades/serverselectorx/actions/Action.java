@@ -10,6 +10,7 @@ public abstract class Action {
 
 	private static final Action[] DEFAULT_ACTIONS = {
 			new AddEffectAction(),
+			new ChatComponent(),
 			new CloseAction(),
 			new ConsoleCommandAction(),
 			new DelayAction(),
