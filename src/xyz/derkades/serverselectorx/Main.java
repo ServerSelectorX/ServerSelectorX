@@ -225,6 +225,7 @@ public class Main extends JavaPlugin {
 				material = Material.valueOf(materialString);
 			} catch (final IllegalArgumentException e) {
 				player.sendMessage("Invalid item name '" + materialString + "'");
+				player.sendMessage("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Item-names");
 				return new ItemBuilder(Material.COBBLESTONE);
 			}
 
