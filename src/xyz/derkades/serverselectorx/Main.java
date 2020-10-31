@@ -171,7 +171,7 @@ public class Main extends JavaPlugin {
 		}
 		
 		if (section.isInt("durability")) {
-			builder.damage(section.getInt("durability"));
+			player.sendMessage("'durability' option is not supported in the legacy version");
 		}
 
 		if (section.isInt("data")) {
