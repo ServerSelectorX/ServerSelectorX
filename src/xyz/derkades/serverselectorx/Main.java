@@ -171,6 +171,10 @@ public class Main extends JavaPlugin {
 		if (section.isInt("amount")) {
 			builder.amount(section.getInt("amount"));
 		}
+		
+		if (section.isInt("durability")) {
+			builder.damage(section.getInt("durability"));
+		}
 
 		if (section.isConfigurationSection("nbt")) {
 			final NBTItem nbt = new NBTItem(builder.create());
