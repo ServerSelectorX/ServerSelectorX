@@ -169,6 +169,10 @@ public class Main extends JavaPlugin {
 		if (section.isInt("amount")) {
 			builder.amount(section.getInt("amount"));
 		}
+		
+		if (section.isInt("durability")) {
+			builder.damage(section.getInt("durability"));
+		}
 
 		if (section.isInt("data")) {
 			final int data = section.getInt("data");
@@ -223,6 +227,7 @@ public class Main extends JavaPlugin {
 				material = Material.valueOf(materialString);
 			} catch (final IllegalArgumentException e) {
 				player.sendMessage("Invalid item name '" + materialString + "'");
+				player.sendMessage("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Item-names");
 				return new ItemBuilder(Material.COBBLESTONE);
 			}
 

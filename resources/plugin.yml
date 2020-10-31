@@ -20,5 +20,5 @@ commands:
       /ssx commands - List names of loaded commands
       /ssx lagdebug - Enable lag debug mode
       /ssx itemdebug - Enable item debug mode
-      /ssx sync - Force config sync (even if disabled)
+      /ssx sync - Force config sync DO NOT USE BEFORE READING sync.yml
       /ssx synclist - Get a list of files that would be synced by config sync
