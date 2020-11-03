@@ -22,7 +22,6 @@ public class MinetoolsPinger extends ServerPinger {
 	private int onlinePlayers;
 	private int maximumPlayers;
 	private String motd;
-//	private int responseTimeMillis;
 	
 	@Override
 	public void ping() {
@@ -64,7 +63,6 @@ public class MinetoolsPinger extends ServerPinger {
 			this.onlinePlayers = players.get("online").getAsInt();
 			this.maximumPlayers = players.get("max").getAsInt();
 			this.motd = json.get("description").getAsString();
-//			this.responseTimeMillis = (int) json.get("latency").getAsDouble();
 		}
 	}
 
@@ -80,29 +78,12 @@ public class MinetoolsPinger extends ServerPinger {
 
 	@Override
 	public int getMaximumPlayers() {
-//		if (!this.online) {
-//			throw new UnsupportedOperationException("Can't get maximum players of a server that is offline.");
-//		}
-
 		return this.maximumPlayers;
 	}
 
 	@Override
 	public String getMotd() {
-//		if (!this.online) {
-//			throw new UnsupportedOperationException("Can't get motd of a server that is offline.");
-//		}
-
 		return this.motd;
 	}
-//
-//	@Override
-//	public int getResponseTimeMillis() {
-//		if (!this.online) {
-//			throw new UnsupportedOperationException("Can't get response time of a server that is offline.");
-//		}
-//
-//		return this.responseTimeMillis;
-//	}
 	
 }
