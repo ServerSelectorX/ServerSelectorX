@@ -16,6 +16,7 @@ import net.md_5.bungee.api.chat.ComponentBuilder;
 import xyz.derkades.derkutils.ListUtils;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
+import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.derkutils.bukkit.menu.IconMenu;
 import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
@@ -118,8 +119,8 @@ public class SelectorMenu extends IconMenu {
 			}
 
 			builder.amount(amount);
-			builder.name(Main.PLACEHOLDER_API.parsePlaceholders(player, name));
-			builder.lore(Main.PLACEHOLDER_API.parsePlaceholders(player, lore));
+			builder.name(PlaceholderUtil.parsePapiPlaceholders(player, name));
+			builder.lore(PlaceholderUtil.parsePapiPlaceholders(player, lore));
 
 			final ItemStack item = builder.create();
 
@@ -166,12 +167,12 @@ public class SelectorMenu extends IconMenu {
 			final String command = action.substring(4);
 			// delay required by some commands that open menus
 			Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
-				Bukkit.dispatchCommand(player, Main.PLACEHOLDER_API.parsePlaceholders(player, command));
+				Bukkit.dispatchCommand(player, PlaceholderUtil.parsePapiPlaceholders(player, command));
 			}, 2);
 			return true;
 		} else if (action.startsWith("consolecmd:")) {
 			final String command = action.substring(11).replace("{player}", player.getName());
-			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), Main.PLACEHOLDER_API.parsePlaceholders(player, command));
+			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), PlaceholderUtil.parsePapiPlaceholders(player, command));
 			return true;
 		} else if (action.startsWith("sel:")){ // Open selector
 			final String configName = action.substring(4);
@@ -199,7 +200,7 @@ public class SelectorMenu extends IconMenu {
 			return true;
 		} else if (action.startsWith("msg:")){ // Send message
 			final String message = action.substring(4);
-			player.sendMessage(Main.PLACEHOLDER_API.parsePlaceholders(player, message));
+			player.sendMessage(PlaceholderUtil.parsePapiPlaceholders(player, message));
 			return true;
 		} else if (action.equals("close")) {
 			return true; // Return true = close

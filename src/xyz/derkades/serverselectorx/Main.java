@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.Map.Entry;
 
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
@@ -16,15 +15,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import xyz.derkades.derkutils.bukkit.Colors;
-import xyz.derkades.serverselectorx.placeholders.Papi;
-import xyz.derkades.serverselectorx.placeholders.PapiDisabled;
-import xyz.derkades.serverselectorx.placeholders.PapiEnabled;
 
 public class Main extends JavaPlugin {
-
-	public static Papi PLACEHOLDER_API;
-
-//	public static Map<String, Map<String, Object>> SERVER_PLACEHOLDERS = new HashMap<>();
 
 	private static ConfigurationManager configurationManager;
 
@@ -63,14 +55,7 @@ public class Main extends JavaPlugin {
 		//Register custom selector commands
 		this.registerCommands();
 
-		//Check if PlaceHolderAPI is installed
-		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")){
-			Main.PLACEHOLDER_API = new PapiEnabled();
-		} else {
-			Main.PLACEHOLDER_API = new PapiDisabled();
-		}
-
-		this.getLogger().info("Thank you for using ServerSelectorX. If you enjoy using this plugin, please consider buying the premium version. It has more features and placeholders update instantly. https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium");
+		this.getLogger().info("Thank you for using ServerSelectorX. If you enjoy using this plugin, consider buying the premium version for more features: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium");
 	}
 	
 	@Override
@@ -98,14 +83,14 @@ public class Main extends JavaPlugin {
 			bukkitCommandMap.setAccessible(true);
 			final CommandMap commandMap = (CommandMap) bukkitCommandMap.get(Bukkit.getServer());
 
-			for (final Entry<String, FileConfiguration> config : configurationManager.files.entrySet()){
-				final String commandName = config.getValue().getString("command");
+			for (final String configName : configurationManager.list()) {
+				final FileConfiguration config = configurationManager.getByName(configName);
+				
+				final String commandName = config.getString("command");
 
 				if (commandName == null || commandName.equalsIgnoreCase("none")) {
 					continue;
 				}
-				
-				final String configName = config.getKey();
 
 				commandMap.register("ssx-custom", new Command(commandName){
 
