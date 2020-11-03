@@ -26,7 +26,7 @@ public class ConfigurationManager {
 	}
 	
 	public String[] list() {
-		return this.files.keySet().toArray(String[]::new);
+		return this.files.keySet().toArray(new String[0]);
 	}
 	
 	public FileConfiguration getByName(final String name) {
