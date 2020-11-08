@@ -85,13 +85,19 @@ public class SelectorMenu extends IconMenu {
 					lore = offlineSection.getStringList("lore");
 				}
 			}
-
-			ItemBuilder builder;
-
+			
 			if (materialString == null) {
 				player.sendMessage("Missing item option for item " + key);
 				return;
 			}
+			
+			materialString = materialString.toUpperCase();
+			
+			if (materialString.equals("AIR")) {
+				return;
+			}
+
+			ItemBuilder builder;
 
 			if (materialString.startsWith("head:")) {
 				final String owner = materialString.split(":")[1];
