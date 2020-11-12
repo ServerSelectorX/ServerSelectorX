@@ -11,6 +11,7 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 public class SelectorOpenListener implements Listener {
 
+	@SuppressWarnings("deprecation")
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onInteract(final PlayerInteractEvent event){
 		if (event.getAction() == Action.PHYSICAL) {
