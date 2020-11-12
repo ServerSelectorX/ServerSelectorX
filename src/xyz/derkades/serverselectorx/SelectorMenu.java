@@ -58,12 +58,19 @@ public class SelectorMenu extends IconMenu {
 					final int max = pinger.getMaximumPlayers();
 					final String motd = pinger.getMotd();
 
-					// Server is online, use online section
-					final ConfigurationSection onlineSection = section.getConfigurationSection("online");
-					materialString = onlineSection.getString("item");
-					name = onlineSection.getString("name");
-					lore = onlineSection.getStringList("lore");
-					data = onlineSection.getInt("data");
+					ConfigurationSection subSection = section.getConfigurationSection("online");
+
+					if (section.isConfigurationSection("dynamic")) {
+						final ConfigurationSection dyn = section.getConfigurationSection("dynamic");
+						if (dyn.isConfigurationSection(motd)) {
+							subSection = dyn.getConfigurationSection(motd);
+						}
+					}
+
+					materialString = subSection.getString("item");
+					name = subSection.getString("name");
+					lore = subSection.getStringList("lore");
+					data = subSection.getInt("data");
 
 					if (section.getBoolean("change-item-count", false)) {
 						amount = online;
@@ -89,12 +96,18 @@ public class SelectorMenu extends IconMenu {
 				}
 			}
 
-			ItemBuilder builder;
-
 			if (materialString == null) {
 				player.sendMessage("Missing item option for item " + key);
 				return;
 			}
+
+			materialString = materialString.toUpperCase();
+
+			if (materialString.equals("AIR")) {
+				return;
+			}
+
+			ItemBuilder builder;
 
 			if (materialString.startsWith("head:")) {
 				final String owner = materialString.split(":")[1];
