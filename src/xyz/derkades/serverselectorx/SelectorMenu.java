@@ -56,12 +56,19 @@ public class SelectorMenu extends IconMenu {
 					final int online = pinger.getOnlinePlayers();
 					final int max = pinger.getMaximumPlayers();
 					final String motd = pinger.getMotd();
+					
+					ConfigurationSection subSection = section.getConfigurationSection("online");
+					
+					if (section.isConfigurationSection("dynamic")) {
+						final ConfigurationSection dyn = section.getConfigurationSection("dynamic");
+						if (dyn.isConfigurationSection(motd)) {
+							subSection = dyn.getConfigurationSection(motd);
+						}
+					}
 
-					// Server is online, use online section
-					final ConfigurationSection onlineSection = section.getConfigurationSection("online");
-					materialString = onlineSection.getString("item");
-					name = onlineSection.getString("name");
-					lore = onlineSection.getStringList("lore");
+					materialString = subSection.getString("item");
+					name = subSection.getString("name");
+					lore = subSection.getStringList("lore");
 
 					if (section.getBoolean("change-item-count", false)) {
 						amount = online;
