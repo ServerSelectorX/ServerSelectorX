@@ -1,11 +1,9 @@
 package xyz.derkades.serverselectorx;
 
 import java.util.List;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Material;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -104,32 +102,7 @@ public class SelectorMenu extends IconMenu {
 				return;
 			}
 
-			ItemBuilder builder;
-
-			if (materialString.startsWith("head:")) {
-				final String owner = materialString.split(":")[1];
-				if (owner.equals("auto")) {
-					builder = new ItemBuilder(player);
-				} else {
-					try {
-						final UUID uuid = UUID.fromString(owner);
-						builder = new ItemBuilder(Bukkit.getOfflinePlayer(uuid));
-					} catch (final IllegalArgumentException e) {
-						// Invalid UUID
-						player.sendMessage("Invalid player head UUID for item " + key);
-						return;
-					}
-				}
-			} else {
-				try {
-					final Material material = Material.valueOf(materialString);
-					builder = new ItemBuilder(material);
-				} catch (final IllegalArgumentException e) {
-					player.sendMessage("Invalid item name " + materialString);
-					player.sendMessage("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Item-names");
-					return;
-				}
-			}
+			final ItemBuilder builder = Main.getItemFromMaterialString(player, materialString);
 
 			builder.amount(amount);
 			builder.name(PlaceholderUtil.parsePapiPlaceholders(player, name));

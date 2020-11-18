@@ -1,6 +1,5 @@
 package xyz.derkades.serverselectorx;
 
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -23,16 +22,9 @@ public class OnJoinListener implements Listener {
 
 			final Player player = event.getPlayer();
 
-			final String itemName = config.getString("item");
+			final String materialString = config.getString("item");
 
-			final Material material = Material.getMaterial(itemName);
-
-			if (material == null) {
-				player.sendMessage("Invalid item name: '" + itemName + "'");
-				return;
-			}
-
-			final ItemBuilder builder = new ItemBuilder(material)
+			final ItemBuilder builder = Main.getItemFromMaterialString(player, materialString)
 					.coloredName(config.getString("item-name", "error"));
 
 			builder.coloredLore(config.getStringList("item-lore"));
