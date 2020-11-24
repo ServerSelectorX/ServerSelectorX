@@ -10,9 +10,8 @@ cancel-item-drop: false
 # this includes swapping items between hands for 1.9+)
 cancel-item-move: false
 
-# Should cancel item move only cancel it if its from a players inventory?
-cancel-item-move-player-only: false
-
+# Apply 'cancel-item-drop' and 'cancel-item-move' to SSX items only
+ssx-items-only: false
 
 # -------------------- Advanced -------------------- #
 
@@ -27,3 +26,7 @@ cancel-click-event: false
 # When this is set to true, players will no longer be able to open the server selector if plugins
 # such as WorldGuard don't allow it.
 ignore-cancelled: false
+
+# Should cancel item move only cancel it if its from a players inventory?
+# This will allow moving items in chests etc.
+cancel-item-move-player-only: false
