@@ -23,10 +23,10 @@ public class ItemMoveDropCancelListener implements Listener {
 			Bukkit.getPluginManager().registerEvents(new Listener() {
 				@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 				public void onDrop(final PlayerDropItemEvent event){
-					if (!event.getPlayer().hasPermission("ssx.drop")) {
-//						event.getItemDrop().setItemStack(null);
-						event.getItemDrop().remove();
+					if (!event.getPlayer().hasPermission("ssx.drop") &&
+							isSsxItem(event.getItemDrop().getItemStack())) {
 						event.setCancelled(true);
+						event.getItemDrop().remove();
 					}
 				}
 			}, Main.getPlugin());
