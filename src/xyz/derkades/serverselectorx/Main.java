@@ -14,6 +14,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
@@ -23,6 +24,7 @@ import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
 import xyz.derkades.serverselectorx.configuration.ConfigSync;
 import xyz.derkades.serverselectorx.configuration.ConfigurationManager;
 import xyz.derkades.serverselectorx.placeholders.PapiExpansionRegistrar;
+import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class Main extends JavaPlugin {
 
@@ -44,7 +46,7 @@ public class Main extends JavaPlugin {
 
 	public static WebServer server;
 	
-	public static final Gson GSON = new Gson();
+	public static final Gson GSON = new GsonBuilder().registerTypeAdapter(Server.class, Server.SERIALIZER).create();
 
 	public static Main getPlugin(){
 		return plugin;

@@ -4,9 +4,26 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializer;
+
 import xyz.derkades.serverselectorx.Main;
 
 public class Server {
+	
+	public static final JsonSerializer<Server> SERIALIZER = (src, typeOfSrc, context) -> {
+		final JsonObject json = new JsonObject();
+		json.addProperty("name", src.getName());
+		json.addProperty("online", src.isOnline());
+		if (src.placeholders == null) {
+			json.add("placeholders", Server.EMPTY_OBJECT);
+		} else {
+			json.add("placeholders", Main.GSON.toJsonTree(src.placeholders));
+		}
+		return json;
+	};
+	
+	private static final JsonObject EMPTY_OBJECT = new JsonObject();
 	
 //	private static final GlobalPlaceholder ONLINE_0 = new GlobalPlaceholder("online", "0");
 //	private static final GlobalPlaceholder MAX_0 = new GlobalPlaceholder("max", "0");
