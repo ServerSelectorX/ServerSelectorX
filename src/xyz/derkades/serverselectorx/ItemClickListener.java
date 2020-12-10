@@ -3,6 +3,7 @@ package xyz.derkades.serverselectorx;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -22,6 +23,8 @@ public class ItemClickListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onInteract(final PlayerInteractEvent event){
+		Bukkit.broadcastMessage("CLICK DEBUG action=" + event.getAction().toString() + " hand=" + event.getHand() + " cancelled=" + event.isCancelled());
+		
 		if (event.getAction() == Action.PHYSICAL) {
 			return;
 		}
