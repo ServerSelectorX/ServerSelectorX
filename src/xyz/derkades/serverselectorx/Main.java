@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.lang.reflect.Field;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
@@ -15,6 +16,7 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
 import xyz.derkades.derkutils.bukkit.Colors;
+import xyz.derkades.derkutils.bukkit.ItemBuilder;
 
 public class Main extends JavaPlugin {
 
@@ -118,6 +120,26 @@ public class Main extends JavaPlugin {
 
 	public static ConfigurationManager getConfigurationManager() {
 		return configurationManager;
+	}
+	
+	static ItemBuilder getItemFromMaterialString(final Player player, final String materialString) {
+		if (materialString.startsWith("head:")) {
+			final String owner = materialString.split(":")[1];
+			if (owner.equals("auto")) {
+				return new ItemBuilder(player.getName());
+			} else {
+				return new ItemBuilder(owner);
+			}
+		} else {
+			try {
+				final Material material = Material.valueOf(materialString);
+				return new ItemBuilder(material);
+			} catch (final IllegalArgumentException e) {
+				player.sendMessage("Invalid item name " + materialString);
+				player.sendMessage("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Item-names");
+				return new ItemBuilder(Material.COBBLESTONE);
+			}
+		}
 	}
 
 	public static void teleportPlayerToServer(final Player player, final String server){
