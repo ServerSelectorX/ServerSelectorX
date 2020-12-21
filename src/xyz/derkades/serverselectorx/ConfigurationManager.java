@@ -59,6 +59,7 @@ public class ConfigurationManager {
 
 		this.files = Arrays.stream(MENU_DIR.list())
 				.filter(s -> s.endsWith(".yml"))
+				.map(s -> MENU_DIR.getPath() + "/" + s)
 				.map(File::new)
 				.collect(Collectors.toMap(f -> f.getName().replace(".yml", ""),
 						YamlConfiguration::loadConfiguration));
