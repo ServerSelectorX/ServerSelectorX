@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.menu.IconMenu;
@@ -92,8 +93,9 @@ public class Menu extends IconMenu {
 			
 			final ConfigurationSection section = this.config.getConfigurationSection("menu." + key);
 
-			List<String> actions;
-			List<String> rightActions;
+//			List<String> actions;
+//			List<String> rightActions;
+			ConfigurationSection chosenSection;
 			ItemBuilder builder;
 
 			if (section.contains("permission") && !this.player.hasPermission(section.getString("permission"))) {
@@ -115,8 +117,9 @@ public class Menu extends IconMenu {
 				}
 
 				builder = Main.getItemBuilderFromItemSection(this.player, noPermissionSection);
-				actions = noPermissionSection.getStringList("actions");
-				rightActions = noPermissionSection.getStringList("actions-right");
+//				actions = noPermissionSection.getStringList("actions");
+//				rightActions = noPermissionSection.getStringList("actions-right");
+				chosenSection = noPermissionSection;
 			} else {
 				// Player has permission, use other sections
 				if (section.contains("connector")) {
@@ -127,16 +130,18 @@ public class Menu extends IconMenu {
 					if (server.isOnline()) {
 						// to avoid "may not have been initialized" errors later
 						builder = null;
-						actions = null;
-						rightActions = null;
+//						actions = null;
+//						rightActions = null;
+						chosenSection = null;
 
 						if (Main.getConfigurationManager().misc.contains("server-name") &&
 								serverName.equalsIgnoreCase(Main.getConfigurationManager().misc.getString("server-name")) &&
 								section.isConfigurationSection("connected")) {
 							final ConfigurationSection connectedSection = section.getConfigurationSection("connected");
 							builder = Main.getItemBuilderFromItemSection(this.player, connectedSection);
-							actions = connectedSection.getStringList("actions");
-							rightActions = connectedSection.getStringList("actions-right");
+//							actions = connectedSection.getStringList("actions");
+//							rightActions = connectedSection.getStringList("actions-right");
+							chosenSection = connectedSection;
 						} else {
 							if (section.contains("dynamic")) {
 								for (final String dynamicKey : section.getConfigurationSection("dynamic").getKeys(false)) {
@@ -191,8 +196,9 @@ public class Menu extends IconMenu {
 										}
 
 										builder = Main.getItemBuilderFromItemSection(this.player, dynamicSection);
-										actions = dynamicSection.getStringList("actions");
-										rightActions = dynamicSection.getStringList("actions-right");
+//										actions = dynamicSection.getStringList("actions");
+//										rightActions = dynamicSection.getStringList("actions-right");
+										chosenSection = dynamicSection;
 										break;
 									}
 								}
@@ -218,8 +224,9 @@ public class Menu extends IconMenu {
 								}
 
 								builder = Main.getItemBuilderFromItemSection(this.player, onlineSection);
-								actions = onlineSection.getStringList("actions");
-								rightActions = onlineSection.getStringList("actions-right");
+//								actions = onlineSection.getStringList("actions");
+//								rightActions = onlineSection.getStringList("actions-right");
+								chosenSection = onlineSection;
 							}
 						}
 
@@ -265,8 +272,9 @@ public class Menu extends IconMenu {
 						}
 
 						builder = Main.getItemBuilderFromItemSection(this.player, offlineSection);
-						actions = offlineSection.getStringList("actions");
-						rightActions = offlineSection.getStringList("actions-right");
+//						actions = offlineSection.getStringList("actions");
+//						rightActions = offlineSection.getStringList("actions-right");
+						chosenSection = offlineSection;
 					}
 				} else {
 					// Simple section
@@ -282,8 +290,9 @@ public class Menu extends IconMenu {
 					}
 
 					builder = Main.getItemBuilderFromItemSection(this.player, section);
-					actions = section.getStringList("actions");
-					rightActions = section.getStringList("actions-right");
+//					actions = section.getStringList("actions");
+//					rightActions = section.getStringList("actions-right");
+					chosenSection = section;
 				}
 			}
 
@@ -293,9 +302,20 @@ public class Menu extends IconMenu {
 
 			// Add actions to item as NBT
 			final NBTItem nbt = new NBTItem(builder.create());
-			nbt.setObject("SSXActions", actions);
-			nbt.setObject("SSXActionsRight", rightActions);
-
+			nbt.setObject("SSXActions", chosenSection.getStringList("actions"));
+			nbt.setObject("SSXActionsRight", chosenSection.getStringList("actions-right"));
+			
+			if (chosenSection.contains("cooldown")) {
+				if (!chosenSection.isList("cooldown-actions")) {
+					this.player.sendMessage("When using the 'cooldown' option, a list of actions 'cooldown-actions' must also be specified.");
+					return;
+				}
+				
+				nbt.setInteger("SSXCooldownTime", (int) (chosenSection.getDouble("cooldown") * 1000));
+				nbt.setString("SSXCooldownId", this.player.getName() + this.getInventoryView().getTitle() + key);
+				nbt.setObject("SSXCooldownActions", chosenSection.getStringList("cooldown-actions"));
+			}
+			
 			final ItemStack item = nbt.getItem();
 			
 			if (key.equals("fill") || key.equals("-1")) { // -1 for backwards compatibility
@@ -337,6 +357,18 @@ public class Menu extends IconMenu {
 		final List<String> actions = nbt.getObject("SSXActions", List.class);
 		@SuppressWarnings("unchecked")
 		final List<String> rightActions = nbt.getObject("SSXActionsRight", List.class);
+		
+		if (nbt.hasKey("SSXCooldownTime")) {
+			final int cooldownTime = nbt.getInteger("SSXCooldownTime");
+			final String cooldownId = nbt.getString("SSXCooldownId");
+			if (Cooldown.getCooldown(cooldownId) > 0) {
+				@SuppressWarnings("unchecked")
+				final List<String> cooldownActions = nbt.getObject("SSXCooldownActions", List.class);
+				return Action.runActions(player, cooldownActions);
+			} else {
+				Cooldown.addCooldown(cooldownId, cooldownTime);
+			}
+		}
 		
 		if (event.getClickType() == ClickType.RIGHT || event.getClickType() == ClickType.SHIFT_RIGHT) {
 			if (rightActions.isEmpty()) {
