@@ -66,6 +66,10 @@
 							<shadedPattern>xyz.derkades.serverselectorx.lib.commons-io</shadedPattern>
 						</relocation>
 						<relocation>
+							<pattern>org.apache.commons.lang3</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.commons-lang3</shadedPattern>
+						</relocation>
+						<relocation>
 							<pattern>xyz.derkades.derkutils</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.lib.derkutils</shadedPattern>
 						</relocation>
