@@ -68,8 +68,7 @@ public class PingResponse
     			this.motd = descriptionObject.toString();
     		}
     	} else {
-    		this.motd = "Invalid ping response (description not found)";
-    		Main.getPlugin().getLogger().log(Level.WARNING, "Received invalid Json response from IP \"" + address.toString() + "\": " + jsonString);
+    		this.motd = "error: motd not returned by server";
     	}
         
         final Object playersObject = json.get("players");

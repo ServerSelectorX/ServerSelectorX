@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.AdvancedPie;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -14,11 +16,11 @@ public class Stats {
 
 //		metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", () -> Main.PLACEHOLDER_API instanceof PapiEnabled ? "yes" : "no"));
 
-		metrics.addCustomChart(new Metrics.SimplePie("number_of_selectors", () -> {
+		metrics.addCustomChart(new SimplePie("number_of_selectors", () -> {
 			return Main.getConfigurationManager().getAll().size() + "";
 		}));
 
-		metrics.addCustomChart(new Metrics.AdvancedPie("selector_item", () -> {
+		metrics.addCustomChart(new AdvancedPie("selector_item", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
@@ -38,7 +40,7 @@ public class Stats {
 			return map;
 		}));
 
-		metrics.addCustomChart(new Metrics.AdvancedPie("type", () -> {
+		metrics.addCustomChart(new AdvancedPie("type", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
@@ -55,7 +57,7 @@ public class Stats {
 			return map;
 		}));
 
-		metrics.addCustomChart(new Metrics.AdvancedPie("server_pinging", () -> {
+		metrics.addCustomChart(new AdvancedPie("server_pinging", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
@@ -79,11 +81,11 @@ public class Stats {
 			return map;
 		}));
 
-		metrics.addCustomChart(new Metrics.SimplePie("permissions", () -> {
+		metrics.addCustomChart(new SimplePie("permissions", () -> {
 			return "Unavailable";
 		}));
 
-		metrics.addCustomChart(new Metrics.SimplePie("item_drop", () -> {
+		metrics.addCustomChart(new SimplePie("item_drop", () -> {
 			if (Main.getPlugin().getConfig().getBoolean("cancel-item-drop", false)) {
 				return "Cancel";
 			} else {
@@ -91,7 +93,7 @@ public class Stats {
 			}
 		}));
 
-		metrics.addCustomChart(new Metrics.SimplePie("item_move", () -> {
+		metrics.addCustomChart(new SimplePie("item_move", () -> {
 			if (Main.getPlugin().getConfig().getBoolean("cancel-item-move", false)) {
 				return "Cancel";
 			} else {
@@ -99,7 +101,7 @@ public class Stats {
 			}
 		}));
 
-		metrics.addCustomChart(new Metrics.AdvancedPie("menu_item_slot", () -> {
+		metrics.addCustomChart(new AdvancedPie("menu_item_slot", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
@@ -122,7 +124,7 @@ public class Stats {
 			return map;
 		}));
 
-		metrics.addCustomChart(new Metrics.AdvancedPie("rows", () -> {
+		metrics.addCustomChart(new AdvancedPie("rows", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
