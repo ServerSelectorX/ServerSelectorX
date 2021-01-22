@@ -4,6 +4,8 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.bstats.bukkit.Metrics;
+import org.bstats.charts.AdvancedPie;
+import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -13,7 +15,7 @@ public class Stats extends Metrics {
 	public Stats() {
 		super(Main.getPlugin(), 1061);
 
-		this.addCustomChart(new Metrics.SimplePie("placeholderapi", () -> {
+		this.addCustomChart(new SimplePie("placeholderapi", () -> {
 			if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
 				return "yes";
 			} else {
@@ -21,11 +23,11 @@ public class Stats extends Metrics {
 			}
 		}));
 
-		this.addCustomChart(new Metrics.SimplePie("number_of_selectors", () -> {
+		this.addCustomChart(new SimplePie("number_of_selectors", () -> {
 			return Main.getConfigurationManager().menus.size() + "";
 		}));
 
-		this.addCustomChart(new Metrics.AdvancedPie("selector_item", () -> {
+		this.addCustomChart(new AdvancedPie("selector_item", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final FileConfiguration item : Main.getConfigurationManager().items.values()) {
@@ -63,15 +65,15 @@ public class Stats extends Metrics {
 //			return map;
 //		}));
 
-		this.addCustomChart(new Metrics.SimplePie("ping_api", () -> "Premium"));
+		this.addCustomChart(new SimplePie("ping_api", () -> "Premium"));
 
-		this.addCustomChart(new Metrics.SimplePie("updater", () -> "Unavailable"));
+		this.addCustomChart(new SimplePie("updater", () -> "Unavailable"));
 
-		this.addCustomChart(new Metrics.SimplePie("player_count_mode", () -> {
+		this.addCustomChart(new SimplePie("player_count_mode", () -> {
 			return Main.getPlugin().getConfig().getString("item-count-mode", "absolute").toLowerCase();
 		}));
 
-		this.addCustomChart(new Metrics.SimplePie("item_drop", () -> {
+		this.addCustomChart(new SimplePie("item_drop", () -> {
 			if (Main.getPlugin().getConfig().getBoolean("cancel-item-drop", false)) {
 				return "Cancel";
 			} else {
@@ -79,7 +81,7 @@ public class Stats extends Metrics {
 			}
 		}));
 
-		this.addCustomChart(new Metrics.SimplePie("item_move", () -> {
+		this.addCustomChart(new SimplePie("item_move", () -> {
 			if (Main.getPlugin().getConfig().getBoolean("cancel-item-move", false)) {
 				return "Cancel";
 			} else {
@@ -87,7 +89,7 @@ public class Stats extends Metrics {
 			}
 		}));
 
-		this.addCustomChart(new Metrics.AdvancedPie("menu_item_slot", () -> {
+		this.addCustomChart(new AdvancedPie("menu_item_slot", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final FileConfiguration item : Main.getConfigurationManager().items.values()) {
@@ -118,7 +120,7 @@ public class Stats extends Metrics {
 			return map;
 		}));
 
-		this.addCustomChart(new Metrics.AdvancedPie("rows", () -> {
+		this.addCustomChart(new AdvancedPie("rows", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
 			for (final FileConfiguration menu : Main.getConfigurationManager().menus.values()) {

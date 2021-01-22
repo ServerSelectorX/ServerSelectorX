@@ -66,6 +66,10 @@
 							<shadedPattern>xyz.derkades.serverselectorx.lib.commons-io</shadedPattern>
 						</relocation>
 						<relocation>
+							<pattern>org.apache.commons.lang3</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.commons-lang3</shadedPattern>
+						</relocation>
+						<relocation>
 							<pattern>xyz.derkades.derkutils</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.lib.derkutils</shadedPattern>
 						</relocation>
@@ -106,7 +110,7 @@
 		<dependency>
 			<groupId>org.bstats</groupId>
 			<artifactId>bstats-bukkit</artifactId>
-			<version>1.8</version>
+			<version>2.0.1</version>
 		</dependency>
 
 		<dependency>
@@ -119,13 +123,13 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-server</artifactId>
-			<version>9.4.35.v20201120</version>
+			<version>9.4.36.v20210114</version>
 		</dependency>
 
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-servlet</artifactId>
-			<version>9.4.35.v20201120</version>
+			<version>9.4.36.v20210114</version>
 		</dependency>
 
 		<dependency>
@@ -154,11 +158,6 @@
 		<repository>
 			<id>spigot-repo</id>
 			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
-		</repository>
-
-		<repository>
-			<id>CodeMC</id>
-			<url>https://repo.codemc.org/repository/maven-public</url>
 		</repository>
 
 		<repository>
