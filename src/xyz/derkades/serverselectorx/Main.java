@@ -27,6 +27,11 @@ import xyz.derkades.serverselectorx.placeholders.PapiExpansionRegistrar;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class Main extends JavaPlugin {
+	
+	static {
+		// Disable NBT API update checker
+		MinecraftVersion.disableUpdateCheck();
+	}
 
 	private static final int FREEZE_STEP_MS = 50;
 	private static final int FREEZE_MAX_MS = 5000;
@@ -92,9 +97,6 @@ public class Main extends JavaPlugin {
 		if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
 			PapiExpansionRegistrar.register();
 		}
-		
-		// Disable NBT API update checker
-		MinecraftVersion.disableUpdateCheck();
 	}
 
 	@Override
