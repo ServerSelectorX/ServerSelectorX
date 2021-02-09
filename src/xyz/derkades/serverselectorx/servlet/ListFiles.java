@@ -2,7 +2,8 @@ package xyz.derkades.serverselectorx.servlet;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Stack;
+import java.util.ArrayDeque;
+import java.util.Deque;
 import java.util.logging.Logger;
 
 import javax.servlet.http.HttpServlet;
@@ -44,7 +45,7 @@ public class ListFiles extends HttpServlet {
 		
 		response.setStatus(HttpServletResponse.SC_OK);
 		
-		final Stack<File> directories = new Stack<>();
+		final Deque<File> directories = new ArrayDeque<>();
 		directories.push(dir);
 		
 		response.setContentType("text/json");

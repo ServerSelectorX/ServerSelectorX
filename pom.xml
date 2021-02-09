@@ -42,7 +42,7 @@
 
 					<relocations>
 						<relocation>
-							<pattern>org.bstats.bukkit</pattern>
+							<pattern>org.bstats</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.lib.bstats</shadedPattern>
 						</relocation>
 						<relocation>
@@ -62,12 +62,8 @@
 							<shadedPattern>xyz.derkades.serverselectorx.lib.servlet</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>org.apache.commons.io</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.commons-io</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>org.apache.commons.lang3</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.commons-lang3</shadedPattern>
+							<pattern>org.apache.commons</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.apache-commons</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>xyz.derkades.derkutils</pattern>
