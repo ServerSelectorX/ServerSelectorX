@@ -42,12 +42,12 @@
 
 					<relocations>
 						<relocation>
-							<pattern>org.bstats.bukkit</pattern>
+							<pattern>org.bstats</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.lib.bstats</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>org.apache.commons.io</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.commons-io</shadedPattern>
+							<pattern>org.apache.commons</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.apache-commons</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>xyz.derkades.derkutils</pattern>
