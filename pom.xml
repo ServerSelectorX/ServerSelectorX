@@ -125,7 +125,7 @@
 		<dependency>
 			<groupId>org.eclipse.jetty</groupId>
 			<artifactId>jetty-servlet</artifactId>
-			<version>9.4.36.v20210114</version>
+			<version>9.4.37.v20210219</version>
 		</dependency>
 
 		<dependency>
