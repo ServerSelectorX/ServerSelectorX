@@ -6,14 +6,13 @@ import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.bukkit.configuration.file.FileConfiguration;
 
 import com.google.gson.stream.JsonWriter;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import xyz.derkades.serverselectorx.Main;
 
 public class ListFiles extends HttpServlet {
