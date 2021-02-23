@@ -2,15 +2,14 @@ package xyz.derkades.serverselectorx.servlet;
 
 import java.io.IOException;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.google.gson.stream.JsonWriter;
 
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import xyz.derkades.serverselectorx.Main;
 
 public class Players extends HttpServlet {
