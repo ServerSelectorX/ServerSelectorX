@@ -18,13 +18,14 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
+import javax.servlet.http.HttpServletResponse;
+
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
 
 import com.google.gson.JsonParser;
 
-import jakarta.servlet.http.HttpServletResponse;
 import xyz.derkades.serverselectorx.Main;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
