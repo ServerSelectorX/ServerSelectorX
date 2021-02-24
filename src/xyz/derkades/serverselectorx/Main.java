@@ -69,6 +69,8 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable(){
 		plugin = this;
+		
+		MinecraftVersion.replaceLogger(this.getLogger());
 
 		configurationManager = new ConfigurationManager();
 		try {
