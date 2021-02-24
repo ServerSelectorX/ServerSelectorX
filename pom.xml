@@ -59,11 +59,20 @@
 						</relocation>
 						<relocation>
 							<pattern>javax.servlet</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.servlet</shadedPattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.javax-servlet</shadedPattern>
+						</relocation>
+						<!-- Cannot have one commons relocation, .lang must not be relocated or it breaks! -->
+						<relocation>
+							<pattern>org.apache.commons.io</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.apache-commons.io</shadedPattern>
+						</relocation>
+							<relocation>
+							<pattern>org.apache.commons.lang3</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.apache-commons.lang3</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>org.apache.commons</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.apache-commons</shadedPattern>
+							<pattern>org.slf4j</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.slf4j</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>xyz.derkades.derkutils</pattern>

@@ -1,7 +1,14 @@
 package xyz.derkades.serverselectorx;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
@@ -13,6 +20,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
@@ -25,7 +34,7 @@ import xyz.derkades.serverselectorx.placeholders.PapiExpansionRegistrar;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class Main extends JavaPlugin {
-	
+
 	static {
 		// Disable NBT API update checker
 		MinecraftVersion.disableUpdateCheck();
@@ -48,8 +57,10 @@ public class Main extends JavaPlugin {
 	private static Main plugin;
 
 	public static WebServer server;
-	
+
 	public static final Gson GSON = new GsonBuilder().registerTypeAdapter(Server.class, Server.SERIALIZER).create();
+
+	private static final Map<UUID, String> HEAD_TEXTURE_CACHE = new HashMap<>();
 
 	public static Main getPlugin(){
 		return plugin;
@@ -58,6 +69,8 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable(){
 		plugin = this;
+
+		MinecraftVersion.replaceLogger(this.getLogger());
 
 		configurationManager = new ConfigurationManager();
 		try {
@@ -173,7 +186,7 @@ public class Main extends JavaPlugin {
 		if (section.isInt("amount")) {
 			builder.amount(section.getInt("amount"));
 		}
-		
+
 		if (section.isInt("durability")) {
 			player.sendMessage("'durability' option is not supported in the legacy version");
 		}
@@ -214,12 +227,11 @@ public class Main extends JavaPlugin {
 			if (owner.equals("auto")) {
 				builder = new ItemBuilder(player.getName());
 			} else {
-				if (owner.length() > 16) {
-					// parse as texture
+				try {
+					builder = new ItemBuilder(Material.SKULL_ITEM).damage(3).skullTexture(getHeadTexture(UUID.fromString(owner)));
+				} catch (final IllegalArgumentException e) {
+					// Invalid UUID, parse as texture
 					builder = new ItemBuilder(Material.SKULL_ITEM).damage(3).skullTexture(owner);
-				} else {
-					// parse as player name
-					builder = new ItemBuilder(owner);
 				}
 			}
 		} else if (materialString.startsWith("hdb")) {
@@ -239,6 +251,29 @@ public class Main extends JavaPlugin {
 		}
 
 		return builder;
+    }
+
+    public static String getHeadTexture(final UUID uuid) {
+    	if (HEAD_TEXTURE_CACHE.containsKey(uuid)) {
+    		return HEAD_TEXTURE_CACHE.get(uuid);
+    	}
+
+    	// TODO async. Need to rewrite menu code first :(
+
+    	try {
+    		Main.getPlugin().getLogger().info("Getting texture value for " + uuid + " from Mojang API");
+	    	final HttpURLConnection connection = (HttpURLConnection) new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString()).openConnection();
+	    	try (final Reader reader = new InputStreamReader(connection.getInputStream())) {
+	    		final JsonObject jsonResponse = (JsonObject) JsonParser.parseReader(reader);
+	    		final String texture = jsonResponse.get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
+	    		HEAD_TEXTURE_CACHE.put(uuid, texture);
+	    		Main.getPlugin().getLogger().info("Got " + texture);
+	    		return texture;
+	    	}
+    	} catch (final IOException | IllegalArgumentException | NullPointerException | ClassCastException | IllegalStateException | IndexOutOfBoundsException e) {
+    		Main.getPlugin().getLogger().warning("Failed to get base64 texture value for " + uuid + ". Is the UUID valid? Error details: " + e.getClass().getSimpleName() + " " + e.getMessage());
+    		return "";
+    	}
     }
 
 }
