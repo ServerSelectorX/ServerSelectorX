@@ -1,13 +1,18 @@
 package xyz.derkades.serverselectorx;
 
 import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
-import org.bukkit.OfflinePlayer;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
@@ -15,6 +20,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
@@ -52,6 +59,8 @@ public class Main extends JavaPlugin {
 	public static WebServer server;
 	
 	public static final Gson GSON = new GsonBuilder().registerTypeAdapter(Server.class, Server.SERIALIZER).create();
+	
+	private static final Map<UUID, String> HEAD_TEXTURE_CACHE = new HashMap<>();
 
 	public static Main getPlugin(){
 		return plugin;
@@ -212,13 +221,7 @@ public class Main extends JavaPlugin {
 				builder = new ItemBuilder(player);
 			} else {
 				try {
-					final OfflinePlayer ownerPlayer = Bukkit.getOfflinePlayer(UUID.fromString(owner));
-					if (ownerPlayer == null) {
-						player.sendMessage("A player with the uuid " + ownerPlayer + " does not exist");
-						return new ItemBuilder(Material.COBBLESTONE);
-					}
-
-					builder = new ItemBuilder(ownerPlayer);
+					builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(getHeadTexture(UUID.fromString(owner)));
 				} catch (final IllegalArgumentException e) {
 					// Invalid UUID, parse as texture
 					builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(owner);
@@ -241,6 +244,29 @@ public class Main extends JavaPlugin {
 		}
 
 		return builder;
+    }
+    
+    public static String getHeadTexture(final UUID uuid) {
+    	if (HEAD_TEXTURE_CACHE.containsKey(uuid)) {
+    		return HEAD_TEXTURE_CACHE.get(uuid);
+    	}
+    	
+    	// TODO async. Need to rewrite menu code first :(
+    	
+    	try {
+    		Main.getPlugin().getLogger().info("Getting texture value for " + uuid + " from Mojang API");
+	    	final HttpURLConnection connection = (HttpURLConnection) new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString()).openConnection();
+	    	try (final Reader reader = new InputStreamReader(connection.getInputStream())) {
+	    		final JsonObject jsonResponse = (JsonObject) JsonParser.parseReader(reader);
+	    		final String texture = jsonResponse.get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
+	    		HEAD_TEXTURE_CACHE.put(uuid, texture);
+	    		Main.getPlugin().getLogger().info("Got " + texture);
+	    		return texture;
+	    	}
+    	} catch (final IOException | IllegalArgumentException | NullPointerException | ClassCastException | IllegalStateException | IndexOutOfBoundsException e) {
+    		Main.getPlugin().getLogger().warning("Failed to get base64 texture value for " + uuid + ". Is the UUID valid? Error details: " + e.getClass().getSimpleName() + " " + e.getMessage());
+    		return "";
+    	}
     }
 
 }
