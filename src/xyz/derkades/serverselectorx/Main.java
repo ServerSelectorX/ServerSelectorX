@@ -220,7 +220,11 @@ public class Main extends JavaPlugin {
 		} else if (materialString.startsWith("head:")) {
 			final String owner = materialString.split(":")[1];
 			if (owner.equals("auto")) {
-				builder = new ItemBuilder(player);
+				if (getConfigurationManager().misc.getBoolean("mojang-api-head-auto", false)) {
+					builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(getHeadTexture(player.getUniqueId()));
+				} else {
+					builder = new ItemBuilder(player);
+				}
 			} else {
 				try {
 					builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(getHeadTexture(UUID.fromString(owner)));
