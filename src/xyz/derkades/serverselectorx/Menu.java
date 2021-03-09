@@ -303,7 +303,8 @@ public class Menu extends IconMenu {
 			// Add actions to item as NBT
 			final NBTItem nbt = new NBTItem(builder.create());
 			nbt.setObject("SSXActions", chosenSection.getStringList("actions"));
-			nbt.setObject("SSXActionsRight", chosenSection.getStringList("actions-right"));
+			nbt.setObject("SSXActionsLeft", chosenSection.getStringList("left-click-actions"));
+			nbt.setObject("SSXActionsRight", chosenSection.getStringList("right-click-actions"));
 			
 			if (chosenSection.contains("cooldown")) {
 				if (!chosenSection.isList("cooldown-actions")) {
@@ -356,6 +357,8 @@ public class Menu extends IconMenu {
 		@SuppressWarnings("unchecked")
 		final List<String> actions = nbt.getObject("SSXActions", List.class);
 		@SuppressWarnings("unchecked")
+		final List<String> leftActions = nbt.getObject("SSXActionsLeft", List.class);
+		@SuppressWarnings("unchecked")
 		final List<String> rightActions = nbt.getObject("SSXActionsRight", List.class);
 		
 		if (nbt.hasKey("SSXCooldownTime")) {
@@ -370,15 +373,13 @@ public class Menu extends IconMenu {
 			}
 		}
 		
+		boolean close = Action.runActions(player, actions);
 		if (event.getClickType() == ClickType.RIGHT || event.getClickType() == ClickType.SHIFT_RIGHT) {
-			if (rightActions.isEmpty()) {
-				return Action.runActions(player, actions);
-			} else {
-				return Action.runActions(player, rightActions);
-			}
-		} else {
-			return Action.runActions(player, actions);
+			close = close || Action.runActions(player, rightActions);
+		} else if (event.getClickType() == ClickType.LEFT || event.getClickType() == ClickType.SHIFT_LEFT) {
+			close = close || Action.runActions(player, leftActions);
 		}
+		return close;
 	}
 
 	@Override
