@@ -29,9 +29,7 @@ public class ItemGiveListener implements Listener {
 		if (config.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
 			debug("Clearning inventory for " + player.getName());
 			final PlayerInventory inv = player.getInventory();
-			inv.setContents(new ItemStack[inv.getContents().length]);
 			inv.setStorageContents(new ItemStack[inv.getStorageContents().length]);
-			inv.setArmorContents(new ItemStack[inv.getArmorContents().length]);
 		}
 
 		this.giveItems(player, "join");
