@@ -60,14 +60,8 @@ public class ItemGiveListener implements Listener {
 			Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> this.giveItems(event.getPlayer(), "clear"), 1);
 		}
 	}
-
-	public void giveItems(final Player player, final String type) {
-		debug("Giving items to " + player.getName() + ". Reason: " + type);
-		
-		debug("First removing any existing SSX items");
-		
-		final PlayerInventory inv = player.getInventory();
-		final ItemStack[] contents = inv.getStorageContents();
+	
+	private void removeSsxItems(final ItemStack[] contents) {
 		for (int i = 0; i < contents.length; i++) {
 			final ItemStack item = contents[i];
 			final NBTItem nbt = new NBTItem(item);
@@ -76,7 +70,20 @@ public class ItemGiveListener implements Listener {
 				contents[i] = null;
 			}
 		}
-		inv.setStorageContents(contents);
+	}
+
+	public void giveItems(final Player player, final String type) {
+		debug("Giving items to " + player.getName() + ". Reason: " + type);
+		
+		debug("First removing any existing SSX items");
+		
+		final PlayerInventory inv = player.getInventory();
+		final ItemStack[] contents = inv.getContents();
+		final ItemStack[] armorContents = inv.getArmorContents();
+		removeSsxItems(contents);
+		removeSsxItems(armorContents);
+		inv.setContents(contents);
+		inv.setArmorContents(armorContents);
 		
 		debug("Now giving items");
 
