@@ -10,6 +10,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
+import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
@@ -35,6 +36,13 @@ public class ItemClickListener implements Listener {
 		final ItemStack item = player.getInventory().getItemInHand();
 
 		if (item == null || item.getType() == Material.AIR) {
+			return;
+		}
+		
+		// 1.16 triggers interact events when clicking items in a menu for some reason
+		// We need to ignore these
+		// If the player does not have an open inventory, getOpenInventory returns their crafting inventory
+		if (player.getOpenInventory().getType() != InventoryType.CRAFTING) {
 			return;
 		}
 

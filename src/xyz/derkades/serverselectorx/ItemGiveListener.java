@@ -63,6 +63,22 @@ public class ItemGiveListener implements Listener {
 
 	public void giveItems(final Player player, final String type) {
 		debug("Giving items to " + player.getName() + ". Reason: " + type);
+		
+		debug("First removing any existing SSX items");
+		
+		final PlayerInventory inv = player.getInventory();
+		final ItemStack[] contents = inv.getStorageContents();
+		for (int i = 0; i < contents.length; i++) {
+			final ItemStack item = contents[i];
+			final NBTItem nbt = new NBTItem(item);
+			if (nbt.hasKey("SSXItem")) {
+				debug("Removed item at position " + i);
+				contents[i] = null;
+			}
+		}
+		inv.setStorageContents(contents);
+		
+		debug("Now giving items");
 
 		for (final Map.Entry<String, FileConfiguration> itemConfigEntry : Main.getConfigurationManager().items.entrySet()) {
 			final String name = itemConfigEntry.getKey();
@@ -109,7 +125,7 @@ public class ItemGiveListener implements Listener {
 			final int slot = config.getInt("give.inv-slot", 0);
 			final int delay = config.getInt("give.delay", 0);
 			debug("Give delay: " + delay);
-			final PlayerInventory inv = player.getInventory();
+			
 			if (slot < 0) {
 				if (!inv.containsAtLeast(item, item.getAmount())) {
 					if (delay == 0) {
