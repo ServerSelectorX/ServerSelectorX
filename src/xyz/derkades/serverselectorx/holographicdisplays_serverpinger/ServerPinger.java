@@ -19,8 +19,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.net.Socket;
-import java.net.SocketTimeoutException;
-import java.net.UnknownHostException;
 
 /*
  * taken from https://github.com/filoghost/HolographicDisplays/tree/master/Plugin/src/main/java/com/gmail/filoghost/holographicdisplays/bridge/bungeecord/serverpinger
@@ -28,7 +26,7 @@ import java.net.UnknownHostException;
  */
 public class ServerPinger {
 
-	public static PingResponse fetchData(final String address, final int port, final int timeout) throws SocketTimeoutException, UnknownHostException, IOException, Exception {
+	public static PingResponse fetchData(final String address, final int port, final int timeout) throws IOException {
 		
 		Socket socket = null;
 		DataOutputStream dataOut = null;
