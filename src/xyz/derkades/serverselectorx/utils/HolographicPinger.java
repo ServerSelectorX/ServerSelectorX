@@ -1,5 +1,7 @@
 package xyz.derkades.serverselectorx.utils;
 
+import java.io.IOException;
+
 import xyz.derkades.serverselectorx.holographicdisplays_serverpinger.PingResponse;
 
 public class HolographicPinger extends ServerPinger {
@@ -22,9 +24,8 @@ public class HolographicPinger extends ServerPinger {
 			this.motd = response.getMotd();
 			this.onlinePlayers = response.getOnlinePlayers();
 			this.maxPlayers = response.getMaxPlayers();
-		} catch (final Exception e) {
+		} catch (final IOException e) {
 			this.online = false;
-			e.printStackTrace();
 		}
 	}
 
