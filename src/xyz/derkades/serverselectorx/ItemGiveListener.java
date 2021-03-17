@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Map;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -64,6 +65,9 @@ public class ItemGiveListener implements Listener {
 	private void removeSsxItems(final ItemStack[] contents) {
 		for (int i = 0; i < contents.length; i++) {
 			final ItemStack item = contents[i];
+			if (item == null || item.getType() == Material.AIR) {
+				continue;
+			}
 			final NBTItem nbt = new NBTItem(item);
 			if (nbt.hasKey("SSXItem")) {
 				debug("Removed item at position " + i);
