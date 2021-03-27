@@ -23,9 +23,12 @@ public class ItemClickListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onInteract(final PlayerInteractEvent event){
+		event.getPlayer().sendMessage("Debug - action: " + event.getAction());
 		if (event.getAction() == Action.PHYSICAL) {
 			return;
 		}
+
+		event.getPlayer().sendMessage("Debug - hand: " + event.getHand());
 
 		if (event.getHand() == EquipmentSlot.OFF_HAND) {
 			return;
@@ -43,7 +46,9 @@ public class ItemClickListener implements Listener {
 		if (item == null || item.getType() == Material.AIR) {
 			return;
 		}
-		
+
+		player.sendMessage("Debug - open inventory: " + player.getOpenInventory().getType());
+
 		// 1.16 triggers interact events when clicking items in a menu for some reason
 		// We need to ignore these
 		// If the player does not have an open inventory, getOpenInventory returns their crafting inventory
@@ -77,14 +82,14 @@ public class ItemClickListener implements Listener {
 		}
 
 		final List<String> actions = new ArrayList<>();
-		
+
 		actions.addAll(config.getStringList("actions"));
 
 		if (config.isList("left-click-actions") &&
 				(event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
 			actions.addAll(config.getStringList("left-click-actions"));
 		}
-		
+
 		if (config.isList("right-click-actions") &&
 				(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			actions.addAll(config.getStringList("right-click-actions"));
