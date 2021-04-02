@@ -8,14 +8,12 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
-import org.bukkit.event.Listener;
-import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import jdk.internal.org.jline.utils.Colors;
 import xyz.derkades.derkutils.Cooldown;
-import xyz.derkades.derkutils.bukkit.Colors;
 
 public class ItemClickListener implements Listener {
 
@@ -64,14 +62,14 @@ public class ItemClickListener implements Listener {
 		}
 
 		final List<String> actions = new ArrayList<>();
-		
+
 		actions.addAll(config.getStringList("actions"));
 
 		if (config.isList("left-click-actions") &&
 				(event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
 			actions.addAll(config.getStringList("left-click-actions"));
 		}
-		
+
 		if (config.isList("right-click-actions") &&
 				(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			actions.addAll(config.getStringList("right-click-actions"));

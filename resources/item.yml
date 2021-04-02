@@ -1,4 +1,4 @@
-# Default server selector hotbar item. Create more hotbar items by copying this file in 
+# Default server selector hotbar item. Create more hotbar items by copying this file in
 # the same directory and giving it a different name.
 
 item:
@@ -18,23 +18,23 @@ give:
   clear: false
 
   inv-slot: 0
-  
+
   # If set to true, require permission ssx.item.<name> to receive the item.
   permission: false
-  
+
   # delay: 1
-  
+
 # Actions to run when clicking the item (right or left click)
 actions:
- - 'openmenu:serverselector' # Open default menu (config file in ../menu/default.yml)
+ - 'openmenu:serverselector' # Open default menu (config file in ../menu/serverselector.yml)
 
 # Actions to run when right clicking the item
 right-click-actions: []
 
 # Actions to run when left clicking the item
 left-click-actions: []
-  
-# Uncomment to define a world whitelist. Players who are not in one of the worlds defined 
+
+# Uncomment to define a world whitelist. Players who are not in one of the worlds defined
 # below will not receive the item on join and will not be able use the item.
 #worlds:
 # - hub
