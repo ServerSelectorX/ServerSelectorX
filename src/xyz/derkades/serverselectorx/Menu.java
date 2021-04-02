@@ -387,7 +387,7 @@ public class Menu extends IconMenu {
 	public void onClose(final MenuCloseEvent event) {
 		this.closed = true;
 
-		if (this.config.contains("on-close")) {
+		if (!this.config.contains("on-close")) {
 			return;
 		}
 
