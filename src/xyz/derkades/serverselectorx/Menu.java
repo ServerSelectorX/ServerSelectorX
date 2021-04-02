@@ -90,7 +90,7 @@ public class Menu extends IconMenu {
 				this.player.sendMessage("Invalid item " + key + ", check indentation.");
 				continue;
 			}
-			
+
 			final ConfigurationSection section = this.config.getConfigurationSection("menu." + key);
 
 //			List<String> actions;
@@ -305,20 +305,20 @@ public class Menu extends IconMenu {
 			nbt.setObject("SSXActions", chosenSection.getStringList("actions"));
 			nbt.setObject("SSXActionsLeft", chosenSection.getStringList("left-click-actions"));
 			nbt.setObject("SSXActionsRight", chosenSection.getStringList("right-click-actions"));
-			
+
 			if (chosenSection.contains("cooldown")) {
 				if (!chosenSection.isList("cooldown-actions")) {
 					this.player.sendMessage("When using the 'cooldown' option, a list of actions 'cooldown-actions' must also be specified.");
 					return;
 				}
-				
+
 				nbt.setInteger("SSXCooldownTime", (int) (chosenSection.getDouble("cooldown") * 1000));
 				nbt.setString("SSXCooldownId", this.player.getName() + this.getInventoryView().getTitle() + key);
 				nbt.setObject("SSXCooldownActions", chosenSection.getStringList("cooldown-actions"));
 			}
-			
+
 			final ItemStack item = nbt.getItem();
-			
+
 			if (key.equals("fill") || key.equals("-1")) { // -1 for backwards compatibility
 				// Fill all blank slots
 				for (int i = 0; i < this.getInventory().getSize(); i++) {
@@ -335,13 +335,13 @@ public class Menu extends IconMenu {
 						this.player.sendMessage("Invalid slot number " + split);
 						return;
 					}
-					
+
 					if (slot >= this.getInventory().getSize() || slot < 0) {
 						this.player.sendMessage("You put an item in slot " + slot + ", which is higher than the maximum number of slots in your menu.");
 						this.player.sendMessage("Use numbers 0 to " + (this.getInventory().getSize() - 1) + "or increase the number of rows in the config");
 						return;
 					}
-					
+
 					this.addItem(slot, item);
 				}
 			}
@@ -360,7 +360,7 @@ public class Menu extends IconMenu {
 		final List<String> leftActions = nbt.getObject("SSXActionsLeft", List.class);
 		@SuppressWarnings("unchecked")
 		final List<String> rightActions = nbt.getObject("SSXActionsRight", List.class);
-		
+
 		if (nbt.hasKey("SSXCooldownTime")) {
 			final int cooldownTime = nbt.getInteger("SSXCooldownTime");
 			final String cooldownId = nbt.getString("SSXCooldownId");
@@ -372,7 +372,7 @@ public class Menu extends IconMenu {
 				Cooldown.addCooldown(cooldownId, cooldownTime);
 			}
 		}
-		
+
 		boolean close = Action.runActions(player, actions);
 		if (event.getClickType() == ClickType.RIGHT || event.getClickType() == ClickType.SHIFT_RIGHT) {
 			close = close || Action.runActions(player, rightActions);
@@ -382,9 +382,41 @@ public class Menu extends IconMenu {
 		return close;
 	}
 
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onClose(final MenuCloseEvent event) {
 		this.closed = true;
+
+		if (this.config.contains("on-close")) {
+			return;
+		}
+
+		final String reason;
+		switch(event.getReason()) {
+		case PLAYER_CLOSED:
+			reason = "player";
+			break;
+		case ITEM_CLICK:
+			reason = "item";
+			break;
+		case PLAYER_QUIT:
+			reason = "quit";
+			break;
+		default:
+			reason = null;
+		}
+
+		if (reason == null) {
+			return;
+		}
+
+		this.config.getMapList("on-close").forEach(map -> {
+			final List<String> reasons = (List<String>) map.get("reasons");
+			if (reasons.contains(reason)) {
+				final List<String> actions = (List<String>) map.get("actions");
+				Action.runActions(event.getPlayer(), actions);
+			}
+		});
 	}
 
 }
