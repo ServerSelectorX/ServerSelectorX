@@ -7,6 +7,7 @@ import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -84,7 +85,13 @@ public class Menu extends IconMenu {
 	}
 
 	private void addItems() {
-		final Player player = (Player) this.getPlayer();
+		final OfflinePlayer potentiallyOffline = this.getPlayer();
+		if (!(potentiallyOffline instanceof Player)) {
+			Main.getPlugin().getLogger().warning("Player " + potentiallyOffline.getUniqueId() + " went offline?");
+			return;
+		}
+
+		final Player player = (Player) potentiallyOffline;
 
 		itemLoop:
 		for (final String key : this.config.getConfigurationSection("menu").getKeys(false)) {
