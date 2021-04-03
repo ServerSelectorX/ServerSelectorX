@@ -50,10 +50,10 @@ public class Menu extends IconMenu {
 
 		if (this.config == null ||
 				this.config.getConfigurationSection("menu") == null) {
-			this.player.sendMessage("The configuration file failed to load, probably due to a syntax error.");
-			this.player.sendMessage("Take a look at the console for any YAML errors, or paste your config in http://www.yamllint.com/");
-			this.player.sendMessage("Check for identation and balanced quotes. If you want to use quotation marks in strings, they must be escaped properly by putting two quotation marks (for example \"\" or '').");
-			this.player.sendMessage("Menu name: " + configName);
+			player.sendMessage("The configuration file failed to load, probably due to a syntax error.");
+			player.sendMessage("Take a look at the console for any YAML errors, or paste your config in http://www.yamllint.com/");
+			player.sendMessage("Check for identation and balanced quotes. If you want to use quotation marks in strings, they must be escaped properly by putting two quotation marks (for example \"\" or '').");
+			player.sendMessage("Menu name: " + configName);
 			return;
 		}
 
@@ -84,10 +84,12 @@ public class Menu extends IconMenu {
 	}
 
 	private void addItems() {
+		final Player player = (Player) this.getPlayer();
+
 		itemLoop:
 		for (final String key : this.config.getConfigurationSection("menu").getKeys(false)) {
 			if (!this.config.isConfigurationSection("menu." + key)) {
-				this.player.sendMessage("Invalid item " + key + ", check indentation.");
+				player.sendMessage("Invalid item " + key + ", check indentation.");
 				continue;
 			}
 
@@ -98,17 +100,17 @@ public class Menu extends IconMenu {
 			ConfigurationSection chosenSection;
 			ItemBuilder builder;
 
-			if (section.contains("permission") && !this.player.hasPermission(section.getString("permission"))) {
+			if (section.contains("permission") && !player.hasPermission(section.getString("permission"))) {
 				// Use no-permission section
 				final ConfigurationSection noPermissionSection = section.getConfigurationSection("no-permission");
 
 				if (noPermissionSection == null) {
-					this.player.sendMessage("Missing no-permission section for item " + key + ". Remove the permission option or add a no-permission section.");
+					player.sendMessage("Missing no-permission section for item " + key + ". Remove the permission option or add a no-permission section.");
 					return;
 				}
 
 				if (!noPermissionSection.contains("material")) {
-					this.player.sendMessage("No permission section is missing the material option");
+					player.sendMessage("No permission section is missing the material option");
 					return;
 				}
 
@@ -116,7 +118,7 @@ public class Menu extends IconMenu {
 					continue itemLoop;
 				}
 
-				builder = Main.getItemBuilderFromItemSection(this.player, noPermissionSection);
+				builder = Main.getItemBuilderFromItemSection(player, noPermissionSection);
 //				actions = noPermissionSection.getStringList("actions");
 //				rightActions = noPermissionSection.getStringList("actions-right");
 				chosenSection = noPermissionSection;
@@ -138,7 +140,7 @@ public class Menu extends IconMenu {
 								serverName.equalsIgnoreCase(Main.getConfigurationManager().misc.getString("server-name")) &&
 								section.isConfigurationSection("connected")) {
 							final ConfigurationSection connectedSection = section.getConfigurationSection("connected");
-							builder = Main.getItemBuilderFromItemSection(this.player, connectedSection);
+							builder = Main.getItemBuilderFromItemSection(player, connectedSection);
 //							actions = connectedSection.getStringList("actions");
 //							rightActions = connectedSection.getStringList("actions-right");
 							chosenSection = connectedSection;
@@ -153,7 +155,7 @@ public class Menu extends IconMenu {
 									}
 
 									if (colons != 1) {
-										this.player.sendMessage("Invalid dynamic section '" + dynamicKey + "'. Dynamic section identifiers should contain exactly one colon, this one contains " + colons + ".");
+										player.sendMessage("Invalid dynamic section '" + dynamicKey + "'. Dynamic section identifiers should contain exactly one colon, this one contains " + colons + ".");
 										return;
 									}
 
@@ -173,7 +175,7 @@ public class Menu extends IconMenu {
 										placeholderValueFromConnector = global.getValue();
 									} else {
 										final PlayerPlaceholder playerPlaceholder = (PlayerPlaceholder) placeholder;
-										placeholderValueFromConnector = playerPlaceholder.getValue(this.player);
+										placeholderValueFromConnector = playerPlaceholder.getValue(player);
 									}
 
 									final ConfigurationSection dynamicSection = section.getConfigurationSection("dynamic." + dynamicKey);
@@ -187,7 +189,7 @@ public class Menu extends IconMenu {
 											) {
 
 										if (!dynamicSection.contains("material")) {
-											this.player.sendMessage("Dynamic section '" + dynamicKey + "' is missing the material option");
+											player.sendMessage("Dynamic section '" + dynamicKey + "' is missing the material option");
 											return;
 										}
 
@@ -195,7 +197,7 @@ public class Menu extends IconMenu {
 											continue itemLoop;
 										}
 
-										builder = Main.getItemBuilderFromItemSection(this.player, dynamicSection);
+										builder = Main.getItemBuilderFromItemSection(player, dynamicSection);
 //										actions = dynamicSection.getStringList("actions");
 //										rightActions = dynamicSection.getStringList("actions-right");
 										chosenSection = dynamicSection;
@@ -207,23 +209,23 @@ public class Menu extends IconMenu {
 							if (builder == null) {
 								//No dynamic rule matched, fall back to online
 								if (!section.isConfigurationSection("online")) {
-									this.player.sendMessage("Error for item " + key);
-									this.player.sendMessage("Online section does not exist");
+									player.sendMessage("Error for item " + key);
+									player.sendMessage("Online section does not exist");
 									return;
 								}
 
 								final ConfigurationSection onlineSection = section.getConfigurationSection("online");
 
 								if (!onlineSection.contains("material")) {
-									this.player.sendMessage("Error for item " + key);
-									this.player.sendMessage("Online section does not have a material option");
+									player.sendMessage("Error for item " + key);
+									player.sendMessage("Online section does not have a material option");
 								}
 
 								if (Arrays.asList("NONE", "AIR").contains(onlineSection.getString("material"))) {
 									continue itemLoop;
 								}
 
-								builder = Main.getItemBuilderFromItemSection(this.player, onlineSection);
+								builder = Main.getItemBuilderFromItemSection(player, onlineSection);
 //								actions = onlineSection.getStringList("actions");
 //								rightActions = onlineSection.getStringList("actions-right");
 								chosenSection = onlineSection;
@@ -240,7 +242,7 @@ public class Menu extends IconMenu {
 								value = global.getValue();
 							} else {
 								final PlayerPlaceholder playerPlaceholder = (PlayerPlaceholder) placeholder;
-								value = playerPlaceholder.getValue(this.player);
+								value = playerPlaceholder.getValue(player);
 							}
 							placeholders.put("{" + placeholder.getKey() + "}", value);
 						}
@@ -256,22 +258,22 @@ public class Menu extends IconMenu {
 					} else {
 						//Server is offline
 						if (!section.isConfigurationSection("offline")) {
-							this.player.sendMessage("Offline section does not exist");
+							player.sendMessage("Offline section does not exist");
 							return;
 						}
 
 						final ConfigurationSection offlineSection = section.getConfigurationSection("offline");
 
 						if (!offlineSection.contains("material")) {
-							this.player.sendMessage("Error for item " + key);
-							this.player.sendMessage("Offline section does not have a material option");
+							player.sendMessage("Error for item " + key);
+							player.sendMessage("Offline section does not have a material option");
 						}
 
 						if (Arrays.asList("NONE", "AIR").contains(offlineSection.getString("material"))) {
 							continue;
 						}
 
-						builder = Main.getItemBuilderFromItemSection(this.player, offlineSection);
+						builder = Main.getItemBuilderFromItemSection(player, offlineSection);
 //						actions = offlineSection.getStringList("actions");
 //						rightActions = offlineSection.getStringList("actions-right");
 						chosenSection = offlineSection;
@@ -279,25 +281,25 @@ public class Menu extends IconMenu {
 				} else {
 					// Simple section
 					if (section.getString("material") == null) {
-						this.player.sendMessage("Error for item " + key);
-						this.player.sendMessage("Missing material option. Remember, this is not an advanced section, so don't use online/offline/dynamic sections in the config.");
-						this.player.sendMessage("If you want to use these sections, add a connector option.");
-						this.player.sendMessage("Read more here: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Menu-items-v2");
+						player.sendMessage("Error for item " + key);
+						player.sendMessage("Missing material option. Remember, this is not an advanced section, so don't use online/offline/dynamic sections in the config.");
+						player.sendMessage("If you want to use these sections, add a connector option.");
+						player.sendMessage("Read more here: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Menu-items-v2");
 					}
 
 					if (Arrays.asList("NONE", "AIR").contains(section.getString("material"))) {
 						continue itemLoop;
 					}
 
-					builder = Main.getItemBuilderFromItemSection(this.player, section);
+					builder = Main.getItemBuilderFromItemSection(player, section);
 //					actions = section.getStringList("actions");
 //					rightActions = section.getStringList("actions-right");
 					chosenSection = section;
 				}
 			}
 
-			builder.papi(this.player)
-				.placeholder("{player}", this.player.getName())
+			builder.papi(player)
+				.placeholder("{player}", player.getName())
 				.placeholder("{globalOnline}", ServerSelectorX.getGlobalPlayerCount() + "");
 
 			// Add actions to item as NBT
@@ -308,12 +310,12 @@ public class Menu extends IconMenu {
 
 			if (chosenSection.contains("cooldown")) {
 				if (!chosenSection.isList("cooldown-actions")) {
-					this.player.sendMessage("When using the 'cooldown' option, a list of actions 'cooldown-actions' must also be specified.");
+					player.sendMessage("When using the 'cooldown' option, a list of actions 'cooldown-actions' must also be specified.");
 					return;
 				}
 
 				nbt.setInteger("SSXCooldownTime", (int) (chosenSection.getDouble("cooldown") * 1000));
-				nbt.setString("SSXCooldownId", this.player.getName() + this.getInventoryView().getTitle() + key);
+				nbt.setString("SSXCooldownId", player.getName() + this.getInventoryView().getTitle() + key);
 				nbt.setObject("SSXCooldownActions", chosenSection.getStringList("cooldown-actions"));
 			}
 
@@ -332,13 +334,13 @@ public class Menu extends IconMenu {
 					try {
 						slot = Integer.valueOf(split);
 					} catch (final NumberFormatException e) {
-						this.player.sendMessage("Invalid slot number " + split);
+						player.sendMessage("Invalid slot number " + split);
 						return;
 					}
 
 					if (slot >= this.getInventory().getSize() || slot < 0) {
-						this.player.sendMessage("You put an item in slot " + slot + ", which is higher than the maximum number of slots in your menu.");
-						this.player.sendMessage("Use numbers 0 to " + (this.getInventory().getSize() - 1) + "or increase the number of rows in the config");
+						player.sendMessage("You put an item in slot " + slot + ", which is higher than the maximum number of slots in your menu.");
+						player.sendMessage("Use numbers 0 to " + (this.getInventory().getSize() - 1) + "or increase the number of rows in the config");
 						return;
 					}
 
