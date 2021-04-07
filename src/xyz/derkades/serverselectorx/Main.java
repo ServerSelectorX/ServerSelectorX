@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -13,6 +12,7 @@ import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
+import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -28,7 +28,7 @@ public class Main extends JavaPlugin {
 	public static JavaPlugin getPlugin(){
 		return plugin;
 	}
-	
+
 	public static BukkitTask pingTask;
 
 	@Override
@@ -38,29 +38,30 @@ public class Main extends JavaPlugin {
 		configurationManager = new ConfigurationManager();
 		configurationManager.reload();
 
-		//Register listeners
 		Bukkit.getPluginManager().registerEvents(new SelectorOpenListener(), this);
 		Bukkit.getPluginManager().registerEvents(new OnJoinListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemMoveDropCancelListener(), this);
+		try {
+			PlayerSwapHandItemsEvent.class.getName();
+			Bukkit.getPluginManager().registerEvents(new OffhandMoveListener(), this);
+		} catch (final NoClassDefFoundError e) {
+			getLogger().info("Skipping offhand listener (this is fine on <1.9)");
+		}
 
-		//Register messaging channels
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
 		PingServersBackground.generatePingJobs();
 		pingTask = Bukkit.getScheduler().runTaskLaterAsynchronously(this, new PingServersBackground(), 40);
 
-		//Register command
 		this.getCommand("serverselectorx").setExecutor(new ReloadCommand());
 
-		//Start bStats
 		Stats.initialize();
 
-		//Register custom selector commands
 		this.registerCommands();
 
 		this.getLogger().info("Thank you for using ServerSelectorX. If you enjoy using this plugin, consider buying the premium version for more features: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium");
 	}
-	
+
 	@Override
 	public void onDisable() {
 		if (pingTask != null) {
@@ -88,7 +89,7 @@ public class Main extends JavaPlugin {
 
 			for (final String configName : configurationManager.list()) {
 				final FileConfiguration config = configurationManager.getByName(configName);
-				
+
 				final String commandName = config.getString("command");
 
 				if (commandName == null || commandName.equalsIgnoreCase("none")) {
@@ -122,7 +123,7 @@ public class Main extends JavaPlugin {
 	public static ConfigurationManager getConfigurationManager() {
 		return configurationManager;
 	}
-	
+
 	static ItemBuilder getItemFromMaterialString(final Player player, final String materialString) {
 		if (materialString.startsWith("head:")) {
 			final String owner = materialString.split(":")[1];
