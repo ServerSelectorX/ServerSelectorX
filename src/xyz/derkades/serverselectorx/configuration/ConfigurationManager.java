@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
-import org.apache.commons.io.FileUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import xyz.derkades.derkutils.FileUtils;
 import xyz.derkades.serverselectorx.Main;
 
 /**
@@ -48,7 +48,7 @@ public class ConfigurationManager {
 		for (final String fileName : files) {
 			final File file = new File(configDir, fileName);
 			if (!file.exists()) {
-				FileUtils.copyURLToFile(this.getClass().getResource("/config/" + fileName), file);
+				FileUtils.copyOutOfJar(this.getClass(), "/config/" + fileName, file);
 			}
 
 			if (fileName.equals("api.yml")) {
@@ -71,21 +71,21 @@ public class ConfigurationManager {
 		final File commandDir = new File(dir, "command");
 		if (!commandDir.exists()) {
 			commandDir.mkdir();
-			FileUtils.copyURLToFile(this.getClass().getResource("/command.yml"),
+			FileUtils.copyOutOfJar(this.getClass(), "/command.yml",
 					new File(commandDir, "servers.yml"));
 		}
-			
+
 		final File itemDir = new File(dir, "item");
 		if (!itemDir.exists()) {
 			itemDir.mkdir();
-			FileUtils.copyURLToFile(this.getClass().getResource("/item.yml"),
+			FileUtils.copyOutOfJar(this.getClass(), "/item.yml",
 					new File(itemDir, "compass.yml"));
 		}
-		
+
 		final File menuDir = new File(dir, "menu");
 		if (!menuDir.exists()) {
 			menuDir.mkdir();
-			FileUtils.copyURLToFile(this.getClass().getResource("/menu.yml"),
+			FileUtils.copyOutOfJar(this.getClass(), "/menu.yml",
 					new File(menuDir, "serverselector.yml"));
 		}
 

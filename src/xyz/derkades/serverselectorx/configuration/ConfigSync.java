@@ -2,11 +2,9 @@ package xyz.derkades.serverselectorx.configuration;
 
 import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStream;
 import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
@@ -14,12 +12,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.bukkit.Bukkit;
 
 import com.google.gson.JsonParser;
@@ -155,7 +152,7 @@ public class ConfigSync {
 			};
 			for (final File dir : toDelete) {
 				try {
-					FileUtils.deleteDirectory(dir);
+					Files.delete(dir.toPath());
 				} catch (final IOException e) {
 					this.logger.warning("Failed to delete directory" + dir.getPath());
 				}
@@ -174,11 +171,8 @@ public class ConfigSync {
 				continue;
 			}
 
-			try (
-					InputStream input = ConfigSync.this.getFileContent(fileName);
-					final OutputStream output = new FileOutputStream(file);
-					){
-				IOUtils.copy(input, output);
+			try (InputStream input = ConfigSync.this.getFileContent(fileName)){
+				Files.copy(input, file.toPath());
 			} catch (final IOException e) {
 				this.logger.warning("An error occured while trying sync file " + fileName);
 				e.printStackTrace();
