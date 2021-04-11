@@ -54,6 +54,10 @@ public class ItemMoveDropCancelListener implements Listener {
 	}
 
 	private boolean isSsxItem(final ItemStack item) {
+		if (item == null) {
+			return false;
+		}
+
 		if (Main.getConfigurationManager().inventory.getBoolean("ssx-items-only", false)) {
 			final NBTItem nbt = new NBTItem(item);
 			return nbt.hasKey("SSXItem");

@@ -1,15 +1,13 @@
 package xyz.derkades.serverselectorx.servlet;
 
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import org.apache.commons.io.IOUtils;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import xyz.derkades.serverselectorx.Main;
@@ -27,14 +25,12 @@ public class GetFile extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
-		
-		response.setStatus(HttpServletResponse.SC_OK);
 
-		final String fileName = request.getParameter("file");
-		final File file = new File(fileName);
-		try (InputStream input = new FileInputStream(file)) {
-			IOUtils.copy(input, response.getOutputStream());
-		}
+		response.setStatus(HttpServletResponse.SC_OK);
+		final Path file = Path.of(request.getParameter("file"));
+		final String type = Files.probeContentType(file);
+		response.setContentType(type != null ? type : "application/octet-stream");
+		Files.copy(file, response.getOutputStream());
 	}
 
 }
