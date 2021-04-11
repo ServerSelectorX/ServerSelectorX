@@ -46,8 +46,8 @@
 							<shadedPattern>xyz.derkades.serverselectorx.lib.bstats</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>org.apache.commons</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.apache-commons</shadedPattern>
+							<pattern>org.apache.commons.lang3</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.commons-lang3</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>xyz.derkades.derkutils</pattern>
@@ -56,10 +56,6 @@
 						<relocation>
 							<pattern>com.google.gson</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.lib.gson</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>org.hamcrest</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.hamcrest</shadedPattern>
 						</relocation>
 					</relocations>
 
