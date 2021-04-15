@@ -25,6 +25,7 @@ import com.google.gson.JsonParser;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
@@ -55,6 +56,8 @@ public class Main extends JavaPlugin {
 	private static ConfigSync configSync;
 
 	private static Main plugin;
+
+	private static BukkitAudiences adventure;
 
 	public static WebServer server;
 
@@ -93,6 +96,8 @@ public class Main extends JavaPlugin {
 			System.setProperty("org.eclipse.jetty.util.log.announce", "false");
 		}
 
+		adventure = BukkitAudiences.create(this);
+
 		server = new WebServer();
 		server.start();
 
@@ -112,6 +117,11 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		if (adventure != null) {
+			adventure.close();
+			adventure = null;
+		}
+
 		if (server != null) {
 			server.stop();
 
@@ -152,6 +162,10 @@ public class Main extends JavaPlugin {
 
 	static ConfigSync getConfigSync() {
 		return configSync;
+	}
+
+	public static BukkitAudiences adventure() {
+		return adventure;
 	}
 
     public static ItemBuilder getItemBuilderFromItemSection(final Player player, final ConfigurationSection section) {

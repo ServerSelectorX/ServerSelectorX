@@ -2,6 +2,10 @@
 # Add messages below, then use then using the action 'chatcomponent:<messagename>`
 # Documentation here: https://github.com/Derkades/Derkutils/wiki/Chat-component-YAML
 
+# THIS FEATURE IS NOW DEPRECATED
+# it will removed in a future release
+# use adventure messages instead
+
 examplemessage:
   - text: 'This part is blue and bold. '
     bold: true
