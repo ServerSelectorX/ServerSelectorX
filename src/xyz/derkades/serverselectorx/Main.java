@@ -25,6 +25,7 @@ import com.google.gson.JsonParser;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
@@ -34,7 +35,7 @@ import xyz.derkades.serverselectorx.placeholders.PapiExpansionRegistrar;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class Main extends JavaPlugin {
-	
+
 	static {
 		// Disable NBT API update checker
 		MinecraftVersion.disableUpdateCheck();
@@ -56,10 +57,12 @@ public class Main extends JavaPlugin {
 
 	private static Main plugin;
 
+	private static BukkitAudiences adventure;
+
 	public static WebServer server;
-	
+
 	public static final Gson GSON = new GsonBuilder().registerTypeAdapter(Server.class, Server.SERIALIZER).create();
-	
+
 	private static final Map<UUID, String> HEAD_TEXTURE_CACHE = new HashMap<>();
 
 	public static Main getPlugin(){
@@ -69,7 +72,7 @@ public class Main extends JavaPlugin {
 	@Override
 	public void onEnable(){
 		plugin = this;
-		
+
 		MinecraftVersion.replaceLogger(this.getLogger());
 
 		configurationManager = new ConfigurationManager();
@@ -93,6 +96,8 @@ public class Main extends JavaPlugin {
 			System.setProperty("org.eclipse.jetty.util.log.announce", "false");
 		}
 
+		adventure = BukkitAudiences.create(this);
+
 		server = new WebServer();
 		server.start();
 
@@ -112,6 +117,11 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
+		if (adventure != null) {
+			adventure.close();
+			adventure = null;
+		}
+
 		if (server != null) {
 			server.stop();
 
@@ -154,6 +164,10 @@ public class Main extends JavaPlugin {
 		return configSync;
 	}
 
+	public static BukkitAudiences adventure() {
+		return adventure;
+	}
+
     public static ItemBuilder getItemBuilderFromItemSection(final Player player, final ConfigurationSection section) {
     	final String materialString = section.getString("material");
     	final ItemBuilder builder = getItemBuilderFromMaterialString(player, materialString);
@@ -186,7 +200,7 @@ public class Main extends JavaPlugin {
 		if (section.isInt("amount")) {
 			builder.amount(section.getInt("amount"));
 		}
-		
+
 		if (section.isInt("durability")) {
 			builder.damage(section.getInt("durability"));
 		}
@@ -251,14 +265,14 @@ public class Main extends JavaPlugin {
 
 		return builder;
     }
-    
+
     public static String getHeadTexture(final UUID uuid) {
     	if (HEAD_TEXTURE_CACHE.containsKey(uuid)) {
     		return HEAD_TEXTURE_CACHE.get(uuid);
     	}
-    	
+
     	// TODO async. Need to rewrite menu code first :(
-    	
+
     	try {
     		Main.getPlugin().getLogger().info("Getting texture value for " + uuid + " from Mojang API");
 	    	final HttpURLConnection connection = (HttpURLConnection) new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString()).openConnection();

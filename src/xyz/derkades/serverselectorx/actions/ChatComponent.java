@@ -14,16 +14,18 @@ public class ChatComponent extends Action {
 
 	@Override
 	public boolean apply(final Player player, final String value) {
+		Main.getPlugin().getLogger().warning("The chatcomponent action is deprecated and will be removed in a future release. Please switch to 'advmessage'.");
+
 		final FileConfiguration config = Main.getConfigurationManager().chatcomponents;
-		
+
 		if (config.contains(value)) {
 			player.sendMessage("Error: chat components config does not contain message with name '" + value + "'");
 			return true;
 		}
-		
+
 		player.spigot().sendMessage(Chat.toComponent(config, value));
 		return false;
 	}
-	
+
 
 }

@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 public abstract class Action {
 
 	private static final Action[] DEFAULT_ACTIONS = {
+			new AdvMessageAction(),
 			new AddEffectAction(),
 			new ChatComponent(),
 			new CloseAction(),

@@ -42,36 +42,28 @@
 
 					<relocations>
 						<relocation>
-							<pattern>org.bstats</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.bstats</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>org.eclipse.jetty</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.jetty</shadedPattern>
+							<pattern>org</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.org</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>de.tr7zw.changeme.nbtapi</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.lib.nbtapi</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>com.google.gson</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.gson</shadedPattern>
+							<pattern>com</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.com</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>javax.servlet</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.javax-servlet</shadedPattern>
+							<pattern>javax</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.javax</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>jakarta.servlet</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.jakarta-servlet</shadedPattern>
+							<pattern>jakarta</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.jakarta</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>org.apache.commons.lang3</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.commons-lang3</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>org.slf4j</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.slf4j</shadedPattern>
+							<pattern>net</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.net</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>xyz.derkades.derkutils</pattern>
@@ -155,13 +147,25 @@
 			<scope>provided</scope>
 		</dependency>
 
+		<dependency>
+			<groupId>net.kyori</groupId>
+			<artifactId>adventure-platform-bukkit</artifactId>
+			<version>4.0.0-SNAPSHOT</version>
+		</dependency>
+
+		<dependency>
+			<groupId>net.kyori</groupId>
+			<artifactId>adventure-text-minimessage</artifactId>
+			<version>4.1.0-SNAPSHOT</version>
+		</dependency>
+
 	</dependencies>
 
 	<repositories>
 
 		<repository>
 			<id>spigot-repo</id>
-			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots/</url>
+			<url>https://hub.spigotmc.org/nexus/content/repositories/snapshots</url>
 		</repository>
 
 		<repository>
@@ -171,7 +175,12 @@
 
 		<repository>
 			<id>placeholderapi</id>
-			<url>http://repo.extendedclip.com/content/repositories/placeholderapi/</url>
+			<url>http://repo.extendedclip.com/content/repositories/placeholderapi</url>
+		</repository>
+
+		<repository>
+			<id>sonatype-oss-snapshots</id>
+			<url>https://oss.sonatype.org/content/repositories/snapshots</url>
 		</repository>
 
 	</repositories>
