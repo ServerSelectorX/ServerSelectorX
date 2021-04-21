@@ -44,6 +44,10 @@
 						<relocation>
 							<pattern>org</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.lib.org</shadedPattern>
+							<excludes>
+								<exclude>org.bukkit</exclude>
+								<exclude>org.spigotmc</exclude>
+							</excludes>
 						</relocation>
 						<relocation>
 							<pattern>de.tr7zw.changeme.nbtapi</pattern>
