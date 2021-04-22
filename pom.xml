@@ -42,28 +42,48 @@
 
 					<relocations>
 						<relocation>
-							<pattern>org</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.org</shadedPattern>
-							<excludes>
-								<exclude>org.bukkit</exclude>
-								<exclude>org.spigotmc</exclude>
-							</excludes>
+							<pattern>org.bstats</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.bstats</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.eclipse.jetty</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.jetty</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>de.tr7zw.changeme.nbtapi</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.lib.nbtapi</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>com</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.com</shadedPattern>
+							<pattern>com.google.gson</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.gson</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>javax</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.javax</shadedPattern>
+							<pattern>javax.servlet</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.javax-servlet</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>net</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.net</shadedPattern>
+							<pattern>org.apache.commons.lang3</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.commons-lang3</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.slf4j</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.slf4j</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.checkerframework</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.checkerframework</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.intellij</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.intellij</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>org.jetbrains</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.jetbrains</shadedPattern>
+						</relocation>
+						<relocation>
+							<pattern>net.kyori</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.kyori</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>xyz.derkades.derkutils</pattern>
