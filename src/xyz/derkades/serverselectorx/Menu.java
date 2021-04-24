@@ -423,7 +423,11 @@ public class Menu extends IconMenu {
 			final List<String> reasons = (List<String>) map.get("reasons");
 			if (reasons.contains(reason)) {
 				final List<String> actions = (List<String>) map.get("actions");
-				Action.runActions(event.getPlayer(), actions);
+				if (event.getOfflinePlayer() instanceof Player) {
+					Action.runActions(event.getPlayer(), actions);
+				} else {
+					Action.runActions(null, actions);
+				}
 			}
 		});
 	}
