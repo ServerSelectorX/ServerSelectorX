@@ -1,6 +1,7 @@
 package xyz.derkades.serverselectorx.actions;
 
 import java.util.Map;
+import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -25,7 +26,16 @@ public class OpenMenuAction extends Action {
 
 		final FileConfiguration config = menus.get(value);
 
-		Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> new Menu(player, config, value), 0);
+		final UUID uuid = player.getUniqueId();
+
+		Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
+			final Player player2 = Bukkit.getPlayer(uuid);
+			if (player2 == null) {
+				Main.getPlugin().getLogger().warning("Player " + uuid + " left while running openmenu action");
+				return;
+			}
+			new Menu(player, config, value);
+		}, 0);
 		return false;
 	}
 
