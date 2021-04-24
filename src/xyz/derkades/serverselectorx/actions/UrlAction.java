@@ -16,7 +16,7 @@ public class UrlAction extends Action {
 	@Override
 	public boolean apply(final Player player, final String value) {
 		final String url = value;
-		final String message = Colors.parseColors(Main.getConfigurationManager().misc.getString("url-message", "&3&lClick here"));
+		final String message = Colors.parseColors(Main.getConfigurationManager().getMiscConfiguration().getString("url-message", "&3&lClick here"));
 
 		player.spigot().sendMessage(
 				new ComponentBuilder(message)

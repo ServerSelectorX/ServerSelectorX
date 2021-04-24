@@ -16,7 +16,7 @@ import de.tr7zw.changeme.nbtapi.NBTItem;
 public class ItemMoveDropCancelListener implements Listener {
 
 	public ItemMoveDropCancelListener() {
-		final FileConfiguration inventory = Main.getConfigurationManager().inventory;
+		final FileConfiguration inventory = Main.getConfigurationManager().getInventoryConfiguration();
 
 		if (inventory.getBoolean("cancel-item-drop", false)) {
 			Bukkit.getPluginManager().registerEvents(new Listener() {
@@ -58,7 +58,7 @@ public class ItemMoveDropCancelListener implements Listener {
 			return false;
 		}
 
-		if (Main.getConfigurationManager().inventory.getBoolean("ssx-items-only", false)) {
+		if (Main.getConfigurationManager().getInventoryConfiguration().getBoolean("ssx-items-only", false)) {
 			final NBTItem nbt = new NBTItem(item);
 			return nbt.hasKey("SSXItem");
 		} else {

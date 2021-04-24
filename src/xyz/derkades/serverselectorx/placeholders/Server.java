@@ -3,6 +3,9 @@ package xyz.derkades.serverselectorx.placeholders;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
+
+import org.bukkit.configuration.file.FileConfiguration;
 
 import com.google.gson.JsonObject;
 import com.google.gson.JsonSerializer;
@@ -10,7 +13,9 @@ import com.google.gson.JsonSerializer;
 import xyz.derkades.serverselectorx.Main;
 
 public class Server {
-	
+
+	private static final JsonObject EMPTY_OBJECT = new JsonObject();
+
 	public static final JsonSerializer<Server> SERIALIZER = (src, typeOfSrc, context) -> {
 		final JsonObject json = new JsonObject();
 		json.addProperty("name", src.getName());
@@ -22,13 +27,7 @@ public class Server {
 		}
 		return json;
 	};
-	
-	private static final JsonObject EMPTY_OBJECT = new JsonObject();
-	
-//	private static final GlobalPlaceholder ONLINE_0 = new GlobalPlaceholder("online", "0");
-//	private static final GlobalPlaceholder MAX_0 = new GlobalPlaceholder("max", "0");
-	
-//	private static final List<Server> SERVERS = new ArrayList<>();
+
 	private static final Map<String, Server> SERVERS = new HashMap<>();
 
 	private final String name;
@@ -36,11 +35,7 @@ public class Server {
 	private Map<String, Placeholder> placeholders;
 
 	public Server(final String name) {
-		if (name == null) {
-			throw new NullPointerException("Server name can't be null");
-		}
-
-		this.name = name;
+		this.name = Objects.requireNonNull("Server name is null");
 	}
 
 	public String getName() {
@@ -52,29 +47,31 @@ public class Server {
 	}
 
 	public boolean isOnline() {
-		final int timeout = Main.getConfigurationManager().api.getInt("server-offline-timeout", 6000);
+		final int timeout = Main.getConfigurationManager().getApiConfiguration().getInt("server-offline-timeout", 6000);
 		return getTimeSinceLastMessage() < timeout;
 	}
 
 	public Collection<Placeholder> getPlaceholders() {
 		return this.placeholders.values();
 	}
-	
+
 	public boolean hasPlaceholder(final String name) {
 		return this.placeholders != null && this.placeholders.containsKey(name);
 	}
 
 	public Placeholder getPlaceholder(final String name) {
+		final FileConfiguration configMisc = Main.getConfigurationManager().getMiscConfiguration();
+
 		if (!this.isOnline()) {
-			return new GlobalPlaceholder(name, Main.getConfigurationManager().misc.getString("placeholders.offline", "-"));
+			return new GlobalPlaceholder(name, configMisc.getString("placeholders.offline", "-"));
 		}
-		
+
 		if (this.hasPlaceholder(name)) {
 			return this.placeholders.get(name);
 		}
 
 		Main.getPlugin().getLogger().warning("Placeholder " + name + " was requested but not received from the server (" + getName() + ").");
-		return new GlobalPlaceholder(name, Main.getConfigurationManager().misc.getString("placeholders.missing", "?"));
+		return new GlobalPlaceholder(name, configMisc.getString("placeholders.missing", "?"));
 	}
 
 	public int getOnlinePlayers() {
@@ -84,7 +81,7 @@ public class Server {
 	public int getMaximumPlayers() {
 		return hasPlaceholder("max") ? Integer.parseInt(((GlobalPlaceholder) getPlaceholder("max")).getValue()) : 0;
 	}
-	
+
 	public void updatePlaceholders(final Map<String, Placeholder> placeholders) {
 		this.placeholders = placeholders;
 		this.lastInfoTime = System.currentTimeMillis();
@@ -98,7 +95,7 @@ public class Server {
 		if (name == null) {
 			throw new NullPointerException("Name can't be null");
 		}
-		
+
 		if (SERVERS.containsKey(name)) {
 			return SERVERS.get(name);
 		} else {
@@ -107,7 +104,7 @@ public class Server {
 			return server;
 		}
 	}
-	
+
 	public static void clear() {
 		SERVERS.clear();
 	}

@@ -26,7 +26,7 @@ public class ItemGiveListener implements Listener {
 	@EventHandler(priority = EventPriority.HIGH)
 	public void onJoin(final PlayerJoinEvent event) {
 		final Player player = event.getPlayer();
-		final FileConfiguration config = Main.getConfigurationManager().inventory;
+		final FileConfiguration config = Main.getConfigurationManager().getInventoryConfiguration();
 
 		if (config.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
 			debug("Clearning inventory for " + player.getName());
@@ -61,7 +61,7 @@ public class ItemGiveListener implements Listener {
 			Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> this.giveItems(event.getPlayer(), "clear"), 1);
 		}
 	}
-	
+
 	private void removeSsxItems(final ItemStack[] contents) {
 		for (int i = 0; i < contents.length; i++) {
 			final ItemStack item = contents[i];
@@ -78,9 +78,9 @@ public class ItemGiveListener implements Listener {
 
 	public void giveItems(final Player player, final String type) {
 		debug("Giving items to " + player.getName() + ". Reason: " + type);
-		
+
 		debug("First removing any existing SSX items");
-		
+
 		final PlayerInventory inv = player.getInventory();
 		final ItemStack[] contents = inv.getContents();
 		final ItemStack[] armorContents = inv.getArmorContents();
@@ -88,12 +88,11 @@ public class ItemGiveListener implements Listener {
 		removeSsxItems(armorContents);
 		inv.setContents(contents);
 		inv.setArmorContents(armorContents);
-		
+
 		debug("Now giving items");
 
-		for (final Map.Entry<String, FileConfiguration> itemConfigEntry : Main.getConfigurationManager().items.entrySet()) {
-			final String name = itemConfigEntry.getKey();
-			final FileConfiguration config = itemConfigEntry.getValue();
+		for (final String name : Main.getConfigurationManager().listItemConfigurations()) {
+			final FileConfiguration config = Main.getConfigurationManager().getItemConfiguration(name);
 
 			debug("Preparing to give item '" + name + "'");
 
@@ -121,7 +120,7 @@ public class ItemGiveListener implements Listener {
 			}
 
 			debug("All checks done, giving item");
-			
+
 			if (!config.isConfigurationSection("item")) {
 				player.sendMessage("Missing 'item' section in item config '" + name + "'");
 				continue;
@@ -136,7 +135,7 @@ public class ItemGiveListener implements Listener {
 			final int slot = config.getInt("give.inv-slot", 0);
 			final int delay = config.getInt("give.delay", 0);
 			debug("Give delay: " + delay);
-			
+
 			if (slot < 0) {
 				if (!inv.containsAtLeast(item, item.getAmount())) {
 					if (delay == 0) {

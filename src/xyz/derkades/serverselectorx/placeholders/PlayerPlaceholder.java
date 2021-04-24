@@ -26,7 +26,7 @@ public class PlayerPlaceholder extends Placeholder {
 
 	public String getValue(final OfflinePlayer player) {
 		if (!this.values.containsKey(player.getUniqueId())) {
-			return Main.getConfigurationManager().misc.getString("placeholders.player-missing", "...");
+			return Main.getConfigurationManager().getMiscConfiguration().getString("placeholders.player-missing", "...");
 		}
 
 		return this.values.get(player.getUniqueId());

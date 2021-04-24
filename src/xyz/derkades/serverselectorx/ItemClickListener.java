@@ -25,7 +25,7 @@ public class ItemClickListener implements Listener {
 			return;
 		}
 
-		final FileConfiguration inventory = Main.getConfigurationManager().inventory;
+		final FileConfiguration inventory = Main.getConfigurationManager().getInventoryConfiguration();
 
 		if (event.isCancelled() && inventory.getBoolean("ignore-cancelled", false)) {
 			return;
@@ -46,17 +46,17 @@ public class ItemClickListener implements Listener {
 
 		final String itemName = nbt.getString("SSXItem");
 
-		if (!Main.getConfigurationManager().items.containsKey(itemName)) {
+		final FileConfiguration config = Main.getConfigurationManager().getItemConfiguration(itemName);
+
+		if (config == null) {
 			player.sendMessage("No configuration file exists for an item with the name '" + itemName + "'.");
 			return;
 		}
 
-		final FileConfiguration config = Main.getConfigurationManager().items.get(itemName);
-
 		if (config.isInt("cooldown")) {
 			final long timeLeft = Cooldown.getCooldown("ssxitem" + itemName);
 			if (timeLeft > 0) {
-				player.sendMessage(Colors.parseColors(String.format(Main.getConfigurationManager().misc.getString("cooldown-message"), timeLeft / 1000.0)));
+				player.sendMessage(Colors.parseColors(String.format(Main.getConfigurationManager().getMiscConfiguration().getString("cooldown-message"), timeLeft / 1000.0)));
 				return;
 			}
 

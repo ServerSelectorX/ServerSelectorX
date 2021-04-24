@@ -10,10 +10,10 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import xyz.derkades.serverselectorx.actions.Action;
 
 public class ActionsOnJoinListener implements Listener {
-	
+
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onJoin(final PlayerJoinEvent event) {
-		final List<String> actions = Main.getConfigurationManager().join.getStringList("actions");
+		final List<String> actions = Main.getConfigurationManager().getJoinConfiguration().getStringList("actions");
 		Action.runActions(event.getPlayer(), actions);
 	}
 

@@ -7,6 +7,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import net.md_5.bungee.api.ChatColor;
 import xyz.derkades.serverselectorx.placeholders.Placeholder;
@@ -35,10 +36,10 @@ public class ServerSelectorXCommand implements CommandExecutor {
 
 			Main.server.stop();
 			Main.server.start();
-			
+
 			// Clear server status cache to remove any old server names
 			Server.clear();
-			
+
 			sender.sendMessage("Run " + ChatColor.GRAY + "/ssx reloadcommands" + ChatColor.RESET + " to reload commands.");
 			return true;
 		}
@@ -51,9 +52,11 @@ public class ServerSelectorXCommand implements CommandExecutor {
 		}
 
 		if (args.length == 1 && args[0].equalsIgnoreCase("status")) {
-			sender.sendMessage("Using port " + Main.getConfigurationManager().api.getInt("port"));
-			sender.sendMessage("Listening on " + Main.getConfigurationManager().api.getString("host", "127.0.0.1 (no host specified in config)"));
-			
+			final FileConfiguration configApi = Main.getConfigurationManager().getApiConfiguration();
+
+			sender.sendMessage("Using port " + configApi.getInt("port"));
+			sender.sendMessage("Listening on " + configApi.getString("host", "127.0.0.1 (no host specified in config)"));
+
 			if (Server.getServers().isEmpty()){
 				sender.sendMessage("No data has been received from servers.");
 				return true;
@@ -75,21 +78,21 @@ public class ServerSelectorXCommand implements CommandExecutor {
 		}
 
 		if (args.length == 1 && args[0].equalsIgnoreCase("items")) {
-			Main.getConfigurationManager().items.forEach((name, config) -> {
+			Main.getConfigurationManager().listItemConfigurations().forEach(name -> {
 				sender.sendMessage(name);
 			});
 			return true;
 		}
 
 		if (args.length == 1 && args[0].equalsIgnoreCase("menus")) {
-			Main.getConfigurationManager().menus.forEach((name, config) -> {
+			Main.getConfigurationManager().listMenuConfigurations().forEach(name -> {
 				sender.sendMessage(name);
 			});
 			return true;
 		}
 
 		if (args.length == 1 && args[0].equalsIgnoreCase("commands")) {
-			Main.getConfigurationManager().commands.forEach((name, config) -> {
+			Main.getConfigurationManager().listCommandConfigurations().forEach(name -> {
 				sender.sendMessage(name);
 			});
 			return true;
@@ -112,7 +115,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 			Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> Main.getConfigSync().sync());
 			return true;
 		}
-		
+
 		if (args.length == 1 && args[0].equalsIgnoreCase("synclist")) {
 			Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> {
 				Main.getConfigSync().getFilesToSync().forEach(f -> sender.sendMessage(f));

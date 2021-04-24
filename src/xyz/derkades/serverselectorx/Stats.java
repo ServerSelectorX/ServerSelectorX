@@ -24,13 +24,14 @@ public class Stats extends Metrics {
 		}));
 
 		this.addCustomChart(new SimplePie("number_of_selectors", () -> {
-			return Main.getConfigurationManager().menus.size() + "";
+			return Main.getConfigurationManager().listMenuConfigurations().size() + "";
 		}));
 
 		this.addCustomChart(new AdvancedPie("selector_item", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
-			for (final FileConfiguration item : Main.getConfigurationManager().items.values()) {
+			for (final String itemName : Main.getConfigurationManager().listItemConfigurations()) {
+				final FileConfiguration item = Main.getConfigurationManager().getItemConfiguration(itemName);
 				final Material material = Material.getMaterial(item.getString("item.material"));
 				if (material == null) {
 					continue; //Do not count invalid items
@@ -92,7 +93,8 @@ public class Stats extends Metrics {
 		this.addCustomChart(new AdvancedPie("menu_item_slot", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
-			for (final FileConfiguration item : Main.getConfigurationManager().items.values()) {
+			for (final String itemName : Main.getConfigurationManager().listItemConfigurations()) {
+				final FileConfiguration item = Main.getConfigurationManager().getItemConfiguration(itemName);
 				if (!item.getBoolean("give.join")) {
 					if (map.containsKey("Disabled")) {
 						map.put("Disabled", map.get("Disabled") + 1);
@@ -123,7 +125,8 @@ public class Stats extends Metrics {
 		this.addCustomChart(new AdvancedPie("rows", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
-			for (final FileConfiguration menu : Main.getConfigurationManager().menus.values()) {
+			for (final String menuName : Main.getConfigurationManager().listMenuConfigurations()) {
+				final FileConfiguration menu = Main.getConfigurationManager().getMenuConfiguration(menuName);
 				final int rows = menu.getInt("rows", 1);
 				if (map.containsKey(rows + "")) {
 					map.put(rows + "", map.get(rows + "") + 1);
