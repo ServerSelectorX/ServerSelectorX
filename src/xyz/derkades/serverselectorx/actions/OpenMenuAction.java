@@ -1,6 +1,5 @@
 package xyz.derkades.serverselectorx.actions;
 
-import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.Bukkit;
@@ -18,13 +17,12 @@ public class OpenMenuAction extends Action {
 
 	@Override
 	public boolean apply(final Player player, final String value) {
-		final Map<String, FileConfiguration> menus = Main.getConfigurationManager().menus;
-		if (!menus.containsKey(value)) {
+		final FileConfiguration menu = Main.getConfigurationManager().getMenuConfiguration(value);
+
+		if (menu == null) {
 			player.sendMessage("A menu with the name '" + value + "' does not exist");
 			return true;
 		}
-
-		final FileConfiguration config = menus.get(value);
 
 		final UUID uuid = player.getUniqueId();
 
@@ -34,7 +32,7 @@ public class OpenMenuAction extends Action {
 				Main.getPlugin().getLogger().warning("Player " + uuid + " left while running openmenu action");
 				return;
 			}
-			new Menu(player, config, value);
+			new Menu(player, menu, value);
 		}, 0);
 		return false;
 	}

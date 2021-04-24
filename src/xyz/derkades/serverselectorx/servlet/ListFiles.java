@@ -18,13 +18,13 @@ import xyz.derkades.serverselectorx.Main;
 public class ListFiles extends HttpServlet {
 
 	private static final long serialVersionUID = 1L;
-	
+
 	private static final int DIR_LIST_FILE_LIMIT = 1000;
 
 	@Override
 	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-		final FileConfiguration api = Main.getConfigurationManager().api;
-		
+		final FileConfiguration api = Main.getConfigurationManager().getApiConfiguration();
+
 		if (!api.getBoolean("files-api")) {
 			response.getWriter().println("Files API disabled");
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
@@ -41,16 +41,16 @@ public class ListFiles extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			return;
 		}
-		
+
 		response.setStatus(HttpServletResponse.SC_OK);
-		
+
 		final Deque<File> directories = new ArrayDeque<>();
 		directories.push(dir);
-		
+
 		response.setContentType("text/json");
 		final JsonWriter writer = Main.GSON.newJsonWriter(response.getWriter());
 		writer.beginArray();
-		
+
 		int i = 0;
 		while (!directories.isEmpty()) {
 			i++;
@@ -64,19 +64,19 @@ public class ListFiles extends HttpServlet {
 						+ "someone else is having a look at the files on your server.");
 				break;
 			}
-				
+
 			final File file = directories.pop();
 			if (file.isFile()) {
 				writer.value(file.getPath());
 			}
-			
+
 			if (file.isDirectory()) {
 				for (final File f : file.listFiles()) {
 					directories.push(f);
 				}
 			}
 		}
-		
+
 		writer.endArray();
 	}
 

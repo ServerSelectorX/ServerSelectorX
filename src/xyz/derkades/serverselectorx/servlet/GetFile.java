@@ -17,7 +17,7 @@ public class GetFile extends HttpServlet {
 
 	@Override
 	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
-		final FileConfiguration api = Main.getConfigurationManager().api;
+		final FileConfiguration api = Main.getConfigurationManager().getApiConfiguration();
 
 		if (!api.getBoolean("files-api")) {
 			response.getWriter().println("Files API disabled");

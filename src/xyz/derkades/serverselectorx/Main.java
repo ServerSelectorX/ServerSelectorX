@@ -70,7 +70,7 @@ public class Main extends JavaPlugin {
 	}
 
 	@Override
-	public void onEnable(){
+	public void onEnable() {
 		plugin = this;
 
 		MinecraftVersion.replaceLogger(this.getLogger());
@@ -90,7 +90,7 @@ public class Main extends JavaPlugin {
 		Commands.registerCustomCommands();
 
 		// Disable annoying jetty warnings
-		if (!configurationManager.api.getBoolean("jetty-debug", false)){
+		if (!configurationManager.getApiConfiguration().getBoolean("jetty-debug", false)){
 			System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");
 			System.setProperty("org.eclipse.jetty.LEVEL", "OFF");
 			System.setProperty("org.eclipse.jetty.util.log.announce", "false");
@@ -234,7 +234,7 @@ public class Main extends JavaPlugin {
 		} else if (materialString.startsWith("head:")) {
 			final String owner = materialString.split(":")[1];
 			if (owner.equals("auto")) {
-				if (getConfigurationManager().misc.getBoolean("mojang-api-head-auto", false)) {
+				if (getConfigurationManager().getMiscConfiguration().getBoolean("mojang-api-head-auto", false)) {
 					builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(getHeadTexture(player.getUniqueId()));
 				} else {
 					builder = new ItemBuilder(player);

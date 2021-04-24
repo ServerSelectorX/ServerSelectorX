@@ -2,8 +2,10 @@ package xyz.derkades.serverselectorx.configuration;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.EnumMap;
+import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.Set;
 
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -16,103 +18,163 @@ import xyz.derkades.serverselectorx.Main;
  */
 public class ConfigurationManager {
 
-	public Map<String, FileConfiguration> commands;
-	public Map<String, FileConfiguration> menus;
-	public Map<String, FileConfiguration> items;
+	private static final File CONFIG_DIR = new File(Main.getPlugin().getDataFolder(), "config");
 
-	public FileConfiguration api;
-	public FileConfiguration chatcomponents;
-	public FileConfiguration inventory;
-	public FileConfiguration join;
-	public FileConfiguration misc;
-	public FileConfiguration sync;
+	private enum StandardConfigFile {
+
+		API(new File(CONFIG_DIR, "api.yml")),
+		CHATCOMPONENTS(new File(CONFIG_DIR, "chatcomponents.yml")),
+		INVENTORY(new File(CONFIG_DIR, "inventory.yml")),
+		JOIN(new File(CONFIG_DIR, "join.yml")),
+		MISC(new File(CONFIG_DIR, "misc.yml")),
+		SYNC(new File(CONFIG_DIR, "sync.yml"));
+
+		private final File file;
+
+		StandardConfigFile(final File file){
+			this.file = file;
+		}
+
+		private YamlConfiguration copyLoad() throws IOException {
+			if (!this.file.exists()) {
+				FileUtils.copyOutOfJar(this.getClass(), "/config/" + this.file.getName(), this.file);
+			}
+			return YamlConfiguration.loadConfiguration(this.file);
+		}
+	}
+
+	private enum MultiConfigFile {
+
+		COMMAND(new File(Main.getPlugin().getDataFolder(), "command"), "/command.yml", "servers.yml"),
+		ITEM(new File(Main.getPlugin().getDataFolder(), "item"), "/item.yml", "compass.yml"),
+		MENU(new File(Main.getPlugin().getDataFolder(), "menu"), "/menu.yml", "serverselector.yml");
+
+		private final File dir;
+		private final String defaultFileInJar;
+		private final String defaultFileOutsideJar;
+
+		MultiConfigFile(final File dir, final String defaultFileInJar, final String defaultFileOutsideJar) {
+			this.dir = dir;
+			this.defaultFileInJar = defaultFileInJar;
+			this.defaultFileOutsideJar = defaultFileOutsideJar;
+		}
+
+		private void copyLoad(final Map<String, FileConfiguration> dest) throws IOException {
+			if (!this.dir.exists()) {
+				this.dir.mkdir();
+				FileUtils.copyOutOfJar(this.getClass(), this.defaultFileInJar,
+						new File(this.dir, this.defaultFileOutsideJar));
+			}
+
+			for (final File file : this.dir.listFiles()) {
+				if (file.getName().endsWith(".yml")) {
+					dest.put(configName(file), YamlConfiguration.loadConfiguration(file));
+				}
+			}
+		}
+
+		private static String configName(final File file) {
+			return file.getName().substring(0, file.getName().length() - 4);
+		}
+
+	}
+
+	private final Map<StandardConfigFile, FileConfiguration> STANDARD_FILES = new EnumMap<>(StandardConfigFile.class);
+	private final Map<MultiConfigFile, Map<String, FileConfiguration>> MULTI_FILES = new EnumMap<>(MultiConfigFile.class);
 
 	public void reload() throws IOException {
 		final File dir = Main.getPlugin().getDataFolder();
-		dir.mkdirs();
-
-		// First copy all files to the config directory
-
-		final String[] files = {
-				"api.yml",
-				"chatcomponents.yml",
-				"inventory.yml",
-				"join.yml",
-				"misc.yml",
-				"sync.yml",
-		};
-
 		final File configDir = new File(dir, "config");
 		configDir.mkdirs();
 
-		for (final String fileName : files) {
-			final File file = new File(configDir, fileName);
-			if (!file.exists()) {
-				FileUtils.copyOutOfJar(this.getClass(), "/config/" + fileName, file);
-			}
+		// First copy all files to the config directory
 
-			if (fileName.equals("api.yml")) {
-				this.api = YamlConfiguration.loadConfiguration(file);
-			} else if (fileName.equals("chatcomponents.yml")) {
-				this.chatcomponents = YamlConfiguration.loadConfiguration(file);
-			} else if (fileName.equals("inventory.yml")) {
-				this.inventory = YamlConfiguration.loadConfiguration(file);
-			} else if (fileName.equals("join.yml")) {
-				this.join = YamlConfiguration.loadConfiguration(file);
-			} else if (fileName.equals("misc.yml")) {
-				this.misc = YamlConfiguration.loadConfiguration(file);
-			} else if (fileName.equals("sync.yml")) {
-				this.sync = YamlConfiguration.loadConfiguration(file);
-			} else {
-				throw new AssertionError();
+		synchronized(this.STANDARD_FILES) {
+			for (final StandardConfigFile file : StandardConfigFile.values()) {
+				this.STANDARD_FILES.put(file, file.copyLoad());
 			}
 		}
 
-		final File commandDir = new File(dir, "command");
-		if (!commandDir.exists()) {
-			commandDir.mkdir();
-			FileUtils.copyOutOfJar(this.getClass(), "/command.yml",
-					new File(commandDir, "servers.yml"));
-		}
-
-		final File itemDir = new File(dir, "item");
-		if (!itemDir.exists()) {
-			itemDir.mkdir();
-			FileUtils.copyOutOfJar(this.getClass(), "/item.yml",
-					new File(itemDir, "compass.yml"));
-		}
-
-		final File menuDir = new File(dir, "menu");
-		if (!menuDir.exists()) {
-			menuDir.mkdir();
-			FileUtils.copyOutOfJar(this.getClass(), "/menu.yml",
-					new File(menuDir, "serverselector.yml"));
-		}
-
-		this.commands = new ConcurrentHashMap<>();
-		for (final File file : commandDir.listFiles()) {
-			if (file.getName().endsWith(".yml")) {
-				this.commands.put(configName(file), YamlConfiguration.loadConfiguration(file));
-			}
-		}
-
-		this.items = new ConcurrentHashMap<>();
-		for (final File file : itemDir.listFiles()) {
-			if (file.getName().endsWith(".yml")) {
-				this.items.put(configName(file), YamlConfiguration.loadConfiguration(file));
-			}
-		}
-
-		this.menus = new ConcurrentHashMap<>();
-		for (final File file : menuDir.listFiles()) {
-			if (file.getName().endsWith(".yml")) {
-				this.menus.put(configName(file), YamlConfiguration.loadConfiguration(file));
+		synchronized(this.MULTI_FILES) {
+			for (final MultiConfigFile file : MultiConfigFile.values()) {
+				final Map<String, FileConfiguration> files = new HashMap<>();
+				file.copyLoad(files);
+				this.MULTI_FILES.put(file, files);
 			}
 		}
 	}
 
-	private static String configName(final File file) {
-		return file.getName().substring(0, file.getName().length() - 4);
+	public FileConfiguration getCommandConfiguration(final String name) {
+		synchronized(this.MULTI_FILES) {
+			return this.MULTI_FILES.get(MultiConfigFile.COMMAND).get(name);
+		}
 	}
+
+	public Set<String> listCommandConfigurations() {
+		synchronized(this.MULTI_FILES) {
+			return this.MULTI_FILES.get(MultiConfigFile.COMMAND).keySet();
+		}
+	}
+
+	public FileConfiguration getItemConfiguration(final String name) {
+		synchronized(this.MULTI_FILES) {
+			return this.MULTI_FILES.get(MultiConfigFile.ITEM).get(name);
+		}
+	}
+
+	public Set<String> listItemConfigurations() {
+		synchronized(this.MULTI_FILES) {
+			return this.MULTI_FILES.get(MultiConfigFile.ITEM).keySet();
+		}
+	}
+
+	public FileConfiguration getMenuConfiguration(final String name) {
+		synchronized(this.MULTI_FILES) {
+			return this.MULTI_FILES.get(MultiConfigFile.MENU).get(name);
+		}
+	}
+
+	public Set<String> listMenuConfigurations() {
+		synchronized(this.MULTI_FILES) {
+			return this.MULTI_FILES.get(MultiConfigFile.MENU).keySet();
+		}
+	}
+
+	public FileConfiguration getApiConfiguration() {
+		synchronized(this.STANDARD_FILES) {
+			return this.STANDARD_FILES.get(StandardConfigFile.API);
+		}
+	}
+
+	public FileConfiguration getChatcomponentsConfiguration() {
+		synchronized(this.STANDARD_FILES) {
+			return this.STANDARD_FILES.get(StandardConfigFile.CHATCOMPONENTS);
+		}
+	}
+
+	public FileConfiguration getInventoryConfiguration() {
+		synchronized(this.STANDARD_FILES) {
+			return this.STANDARD_FILES.get(StandardConfigFile.INVENTORY);
+		}
+	}
+
+	public FileConfiguration getJoinConfiguration() {
+		synchronized(this.STANDARD_FILES) {
+			return this.STANDARD_FILES.get(StandardConfigFile.JOIN);
+		}
+	}
+
+	public FileConfiguration getMiscConfiguration() {
+		synchronized(this.STANDARD_FILES) {
+			return this.STANDARD_FILES.get(StandardConfigFile.MISC);
+		}
+	}
+
+	public FileConfiguration getSyncConfiguration() {
+		synchronized(this.STANDARD_FILES) {
+			return this.STANDARD_FILES.get(StandardConfigFile.SYNC);
+		}
+	}
+
 
 }

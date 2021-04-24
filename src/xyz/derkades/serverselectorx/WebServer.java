@@ -1,5 +1,6 @@
 package xyz.derkades.serverselectorx;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.servlet.ServletContextHandler;
@@ -21,13 +22,14 @@ public class WebServer {
 		handler.addServlet(ListFiles.class, "/listfiles");
 		handler.addServlet(Root.class, "/");
 		handler.addServlet(Players.class, "/players");
-		
+
 
         this.server.setHandler(handler);
 
         final ServerConnector connector = new ServerConnector(this.server);
-        connector.setHost(Main.getConfigurationManager().api.getString("host", "127.0.0.1"));
-        final int port = Main.getConfigurationManager().api.getInt("port");
+        final FileConfiguration configApi = Main.getConfigurationManager().getApiConfiguration();
+        connector.setHost(configApi.getString("host", "127.0.0.1"));
+        final int port = configApi.getInt("port");
         connector.setPort(port);
         this.server.addConnector(connector);
 

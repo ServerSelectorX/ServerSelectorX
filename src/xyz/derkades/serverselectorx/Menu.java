@@ -1,10 +1,8 @@
 package xyz.derkades.serverselectorx;
 
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
@@ -36,7 +34,7 @@ public class Menu extends IconMenu {
 	private boolean closed = false;
 
 	public Menu(final Player player, final FileConfiguration config, final String configName) {
-		super(Main.getPlugin(), Colors.parseColors(config.getString("title", UUID.randomUUID().toString())), config.getInt("rows", 6), player);
+		super(Main.getPlugin(), Colors.parseColors(config.getString("title", "no title, config failed to load?")), config.getInt("rows", 6), player);
 
 		this.config = config;
 
@@ -85,6 +83,8 @@ public class Menu extends IconMenu {
 	}
 
 	private void addItems() {
+		final FileConfiguration configMisc = Main.getConfigurationManager().getMiscConfiguration();
+
 		final OfflinePlayer potentiallyOffline = this.getPlayer();
 		if (!(potentiallyOffline instanceof Player)) {
 			Main.getPlugin().getLogger().warning("Player " + potentiallyOffline.getUniqueId() + " went offline?");
@@ -102,8 +102,6 @@ public class Menu extends IconMenu {
 
 			final ConfigurationSection section = this.config.getConfigurationSection("menu." + key);
 
-//			List<String> actions;
-//			List<String> rightActions;
 			ConfigurationSection chosenSection;
 			ItemBuilder builder;
 
@@ -116,18 +114,18 @@ public class Menu extends IconMenu {
 					return;
 				}
 
-				if (!noPermissionSection.contains("material")) {
+				final String materialString = noPermissionSection.getString("material");
+
+				if (materialString == null) {
 					player.sendMessage("No permission section is missing the material option");
 					return;
 				}
 
-				if (Arrays.asList("NONE", "AIR").contains(noPermissionSection.getString("material"))) {
-					continue itemLoop;
+				if (materialString.equals("NONE") || materialString.equals("AIR")) {
+					continue;
 				}
 
 				builder = Main.getItemBuilderFromItemSection(player, noPermissionSection);
-//				actions = noPermissionSection.getStringList("actions");
-//				rightActions = noPermissionSection.getStringList("actions-right");
 				chosenSection = noPermissionSection;
 			} else {
 				// Player has permission, use other sections
@@ -139,35 +137,26 @@ public class Menu extends IconMenu {
 					if (server.isOnline()) {
 						// to avoid "may not have been initialized" errors later
 						builder = null;
-//						actions = null;
-//						rightActions = null;
 						chosenSection = null;
 
-						if (Main.getConfigurationManager().misc.contains("server-name") &&
-								serverName.equalsIgnoreCase(Main.getConfigurationManager().misc.getString("server-name")) &&
+						if (configMisc.contains("server-name") &&
+								serverName.equalsIgnoreCase(configMisc.getString("server-name")) &&
 								section.isConfigurationSection("connected")) {
 							final ConfigurationSection connectedSection = section.getConfigurationSection("connected");
 							builder = Main.getItemBuilderFromItemSection(player, connectedSection);
-//							actions = connectedSection.getStringList("actions");
-//							rightActions = connectedSection.getStringList("actions-right");
 							chosenSection = connectedSection;
 						} else {
 							if (section.contains("dynamic")) {
 								for (final String dynamicKey : section.getConfigurationSection("dynamic").getKeys(false)) {
-									int colons = 0;
-									for (final char c : dynamicKey.toCharArray()) {
-										if (c == ':') {
-											colons++;
-										}
-									}
-
+									final long colons = dynamicKey.chars().filter(c -> c == ':').count();
 									if (colons != 1) {
 										player.sendMessage("Invalid dynamic section '" + dynamicKey + "'. Dynamic section identifiers should contain exactly one colon, this one contains " + colons + ".");
 										return;
 									}
 
-									final String placeholderKeyInConfig = dynamicKey.split(":")[0];
-									final String placeholderValueInConfig = dynamicKey.split(":")[1];
+									final String[] split = dynamicKey.split(":");
+									final String placeholderKeyInConfig = split[0];
+									final String placeholderValueInConfig = split[1];
 
 									final Placeholder placeholder = server.getPlaceholder(placeholderKeyInConfig);
 									if (placeholder == null) {
@@ -195,18 +184,18 @@ public class Menu extends IconMenu {
 											mode.equals("more") && Double.parseDouble(placeholderValueInConfig) < Double.parseDouble(placeholderValueFromConnector)
 											) {
 
-										if (!dynamicSection.contains("material")) {
+										final String materialString = dynamicSection.getString("material");
+
+										if (materialString == null) {
 											player.sendMessage("Dynamic section '" + dynamicKey + "' is missing the material option");
 											return;
 										}
 
-										if (Arrays.asList("NONE", "AIR").contains(dynamicSection.getString("material"))) {
+										if (materialString.equals("NONE") || materialString.equals("AIR")) {
 											continue itemLoop;
 										}
 
 										builder = Main.getItemBuilderFromItemSection(player, dynamicSection);
-//										actions = dynamicSection.getStringList("actions");
-//										rightActions = dynamicSection.getStringList("actions-right");
 										chosenSection = dynamicSection;
 										break;
 									}
@@ -223,18 +212,18 @@ public class Menu extends IconMenu {
 
 								final ConfigurationSection onlineSection = section.getConfigurationSection("online");
 
-								if (!onlineSection.contains("material")) {
+								final String materialString = onlineSection.getString("material");
+
+								if (materialString == null) {
 									player.sendMessage("Error for item " + key);
 									player.sendMessage("Online section does not have a material option");
 								}
 
-								if (Arrays.asList("NONE", "AIR").contains(onlineSection.getString("material"))) {
-									continue itemLoop;
+								if (materialString.equals("NONE") || materialString.equals("AIR")) {
+									continue;
 								}
 
 								builder = Main.getItemBuilderFromItemSection(player, onlineSection);
-//								actions = onlineSection.getStringList("actions");
-//								rightActions = onlineSection.getStringList("actions-right");
 								chosenSection = onlineSection;
 							}
 						}
@@ -263,7 +252,7 @@ public class Menu extends IconMenu {
 							builder.amount(amount < 1 || amount > 64 ? 1 : amount);
 						}
 					} else {
-						//Server is offline
+						// Server is offline
 						if (!section.isConfigurationSection("offline")) {
 							player.sendMessage("Offline section does not exist");
 							return;
@@ -271,36 +260,36 @@ public class Menu extends IconMenu {
 
 						final ConfigurationSection offlineSection = section.getConfigurationSection("offline");
 
-						if (!offlineSection.contains("material")) {
+						final String materialString = offlineSection.getString("material");
+
+						if (materialString == null) {
 							player.sendMessage("Error for item " + key);
 							player.sendMessage("Offline section does not have a material option");
 						}
 
-						if (Arrays.asList("NONE", "AIR").contains(offlineSection.getString("material"))) {
+						if (materialString.equals("NONE") || materialString.equals("AIR")) {
 							continue;
 						}
 
 						builder = Main.getItemBuilderFromItemSection(player, offlineSection);
-//						actions = offlineSection.getStringList("actions");
-//						rightActions = offlineSection.getStringList("actions-right");
 						chosenSection = offlineSection;
 					}
 				} else {
 					// Simple section
-					if (section.getString("material") == null) {
+					final String materialString = section.getString("material");
+
+					if (materialString == null) {
 						player.sendMessage("Error for item " + key);
 						player.sendMessage("Missing material option. Remember, this is not an advanced section, so don't use online/offline/dynamic sections in the config.");
 						player.sendMessage("If you want to use these sections, add a connector option.");
 						player.sendMessage("Read more here: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Menu-items-v2");
 					}
 
-					if (Arrays.asList("NONE", "AIR").contains(section.getString("material"))) {
-						continue itemLoop;
+					if (materialString.equals("NONE") || materialString.equals("AIR")) {
+						continue;
 					}
 
 					builder = Main.getItemBuilderFromItemSection(player, section);
-//					actions = section.getStringList("actions");
-//					rightActions = section.getStringList("actions-right");
 					chosenSection = section;
 				}
 			}

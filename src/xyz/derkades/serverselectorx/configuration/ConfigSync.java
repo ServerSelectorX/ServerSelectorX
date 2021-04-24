@@ -18,6 +18,7 @@ import java.util.List;
 import java.util.logging.Logger;
 
 import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import com.google.gson.JsonParser;
 
@@ -30,11 +31,13 @@ public class ConfigSync {
 	private final Logger logger = Main.getPlugin().getLogger();
 
 	public ConfigSync() {
-		if (!Main.getConfigurationManager().sync.getBoolean("enabled", false)) {
+		final FileConfiguration configSync = Main.getConfigurationManager().getSyncConfiguration();
+
+		if (!configSync.getBoolean("enabled", false)) {
 			return;
 		}
 
-		final long interval = Main.getConfigurationManager().sync.getInt("interval") * 60 * 20;
+		final long interval = configSync.getInt("interval") * 60 * 20;
 
 		// Run 1 second after server startup, then every hour
 		Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getPlugin(), this::sync, 20, interval);
@@ -49,7 +52,8 @@ public class ConfigSync {
     }
 
     private static String getBaseUrl(final String method) {
-		return "http://" + Main.getConfigurationManager().sync.getString("address") +
+    	final FileConfiguration configSync = Main.getConfigurationManager().getSyncConfiguration();
+		return "http://" + configSync.getString("address") +
 				(method.equals("") ? "" : "/" + method);
     }
 
@@ -101,13 +105,15 @@ public class ConfigSync {
 	}
 
 	public List<String> getFilesToSync() {
+		final FileConfiguration configSync = Main.getConfigurationManager().getSyncConfiguration();
+
 		final List<String> files = new ArrayList<>();
 
 		// Add all files from the 'files' option
-		Main.getConfigurationManager().sync.getStringList("files").stream().map(s -> Main.getPlugin().getDataFolder().getPath() + s).forEach(files::add);
+		configSync.getStringList("files").stream().map(s -> Main.getPlugin().getDataFolder().getPath() + s).forEach(files::add);
 
 		// Add all files from the 'directories' option
-		for (final String dir : Main.getConfigurationManager().sync.getStringList("directories")) {
+		for (final String dir : configSync.getStringList("directories")) {
 			try {
 				addFilesInDirectory(dir, files);
 			} catch (final IOException e) {
@@ -117,7 +123,7 @@ public class ConfigSync {
 		}
 
 		// Remove excluded files
-		Main.getConfigurationManager().sync.getStringList("exclude").forEach(files::remove);
+		configSync.getStringList("exclude").forEach(files::remove);
 
 		return files;
 	}
@@ -127,11 +133,13 @@ public class ConfigSync {
 	}
 
 	public void sync() {
+		final FileConfiguration configSync = Main.getConfigurationManager().getSyncConfiguration();
+
 		this.logger.info("Starting config sync..");
 
 		// Verify that the address is in the correct format
 		try {
-			new URL("http://" + Main.getConfigurationManager().sync.getString("address"));
+			new URL("http://" + configSync.getString("address"));
 		} catch (final MalformedURLException e) {
 			this.logger.severe("The address you entered seems to be incorrectly formatted.");
 			this.logger.severe("It must be formatted like this: 173.45.16.208:8888");
@@ -144,7 +152,7 @@ public class ConfigSync {
 
 		final File dataFolder = Main.getPlugin().getDataFolder(); // for convenience
 
-		if (Main.getConfigurationManager().sync.getBoolean("delete", false)) {
+		if (configSync.getBoolean("delete", false)) {
 			final File[] toDelete = new File[] {
 					new File(dataFolder, "item"),
 					new File(dataFolder, "command"),
@@ -195,7 +203,7 @@ public class ConfigSync {
 		Server.clear();
 
 		Bukkit.getScheduler().runTask(Main.getPlugin(), () -> {
-			final List<String> commands = Main.getConfigurationManager().sync.getStringList("after-sync-commands");
+			final List<String> commands = configSync.getStringList("after-sync-commands");
 			if (!commands.isEmpty()) {
 				this.logger.info("Running after-sync-commands");
 				commands.forEach((c) -> Bukkit.dispatchCommand(Bukkit.getConsoleSender(), c));

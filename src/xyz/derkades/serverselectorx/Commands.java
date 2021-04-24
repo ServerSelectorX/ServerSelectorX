@@ -1,7 +1,6 @@
 package xyz.derkades.serverselectorx;
 
 import java.util.List;
-import java.util.Map;
 
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
@@ -19,9 +18,8 @@ public class Commands {
 	static void registerCustomCommands() {
 		final CommandMap commandMap = ReflectionUtil.getCommandMap();
 
-		for (final Map.Entry<String, FileConfiguration> configEntry : Main.getConfigurationManager().commands.entrySet()) {
-			final String commandName = configEntry.getKey();
-			final FileConfiguration config = configEntry.getValue();
+		for (final String commandName : Main.getConfigurationManager().listCommandConfigurations()) {
+			final FileConfiguration config = Main.getConfigurationManager().getCommandConfiguration(commandName);
 			final String description = config.getString("description", "Opens menu");
 			final String usage = config.getString("usage", "/<command>");
 			final List<String> aliases = config.getStringList("aliases");
@@ -39,20 +37,22 @@ public class Commands {
 					if (sender instanceof Player){
 						final Player player = (Player) sender;
 
+						final FileConfiguration configMisc = Main.getConfigurationManager().getMiscConfiguration();
+
 						if (config.isInt("cooldown")) {
 							final long timeLeft = Cooldown.getCooldown("ssxcommand" + commandName);
 							if (timeLeft > 0) {
-								player.sendMessage(Colors.parseColors(String.format(Main.getConfigurationManager().misc.getString("cooldown-message"), timeLeft / 1000.0)));
+								player.sendMessage(Colors.parseColors(String.format(configMisc.getString("cooldown-message"), timeLeft / 1000.0)));
 								return true;
 							}
 
 							Cooldown.addCooldown("ssxcommand" + commandName, config.getInt("cooldown"));
 						}
-						
+
 						if (config.getBoolean("permission", false) && !player.hasPermission("ssx.command." + commandName)) {
-							FileConfiguration misc = Main.getConfigurationManager().misc;
-							if (misc.isString("no-permission")) {
-								player.sendMessage(Colors.parseColors(misc.getString("no-permission")));
+
+							if (configMisc.isString("no-permission")) {
+								player.sendMessage(Colors.parseColors(configMisc.getString("no-permission")));
 							}
 							return true;
 						}
