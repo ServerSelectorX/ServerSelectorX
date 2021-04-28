@@ -1,6 +1,7 @@
 package xyz.derkades.serverselectorx;
 
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -54,7 +55,7 @@ public class ItemMoveDropCancelListener implements Listener {
 	}
 
 	private boolean isSsxItem(final ItemStack item) {
-		if (item == null) {
+		if (item == null || item.getType() == Material.AIR) {
 			return false;
 		}
 
