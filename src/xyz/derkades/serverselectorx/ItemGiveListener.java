@@ -1,7 +1,6 @@
 package xyz.derkades.serverselectorx;
 
 import java.lang.reflect.InvocationTargetException;
-import java.util.Map;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
