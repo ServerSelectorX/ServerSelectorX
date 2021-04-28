@@ -3,6 +3,7 @@ package xyz.derkades.serverselectorx.servlet;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.util.Objects;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -25,8 +26,12 @@ public class GetFile extends HttpServlet {
 			return;
 		}
 
+		final String filePath = request.getParameter("file");
+
+		Objects.requireNonNull(filePath, "File path not specified");
+
 		response.setStatus(HttpServletResponse.SC_OK);
-		final Path file = Path.of(request.getParameter("file"));
+		final Path file = Path.of(filePath);
 		final String type = Files.probeContentType(file);
 		response.setContentType(type != null ? type : "application/octet-stream");
 		Files.copy(file, response.getOutputStream());
