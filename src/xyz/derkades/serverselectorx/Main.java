@@ -89,6 +89,8 @@ public class Main extends JavaPlugin {
 		//Register custom selector commands
 		Commands.registerCustomCommands();
 
+		System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
+
 		// Disable annoying jetty warnings
 		if (!configurationManager.getApiConfiguration().getBoolean("jetty-debug", false)){
 			System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");
