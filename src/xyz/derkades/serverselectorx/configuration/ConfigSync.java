@@ -111,7 +111,7 @@ public class ConfigSync {
 		final List<String> files = new ArrayList<>();
 
 		// Add all files from the 'files' option
-		configSync.getStringList("files").stream().map(s -> Main.getPlugin().getDataFolder().getPath() + s).forEach(files::add);
+		configSync.getStringList("files").stream().map(s -> Main.getPlugin().getDataFolder().getPath() + "/" + s).forEach(files::add);
 
 		// Add all files from the 'directories' option
 		for (final String dir : configSync.getStringList("directories")) {
