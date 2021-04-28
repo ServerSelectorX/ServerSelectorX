@@ -13,6 +13,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
@@ -111,7 +112,7 @@ public class ConfigSync {
 		final List<String> files = new ArrayList<>();
 
 		// Add all files from the 'files' option
-		configSync.getStringList("files").stream().map(s -> Main.getPlugin().getDataFolder().getPath() + s).forEach(files::add);
+		configSync.getStringList("files").stream().map(s -> Main.getPlugin().getDataFolder().getPath() + "/" + s).forEach(files::add);
 
 		// Add all files from the 'directories' option
 		for (final String dir : configSync.getStringList("directories")) {
@@ -169,19 +170,10 @@ public class ConfigSync {
 		}
 
 		for (final String fileName : this.getFilesToSync()) {
-			final File file = new File(fileName);
-			try {
-				if (!file.exists()) {
-					file.getParentFile().mkdirs();
-					file.createNewFile();
-				}
-			} catch (final IOException e) {
-				e.printStackTrace();
-				continue;
-			}
-
 			try (InputStream input = ConfigSync.this.getFileContent(fileName)){
-				Files.copy(input, file.toPath());
+				final File file = new File(fileName);
+				file.getParentFile().mkdirs();
+				Files.copy(input, file.toPath(), StandardCopyOption.REPLACE_EXISTING);
 			} catch (final IOException e) {
 				this.logger.warning("An error occured while trying sync file " + fileName);
 				e.printStackTrace();
