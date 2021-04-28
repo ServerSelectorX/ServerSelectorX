@@ -8,6 +8,7 @@ import java.nio.file.Paths;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.util.Objects;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -27,8 +28,13 @@ public class GetFile extends HttpServlet {
 			return;
 		}
 
+		final String filePath = request.getParameter("file");
+
+		Objects.requireNonNull(filePath, "File path not specified");
+
 		response.setStatus(HttpServletResponse.SC_OK);
-		final Path file = Paths.get(request.getParameter("file"));
+
+		final Path file = Paths.get(filePath);
 		final String type = Files.probeContentType(file);
 		response.setContentType(type != null ? type : "application/octet-stream");
 		Files.copy(file, response.getOutputStream());
