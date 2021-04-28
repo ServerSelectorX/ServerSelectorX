@@ -1,5 +1,6 @@
 package xyz.derkades.serverselectorx;
 
+import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
@@ -33,20 +34,14 @@ public class WebServer {
         connector.setPort(port);
         this.server.addConnector(connector);
 
-		new Thread() {
-
-			@Override
-			public void run() {
-				try {
-					WebServer.this.server.start();
-					Main.getPlugin().getLogger().info("Listening on port " + port);
-					WebServer.this.server.join(); //Join with main thread
-				} catch (final Exception e) {
-					Main.getPlugin().getLogger().severe("An error occured while starting webserver: " + e.getMessage());
-				}
+        Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> {
+        	try {
+				WebServer.this.server.start();
+				Main.getPlugin().getLogger().info("Listening on port " + port);
+			} catch (final Exception e) {
+				Main.getPlugin().getLogger().severe("An error occured while starting webserver: " + e.getMessage());
 			}
-
-		}.start();
+        });
 	}
 
 	public void stop() {
