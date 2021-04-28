@@ -8,7 +8,6 @@ import java.nio.file.Paths;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Objects;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -30,7 +29,11 @@ public class GetFile extends HttpServlet {
 
 		final String filePath = request.getParameter("file");
 
-		Objects.requireNonNull(filePath, "File path not specified");
+		if (filePath == null) {
+			response.getWriter().println("File not specified");
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
 
 		response.setStatus(HttpServletResponse.SC_OK);
 
