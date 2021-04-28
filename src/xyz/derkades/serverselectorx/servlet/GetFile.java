@@ -3,7 +3,6 @@ package xyz.derkades.serverselectorx.servlet;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Objects;
 
 import org.bukkit.configuration.file.FileConfiguration;
 
@@ -28,7 +27,11 @@ public class GetFile extends HttpServlet {
 
 		final String filePath = request.getParameter("file");
 
-		Objects.requireNonNull(filePath, "File path not specified");
+		if (filePath == null) {
+			response.getWriter().println("File not specified");
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			return;
+		}
 
 		response.setStatus(HttpServletResponse.SC_OK);
 		final Path file = Path.of(filePath);
