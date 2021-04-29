@@ -253,10 +253,16 @@ public class Main extends JavaPlugin {
 			final String id = materialString.substring(4);
 			builder = HDBHandler.getBuilder(id);
 		} else {
-			Material material;
-			try {
-				material = Material.valueOf(materialString);
-			} catch (final IllegalArgumentException e) {
+			final String[] materialsToTry = materialString.split("\\|");
+			Material material = null;
+			for (final String materialString2 : materialsToTry) {
+				try {
+					material = Material.valueOf(materialString2);
+					break;
+				} catch (final IllegalArgumentException e) {}
+			}
+
+			if (material == null) {
 				player.sendMessage("Invalid item name '" + materialString + "'");
 				player.sendMessage("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Item-names");
 				return new ItemBuilder(Material.COBBLESTONE);
