@@ -237,13 +237,23 @@ public class Main extends JavaPlugin {
 			final String owner = materialString.split(":")[1];
 			if (owner.equals("auto")) {
 				if (getConfigurationManager().getMiscConfiguration().getBoolean("mojang-api-head-auto", false)) {
-					builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(getHeadTexture(player.getUniqueId()));
+					final String texture = getHeadTexture(UUID.fromString(owner));
+					if (texture != null) {
+						builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(texture);
+					} else {
+						builder = new ItemBuilder(Material.PLAYER_HEAD);
+					}
 				} else {
 					builder = new ItemBuilder(player);
 				}
 			} else {
 				try {
-					builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(getHeadTexture(UUID.fromString(owner)));
+					final String texture = getHeadTexture(UUID.fromString(owner));
+					if (texture != null) {
+						builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(texture);
+					} else {
+						builder = new ItemBuilder(Material.PLAYER_HEAD);
+					}
 				} catch (final IllegalArgumentException e) {
 					// Invalid UUID, parse as texture
 					builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(owner);
@@ -293,7 +303,7 @@ public class Main extends JavaPlugin {
 	    	}
     	} catch (final IOException | IllegalArgumentException | NullPointerException | ClassCastException | IllegalStateException | IndexOutOfBoundsException e) {
     		Main.getPlugin().getLogger().warning("Failed to get base64 texture value for " + uuid + ". Is the UUID valid? Error details: " + e.getClass().getSimpleName() + " " + e.getMessage());
-    		return "";
+    		return null;
     	}
     }
 
