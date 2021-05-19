@@ -89,6 +89,8 @@ public class ServerSelectorXCommand implements CommandExecutor {
 				return true;
 			}
 
+			sender.sendMessage("Placeholders for " + serverName);
+
 			for (final Placeholder placeholder : server.getPlaceholders()) {
 				if (placeholder instanceof PlayerPlaceholder) {
 					sender.sendMessage(placeholder.getKey());
@@ -100,6 +102,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 					sender.sendMessage(placeholder.getKey() + ": " + ((GlobalPlaceholder) placeholder).getValue());
 				}
 			}
+			return true;
 		}
 
 		if (args.length == 1 && args[0].equalsIgnoreCase("items")) {
