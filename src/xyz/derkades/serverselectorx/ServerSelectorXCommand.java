@@ -10,7 +10,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import net.md_5.bungee.api.ChatColor;
+import xyz.derkades.serverselectorx.placeholders.GlobalPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.Placeholder;
+import xyz.derkades.serverselectorx.placeholders.PlayerPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class ServerSelectorXCommand implements CommandExecutor {
@@ -75,6 +77,29 @@ public class ServerSelectorXCommand implements CommandExecutor {
 				}
 			}
 			return true;
+		}
+
+		if (args.length == 2 && args[0].equalsIgnoreCase("placeholders")) {
+			final String serverName = args[1];
+
+			final Server server = Server.getServer(serverName);
+
+			if (!server.isOnline()) {
+				sender.sendMessage("The server '" + serverName + "' does not exist or is currently offline");
+				return true;
+			}
+
+			for (final Placeholder placeholder : server.getPlaceholders()) {
+				if (placeholder instanceof PlayerPlaceholder) {
+					sender.sendMessage(placeholder.getKey());
+					final PlayerPlaceholder pp = (PlayerPlaceholder) placeholder;
+					pp.getValues().forEach((uuid, value) -> {
+						sender.sendMessage("  " + uuid + ": " + value);
+					});
+				} else {
+					sender.sendMessage(placeholder.getKey() + ": " + ((GlobalPlaceholder) placeholder).getValue());
+				}
+			}
 		}
 
 		if (args.length == 1 && args[0].equalsIgnoreCase("items")) {
