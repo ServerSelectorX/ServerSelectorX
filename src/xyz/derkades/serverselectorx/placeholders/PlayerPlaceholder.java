@@ -1,6 +1,7 @@
 package xyz.derkades.serverselectorx.placeholders;
 
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 
 import org.bukkit.OfflinePlayer;
@@ -13,7 +14,7 @@ public class PlayerPlaceholder extends Placeholder {
 
 	public PlayerPlaceholder(final String key, final Map<UUID, String> values) {
 		super(key);
-		this.values = values;
+		this.values = Objects.requireNonNull(values, "Placeholder values map is null");
 	}
 
 	public Map<UUID, String> getValues() {
@@ -21,7 +22,7 @@ public class PlayerPlaceholder extends Placeholder {
 	}
 
 	public String getValue(final UUID uuid) {
-		return this.values.get(uuid);
+		return this.values.get(Objects.requireNonNull(uuid, "Specified UUID is null"));
 	}
 
 	public String getValue(final OfflinePlayer player) {
