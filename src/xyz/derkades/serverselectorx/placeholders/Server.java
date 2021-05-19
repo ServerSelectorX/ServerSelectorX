@@ -35,7 +35,7 @@ public class Server {
 	private Map<String, Placeholder> placeholders;
 
 	public Server(final String name) {
-		this.name = Objects.requireNonNull("Server name is null");
+		this.name = Objects.requireNonNull(name, "Server name is null");
 	}
 
 	public String getName() {
@@ -92,9 +92,7 @@ public class Server {
 	}
 
 	public static Server getServer(final String name) {
-		if (name == null) {
-			throw new NullPointerException("Name can't be null");
-		}
+		Objects.requireNonNull(name, "Server name is null");
 
 		if (SERVERS.containsKey(name)) {
 			return SERVERS.get(name);
