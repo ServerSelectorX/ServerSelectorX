@@ -15,6 +15,7 @@ commands:
       /ssx reload/rl - Reload configuration files
       /ssx reloadcommands/rlcmd - Reloads commands (sort of)
       /ssx status - Show SSX-Connector status
+      /ssx placeholders <server> - Show placeholders for a server
       /ssx items - List names of loaded items
       /ssx menus - List names of loaded menus
       /ssx commands - List names of loaded commands
