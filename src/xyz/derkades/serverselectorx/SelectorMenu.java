@@ -96,8 +96,6 @@ public class SelectorMenu extends IconMenu {
 				return;
 			}
 
-			materialString = materialString.toUpperCase();
-
 			if (materialString.equals("AIR")) {
 				return;
 			}

@@ -28,7 +28,7 @@ public class Main extends JavaPlugin {
 	public static JavaPlugin getPlugin(){
 		return plugin;
 	}
-	
+
 	public static BukkitTask pingTask;
 
 	@Override
@@ -61,7 +61,7 @@ public class Main extends JavaPlugin {
 
 		this.getLogger().info("Thank you for using ServerSelectorX. If you enjoy using this plugin, consider buying the premium version for more features: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium");
 	}
-	
+
 	@Override
 	public void onDisable() {
 		if (pingTask != null) {
@@ -72,9 +72,9 @@ public class Main extends JavaPlugin {
 					getLogger().warning("Was not able to stop ping task, giving up. You may see a \"Nag author\" warning.");
 					break;
 				}
-				
+
 				pingTask.cancel();
-				
+
 				try {
 					Thread.sleep(100);
 				} catch (final InterruptedException e) {
@@ -96,7 +96,7 @@ public class Main extends JavaPlugin {
 
 			for (final String configName : configurationManager.list()) {
 				final FileConfiguration config = configurationManager.getByName(configName);
-				
+
 				final String commandName = config.getString("command");
 
 				if (commandName == null || commandName.equalsIgnoreCase("none")) {
@@ -130,7 +130,7 @@ public class Main extends JavaPlugin {
 	public static ConfigurationManager getConfigurationManager() {
 		return configurationManager;
 	}
-	
+
 	static ItemBuilder getItemFromMaterialString(final Player player, final String materialString) {
 		if (materialString.startsWith("head:")) {
 			final String owner = materialString.split(":")[1];
@@ -147,10 +147,10 @@ public class Main extends JavaPlugin {
 			}
 		} else {
 			try {
-				final Material material = Material.valueOf(materialString);
+				final Material material = Material.valueOf(materialString.toUpperCase());
 				return new ItemBuilder(material);
 			} catch (final IllegalArgumentException e) {
-				player.sendMessage("Invalid item name " + materialString);
+				player.sendMessage("Invalid item name " + materialString.toUpperCase());
 				player.sendMessage("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Item-names");
 				return new ItemBuilder(Material.COBBLESTONE);
 			}
