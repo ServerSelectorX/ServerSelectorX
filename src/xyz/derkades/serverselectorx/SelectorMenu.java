@@ -113,8 +113,8 @@ public class SelectorMenu extends IconMenu {
 			}
 
 			builder.amount(amount);
-			builder.name(PlaceholderUtil.parsePapiPlaceholders(player, name));
-			builder.lore(PlaceholderUtil.parsePapiPlaceholders(player, lore));
+			builder.coloredName(PlaceholderUtil.parsePapiPlaceholders(player, name));
+			builder.coloredLore(PlaceholderUtil.parsePapiPlaceholders(player, lore));
 
 			final ItemStack item = builder.create();
 
