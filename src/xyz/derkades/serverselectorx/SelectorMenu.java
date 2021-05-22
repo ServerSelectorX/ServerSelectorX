@@ -45,7 +45,7 @@ public class SelectorMenu extends IconMenu {
 			} else {
 				final String ip = section.getString("ip");
 				final int port = section.getInt("port");
-				final String serverId = ip + port;
+				final String serverId = ip + ":" + port;
 
 				final ServerPinger pinger = PingServersBackground.SERVER_INFO.get(serverId);
 
