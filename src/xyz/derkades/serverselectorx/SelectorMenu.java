@@ -46,7 +46,7 @@ public class SelectorMenu extends IconMenu {
 				final String ip = section.getString("ip");
 				final int port = section.getInt("port");
 				final String serverId = ip + port;
-				
+
 				final ServerPinger pinger = PingServersBackground.SERVER_INFO.get(serverId);
 
 				// If server is online
@@ -54,9 +54,9 @@ public class SelectorMenu extends IconMenu {
 					final int online = pinger.getOnlinePlayers();
 					final int max = pinger.getMaximumPlayers();
 					final String motd = pinger.getMotd();
-					
+
 					ConfigurationSection subSection = section.getConfigurationSection("online");
-					
+
 					if (section.isConfigurationSection("dynamic")) {
 						final ConfigurationSection dyn = section.getConfigurationSection("dynamic");
 						if (dyn.isConfigurationSection(motd)) {
@@ -90,14 +90,14 @@ public class SelectorMenu extends IconMenu {
 					lore = offlineSection.getStringList("lore");
 				}
 			}
-			
+
 			if (materialString == null) {
 				player.sendMessage("Missing item option for item " + key);
 				return;
 			}
-			
+
 			materialString = materialString.toUpperCase();
-			
+
 			if (materialString.equals("AIR")) {
 				return;
 			}
@@ -105,8 +105,8 @@ public class SelectorMenu extends IconMenu {
 			final ItemBuilder builder = Main.getItemFromMaterialString(player, materialString);
 
 			builder.amount(amount);
-			builder.name(PlaceholderUtil.parsePapiPlaceholders(player, name));
-			builder.lore(PlaceholderUtil.parsePapiPlaceholders(player, lore));
+			builder.coloredName(PlaceholderUtil.parsePapiPlaceholders(player, name));
+			builder.coloredLore(PlaceholderUtil.parsePapiPlaceholders(player, lore));
 
 			final ItemStack item = builder.create();
 
