@@ -134,10 +134,10 @@ public class Main extends JavaPlugin {
 			}
 		} else {
 			try {
-				final Material material = Material.valueOf(materialString);
+				final Material material = Material.valueOf(materialString.toUpperCase());
 				return new ItemBuilder(material);
 			} catch (final IllegalArgumentException e) {
-				player.sendMessage("Invalid item name " + materialString);
+				player.sendMessage("Invalid item name " + materialString.toUpperCase());
 				player.sendMessage("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Item-names");
 				return new ItemBuilder(Material.COBBLESTONE);
 			}
