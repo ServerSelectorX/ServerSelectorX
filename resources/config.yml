@@ -15,3 +15,5 @@ cancel-item-move: false
 external-pinger: false
 
 ping-timeout: 1000
+
+ping-debug: false
