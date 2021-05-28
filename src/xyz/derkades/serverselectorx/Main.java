@@ -191,11 +191,13 @@ public class Main extends JavaPlugin {
 			builder.coloredLore(lore);
 		}
 
+		boolean hideFlagsDefault = false;
 		if (section.getBoolean("enchanted")) {
 			builder.unsafeEnchant(Enchantment.DURABILITY, 1);
+			hideFlagsDefault = true;
 		}
 
-		if (section.getBoolean("hide-flags")) {
+		if (section.getBoolean("hide-flags", hideFlagsDefault)) {
 			builder.hideFlags(63);
 		}
 
