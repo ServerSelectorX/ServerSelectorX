@@ -38,6 +38,11 @@ public class ItemClickListener implements Listener {
 			return;
 		}
 
+		// this cooldown is added when the menu closes
+		if (!checkCooldown(player, "ssxitemglobal", 100, false)) {
+			return;
+		}
+
 		final NBTItem nbt = new NBTItem(item);
 
 		if (!nbt.hasKey("SSXItem")) {
@@ -53,14 +58,8 @@ public class ItemClickListener implements Listener {
 			return;
 		}
 
-		if (config.isInt("cooldown")) {
-			final long timeLeft = Cooldown.getCooldown("ssxitem" + itemName);
-			if (timeLeft > 0) {
-				player.sendMessage(Colors.parseColors(String.format(Main.getConfigurationManager().getMiscConfiguration().getString("cooldown-message"), timeLeft / 1000.0)));
-				return;
-			}
-
-			Cooldown.addCooldown("ssxitem" + itemName, config.getInt("cooldown"));
+		if (config.isInt("cooldown") && !checkCooldown(player, "ssxitem" + itemName, config.getInt("cooldown"), true)) {
+			return;
 		}
 
 		final List<String> actions = new ArrayList<>();
@@ -77,22 +76,25 @@ public class ItemClickListener implements Listener {
 			actions.addAll(config.getStringList("right-click-actions"));
 		}
 
-		/*
-		 * On 1.9-1.12, this event is sometimes called twice (once for each hand). Bukkit
-		 * has a proper method of checking which hand is used, but since this version is
-		 * compiled against 1.8 I can't use that here. Unless I use reflection, which I am
-		 * not going to, because I'm lazy. A cooldown of 200ms does the same thing.
-		 */
-		if (Cooldown.getCooldown("ssxclick" + player.getName()) > 0) {
-			return;
-		}
-		Cooldown.addCooldown("ssxclick" + player.getName(), 200);
-
 		xyz.derkades.serverselectorx.actions.Action.runActions(player, actions);
 
 		final boolean cancel = inventory.getBoolean("cancel-click-event", false);
 		if (cancel) {
 			event.setCancelled(true);
 		}
+	}
+
+	private boolean checkCooldown(final Player player, String id, final long duration, final boolean message) {
+		id = id + player.getName();
+		final long timeLeft = Cooldown.getCooldown(id);
+		if (timeLeft > 0) {
+			if (message && Main.getConfigurationManager().getMiscConfiguration().isString("cooldown-message")) {
+				player.sendMessage(Colors.parseColors(String.format(Main.getConfigurationManager().getMiscConfiguration().getString("cooldown-message"), timeLeft / 1000.0)));
+			}
+			return false;
+		}
+
+		Cooldown.addCooldown(id, duration);
+		return true;
 	}
 }
