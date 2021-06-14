@@ -102,7 +102,7 @@ public class ItemClickListener implements Listener {
 		id = id + player.getName();
 		final long timeLeft = Cooldown.getCooldown(id);
 		if (timeLeft > 0) {
-			if (message) {
+			if (message && Main.getConfigurationManager().getMiscConfiguration().isString("cooldown-message")) {
 				player.sendMessage(Colors.parseColors(String.format(Main.getConfigurationManager().getMiscConfiguration().getString("cooldown-message"), timeLeft / 1000.0)));
 			}
 			return false;
