@@ -52,6 +52,11 @@ public class ItemClickListener implements Listener {
 			return;
 		}
 
+		// this cooldown is added when the menu closes
+		if (!checkCooldown(player, "ssxitemglobal", 100, false)) {
+			return;
+		}
+
 		final NBTItem nbt = new NBTItem(item);
 
 		if (!nbt.hasKey("SSXItem")) {
@@ -67,14 +72,8 @@ public class ItemClickListener implements Listener {
 			return;
 		}
 
-		if (config.isInt("cooldown")) {
-			final long timeLeft = Cooldown.getCooldown("ssxitem" + itemName);
-			if (timeLeft > 0) {
-				player.sendMessage(Colors.parseColors(String.format(Main.getConfigurationManager().getMiscConfiguration().getString("cooldown-message"), timeLeft / 1000.0)));
-				return;
-			}
-
-			Cooldown.addCooldown("ssxitem" + itemName, config.getInt("cooldown"));
+		if (config.isInt("cooldown") && !checkCooldown(player, "ssxitem" + itemName, config.getInt("cooldown"), true)) {
+			return;
 		}
 
 		final List<String> actions = new ArrayList<>();
@@ -97,5 +96,19 @@ public class ItemClickListener implements Listener {
 		if (cancel) {
 			event.setCancelled(true);
 		}
+	}
+
+	private boolean checkCooldown(final Player player, String id, final long duration, final boolean message) {
+		id = id + player.getName();
+		final long timeLeft = Cooldown.getCooldown(id);
+		if (timeLeft > 0) {
+			if (message) {
+				player.sendMessage(Colors.parseColors(String.format(Main.getConfigurationManager().getMiscConfiguration().getString("cooldown-message"), timeLeft / 1000.0)));
+			}
+			return false;
+		}
+
+		Cooldown.addCooldown(id, duration);
+		return true;
 	}
 }
