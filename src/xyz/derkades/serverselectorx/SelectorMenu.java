@@ -12,11 +12,13 @@ import org.bukkit.inventory.ItemStack;
 
 import net.md_5.bungee.api.chat.ClickEvent;
 import net.md_5.bungee.api.chat.ComponentBuilder;
+import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.ListUtils;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.derkutils.bukkit.menu.IconMenu;
+import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
 import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
 
@@ -191,7 +193,13 @@ public class SelectorMenu extends IconMenu {
 		} else {
 			return false; // Return false = stay open
 		}
+	}
 
+	@Override
+	public void onClose(final MenuCloseEvent event) {
+		if (event.getPlayer() instanceof Player) {
+			Cooldown.addCooldown("ssx-global-open" + event.getPlayer().getName(), 300);
+		}
 	}
 
 }

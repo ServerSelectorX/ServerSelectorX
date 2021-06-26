@@ -10,6 +10,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 
+import xyz.derkades.derkutils.Cooldown;
+
 public class SelectorOpenListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH)
@@ -22,17 +24,24 @@ public class SelectorOpenListener implements Listener {
 			return;
 		}
 
+
 		final Player player = event.getPlayer();
+
+		if (Cooldown.getCooldown("ssx-global-open" + player.getName()) > 0) {
+			return;
+		}
+
+		Cooldown.addCooldown("ssx-global-open" + player.getName(), 300);
 
 		for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
 			if (config == null) {
 				continue;
 			}
-			
+
 			if (!config.isString("item")) {
 				continue;
 			}
-			
+
 			if (config.getString("item").equalsIgnoreCase("NONE")){
 				continue;
 			}
