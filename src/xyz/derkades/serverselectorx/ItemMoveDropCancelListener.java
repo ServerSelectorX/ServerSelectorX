@@ -6,9 +6,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.event.inventory.InventoryDragEvent;
-import org.bukkit.event.inventory.InventoryType;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.inventory.ItemStack;
@@ -36,13 +36,19 @@ public class ItemMoveDropCancelListener implements Listener {
 		if (inventory.getBoolean("cancel-item-move", false)) {
 			Bukkit.getPluginManager().registerEvents(new Listener() {
 				@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-				public void onItemMove(final InventoryClickEvent event){
-					event.setCancelled(event.getClickedInventory() != null
-							&& (!inventory.getBoolean("cancel-item-move-player-only")
-									|| event.getClickedInventory().getType().equals(InventoryType.PLAYER))
-							&& !event.getWhoClicked().hasPermission("ssx.move")
-							&& (isSsxItem(event.getCursor())
-									|| isSsxItem(event.getCurrentItem())));
+				public void onItemMove(final InventoryClickEvent event) {
+					event.setCancelled(
+						event.getClickedInventory() != null &&
+						!event.getWhoClicked().hasPermission("ssx.move") &&
+						(
+							isSsxItem(event.getCursor()) ||
+							isSsxItem(event.getCurrentItem()) ||
+							(
+								event.getClick() == ClickType.NUMBER_KEY &&
+								isSsxItem(event.getWhoClicked().getInventory().getItem(event.getHotbarButton()))
+							)
+						)
+					);
 				}
 
 				@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
@@ -64,15 +70,15 @@ public class ItemMoveDropCancelListener implements Listener {
 	}
 
 	private boolean isSsxItem(final ItemStack item) {
-		if (item == null || item.getType() == Material.AIR) {
-			return false;
+		if (!Main.getConfigurationManager().getInventoryConfiguration().getBoolean("ssx-items-only", false)) {
+			return true;
 		}
 
-		if (Main.getConfigurationManager().getInventoryConfiguration().getBoolean("ssx-items-only", false)) {
+		if (item == null || item.getType() == Material.AIR) {
+			return false;
+		} else {
 			final NBTItem nbt = new NBTItem(item);
 			return nbt.hasKey("SSXItem");
-		} else {
-			return true;
 		}
 	}
 
