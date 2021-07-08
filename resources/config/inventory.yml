@@ -26,7 +26,3 @@ cancel-click-event: false
 # When this is set to true, players will no longer be able to open the server selector if plugins
 # such as WorldGuard don't allow it.
 ignore-cancelled: false
-
-# Should cancel item move only cancel it if its from a players inventory?
-# This will allow moving items in chests etc.
-cancel-item-move-player-only: false
