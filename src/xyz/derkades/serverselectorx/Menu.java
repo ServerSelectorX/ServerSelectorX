@@ -38,15 +38,6 @@ public class Menu extends IconMenu {
 
 		this.config = config;
 
-		try {
-			if (config.contains("sound")) {
-				player.playSound(player.getLocation(), Sound.valueOf(config.getString("sound")), 1.0f, 1.0f);
-			}
-		} catch (final IllegalArgumentException e) {
-			Main.getPlugin().getLogger().warning("Invalid sound name in config file '" + configName + "'");
-			Main.getPlugin().getLogger().warning("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Sound-names");
-		}
-
 		if (this.config == null ||
 				this.config.getConfigurationSection("menu") == null) {
 			player.sendMessage("The configuration file failed to load, probably due to a syntax error.");
@@ -54,6 +45,15 @@ public class Menu extends IconMenu {
 			player.sendMessage("Check for identation and balanced quotes. If you want to use quotation marks in strings, they must be escaped properly by putting two quotation marks (for example \"\" or '').");
 			player.sendMessage("Menu name: " + configName);
 			return;
+		}
+
+		try {
+			if (config.contains("sound")) {
+				player.playSound(player.getLocation(), Sound.valueOf(config.getString("sound")), 1.0f, 1.0f);
+			}
+		} catch (final IllegalArgumentException e) {
+			Main.getPlugin().getLogger().warning("Invalid sound name in config file '" + configName + "'");
+			Main.getPlugin().getLogger().warning("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Sound-names");
 		}
 
 		final int updateInterval = config.getInt("update-interval", 100);
