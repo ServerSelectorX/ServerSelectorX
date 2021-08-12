@@ -34,7 +34,7 @@ public class Menu extends IconMenu {
 	private boolean closed = false;
 
 	public Menu(final Player player, final FileConfiguration config, final String configName) {
-		super(Main.getPlugin(), Colors.parseColors(config.getString("title", "no title, config failed to load?")), config.getInt("rows", 6), player);
+		super(Main.getPlugin(), Colors.parseColors(config.getString("title", "TITLE MISSING")), config.getInt("rows", 6), player);
 
 		this.config = config;
 
