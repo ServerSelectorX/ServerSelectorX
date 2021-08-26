@@ -9,7 +9,7 @@ import xyz.derkades.serverselectorx.Main;
 
 public class ServerGroupAction extends Action {
 
-	private static final String CHANNEL_NAME = "SSX-ServerGroup";
+	private static final String CHANNEL_NAME = "ssx:servergroup";
 
 	public ServerGroupAction() {
 		super("servergroup", true);
