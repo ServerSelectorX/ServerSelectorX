@@ -1,5 +1,6 @@
 package xyz.derkades.serverselectorx.actions;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import com.google.common.io.ByteArrayDataOutput;
@@ -9,10 +10,12 @@ import xyz.derkades.serverselectorx.Main;
 
 public class ServerGroupAction extends Action {
 
-	private static final String CHANNEL_NAME = "ssx:servergroup";
+	private static final String CHANNEL_NAME = "derkades.serverselectorx:servergroup";
 
 	public ServerGroupAction() {
 		super("servergroup", true);
+
+		Bukkit.getServer().getMessenger().registerOutgoingPluginChannel(Main.getPlugin(), CHANNEL_NAME);
 	}
 
 	@Override
