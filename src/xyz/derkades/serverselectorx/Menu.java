@@ -34,18 +34,9 @@ public class Menu extends IconMenu {
 	private boolean closed = false;
 
 	public Menu(final Player player, final FileConfiguration config, final String configName) {
-		super(Main.getPlugin(), Colors.parseColors(config.getString("title", "no title, config failed to load?")), config.getInt("rows", 6), player);
+		super(Main.getPlugin(), Colors.parseColors(config.getString("title", "TITLE MISSING")), config.getInt("rows", 6), player);
 
 		this.config = config;
-
-		try {
-			if (config.contains("sound")) {
-				player.playSound(player.getLocation(), Sound.valueOf(config.getString("sound")), 1.0f, 1.0f);
-			}
-		} catch (final IllegalArgumentException e) {
-			Main.getPlugin().getLogger().warning("Invalid sound name in config file '" + configName + "'");
-			Main.getPlugin().getLogger().warning("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Sound-names");
-		}
 
 		if (this.config == null ||
 				this.config.getConfigurationSection("menu") == null) {
@@ -54,6 +45,15 @@ public class Menu extends IconMenu {
 			player.sendMessage("Check for identation and balanced quotes. If you want to use quotation marks in strings, they must be escaped properly by putting two quotation marks (for example \"\" or '').");
 			player.sendMessage("Menu name: " + configName);
 			return;
+		}
+
+		try {
+			if (config.contains("sound")) {
+				player.playSound(player.getLocation(), Sound.valueOf(config.getString("sound")), 1.0f, 1.0f);
+			}
+		} catch (final IllegalArgumentException e) {
+			Main.getPlugin().getLogger().warning("Invalid sound name in config file '" + configName + "'");
+			Main.getPlugin().getLogger().warning("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Sound-names");
 		}
 
 		final int updateInterval = config.getInt("update-interval", 100);

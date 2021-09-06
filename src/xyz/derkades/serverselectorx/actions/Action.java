@@ -22,6 +22,7 @@ public abstract class Action {
 			new RandomServerAction(),
 			new RoundRobinServerAction(),
 			new ServerAction(),
+			new ServerGroupAction(),
 			new SoundAction(),
 			new TeleportAction(),
 			new ToggleEffectAction(),
