@@ -182,9 +182,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>com.github.shynixn.headdatabase</groupId>
-			<artifactId>hdb-api</artifactId>
-			<version>1.0</version>
+			<groupId>com.arcaniax</groupId>
+			<artifactId>HeadDatabase-API</artifactId>
+			<version>1.3.0</version>
 			<scope>provided</scope>
 		</dependency>
 
