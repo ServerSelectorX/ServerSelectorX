@@ -205,7 +205,7 @@ public class SelectorMenu extends IconMenu {
 
 	@Override
 	public void onClose(final MenuCloseEvent event) {
-		if (event.getPlayer() instanceof Player) {
+		if (event.getOfflinePlayer() instanceof Player) {
 			Cooldown.addCooldown("ssx-global-open" + event.getPlayer().getName(), 300);
 		}
 	}
