@@ -5,11 +5,11 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-import java.util.stream.Collectors;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -26,6 +26,9 @@ import com.google.gson.JsonParser;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
@@ -173,22 +176,44 @@ public class Main extends JavaPlugin {
     public static ItemBuilder getItemBuilderFromItemSection(final Player player, final ConfigurationSection section) {
     	final String materialString = section.getString("material");
     	final ItemBuilder builder = getItemBuilderFromMaterialString(player, materialString);
+    	
+    	boolean useMiniMessage = section.getBoolean("minimessage", false);
 
     	if (section.contains("title")) {
-	    	String title = "&r&f" + section.getString("title");
+	    	String title = section.getString("title");
 	    	title = title.replace("{player}", player.getName());
 	    	title = PlaceholderUtil.parsePapiPlaceholders(player, title);
-	    	builder.coloredName(title);
+	    	if (useMiniMessage) {
+	    		Component c = MiniMessage.get().deserialize(title);
+	    		title = LegacyComponentSerializer.legacySection().serialize(c);
+	    		builder.name(title);
+	    	} else {
+	    		title = "&r&f" + title;
+	    		builder.coloredName(title);
+	    	}
     	} else {
     		builder.name(" ");
     	}
 
 		if (section.contains("lore")) {
-			List<String> lore = section.getStringList("lore");
-			lore = lore.stream().map((s) -> "&r&f" + s).collect(Collectors.toList());
-			final Placeholder playerPlaceholder = new Placeholder("{player}", player.getName());
-			lore = PlaceholderUtil.parsePapiPlaceholders(player, lore, playerPlaceholder);
-			builder.coloredLore(lore);
+			List<String> lore = new ArrayList<>(section.getStringList("lore"));
+			for (int i = 0; i < lore.size(); i++) {
+				String line = lore.get(i);
+				final Placeholder playerPlaceholder = new Placeholder("{player}", player.getName());
+				line = PlaceholderUtil.parsePapiPlaceholders(player, line, playerPlaceholder);
+				if (useMiniMessage) {
+		    		Component c = MiniMessage.get().deserialize(line);
+		    		line = LegacyComponentSerializer.legacySection().serialize(c);
+				} else {
+					line = "&r&f";
+				}
+				lore.set(i, line);
+			}
+			if (useMiniMessage) {
+				builder.lore(lore);
+			} else {
+				builder.coloredLore(lore);
+			}
 		}
 
 		boolean hideFlagsDefault = false;
