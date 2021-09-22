@@ -2,7 +2,7 @@
 
 https://www.spigotmc.org/resources/serverselectorx-free.32853/
 
-Beta builds are available at https://ci.derkad.es/view/ServerSelectorX/
+Beta builds are available at https://ci.rkslot.nl/view/ServerSelectorX/
 
 
 ## Branches
