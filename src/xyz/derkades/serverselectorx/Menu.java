@@ -68,11 +68,12 @@ public class Menu extends IconMenu {
 					return;
 				}
 
+				Main.getPlugin().getLogger().info("Starting menu load for player " + player.getName());
 				final long start = System.nanoTime();
 				addItems();
 				if (Main.LAG_DEBUG) {
 					final long diff = System.nanoTime() - start;
-					System.out.println("(Re)loaded menu for player " + player.getName() + " in " + diff / 1000 + "μs. (one tick is 50ms)");
+					Main.getPlugin().getLogger().info(String.format("--Finished (re)loading menu in %.2fμs. (one tick is 50ms)", diff / 1000f));
 				}
 
 				if (config.getBoolean("disable-updates", false)) {
@@ -83,6 +84,8 @@ public class Menu extends IconMenu {
 	}
 
 	private void addItems() {
+		
+		
 		final FileConfiguration configMisc = Main.getConfigurationManager().getMiscConfiguration();
 
 		final OfflinePlayer potentiallyOffline = this.getPlayer();
@@ -95,6 +98,8 @@ public class Menu extends IconMenu {
 
 		itemLoop:
 		for (final String key : this.config.getConfigurationSection("menu").getKeys(false)) {
+			long itemStart = System.nanoTime();
+			
 			if (!this.config.isConfigurationSection("menu." + key)) {
 				player.sendMessage("Invalid item " + key + ", check indentation.");
 				continue;
@@ -342,6 +347,11 @@ public class Menu extends IconMenu {
 
 					this.addItem(slot, item);
 				}
+			}
+			if (Main.LAG_DEBUG) {
+				long current = System.nanoTime();
+				Main.getPlugin().getLogger().info(String.format("  item %s took %.2fμs", key, (current - itemStart) / 1000f));
+				itemStart = current;
 			}
 		}
 	}
