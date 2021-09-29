@@ -23,7 +23,6 @@ public class ConfigurationManager {
 	private enum StandardConfigFile {
 
 		API(new File(CONFIG_DIR, "api.yml")),
-		CHATCOMPONENTS(new File(CONFIG_DIR, "chatcomponents.yml")),
 		INVENTORY(new File(CONFIG_DIR, "inventory.yml")),
 		JOIN(new File(CONFIG_DIR, "join.yml")),
 		MISC(new File(CONFIG_DIR, "misc.yml")),
@@ -143,12 +142,6 @@ public class ConfigurationManager {
 	public FileConfiguration getApiConfiguration() {
 		synchronized(this.STANDARD_FILES) {
 			return this.STANDARD_FILES.get(StandardConfigFile.API);
-		}
-	}
-
-	public FileConfiguration getChatcomponentsConfiguration() {
-		synchronized(this.STANDARD_FILES) {
-			return this.STANDARD_FILES.get(StandardConfigFile.CHATCOMPONENTS);
 		}
 	}
 

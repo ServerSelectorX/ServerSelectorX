@@ -11,7 +11,6 @@ public abstract class Action {
 	private static final Action[] DEFAULT_ACTIONS = {
 			new AdvMessageAction(),
 			new AddEffectAction(),
-			new ChatComponent(),
 			new CloseAction(),
 			new ConsoleCommandAction(),
 			new DelayAction(),
