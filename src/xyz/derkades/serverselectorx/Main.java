@@ -135,11 +135,11 @@ public class Main extends JavaPlugin {
 		if (materialString.startsWith("head:")) {
 			final String owner = materialString.split(":")[1];
 			if (owner.equals("auto")) {
-				return new ItemBuilder(player);
+				return new ItemBuilder(Material.PLAYER_HEAD).skullOwner(player);
 			} else {
 				try {
 					final UUID uuid = UUID.fromString(owner);
-					return new ItemBuilder(Bukkit.getOfflinePlayer(uuid));
+					return new ItemBuilder(Material.PLAYER_HEAD).skullOwner(Bukkit.getOfflinePlayer(uuid));
 				} catch (final IllegalArgumentException e) {
 					player.sendMessage("Invalid player head UUID '" + owner + "'");
 					return new ItemBuilder(Material.COBBLESTONE);
