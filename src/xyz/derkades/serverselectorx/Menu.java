@@ -18,6 +18,7 @@ import de.tr7zw.changeme.nbtapi.NBTItem;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
+import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
 import xyz.derkades.derkutils.bukkit.menu.IconMenu;
 import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
 import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
@@ -108,7 +109,7 @@ public class Menu extends IconMenu {
 			final ConfigurationSection section = this.config.getConfigurationSection("menu." + key);
 
 			ConfigurationSection chosenSection;
-			ItemBuilder builder;
+			NbtItemBuilder builder;
 
 			if (section.contains("permission") && !player.hasPermission(section.getString("permission"))) {
 				// Use no-permission section
