@@ -127,11 +127,7 @@ public class Main extends JavaPlugin {
 	static ItemBuilder getItemFromMaterialString(final Player player, final String materialString) {
 		if (materialString.startsWith("head:")) {
 			final String owner = materialString.split(":")[1];
-			if (owner.equals("auto")) {
-				return new ItemBuilder(player.getName());
-			} else {
-				return new ItemBuilder(owner);
-			}
+			return new ItemBuilder(Material.SKULL_ITEM).damage(3).skullOwner(owner.equals("auto") ? player.getName() : owner);
 		} else {
 			try {
 				final Material material = Material.valueOf(materialString.toUpperCase());
