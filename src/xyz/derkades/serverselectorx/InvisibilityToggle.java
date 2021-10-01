@@ -11,35 +11,25 @@ public class InvisibilityToggle {
 
 	public static List<UUID> INVISIBILITY_ON = new ArrayList<>();
 
-	@SuppressWarnings("deprecation")
 	public static void showOthers(final Player player) {
 		for (final Player online : Bukkit.getOnlinePlayers()) {
 			if (online.getUniqueId() == player.getUniqueId()) {
 				continue;
 			}
 
-			try {
-				player.showPlayer(Main.getPlugin(), online);
-			} catch (final NoSuchMethodError e) {
-				player.showPlayer(online);
-			}
+			player.showPlayer(Main.getPlugin(), online);
 		}
 
 		INVISIBILITY_ON.remove(player.getUniqueId());
 	}
 
-	@SuppressWarnings("deprecation")
 	public static void hideOthers(final Player player) {
 		for (final Player online : Bukkit.getOnlinePlayers()) {
 			if (online.getUniqueId() == player.getUniqueId()) {
 				continue;
 			}
 
-			try {
-				player.hidePlayer(Main.getPlugin(), online);
-			} catch (final NoSuchMethodError e) {
-				player.hidePlayer(online);
-			}
+			player.hidePlayer(Main.getPlugin(), online);
 		}
 
 		INVISIBILITY_ON.add(player.getUniqueId());

@@ -17,6 +17,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -69,6 +70,8 @@ public class Main extends JavaPlugin {
 
 	private static final Map<UUID, String> HEAD_TEXTURE_CACHE = new HashMap<>();
 
+	@SuppressWarnings("null")
+	@NotNull
 	public static Main getPlugin(){
 		return plugin;
 	}
