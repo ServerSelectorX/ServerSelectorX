@@ -30,6 +30,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
+import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
 import xyz.derkades.serverselectorx.configuration.ConfigSync;
@@ -173,9 +174,9 @@ public class Main extends JavaPlugin {
 		return adventure;
 	}
 
-    public static ItemBuilder getItemBuilderFromItemSection(final Player player, final ConfigurationSection section) {
+    public static NbtItemBuilder getItemBuilderFromItemSection(final Player player, final ConfigurationSection section) {
     	final String materialString = section.getString("material");
-    	final ItemBuilder builder = getItemBuilderFromMaterialString(player, materialString);
+    	final NbtItemBuilder builder = getItemBuilderFromMaterialString(player, materialString);
     	
     	boolean useMiniMessage = section.getBoolean("minimessage", false);
 
@@ -248,42 +249,42 @@ public class Main extends JavaPlugin {
 					player.sendMessage("Unsupported NBT option '" + key + "'");
 				}
 			}
-			return new ItemBuilder(nbt.getItem());
+			return new NbtItemBuilder(nbt.getItem());
 		}
 
 		return builder;
     }
 
-    public static ItemBuilder getItemBuilderFromMaterialString(final Player player, final String materialString) {
-		ItemBuilder builder;
+    public static NbtItemBuilder getItemBuilderFromMaterialString(final Player player, final String materialString) {
+    	NbtItemBuilder builder;
 
 		if (materialString == null) {
 			player.sendMessage("Material is null, either specify a material or remove the material option completely");
-			return new ItemBuilder(Material.COBBLESTONE);
+			return new NbtItemBuilder(Material.COBBLESTONE);
 		} else if (materialString.startsWith("head:")) {
 			final String owner = materialString.split(":")[1];
 			if (owner.equals("auto")) {
 				if (getConfigurationManager().getMiscConfiguration().getBoolean("mojang-api-head-auto", false)) {
 					final String texture = getHeadTexture(UUID.fromString(owner));
 					if (texture != null) {
-						builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(texture);
+						builder = new NbtItemBuilder(Material.PLAYER_HEAD).skullTexture(texture);
 					} else {
-						builder = new ItemBuilder(Material.PLAYER_HEAD);
+						builder = new NbtItemBuilder(Material.PLAYER_HEAD);
 					}
 				} else {
-					builder = new ItemBuilder(player);
+					builder = new NbtItemBuilder(Material.PLAYER_HEAD).skullOwner(player);
 				}
 			} else {
 				try {
 					final String texture = getHeadTexture(UUID.fromString(owner));
 					if (texture != null) {
-						builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(texture);
+						builder = new NbtItemBuilder(Material.PLAYER_HEAD).skullTexture(texture);
 					} else {
-						builder = new ItemBuilder(Material.PLAYER_HEAD);
+						builder = new NbtItemBuilder(Material.PLAYER_HEAD);
 					}
 				} catch (final IllegalArgumentException e) {
 					// Invalid UUID, parse as texture
-					builder = new ItemBuilder(Material.PLAYER_HEAD).skullTexture(owner);
+					builder = new NbtItemBuilder(Material.PLAYER_HEAD).skullTexture(owner);
 				}
 			}
 		} else if (materialString.startsWith("hdb")) {
@@ -302,10 +303,10 @@ public class Main extends JavaPlugin {
 			if (material == null) {
 				player.sendMessage("Invalid item name '" + materialString + "'");
 				player.sendMessage("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Item-names");
-				return new ItemBuilder(Material.COBBLESTONE);
+				return new NbtItemBuilder(Material.COBBLESTONE);
 			}
 
-			builder = new ItemBuilder(material);
+			builder = new NbtItemBuilder(material);
 		}
 
 		return builder;
