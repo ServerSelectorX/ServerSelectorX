@@ -88,7 +88,7 @@
 		<dependency>
 			<groupId>xyz.derkades</groupId>
 			<artifactId>Derkutils</artifactId>
-			<version>master</version>
+			<version>spigot-1.13</version>
 		</dependency>
 
 		<dependency>
