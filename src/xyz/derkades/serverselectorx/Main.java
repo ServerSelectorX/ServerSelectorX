@@ -2,7 +2,13 @@ package xyz.derkades.serverselectorx;
 
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.PrintStream;
 import java.io.Reader;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -10,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
+import java.util.logging.Level;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
@@ -17,6 +24,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.eclipse.jetty.util.log.Log;
 import org.jetbrains.annotations.NotNull;
 
 import com.google.gson.Gson;
@@ -30,6 +38,9 @@ import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.slf4j.simple.SimpleLogger;
+import org.slf4j.simple.SimpleLoggerConfiguration;
+import xyz.derkades.derkutils.LoggerOutputStream;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
@@ -93,16 +104,31 @@ public class Main extends JavaPlugin {
 
 		this.getCommand("serverselectorx").setExecutor(new ServerSelectorXCommand());
 
-		//Register custom selector commands
+		// Register custom selector commands
 		Commands.registerCustomCommands();
 
-		System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
-
-		// Disable annoying jetty warnings
-		if (!configurationManager.getApiConfiguration().getBoolean("jetty-debug", false)){
-			System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");
-			System.setProperty("org.eclipse.jetty.LEVEL", "OFF");
-			System.setProperty("org.eclipse.jetty.util.log.announce", "false");
+		try {
+			Class<?> outputChoiceClass = Class.forName("org.slf4j.simple.OutputChoice");
+			OutputStream out = new LoggerOutputStream(this.getLogger(), Level.INFO);
+			PrintStream printStream = new PrintStream(out);
+			Constructor outputChoiceConstructor = outputChoiceClass.getDeclaredConstructor(PrintStream.class);
+			outputChoiceConstructor.setAccessible(true);
+			Object outputChoice = outputChoiceConstructor.newInstance(printStream);
+			SimpleLoggerConfiguration config = new SimpleLoggerConfiguration();
+			Method configInitMethod = SimpleLoggerConfiguration.class.getDeclaredMethod("init");
+			configInitMethod.setAccessible(true);
+			configInitMethod.invoke(config);
+			Field outputChoiceField = SimpleLoggerConfiguration.class.getDeclaredField("outputChoice");
+			outputChoiceField.setAccessible(true);
+			outputChoiceField.set(config, outputChoice);
+			Field configField = SimpleLogger.class.getDeclaredField("CONFIG_PARAMS");
+			configField.setAccessible(true);
+			configField.set(null, config);
+			Field initializedField = SimpleLogger.class.getDeclaredField("INITIALIZED");
+			initializedField.setAccessible(true);
+			initializedField.set(null, true);
+		} catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
+			e.printStackTrace();
 		}
 
 		adventure = BukkitAudiences.create(this);
