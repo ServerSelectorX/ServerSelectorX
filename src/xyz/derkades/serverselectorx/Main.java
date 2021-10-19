@@ -227,7 +227,7 @@ public class Main extends JavaPlugin {
 		}
 
 		if (section.getBoolean("hide-flags", hideFlagsDefault)) {
-			builder.hideFlags();
+			builder.hideFlags(63);
 		}
 
 		if (section.isInt("amount")) {
