@@ -180,7 +180,7 @@ public class Main extends JavaPlugin {
     public static NbtItemBuilder getItemBuilderFromItemSection(final Player player, final ConfigurationSection section) {
     	final String materialString = section.getString("material");
     	final NbtItemBuilder builder = getItemBuilderFromMaterialString(player, materialString);
-    	
+
     	boolean useMiniMessage = section.getBoolean("minimessage", false);
 
     	if (section.contains("title")) {
@@ -209,7 +209,7 @@ public class Main extends JavaPlugin {
 		    		Component c = MiniMessage.get().deserialize(line);
 		    		line = LegacyComponentSerializer.legacySection().serialize(c);
 				} else {
-					line = "&r&f";
+					line = "&r&f" + line;
 				}
 				lore.set(i, line);
 			}
