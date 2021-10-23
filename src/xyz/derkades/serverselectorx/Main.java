@@ -231,7 +231,7 @@ public class Main extends JavaPlugin {
 		    		Component c = MiniMessage.get().deserialize(line);
 		    		line = LegacyComponentSerializer.legacySection().serialize(c);
 				} else {
-					line = "&r&f";
+					line = "&r&f" + line;
 				}
 				lore.set(i, line);
 			}
