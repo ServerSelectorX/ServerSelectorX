@@ -69,9 +69,13 @@ public class Menu extends IconMenu {
 					return;
 				}
 
-				Main.getPlugin().getLogger().info("Starting menu load for player " + player.getName());
 				final long start = System.nanoTime();
+				if (Main.LAG_DEBUG) {
+					Main.getPlugin().getLogger().info("Starting menu load for player " + player.getName());
+				}
+
 				addItems();
+
 				if (Main.LAG_DEBUG) {
 					final long diff = System.nanoTime() - start;
 					Main.getPlugin().getLogger().info(String.format("--Finished (re)loading menu in %.2fμs. (one tick is 50ms)", diff / 1000f));
