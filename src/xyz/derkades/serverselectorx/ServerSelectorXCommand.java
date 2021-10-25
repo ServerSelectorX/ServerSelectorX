@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import net.md_5.bungee.api.ChatColor;
+import org.jetbrains.annotations.NotNull;
 import xyz.derkades.serverselectorx.placeholders.GlobalPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.Placeholder;
 import xyz.derkades.serverselectorx.placeholders.PlayerPlaceholder;
@@ -18,7 +19,7 @@ import xyz.derkades.serverselectorx.placeholders.Server;
 public class ServerSelectorXCommand implements CommandExecutor {
 
 	@Override
-	public boolean onCommand(final CommandSender sender, final Command command, final String label, final String[] args){
+	public boolean onCommand(final CommandSender sender, final @NotNull Command command, final @NotNull String label, final String[] args){
 		if (!sender.hasPermission("ssx.admin")) {
 			sender.sendMessage(ChatColor.RED + "You need the permission 'ssx.admin' to execute this command.");
 			return true;
@@ -41,9 +42,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 					if (placeholder instanceof PlayerPlaceholder) {
 						sender.sendMessage(placeholder.getKey());
 						final PlayerPlaceholder pp = (PlayerPlaceholder) placeholder;
-						pp.getValues().forEach((uuid, value) -> {
-							sender.sendMessage("  " + uuid + ": " + value);
-						});
+						pp.getValues().forEach((uuid, value) -> sender.sendMessage("  " + uuid + ": " + value));
 					} else {
 						sender.sendMessage(placeholder.getKey() + ": " + ((GlobalPlaceholder) placeholder).getValue());
 					}
@@ -51,105 +50,83 @@ public class ServerSelectorXCommand implements CommandExecutor {
 				return true;
 			}
 		} else if (args.length == 1) {
-			if (args[0].equals("rl") || args[0].equals("reload")) {
-				try {
-					Main.getConfigurationManager().reload();
-					sender.sendMessage("The configuration file has been reloaded.");
-				} catch (final Exception e) {
-					sender.sendMessage(ChatColor.RED + "An error occured while trying to reload the configuration files, probably because of a YAML syntax error.");
-					sender.sendMessage("Error: " + e.getMessage());
-					sender.sendMessage("For a more detailed error message see the console.");
-					e.printStackTrace();
-					return true;
-				}
-
-				Main.server.stop();
-				Main.server.start();
-
-				// Clear server status cache to remove any old server names
-				Server.clear();
-
-				sender.sendMessage("Run " + ChatColor.GRAY + "/ssx reloadcommands" + ChatColor.RESET + " to reload commands.");
-				return true;
-			}
-
-			else if (args[0].equals("reloadcommands") || args[0].equals("rlcmd")) {
-				Commands.registerCustomCommands();
-				sender.sendMessage("Re-registered custom commands.");
-				sender.sendMessage("Commands are not unregistered, if you disabled or renamed a command the old command will still work until the server is restarted.");
-				return true;
-			}
-
-			else if (args[0].equals("status")) {
-				final FileConfiguration configApi = Main.getConfigurationManager().getApiConfiguration();
-
-				sender.sendMessage("Using port " + configApi.getInt("port"));
-				sender.sendMessage("Listening on " + configApi.getString("host", "127.0.0.1 (no host specified in config)"));
-
-				if (Server.getServers().isEmpty()){
-					sender.sendMessage("No data has been received from servers.");
-					return true;
-				}
-
-				for (final Server server : ServerSelectorX.getServers()) {
-					final long ms = server.getTimeSinceLastMessage();
-					final String lastInfo = ms < 999999 ? server.getTimeSinceLastMessage() + "ms" : "∞ ms";
-					if (server.isOnline()) {
-						final List<String> placeholderKeys = server.getPlaceholders().stream()
-								.map(Placeholder::getKey).collect(Collectors.toList());
-						sender.sendMessage(server.getName() + ": " + ChatColor.GREEN + "ONLINE (" + lastInfo + ") " + ChatColor.WHITE +
-								": " + ChatColor.GRAY + String.join(", ", placeholderKeys.stream().map(s -> "{" + s + "}").collect(Collectors.toList())));
-					} else {
-						sender.sendMessage(server.getName() + ": " + ChatColor.RED + "OFFLINE (" + lastInfo + ")");
+			switch (args[0]) {
+				case "rl":
+				case "reload":
+					try {
+						Main.getConfigurationManager().reload();
+						sender.sendMessage("The configuration file has been reloaded.");
+					} catch (final Exception e) {
+						sender.sendMessage(ChatColor.RED + "An error occured while trying to reload the configuration files, probably because of a YAML syntax error.");
+						sender.sendMessage("Error: " + e.getMessage());
+						sender.sendMessage("For a more detailed error message see the console.");
+						e.printStackTrace();
+						return true;
 					}
-				}
-				return true;
-			}
 
-			else if (args[0].equals("items")) {
-				Main.getConfigurationManager().listItemConfigurations().forEach(name -> {
-					sender.sendMessage(name);
-				});
-				return true;
-			}
+					Main.server.stop();
+					Main.server.start();
 
-			else if (args[0].equals("menus")) {
-				Main.getConfigurationManager().listMenuConfigurations().forEach(name -> {
-					sender.sendMessage(name);
-				});
-				return true;
-			}
+					// Clear server status cache to remove any old server names
+					Server.clear();
 
-			else if (args[0].equals("commands")) {
-				Main.getConfigurationManager().listCommandConfigurations().forEach(name -> {
-					sender.sendMessage(name);
-				});
-				return true;
-			}
+					sender.sendMessage("Run " + ChatColor.GRAY + "/ssx reloadcommands" + ChatColor.RESET + " to reload commands.");
+					return true;
+				case "reloadcommands":
+				case "rlcmd":
+					Commands.registerCustomCommands();
+					sender.sendMessage("Re-registered custom commands.");
+					sender.sendMessage("Commands are not unregistered, if you disabled or renamed a command the old command will still work until the server is restarted.");
+					return true;
+				case "status":
+					final FileConfiguration configApi = Main.getConfigurationManager().getApiConfiguration();
 
-			else if (args[0].equals("lagdebug")) {
-				Main.LAG_DEBUG = true;
-				sender.sendMessage("Lag related debug console messages are now enabled until the next server restart/reload.");
-				return true;
-			}
+					sender.sendMessage("Using port " + configApi.getInt("port"));
+					sender.sendMessage("Listening on " + configApi.getString("host", "127.0.0.1 (no host specified in config)"));
 
-			else if (args[0].equals("itemdebug")) {
-				Main.ITEM_DEBUG = true;
-				sender.sendMessage("Debug messages related to items on join are now enabled until the next server restart/reload.");
-				return true;
-			}
+					if (Server.getServers().isEmpty()) {
+						sender.sendMessage("No data has been received from servers.");
+						return true;
+					}
 
-			else if (args[0].equals("sync")) {
-				sender.sendMessage("Synchronising configuration files.. For more information have a look at the console.");
-				Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> Main.getConfigSync().sync());
-				return true;
-			}
-
-			else if (args[0].equals("synclist")) {
-				Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> {
-					Main.getConfigSync().getFilesToSync().forEach(f -> sender.sendMessage(f));
-				});
-				return true;
+					for (final Server server : ServerSelectorX.getServers()) {
+						final long ms = server.getTimeSinceLastMessage();
+						final String lastInfo = ms < 999999 ? server.getTimeSinceLastMessage() + "ms" : "∞ ms";
+						if (server.isOnline()) {
+							final List<String> placeholderKeys = server.getPlaceholders().stream()
+									.map(Placeholder::getKey).collect(Collectors.toList());
+							sender.sendMessage(server.getName() + ": " + ChatColor.GREEN + "ONLINE (" + lastInfo + ") " + ChatColor.WHITE +
+									": " + ChatColor.GRAY + placeholderKeys.stream().map(s -> "{" + s + "}").collect(Collectors.joining(", ")));
+						} else {
+							sender.sendMessage(server.getName() + ": " + ChatColor.RED + "OFFLINE (" + lastInfo + ")");
+						}
+					}
+					return true;
+				case "items":
+					Main.getConfigurationManager().listItemConfigurations().forEach(sender::sendMessage);
+					return true;
+				case "menus":
+					Main.getConfigurationManager().listMenuConfigurations().forEach(sender::sendMessage);
+					return true;
+				case "commands":
+					Main.getConfigurationManager().listCommandConfigurations().forEach(sender::sendMessage);
+					return true;
+				case "lagdebug":
+					Main.LAG_DEBUG = true;
+					sender.sendMessage("Lag related debug console messages are now enabled until the next server restart/reload.");
+					return true;
+				case "itemdebug":
+					Main.ITEM_DEBUG = true;
+					sender.sendMessage("Debug messages related to items on join are now enabled until the next server restart/reload.");
+					return true;
+				case "sync":
+					sender.sendMessage("Synchronising configuration files.. For more information have a look at the console.");
+					Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> Main.getConfigSync().sync());
+					return true;
+				case "synclist":
+					Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () ->
+							Main.getConfigSync().getFilesToSync().forEach(sender::sendMessage));
+					return true;
 			}
 		}
 

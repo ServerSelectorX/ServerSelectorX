@@ -8,6 +8,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import org.jetbrains.annotations.NotNull;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.reflection.ReflectionUtil;
@@ -33,7 +34,7 @@ public class Commands {
 			commandMap.register("ssx-custom", new Command(commandName, description, usage, aliases) {
 
 				@Override
-				public boolean execute(final CommandSender sender, final String label, final String[] args) {
+				public boolean execute(final @NotNull CommandSender sender, final @NotNull String label, final String[] args) {
 					if (sender instanceof Player){
 						final Player player = (Player) sender;
 

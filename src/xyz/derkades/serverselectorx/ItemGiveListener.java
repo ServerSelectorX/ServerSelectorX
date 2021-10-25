@@ -54,9 +54,9 @@ public class ItemGiveListener implements Listener {
 		this.giveItems(event.getPlayer(), "death");
 	}
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onClear(final PlayerCommandPreprocessEvent event) {
-		if (event.getMessage().equalsIgnoreCase("/clear")) {
+		if (event.getMessage().equals("/clear") && event.getPlayer().hasPermission("minecraft.command.clear")) {
 			Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> this.giveItems(event.getPlayer(), "clear"), 1);
 		}
 	}

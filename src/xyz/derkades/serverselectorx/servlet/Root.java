@@ -42,7 +42,7 @@ public class Root extends HttpServlet {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void doPost(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+	protected void doPost(final HttpServletRequest request, final HttpServletResponse response) {
 		final String serverName = request.getParameter("server");
 		final String placeholdersJsonString = request.getParameter("data");
 
@@ -74,7 +74,7 @@ public class Root extends HttpServlet {
 				// values for each player. Every map entry is added as a unique
 				// player specific placeholder.
 				parsedPlaceholders.put(k, new PlayerPlaceholder(k, ((Map<String, String>) v).entrySet().stream()
-						.collect(Collectors.toMap(e -> UUID.fromString(e.getKey()), e-> e.getValue()))));
+						.collect(Collectors.toMap(e -> UUID.fromString(e.getKey()), Map.Entry::getValue))));
 			} else {
 				Main.getPlugin().getLogger().warning("Invalid placeholder value format (" + k + "; " + v + ")");
 			}

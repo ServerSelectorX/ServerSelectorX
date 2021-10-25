@@ -62,9 +62,7 @@ public class ItemClickListener implements Listener {
 			return;
 		}
 
-		final List<String> actions = new ArrayList<>();
-
-		actions.addAll(config.getStringList("actions"));
+		final List<String> actions = new ArrayList<>(config.getStringList("actions"));
 
 		if (config.isList("left-click-actions") &&
 				(event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {

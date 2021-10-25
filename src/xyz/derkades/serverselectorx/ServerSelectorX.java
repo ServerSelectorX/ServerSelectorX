@@ -3,7 +3,9 @@ package xyz.derkades.serverselectorx;
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
@@ -31,7 +33,7 @@ public class ServerSelectorX {
 	}
 	
 	public static List<Server> getServers() {
-		return Server.getServers().entrySet().stream().map(e -> e.getValue()).collect(Collectors.toList());
+		return new ArrayList<>(Server.getServers().values());
 	}
 	
 	public static List<Server> getOnlineServers() {

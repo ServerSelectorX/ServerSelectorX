@@ -305,7 +305,7 @@ public class Main extends JavaPlugin {
 				try {
 					material = Material.valueOf(materialString2);
 					break;
-				} catch (final IllegalArgumentException e) {}
+				} catch (final IllegalArgumentException ignored) {}
 			}
 
 			if (material == null) {
