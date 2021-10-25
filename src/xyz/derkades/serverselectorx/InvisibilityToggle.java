@@ -9,7 +9,7 @@ import org.bukkit.entity.Player;
 
 public class InvisibilityToggle {
 
-	public static List<UUID> INVISIBILITY_ON = new ArrayList<>();
+	public static final List<UUID> INVISIBILITY_ON = new ArrayList<>();
 
 	public static void showOthers(final Player player) {
 		for (final Player online : Bukkit.getOnlinePlayers()) {

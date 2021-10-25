@@ -17,7 +17,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
-import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
 import xyz.derkades.derkutils.bukkit.menu.IconMenu;
 import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
@@ -338,7 +337,7 @@ public class Menu extends IconMenu {
 				for (final String split : key.split(",")) {
 					int slot;
 					try {
-						slot = Integer.valueOf(split);
+						slot = Integer.parseInt(split);
 					} catch (final NumberFormatException e) {
 						player.sendMessage("Invalid slot number " + split);
 						return;

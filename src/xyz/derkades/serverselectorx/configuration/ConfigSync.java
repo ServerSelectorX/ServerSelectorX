@@ -38,7 +38,7 @@ public class ConfigSync {
 			return;
 		}
 
-		final long interval = configSync.getInt("interval") * 60 * 20;
+		final long interval = configSync.getInt("interval") * 60 * 20L;
 
 		// Run 1 second after server startup, then every hour
 		Bukkit.getScheduler().runTaskTimerAsynchronously(Main.getPlugin(), this::sync, 20, interval);
@@ -176,7 +176,6 @@ public class ConfigSync {
 			} catch (final IOException e) {
 				this.logger.warning("An error occured while trying sync file " + fileName);
 				e.printStackTrace();
-				continue;
 			}
 		}
 

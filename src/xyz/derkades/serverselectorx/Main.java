@@ -8,7 +8,6 @@ import java.io.Reader;
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.ArrayList;
@@ -24,7 +23,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.eclipse.jetty.util.log.Log;
 import org.jetbrains.annotations.NotNull;
 
 import com.google.gson.Gson;
@@ -41,7 +39,6 @@ import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.slf4j.simple.SimpleLogger;
 import org.slf4j.simple.SimpleLoggerConfiguration;
 import xyz.derkades.derkutils.LoggerOutputStream;
-import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
@@ -111,7 +108,7 @@ public class Main extends JavaPlugin {
 			Class<?> outputChoiceClass = Class.forName("org.slf4j.simple.OutputChoice");
 			OutputStream out = new LoggerOutputStream(this.getLogger(), Level.INFO);
 			PrintStream printStream = new PrintStream(out);
-			Constructor outputChoiceConstructor = outputChoiceClass.getDeclaredConstructor(PrintStream.class);
+			Constructor<?> outputChoiceConstructor = outputChoiceClass.getDeclaredConstructor(PrintStream.class);
 			outputChoiceConstructor.setAccessible(true);
 			Object outputChoice = outputChoiceConstructor.newInstance(printStream);
 			Field configField = SimpleLogger.class.getDeclaredField("CONFIG_PARAMS");
@@ -322,7 +319,7 @@ public class Main extends JavaPlugin {
 				try {
 					material = Material.valueOf(materialString2);
 					break;
-				} catch (final IllegalArgumentException e) {}
+				} catch (final IllegalArgumentException ignored) {}
 			}
 
 			if (material == null) {

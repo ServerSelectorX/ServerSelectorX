@@ -23,9 +23,7 @@ public class Stats extends Metrics {
 			}
 		}));
 
-		this.addCustomChart(new SimplePie("number_of_selectors", () -> {
-			return Main.getConfigurationManager().listMenuConfigurations().size() + "";
-		}));
+		this.addCustomChart(new SimplePie("number_of_selectors", () -> Main.getConfigurationManager().listMenuConfigurations().size() + ""));
 
 		this.addCustomChart(new AdvancedPie("selector_item", () -> {
 			final Map<String, Integer> map = new HashMap<>();
@@ -70,9 +68,8 @@ public class Stats extends Metrics {
 
 		this.addCustomChart(new SimplePie("updater", () -> "Unavailable"));
 
-		this.addCustomChart(new SimplePie("player_count_mode", () -> {
-			return Main.getPlugin().getConfig().getString("item-count-mode", "absolute").toLowerCase();
-		}));
+		this.addCustomChart(new SimplePie("player_count_mode", () ->
+				Main.getPlugin().getConfig().getString("item-count-mode", "absolute").toLowerCase()));
 
 		this.addCustomChart(new SimplePie("item_drop", () -> {
 			if (Main.getPlugin().getConfig().getBoolean("cancel-item-drop", false)) {
