@@ -35,7 +35,7 @@ right-click-actions: []
 left-click-actions: []
 
 # Uncomment to define a world whitelist. Players who are not in one of the worlds defined
-# below will not receive the item on join and will not be able use the item.
+# below will not receive the item on join and will not be able to use the item.
 #worlds:
 # - hub
 

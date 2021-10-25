@@ -19,7 +19,7 @@ placeholders:
 # Set a server name here if you wish to use the `connected` section
 #server-name: ''
 
-# Request a skin texture from the mojang api by uuid instead of using
+# Request a skin texture from the Mojang API by UUID instead of using
 # player heads directly. Leave disabled unless you're having issues
 # where 'head:auto' does not work but 'head:<uuid>' does work.
 mojang-api-head-auto: false
