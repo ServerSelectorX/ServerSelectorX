@@ -15,7 +15,7 @@ give:
   join: true
   world-switch: false
   death: true
-  clear: false
+  clear: false # give item after using '/clear', doesn't work when using the command on other players
 
   inv-slot: 0
 

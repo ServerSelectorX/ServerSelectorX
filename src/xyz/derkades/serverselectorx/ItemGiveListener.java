@@ -9,6 +9,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
+import org.bukkit.event.player.PlayerCommandSendEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
@@ -44,9 +45,9 @@ public class ItemGiveListener implements Listener {
 		this.giveItems(event.getPlayer(), "death");
 	}
 
-	@EventHandler
+	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
 	public void onClear(final PlayerCommandPreprocessEvent event) {
-		if (event.getMessage().equalsIgnoreCase("/clear")) {
+		if (event.getMessage().equals("/clear") && event.getPlayer().hasPermission("minecraft.command.clear")) {
 			Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> this.giveItems(event.getPlayer(), "clear"), 1);
 		}
 	}
