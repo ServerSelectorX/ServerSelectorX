@@ -16,7 +16,7 @@ ssx-items-only: false
 # -------------------- Advanced -------------------- #
 
 # When this is set to true, stuff that would normally happen when you click an item will not happen.
-# For example, right clicking with a hoe will not turn dirt into farmland.
+# For example, right-clicking with a hoe will not turn dirt into farmland.
 # (only for items that open a menu)
 # This is useful if you use certain items, but can cause problems
 # with some plugins which is why it's disabled by default.
