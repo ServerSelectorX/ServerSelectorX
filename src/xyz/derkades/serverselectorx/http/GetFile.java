@@ -11,6 +11,7 @@ import xyz.derkades.serverselectorx.Main;
 
 import java.nio.file.Files;
 import java.nio.file.Path;
+import java.nio.file.Paths;
 
 public class GetFile extends HttpHandler {
 
@@ -34,7 +35,7 @@ public class GetFile extends HttpHandler {
 			return;
 		}
 
-		final Path file = Path.of(filePath);
+		final Path file = Paths.get(filePath);
 		final String type = Files.probeContentType(file);
 		response.setContentType(type != null ? type : "application/octet-stream");
 		Files.copy(file, response.getOutputStream());
