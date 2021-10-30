@@ -58,32 +58,20 @@
 							<shadedPattern>xyz.derkades.serverselectorx.lib.gson</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>javax.servlet</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.javax-servlet</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>jakarta.servlet</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.jakarta-servlet</shadedPattern>
-						</relocation>
-						<relocation>
 							<pattern>org.apache.commons.lang3</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.lib.commons-lang3</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>org.slf4j</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.slf4j</shadedPattern>
+							<pattern>org.glassfish.grizzly</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.grizzly</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>org.checkerframework</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.checkerframework</shadedPattern>
+							<pattern>org.intellij.lang.annotations</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.intellij-annotations</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>org.intellij</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.intellij</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>org.jetbrains</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.jetbrains</shadedPattern>
+							<pattern>org.jetbrains.annotations</pattern>
+							<shadedPattern>xyz.derkades.serverselectorx.lib.jetbrains-annotations</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>net.kyori</pattern>
@@ -97,29 +85,10 @@
 
 					<filters>
 						<filter>
-							<artifact>org.slf4j:slf4j-simple</artifact>
-							<includes>
-								<include>org/slf4j/**</include>
-							</includes>
-							<excludes>
-								<exclude>META-INF/services/**</exclude>
-							</excludes>
-						</filter>
-						<filter>
-							<artifact>org.slf4j:slf4j-api</artifact>
-							<excludes>
-								<exclude>org/slf4j/LoggerFactory.class</exclude>
-							</excludes>
-						</filter>
-						<filter>
 							<artifact>*:*</artifact>
 							<excludes>
-								<exclude>META-INF/*</exclude>
-								<exclude>META-INF/maven/**</exclude>
-								<exclude>META-INF/versions/**</exclude>
+								<exclude>META-INF/</exclude>
 								<exclude>LICENSE</exclude>
-								<exclude>jetty-dir.css</exclude>
-								<exclude>about.html</exclude>
 							</excludes>
 						</filter>
 					</filters>
@@ -155,18 +124,6 @@
 			<artifactId>placeholderapi</artifactId>
 			<version>2.10.10</version>
 			<scope>provided</scope>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-server</artifactId>
-			<version>11.0.7</version>
-		</dependency>
-
-		<dependency>
-			<groupId>org.eclipse.jetty</groupId>
-			<artifactId>jetty-servlet</artifactId>
-			<version>11.0.7</version>
 		</dependency>
 
 		<dependency>
@@ -207,9 +164,9 @@
 		</dependency>
 
 		<dependency>
-			<groupId>org.slf4j</groupId>
-			<artifactId>slf4j-simple</artifactId>
-			<version>2.0.0-alpha5</version>
+			<groupId>org.glassfish.grizzly</groupId>
+			<artifactId>grizzly-http-server</artifactId>
+			<version>3.0.1</version>
 		</dependency>
 
 	</dependencies>

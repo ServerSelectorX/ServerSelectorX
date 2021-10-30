@@ -1,22 +1,15 @@
 package xyz.derkades.serverselectorx;
 
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintStream;
-import java.io.Reader;
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
-import java.net.HttpURLConnection;
-import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
-import java.util.logging.Level;
-
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import de.tr7zw.changeme.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
@@ -24,21 +17,6 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import de.tr7zw.changeme.nbtapi.NBTItem;
-import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.slf4j.simple.SimpleLogger;
-import org.slf4j.simple.SimpleLoggerConfiguration;
-import xyz.derkades.derkutils.LoggerOutputStream;
 import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
@@ -46,6 +24,17 @@ import xyz.derkades.serverselectorx.configuration.ConfigSync;
 import xyz.derkades.serverselectorx.configuration.ConfigurationManager;
 import xyz.derkades.serverselectorx.placeholders.PapiExpansionRegistrar;
 import xyz.derkades.serverselectorx.placeholders.Server;
+
+import java.io.IOException;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
 
 public class Main extends JavaPlugin {
 
@@ -104,25 +93,25 @@ public class Main extends JavaPlugin {
 		// Register custom selector commands
 		Commands.registerCustomCommands();
 
-		try {
-			Class<?> outputChoiceClass = Class.forName("org.slf4j.simple.OutputChoice");
-			OutputStream out = new LoggerOutputStream(this.getLogger(), Level.INFO);
-			PrintStream printStream = new PrintStream(out);
-			Constructor<?> outputChoiceConstructor = outputChoiceClass.getDeclaredConstructor(PrintStream.class);
-			outputChoiceConstructor.setAccessible(true);
-			Object outputChoice = outputChoiceConstructor.newInstance(printStream);
-			Field configField = SimpleLogger.class.getDeclaredField("CONFIG_PARAMS");
-			configField.setAccessible(true);
-			SimpleLoggerConfiguration config = (SimpleLoggerConfiguration) configField.get(null);
-			Field outputChoiceField = SimpleLoggerConfiguration.class.getDeclaredField("outputChoice");
-			outputChoiceField.setAccessible(true);
-			outputChoiceField.set(config, outputChoice);
-			Field initializedField = SimpleLogger.class.getDeclaredField("INITIALIZED");
-			initializedField.setAccessible(true);
-			initializedField.set(null, true);
-		} catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
-			e.printStackTrace();
-		}
+//		try {
+//			Class<?> outputChoiceClass = Class.forName("org.slf4j.simple.OutputChoice");
+//			OutputStream out = new LoggerOutputStream(this.getLogger(), Level.INFO);
+//			PrintStream printStream = new PrintStream(out);
+//			Constructor<?> outputChoiceConstructor = outputChoiceClass.getDeclaredConstructor(PrintStream.class);
+//			outputChoiceConstructor.setAccessible(true);
+//			Object outputChoice = outputChoiceConstructor.newInstance(printStream);
+//			Field configField = SimpleLogger.class.getDeclaredField("CONFIG_PARAMS");
+//			configField.setAccessible(true);
+//			SimpleLoggerConfiguration config = (SimpleLoggerConfiguration) configField.get(null);
+//			Field outputChoiceField = SimpleLoggerConfiguration.class.getDeclaredField("outputChoice");
+//			outputChoiceField.setAccessible(true);
+//			outputChoiceField.set(config, outputChoice);
+//			Field initializedField = SimpleLogger.class.getDeclaredField("INITIALIZED");
+//			initializedField.setAccessible(true);
+//			initializedField.set(null, true);
+//		} catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
+//			e.printStackTrace();
+//		}
 
 		adventure = BukkitAudiences.create(this);
 
@@ -154,33 +143,33 @@ public class Main extends JavaPlugin {
 			server.stop();
 
 			// Freeze bukkit thread to give the server time to stop
-			int safetyLimit = 0;
-			final int max = FREEZE_MAX_MS / FREEZE_STEP_MS;
-			while(!server.isStopped()) {
-
-				// Don't freeze for longer than 5 seconds
-				if (safetyLimit > max) {
-					this.getLogger().severe("Webserver was still running after waiting for 5 seconds.");
-					this.getLogger().severe("Giving up, crashing the server is worse than breaking the menu.");
-					break;
-				}
-
-				safetyLimit++;
-
-				try {
-					Thread.sleep(FREEZE_STEP_MS);
-				} catch (final InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-
+//			int safetyLimit = 0;
+//			final int max = FREEZE_MAX_MS / FREEZE_STEP_MS;
+//			while(!server.isStopped()) {
+//
+//				// Don't freeze for longer than 5 seconds
+//				if (safetyLimit > max) {
+//					this.getLogger().severe("Webserver was still running after waiting for 5 seconds.");
+//					this.getLogger().severe("Giving up, crashing the server is worse than breaking the menu.");
+//					break;
+//				}
+//
+//				safetyLimit++;
+//
+//				try {
+//					Thread.sleep(FREEZE_STEP_MS);
+//				} catch (final InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//
 			// Sleep a little longer to give the internal jetty stuff time to shut down
 			// otherwise I still got a NoClassDefFoundError
-			try {
-				Thread.sleep(100);
-			} catch (final InterruptedException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				Thread.sleep(100);
+//			} catch (final InterruptedException e) {
+//				e.printStackTrace();
+//			}
 		}
 	}
 

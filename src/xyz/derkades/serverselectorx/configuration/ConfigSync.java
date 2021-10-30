@@ -1,5 +1,11 @@
 package xyz.derkades.serverselectorx.configuration;
 
+import com.google.gson.JsonParser;
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.file.FileConfiguration;
+import xyz.derkades.serverselectorx.Main;
+import xyz.derkades.serverselectorx.placeholders.Server;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
@@ -17,15 +23,6 @@ import java.nio.file.StandardCopyOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Logger;
-
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.file.FileConfiguration;
-
-import com.google.gson.JsonParser;
-
-import jakarta.servlet.http.HttpServletResponse;
-import xyz.derkades.serverselectorx.Main;
-import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class ConfigSync {
 
@@ -63,9 +60,9 @@ public class ConfigSync {
 			final HttpURLConnection conn = (HttpURLConnection) new URL(getBaseUrl("listfiles") + "?dir=.").openConnection();
 			conn.setConnectTimeout(1000);
 			conn.connect();
-			if (conn.getResponseCode() == HttpServletResponse.SC_OK) {
+			if (conn.getResponseCode() == 200) {
 				return true;
-			} else if (conn.getResponseCode() == HttpServletResponse.SC_FORBIDDEN) {
+			} else if (conn.getResponseCode() == 403) {
 				this.logger.warning("Failed to sync files, is files-api enabled on the other server?");
 				return false;
 			} else {
