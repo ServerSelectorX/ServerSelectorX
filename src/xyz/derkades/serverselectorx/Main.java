@@ -1,5 +1,30 @@
 package xyz.derkades.serverselectorx;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import de.tr7zw.changeme.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
+import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.Component;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
+import org.bukkit.Bukkit;
+import org.bukkit.Material;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.enchantments.Enchantment;
+import org.bukkit.entity.Player;
+import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.NotNull;
+import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
+import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
+import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
+import xyz.derkades.serverselectorx.configuration.ConfigSync;
+import xyz.derkades.serverselectorx.configuration.ConfigurationManager;
+import xyz.derkades.serverselectorx.placeholders.PapiExpansionRegistrar;
+import xyz.derkades.serverselectorx.placeholders.Server;
+
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -10,34 +35,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.UUID;
-
-import org.bukkit.Bukkit;
-import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
-import org.bukkit.entity.Player;
-import org.bukkit.plugin.java.JavaPlugin;
-import org.jetbrains.annotations.NotNull;
-
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
-import de.tr7zw.changeme.nbtapi.NBTItem;
-import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
-import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import xyz.derkades.derkutils.bukkit.ItemBuilder;
-import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
-import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
-import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
-import xyz.derkades.serverselectorx.configuration.ConfigSync;
-import xyz.derkades.serverselectorx.configuration.ConfigurationManager;
-import xyz.derkades.serverselectorx.placeholders.PapiExpansionRegistrar;
-import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class Main extends JavaPlugin {
 
@@ -96,15 +93,6 @@ public class Main extends JavaPlugin {
 		//Register custom selector commands
 		Commands.registerCustomCommands();
 
-		System.setProperty("org.slf4j.simpleLogger.logFile", "System.out");
-
-		// Disable annoying jetty warnings
-		if (!configurationManager.getApiConfiguration().getBoolean("jetty-debug", false)){
-			System.setProperty("org.eclipse.jetty.util.log.class", "org.eclipse.jetty.util.log.StdErrLog");
-			System.setProperty("org.eclipse.jetty.LEVEL", "OFF");
-			System.setProperty("org.eclipse.jetty.util.log.announce", "false");
-		}
-
 		adventure = BukkitAudiences.create(this);
 
 		server = new WebServer();
@@ -135,33 +123,33 @@ public class Main extends JavaPlugin {
 			server.stop();
 
 			// Freeze bukkit thread to give the server time to stop
-			int safetyLimit = 0;
-			final int max = FREEZE_MAX_MS / FREEZE_STEP_MS;
-			while(!server.isStopped()) {
-
-				// Don't freeze for longer than 5 seconds
-				if (safetyLimit > max) {
-					this.getLogger().severe("Webserver was still running after waiting for 5 seconds.");
-					this.getLogger().severe("Giving up, crashing the server is worse than breaking the menu.");
-					break;
-				}
-
-				safetyLimit++;
-
-				try {
-					Thread.sleep(FREEZE_STEP_MS);
-				} catch (final InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-
+//			int safetyLimit = 0;
+//			final int max = FREEZE_MAX_MS / FREEZE_STEP_MS;
+//			while(!server.isStopped()) {
+//
+//				// Don't freeze for longer than 5 seconds
+//				if (safetyLimit > max) {
+//					this.getLogger().severe("Webserver was still running after waiting for 5 seconds.");
+//					this.getLogger().severe("Giving up, crashing the server is worse than breaking the menu.");
+//					break;
+//				}
+//
+//				safetyLimit++;
+//
+//				try {
+//					Thread.sleep(FREEZE_STEP_MS);
+//				} catch (final InterruptedException e) {
+//					e.printStackTrace();
+//				}
+//			}
+//
 			// Sleep a little longer to give the internal jetty stuff time to shut down
 			// otherwise I still got a NoClassDefFoundError
-			try {
-				Thread.sleep(100);
-			} catch (final InterruptedException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				Thread.sleep(100);
+//			} catch (final InterruptedException e) {
+//				e.printStackTrace();
+//			}
 		}
 	}
 

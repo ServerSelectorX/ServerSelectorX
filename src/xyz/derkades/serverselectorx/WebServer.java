@@ -1,61 +1,45 @@
 package xyz.derkades.serverselectorx;
 
-import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.eclipse.jetty.server.Server;
-import org.eclipse.jetty.server.ServerConnector;
-import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.glassfish.grizzly.http.server.HttpServer;
+import org.glassfish.grizzly.http.server.NetworkListener;
+import org.glassfish.grizzly.http.server.ServerConfiguration;
+import xyz.derkades.serverselectorx.http.GetFile;
+import xyz.derkades.serverselectorx.http.ListFiles;
+import xyz.derkades.serverselectorx.http.Players;
+import xyz.derkades.serverselectorx.http.Root;
 
-import xyz.derkades.serverselectorx.servlet.GetFile;
-import xyz.derkades.serverselectorx.servlet.ListFiles;
-import xyz.derkades.serverselectorx.servlet.Players;
-import xyz.derkades.serverselectorx.servlet.Root;
+import java.io.IOException;
+import java.util.concurrent.TimeUnit;
 
 public class WebServer {
 
-	private Server server;
+	private HttpServer server;
 
 	public void start() {
-		this.server = new Server();
+		this.server = new HttpServer();
+		final FileConfiguration api = Main.getConfigurationManager().getApiConfiguration();
+		this.server.addListener(new NetworkListener("Listener", api.getString("host", "127.0.0.1"), api.getInt("port")));
+		ServerConfiguration config = server.getServerConfiguration();
+		config.addHttpHandler(new GetFile(), "/getfile");
+		config.addHttpHandler(new ListFiles(), "/listfiles");
+		config.addHttpHandler(new Root());
+		config.addHttpHandler(new Players(), "/players");
 
-		final ServletContextHandler handler = new ServletContextHandler(ServletContextHandler.SESSIONS);
-		handler.addServlet(GetFile.class, "/getfile");
-		handler.addServlet(ListFiles.class, "/listfiles");
-		handler.addServlet(Root.class, "/");
-		handler.addServlet(Players.class, "/players");
-
-
-        this.server.setHandler(handler);
-
-        final ServerConnector connector = new ServerConnector(this.server);
-        final FileConfiguration configApi = Main.getConfigurationManager().getApiConfiguration();
-        connector.setHost(configApi.getString("host", "127.0.0.1"));
-        final int port = configApi.getInt("port");
-        connector.setPort(port);
-        this.server.addConnector(connector);
-
-        Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () -> {
-        	try {
-				WebServer.this.server.start();
-				Main.getPlugin().getLogger().info("Listening on port " + port);
-			} catch (final Exception e) {
-				Main.getPlugin().getLogger().severe("An error occured while starting webserver: " + e.getMessage());
-			}
-        });
+		try {
+			this.server.start();
+		} catch (final IOException e) {
+			Main.getPlugin().getLogger().severe("An error occured while starting webserver: " + e.getMessage());
+		}
 	}
 
 	public void stop() {
 		try {
-			this.server.setStopAtShutdown(true);
-			this.server.stop();
-			Main.getPlugin().getLogger().info("Embedded webserver has been stopped.");
+			Main.getPlugin().getLogger().info("Stopping embedded webserver...");
+			this.server.shutdown().get(5000, TimeUnit.MILLISECONDS);
 		} catch (final Exception e) {
 			Main.getPlugin().getLogger().severe("An error occured while stopping webserver: " + e.getMessage());
 		}
-	}
-
-	boolean isStopped() {
-		return this.server.isStopped();
 	}
 
 }

@@ -1,34 +1,33 @@
-package xyz.derkades.serverselectorx.servlet;
+package xyz.derkades.serverselectorx.http;
+
+import com.google.gson.stream.JsonWriter;
+import org.apache.commons.lang3.Validate;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.glassfish.grizzly.http.Method;
+import org.glassfish.grizzly.http.server.HttpHandler;
+import org.glassfish.grizzly.http.server.Request;
+import org.glassfish.grizzly.http.server.Response;
+import org.glassfish.grizzly.http.util.HttpStatus;
+import xyz.derkades.serverselectorx.Main;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.logging.Logger;
 
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-
-import org.bukkit.configuration.file.FileConfiguration;
-
-import com.google.gson.stream.JsonWriter;
-
-import xyz.derkades.serverselectorx.Main;
-
-public class ListFiles extends HttpServlet {
-
-	private static final long serialVersionUID = 1L;
+public class ListFiles extends HttpHandler {
 
 	private static final int DIR_LIST_FILE_LIMIT = 1000;
 
 	@Override
-	protected void doGet(final HttpServletRequest request, final HttpServletResponse response) throws IOException {
+	public void service(Request request, Response response) throws Exception {
+		Validate.isTrue(request.getMethod() == Method.GET, "Must use GET method");
+
 		final FileConfiguration api = Main.getConfigurationManager().getApiConfiguration();
 
 		if (!api.getBoolean("files-api")) {
-			response.getWriter().println("Files API disabled");
-			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			response.getWriter().write("Files API disabled\n");
+			response.setStatus(HttpStatus.FORBIDDEN_403);
 			return;
 		}
 
@@ -39,11 +38,9 @@ public class ListFiles extends HttpServlet {
 		if (!dir.isDirectory()) {
 			logger.warning("Received bad request from " + request.getRemoteAddr());
 			logger.warning("Requested to list files in " + dirName + ", but it is not a directory.");
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.setStatus(HttpStatus.BAD_REQUEST_400);
 			return;
 		}
-
-		response.setStatus(HttpServletResponse.SC_OK);
 
 		final Deque<File> directories = new ArrayDeque<>();
 		directories.push(dir);
