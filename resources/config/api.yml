@@ -23,5 +23,3 @@ server-offline-timeout: 6000
 # running the server process has access to. Only enable this if
 # your API is not open to the internet!!
 files-api: false
-
-jetty-debug: false
