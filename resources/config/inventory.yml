@@ -15,6 +15,14 @@ ssx-items-only: false
 
 # -------------------- Advanced -------------------- #
 
+# World whitelist for 'cancel-item-drop' and 'cancel-item-move'. If empty, these options are active in all
+# worlds. Otherwise, they are only active in the specified worlds.
+only-in-worlds: []
+
+# Exceptions to the above option, 'cancel-item-drop' and 'cancel-item-move' will never affect players in
+# these worlds.
+world-exceptions: []
+
 # When this is set to true, stuff that would normally happen when you click an item will not happen.
 # For example, right-clicking with a hoe will not turn dirt into farmland.
 # (only for items that open a menu)

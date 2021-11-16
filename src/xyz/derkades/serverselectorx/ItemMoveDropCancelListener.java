@@ -1,7 +1,9 @@
 package xyz.derkades.serverselectorx;
 
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.World;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -12,7 +14,7 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.ItemStack;
 
-import de.tr7zw.changeme.nbtapi.NBTItem;
+import java.util.List;
 
 public class ItemMoveDropCancelListener implements Listener {
 
@@ -22,9 +24,11 @@ public class ItemMoveDropCancelListener implements Listener {
 		if (inventory.getBoolean("cancel-item-drop", false)) {
 			Bukkit.getPluginManager().registerEvents(new Listener() {
 				@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
-				public void onDrop(final PlayerDropItemEvent event){
+				public void onDrop(final PlayerDropItemEvent event) {
 					if (!event.getPlayer().hasPermission("ssx.drop") &&
-							isSsxItem(event.getItemDrop().getItemStack())) {
+							isCancelledWorld(event.getPlayer().getWorld()) &&
+							isSsxItem(event.getItemDrop().getItemStack())
+					) {
 						event.setCancelled(true);
 						event.getItemDrop().remove();
 					}
@@ -39,6 +43,7 @@ public class ItemMoveDropCancelListener implements Listener {
 					event.setCancelled(
 						event.getClickedInventory() != null &&
 						!event.getWhoClicked().hasPermission("ssx.move") &&
+						isCancelledWorld(event.getWhoClicked().getWorld()) &&
 						(
 							isSsxItem(event.getCursor()) ||
 							isSsxItem(event.getCurrentItem()) ||
@@ -53,11 +58,18 @@ public class ItemMoveDropCancelListener implements Listener {
 				@EventHandler(ignoreCancelled = true, priority = EventPriority.LOW)
 				public void onItemMove(final InventoryDragEvent event){
 					event.setCancelled(
-							!event.getWhoClicked().hasPermission("ssx.move")
-							&& isSsxItem(event.getCursor()));
+							!event.getWhoClicked().hasPermission("ssx.move") &&
+							isCancelledWorld(event.getWhoClicked().getWorld()) &&
+							isSsxItem(event.getCursor()));
 				}
 			}, Main.getPlugin());
 		}
+	}
+
+	private boolean isCancelledWorld(final World world) {
+		List<String> onlyIn = Main.getConfigurationManager().getInventoryConfiguration().getStringList("only-in-worlds");
+		List<String> exceptions = Main.getConfigurationManager().getInventoryConfiguration().getStringList("world-exceptions");
+		return (onlyIn.isEmpty() || onlyIn.contains(world.getName())) && !exceptions.contains(world.getName());
 	}
 
 	private boolean isSsxItem(final ItemStack item) {
