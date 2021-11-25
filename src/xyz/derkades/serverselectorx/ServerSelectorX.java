@@ -4,8 +4,11 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
@@ -33,12 +36,12 @@ public class ServerSelectorX {
 		return Server.getServer(name);
 	}
 	
-	public static @NotNull List<Server> getServers() {
-		return new ArrayList<>(Server.getServers().values());
+	public static @NotNull Collection<Server> getServers() {
+		return Collections.unmodifiableCollection(Server.getServers().values());
 	}
 	
-	public static @NotNull List<Server> getOnlineServers() {
-		return getServers().stream().filter(Server::isOnline).collect(Collectors.toList());
+	public static @NotNull Set<Server> getOnlineServers() {
+		return getServers().stream().filter(Server::isOnline).collect(Collectors.toUnmodifiableSet());
 	}
 	
 	public static int getGlobalPlayerCount() {
