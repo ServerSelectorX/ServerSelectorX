@@ -1,7 +1,5 @@
 package xyz.derkades.serverselectorx.http;
 
-import org.apache.commons.lang3.Validate;
-import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.HttpHandler;
 import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
@@ -75,7 +73,6 @@ public class Root extends HttpHandler {
 			default:
 				response.setStatus(HttpStatus.METHOD_NOT_ALLOWED_405);
 		}
-		Validate.isTrue(request.getMethod() == Method.GET, "Must use GET method");
 	}
 
 }

@@ -1,7 +1,7 @@
 package xyz.derkades.serverselectorx.http;
 
+import com.google.common.base.Preconditions;
 import com.google.gson.stream.JsonWriter;
-import org.apache.commons.lang3.Validate;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.glassfish.grizzly.http.Method;
 import org.glassfish.grizzly.http.server.HttpHandler;
@@ -21,7 +21,7 @@ public class ListFiles extends HttpHandler {
 
 	@Override
 	public void service(Request request, Response response) throws Exception {
-		Validate.isTrue(request.getMethod() == Method.GET, "Must use GET method");
+		Preconditions.checkArgument(request.getMethod() == Method.GET, "Must use GET method");
 
 		final FileConfiguration api = Main.getConfigurationManager().getApiConfiguration();
 
