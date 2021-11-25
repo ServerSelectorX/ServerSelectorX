@@ -89,7 +89,8 @@ public class Main extends JavaPlugin {
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
 		this.getCommand("serverselectorx").setExecutor(new ServerSelectorXCommand());
-
+		this.getCommand("serverselectorx").setTabCompleter(new ServerSelectorXCommandCompleter());
+		
 		// Register custom selector commands
 		Commands.registerCustomCommands();
 
