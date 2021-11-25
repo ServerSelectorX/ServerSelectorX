@@ -10,33 +10,34 @@ import java.util.stream.Collectors;
 
 import org.bukkit.entity.Player;
 
+import org.jetbrains.annotations.NotNull;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.serverselectorx.actions.Action;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
 public class ServerSelectorX {
 
-	public static void registerAction(final Action action) {
+	public static void registerAction(final @NotNull Action action) {
 		Action.ACTIONS.add(action);
 	}
 	
-	public static boolean runAction(Player player, String actionString) {
+	public static boolean runAction(@NotNull Player player, @NotNull String actionString) {
 		return Action.runAction(player, actionString);
 	}
 	
-	public static boolean runActions(Player player, List<String> actionStrings) {
+	public static boolean runActions(@NotNull Player player, @NotNull List<String> actionStrings) {
 		return Action.runActions(player, actionStrings);
 	}
 	
-	public static Server getServer(String name) {
+	public static @NotNull Server getServer(@NotNull String name) {
 		return Server.getServer(name);
 	}
 	
-	public static List<Server> getServers() {
+	public static @NotNull List<Server> getServers() {
 		return new ArrayList<>(Server.getServers().values());
 	}
 	
-	public static List<Server> getOnlineServers() {
+	public static @NotNull List<Server> getOnlineServers() {
 		return getServers().stream().filter(Server::isOnline).collect(Collectors.toList());
 	}
 	
@@ -44,7 +45,7 @@ public class ServerSelectorX {
 		return getServers().stream().filter(Server::isOnline).mapToInt(Server::getOnlinePlayers).sum();
 	}
 	
-	public static void teleportPlayerToServer(final Player player, final String server){
+	public static void teleportPlayerToServer(final @NotNull Player player, final @NotNull String server){
 		if (Cooldown.getCooldown("servertp" + player.getName() + server) > 0) {
 			return;
 		}
