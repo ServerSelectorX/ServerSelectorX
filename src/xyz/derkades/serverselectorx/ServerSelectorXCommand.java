@@ -10,6 +10,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 
 import net.md_5.bungee.api.ChatColor;
+import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import xyz.derkades.serverselectorx.placeholders.GlobalPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.Placeholder;
@@ -25,30 +26,50 @@ public class ServerSelectorXCommand implements CommandExecutor {
 			return true;
 		}
 
-		if (args.length == 2) {
-			if (args[0].equals("placeholders")) {
-				final String serverName = args[1];
+		if (args.length == 3 &&
+			args[0].equals("openmenu")) {
+			String menuName = args[1];
+			String playerName = args[2];
 
-				final Server server = Server.getServer(serverName);
-
-				if (!server.isOnline()) {
-					sender.sendMessage("The server '" + serverName + "' does not exist or is currently offline");
-					return true;
-				}
-
-				sender.sendMessage("Placeholders for " + serverName);
-
-				for (final Placeholder placeholder : server.getPlaceholders()) {
-					if (placeholder instanceof PlayerPlaceholder) {
-						sender.sendMessage(placeholder.getKey());
-						final PlayerPlaceholder pp = (PlayerPlaceholder) placeholder;
-						pp.getValues().forEach((uuid, value) -> sender.sendMessage("  " + uuid + ": " + value));
-					} else {
-						sender.sendMessage(placeholder.getKey() + ": " + ((GlobalPlaceholder) placeholder).getValue());
-					}
-				}
+			Player player = Bukkit.getPlayerExact(playerName);
+			if (player == null) {
+				sender.sendMessage("No online player found with name '" + playerName + "'.");
 				return true;
 			}
+
+			FileConfiguration config = Main.getConfigurationManager().getMenuConfiguration(menuName);
+			if (config != null) {
+				sender.sendMessage("No menu exists with name '" + menuName + "'.");
+				sender.sendMessage("The menu name is the name of the menu file, without its extension.");
+				sender.sendMessage("For example, for a menu file called 'serverselector.yml', enter 'serverselector'.");
+				return true;
+			}
+
+			new Menu(player, config, menuName);
+			return true;
+		} else if (args.length == 2 &&
+			args[0].equals("placeholders")) {
+			final String serverName = args[1];
+
+			final Server server = Server.getServer(serverName);
+
+			if (!server.isOnline()) {
+				sender.sendMessage("The server '" + serverName + "' does not exist or is currently offline");
+				return true;
+			}
+
+			sender.sendMessage("Placeholders for " + serverName);
+
+			for (final Placeholder placeholder : server.getPlaceholders()) {
+				if (placeholder instanceof PlayerPlaceholder) {
+					sender.sendMessage(placeholder.getKey());
+					final PlayerPlaceholder pp = (PlayerPlaceholder) placeholder;
+					pp.getValues().forEach((uuid, value) -> sender.sendMessage("  " + uuid + ": " + value));
+				} else {
+					sender.sendMessage(placeholder.getKey() + ": " + ((GlobalPlaceholder) placeholder).getValue());
+				}
+			}
+			return true;
 		} else if (args.length == 1) {
 			switch (args[0]) {
 				case "rl":

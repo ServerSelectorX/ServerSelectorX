@@ -23,3 +23,4 @@ commands:
       /ssx itemdebug - Enable item debug mode
       /ssx sync - Force config sync DO NOT USE BEFORE READING sync.yml
       /ssx synclist - Get a list of files that would be synced
+      /ssx openmenu <menu> <player> - Open a menu for a player
