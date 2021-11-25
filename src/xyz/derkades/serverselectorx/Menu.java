@@ -15,6 +15,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import org.jetbrains.annotations.Nullable;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
@@ -33,8 +34,11 @@ public class Menu extends IconMenu {
 
 	private boolean closed = false;
 
-	public Menu(final Player player, final FileConfiguration config, final String configName) {
-		super(Main.getPlugin(), Colors.parseColors(config.getString("title", "TITLE MISSING")), config.getInt("rows", 6), player);
+	public Menu(final Player player, final @Nullable FileConfiguration config, final String configName) {
+		super(Main.getPlugin(),
+				config == null ? "error" : Colors.parseColors(config.getString("title", "TITLE MISSING")),
+				config == null ? 1 : config.getInt("rows", 6),
+				player);
 
 		this.config = config;
 
@@ -88,8 +92,6 @@ public class Menu extends IconMenu {
 	}
 
 	private void addItems() {
-		
-		
 		final FileConfiguration configMisc = Main.getConfigurationManager().getMiscConfiguration();
 
 		final OfflinePlayer potentiallyOffline = this.getPlayer();
