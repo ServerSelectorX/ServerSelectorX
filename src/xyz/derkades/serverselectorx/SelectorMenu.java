@@ -1,7 +1,7 @@
 package xyz.derkades.serverselectorx;
 
-import java.util.List;
-
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -9,9 +9,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.ListUtils;
 import xyz.derkades.derkutils.bukkit.Colors;
@@ -21,6 +18,8 @@ import xyz.derkades.derkutils.bukkit.menu.IconMenu;
 import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
 import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
+
+import java.util.List;
 
 public class SelectorMenu extends IconMenu {
 
@@ -192,7 +191,9 @@ public class SelectorMenu extends IconMenu {
 		} else if (action.equals("close")) {
 			return true; // Return true = close
 		} else {
-			return false; // Return false = stay open
+			player.sendMessage("Invalid action '" + action + "'");
+			player.sendMessage("Action list: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Actions");
+			return true;
 		}
 	}
 
