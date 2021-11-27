@@ -139,7 +139,7 @@ public class SelectorMenu extends IconMenu {
 			}
 		}
 
-		if (action.startsWith("url:")){ // Send url message
+		if (action.startsWith("url:")) { // Send url message
 			final String url = action.substring(4);
 			final String message = Colors.parseColors(this.config.getString("url-message", "&3&lClick here"));
 
@@ -149,7 +149,7 @@ public class SelectorMenu extends IconMenu {
 					.create()
 					);
 			return true;
-		} else if (action.startsWith("cmd:")){ // Execute command
+		} else if (action.startsWith("cmd:")) { // Execute command
 			final String command = action.substring(4);
 			// delay required by some commands that open menus
 			Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
@@ -160,7 +160,7 @@ public class SelectorMenu extends IconMenu {
 			final String command = action.substring(11).replace("{player}", player.getName());
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), PlaceholderUtil.parsePapiPlaceholders(player, command));
 			return true;
-		} else if (action.startsWith("sel:")){ // Open selector
+		} else if (action.startsWith("sel:")) { // Open selector
 			final String configName = action.substring(4);
 			final FileConfiguration config = Main.getConfigurationManager().getByName(configName);
 			if (config == null){
@@ -170,7 +170,7 @@ public class SelectorMenu extends IconMenu {
 				new SelectorMenu(player, config);
 				return false;
 			}
-		} else if (action.startsWith("world:")){ // Teleport to world
+		} else if (action.startsWith("world:")) { // Teleport to world
 			final String worldName = action.substring(6);
 			final World world = Bukkit.getWorld(worldName);
 			if (world == null){
@@ -180,11 +180,11 @@ public class SelectorMenu extends IconMenu {
 				player.teleport(world.getSpawnLocation());
 				return true;
 			}
-		} else if (action.startsWith("srv:")){ // Teleport to server
+		} else if (action.startsWith("srv:")) { // Teleport to server
 			final String serverName = action.substring(4);
 			Main.teleportPlayerToServer(player, serverName);
 			return true;
-		} else if (action.startsWith("msg:")){ // Send message
+		} else if (action.startsWith("msg:")) { // Send message
 			final String message = action.substring(4);
 			player.sendMessage(PlaceholderUtil.parsePapiPlaceholders(player, message));
 			return true;
