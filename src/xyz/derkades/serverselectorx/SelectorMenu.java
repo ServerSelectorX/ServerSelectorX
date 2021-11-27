@@ -1,7 +1,7 @@
 package xyz.derkades.serverselectorx;
 
-import java.util.List;
-
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.World;
@@ -9,9 +9,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
-
-import net.md_5.bungee.api.chat.ClickEvent;
-import net.md_5.bungee.api.chat.ComponentBuilder;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.ListUtils;
 import xyz.derkades.derkutils.bukkit.Colors;
@@ -21,6 +18,8 @@ import xyz.derkades.derkutils.bukkit.menu.IconMenu;
 import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
 import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
+
+import java.util.List;
 
 public class SelectorMenu extends IconMenu {
 
@@ -148,7 +147,7 @@ public class SelectorMenu extends IconMenu {
 			}
 		}
 
-		if (action.startsWith("url:")){ // Send url message
+		if (action.startsWith("url:")) { // Send url message
 			final String url = action.substring(4);
 			final String message = Colors.parseColors(this.config.getString("url-message", "&3&lClick here"));
 
@@ -158,7 +157,7 @@ public class SelectorMenu extends IconMenu {
 					.create()
 					);
 			return true;
-		} else if (action.startsWith("cmd:")){ // Execute command
+		} else if (action.startsWith("cmd:")) { // Execute command
 			final String command = action.substring(4);
 			// delay required by some commands that open menus
 			Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> {
@@ -169,7 +168,7 @@ public class SelectorMenu extends IconMenu {
 			final String command = action.substring(11).replace("{player}", player.getName());
 			Bukkit.dispatchCommand(Bukkit.getConsoleSender(), PlaceholderUtil.parsePapiPlaceholders(player, command));
 			return true;
-		} else if (action.startsWith("sel:")){ // Open selector
+		} else if (action.startsWith("sel:")) { // Open selector
 			final String configName = action.substring(4);
 			final FileConfiguration config = Main.getConfigurationManager().getByName(configName);
 			if (config == null){
@@ -179,7 +178,7 @@ public class SelectorMenu extends IconMenu {
 				new SelectorMenu(player, config);
 				return false;
 			}
-		} else if (action.startsWith("world:")){ // Teleport to world
+		} else if (action.startsWith("world:")) { // Teleport to world
 			final String worldName = action.substring(6);
 			final World world = Bukkit.getWorld(worldName);
 			if (world == null){
@@ -189,18 +188,20 @@ public class SelectorMenu extends IconMenu {
 				player.teleport(world.getSpawnLocation());
 				return true;
 			}
-		} else if (action.startsWith("srv:")){ // Teleport to server
+		} else if (action.startsWith("srv:")) { // Teleport to server
 			final String serverName = action.substring(4);
 			Main.teleportPlayerToServer(player, serverName);
 			return true;
-		} else if (action.startsWith("msg:")){ // Send message
+		} else if (action.startsWith("msg:")) { // Send message
 			final String message = action.substring(4);
 			player.sendMessage(PlaceholderUtil.parsePapiPlaceholders(player, message));
 			return true;
 		} else if (action.equals("close")) {
 			return true; // Return true = close
 		} else {
-			return false; // Return false = stay open
+			player.sendMessage("Invalid action '" + action + "'");
+			player.sendMessage("Action list: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Actions");
+			return true;
 		}
 	}
 
