@@ -46,20 +46,12 @@
 							<shadedPattern>xyz.derkades.serverselectorx.lib.bstats</shadedPattern>
 						</relocation>
 						<relocation>
-							<pattern>org.eclipse.jetty</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.jetty</shadedPattern>
-						</relocation>
-						<relocation>
 							<pattern>de.tr7zw.changeme.nbtapi</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.lib.nbtapi</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>com.google.gson</pattern>
 							<shadedPattern>xyz.derkades.serverselectorx.lib.gson</shadedPattern>
-						</relocation>
-						<relocation>
-							<pattern>org.apache.commons.lang3</pattern>
-							<shadedPattern>xyz.derkades.serverselectorx.lib.commons-lang3</shadedPattern>
 						</relocation>
 						<relocation>
 							<pattern>org.glassfish.grizzly</pattern>
@@ -135,7 +127,7 @@
 		<dependency>
 			<groupId>de.tr7zw</groupId>
 			<artifactId>item-nbt-api</artifactId>
-			<version>2.8.0</version>
+			<version>2.9.0-SNAPSHOT</version>
 		</dependency>
 
 		<dependency>
@@ -154,7 +146,7 @@
 		<dependency>
 			<groupId>net.kyori</groupId>
 			<artifactId>adventure-platform-bukkit</artifactId>
-			<version>4.0.0</version>
+			<version>4.0.1</version>
 		</dependency>
 
 		<dependency>

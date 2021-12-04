@@ -10,6 +10,8 @@ import java.util.Set;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xyz.derkades.derkutils.FileUtils;
 import xyz.derkades.serverselectorx.Main;
 
@@ -28,13 +30,13 @@ public class ConfigurationManager {
 		MISC(new File(CONFIG_DIR, "misc.yml")),
 		SYNC(new File(CONFIG_DIR, "sync.yml"));
 
-		private final File file;
+		private final @NotNull File file;
 
-		StandardConfigFile(final File file){
+		StandardConfigFile(final @NotNull File file){
 			this.file = file;
 		}
 
-		private YamlConfiguration copyLoad() throws IOException {
+		private @NotNull YamlConfiguration copyLoad() throws IOException {
 			if (!this.file.exists()) {
 				FileUtils.copyOutOfJar(this.getClass(), "/config/" + this.file.getName(), this.file);
 			}
@@ -48,26 +50,30 @@ public class ConfigurationManager {
 		ITEM(new File(Main.getPlugin().getDataFolder(), "item"), "/item.yml", "compass.yml"),
 		MENU(new File(Main.getPlugin().getDataFolder(), "menu"), "/menu.yml", "serverselector.yml");
 
-		private final File dir;
-		private final String defaultFileInJar;
-		private final String defaultFileOutsideJar;
+		private final @NotNull File dir;
+		private final @NotNull String defaultFileInJar;
+		private final @NotNull String defaultFileOutsideJar;
 
-		MultiConfigFile(final File dir, final String defaultFileInJar, final String defaultFileOutsideJar) {
+		MultiConfigFile(final @NotNull File dir, final @NotNull String defaultFileInJar,
+						final @NotNull String defaultFileOutsideJar) {
 			this.dir = dir;
 			this.defaultFileInJar = defaultFileInJar;
 			this.defaultFileOutsideJar = defaultFileOutsideJar;
 		}
 
-		private void copyLoad(final Map<String, FileConfiguration> dest) throws IOException {
+		private void copyLoad(final @NotNull Map<String, FileConfiguration> dest) throws IOException {
 			if (!this.dir.exists()) {
 				this.dir.mkdir();
 				FileUtils.copyOutOfJar(this.getClass(), this.defaultFileInJar,
 						new File(this.dir, this.defaultFileOutsideJar));
 			}
 
-			for (final File file : this.dir.listFiles()) {
-				if (file.getName().endsWith(".yml")) {
-					dest.put(configName(file), YamlConfiguration.loadConfiguration(file));
+			File[] files = this.dir.listFiles();
+			if (files != null) {
+				for (final File file : files) {
+					if (file.getName().endsWith(".yml")) {
+						dest.put(configName(file), YamlConfiguration.loadConfiguration(file));
+					}
 				}
 			}
 		}
@@ -103,67 +109,67 @@ public class ConfigurationManager {
 		}
 	}
 
-	public FileConfiguration getCommandConfiguration(final String name) {
+	public @Nullable FileConfiguration getCommandConfiguration(final String name) {
 		synchronized(this.MULTI_FILES) {
 			return this.MULTI_FILES.get(MultiConfigFile.COMMAND).get(name);
 		}
 	}
 
-	public Set<String> listCommandConfigurations() {
+	public @NotNull Set<String> listCommandConfigurations() {
 		synchronized(this.MULTI_FILES) {
 			return this.MULTI_FILES.get(MultiConfigFile.COMMAND).keySet();
 		}
 	}
 
-	public FileConfiguration getItemConfiguration(final String name) {
+	public @Nullable FileConfiguration getItemConfiguration(final String name) {
 		synchronized(this.MULTI_FILES) {
 			return this.MULTI_FILES.get(MultiConfigFile.ITEM).get(name);
 		}
 	}
 
-	public Set<String> listItemConfigurations() {
+	public @NotNull Set<String> listItemConfigurations() {
 		synchronized(this.MULTI_FILES) {
 			return this.MULTI_FILES.get(MultiConfigFile.ITEM).keySet();
 		}
 	}
 
-	public FileConfiguration getMenuConfiguration(final String name) {
+	public @Nullable FileConfiguration getMenuConfiguration(final String name) {
 		synchronized(this.MULTI_FILES) {
 			return this.MULTI_FILES.get(MultiConfigFile.MENU).get(name);
 		}
 	}
 
-	public Set<String> listMenuConfigurations() {
+	public @NotNull Set<String> listMenuConfigurations() {
 		synchronized(this.MULTI_FILES) {
 			return this.MULTI_FILES.get(MultiConfigFile.MENU).keySet();
 		}
 	}
 
-	public FileConfiguration getApiConfiguration() {
+	public @NotNull FileConfiguration getApiConfiguration() {
 		synchronized(this.STANDARD_FILES) {
 			return this.STANDARD_FILES.get(StandardConfigFile.API);
 		}
 	}
 
-	public FileConfiguration getInventoryConfiguration() {
+	public @NotNull FileConfiguration getInventoryConfiguration() {
 		synchronized(this.STANDARD_FILES) {
 			return this.STANDARD_FILES.get(StandardConfigFile.INVENTORY);
 		}
 	}
 
-	public FileConfiguration getJoinConfiguration() {
+	public @NotNull FileConfiguration getJoinConfiguration() {
 		synchronized(this.STANDARD_FILES) {
 			return this.STANDARD_FILES.get(StandardConfigFile.JOIN);
 		}
 	}
 
-	public FileConfiguration getMiscConfiguration() {
+	public @NotNull FileConfiguration getMiscConfiguration() {
 		synchronized(this.STANDARD_FILES) {
 			return this.STANDARD_FILES.get(StandardConfigFile.MISC);
 		}
 	}
 
-	public FileConfiguration getSyncConfiguration() {
+	public @NotNull FileConfiguration getSyncConfiguration() {
 		synchronized(this.STANDARD_FILES) {
 			return this.STANDARD_FILES.get(StandardConfigFile.SYNC);
 		}

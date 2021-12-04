@@ -6,12 +6,13 @@ import java.util.UUID;
 
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class InvisibilityToggle {
 
 	public static final List<UUID> INVISIBILITY_ON = new ArrayList<>();
 
-	public static void showOthers(final Player player) {
+	public static void showOthers(final @NotNull Player player) {
 		for (final Player online : Bukkit.getOnlinePlayers()) {
 			if (online.getUniqueId() == player.getUniqueId()) {
 				continue;
@@ -23,7 +24,7 @@ public class InvisibilityToggle {
 		INVISIBILITY_ON.remove(player.getUniqueId());
 	}
 
-	public static void hideOthers(final Player player) {
+	public static void hideOthers(final @NotNull Player player) {
 		for (final Player online : Bukkit.getOnlinePlayers()) {
 			if (online.getUniqueId() == player.getUniqueId()) {
 				continue;
@@ -35,7 +36,7 @@ public class InvisibilityToggle {
 		INVISIBILITY_ON.add(player.getUniqueId());
 	}
 
-	public static boolean hasHiddenOthers(final Player player) {
+	public static boolean hasHiddenOthers(final @NotNull Player player) {
 		return INVISIBILITY_ON.contains(player.getUniqueId());
 	}
 }
