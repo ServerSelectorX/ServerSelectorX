@@ -43,9 +43,6 @@ public class Main extends JavaPlugin {
 		MinecraftVersion.disableUpdateCheck();
 	}
 
-	private static final int FREEZE_STEP_MS = 50;
-	private static final int FREEZE_MAX_MS = 5000;
-
 	// When set to true, lag-related debug information is printed to the console. This boolean
 	// is enabled using /ssx lagdebug
 	static boolean LAG_DEBUG = false;
@@ -94,26 +91,6 @@ public class Main extends JavaPlugin {
 		// Register custom selector commands
 		Commands.registerCustomCommands();
 
-//		try {
-//			Class<?> outputChoiceClass = Class.forName("org.slf4j.simple.OutputChoice");
-//			OutputStream out = new LoggerOutputStream(this.getLogger(), Level.INFO);
-//			PrintStream printStream = new PrintStream(out);
-//			Constructor<?> outputChoiceConstructor = outputChoiceClass.getDeclaredConstructor(PrintStream.class);
-//			outputChoiceConstructor.setAccessible(true);
-//			Object outputChoice = outputChoiceConstructor.newInstance(printStream);
-//			Field configField = SimpleLogger.class.getDeclaredField("CONFIG_PARAMS");
-//			configField.setAccessible(true);
-//			SimpleLoggerConfiguration config = (SimpleLoggerConfiguration) configField.get(null);
-//			Field outputChoiceField = SimpleLoggerConfiguration.class.getDeclaredField("outputChoice");
-//			outputChoiceField.setAccessible(true);
-//			outputChoiceField.set(config, outputChoice);
-//			Field initializedField = SimpleLogger.class.getDeclaredField("INITIALIZED");
-//			initializedField.setAccessible(true);
-//			initializedField.set(null, true);
-//		} catch (ClassNotFoundException | NoSuchMethodException | InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchFieldException e) {
-//			e.printStackTrace();
-//		}
-
 		adventure = BukkitAudiences.create(this);
 
 		server = new WebServer();
@@ -142,35 +119,6 @@ public class Main extends JavaPlugin {
 
 		if (server != null) {
 			server.stop();
-
-			// Freeze bukkit thread to give the server time to stop
-//			int safetyLimit = 0;
-//			final int max = FREEZE_MAX_MS / FREEZE_STEP_MS;
-//			while(!server.isStopped()) {
-//
-//				// Don't freeze for longer than 5 seconds
-//				if (safetyLimit > max) {
-//					this.getLogger().severe("Webserver was still running after waiting for 5 seconds.");
-//					this.getLogger().severe("Giving up, crashing the server is worse than breaking the menu.");
-//					break;
-//				}
-//
-//				safetyLimit++;
-//
-//				try {
-//					Thread.sleep(FREEZE_STEP_MS);
-//				} catch (final InterruptedException e) {
-//					e.printStackTrace();
-//				}
-//			}
-//
-			// Sleep a little longer to give the internal jetty stuff time to shut down
-			// otherwise I still got a NoClassDefFoundError
-//			try {
-//				Thread.sleep(100);
-//			} catch (final InterruptedException e) {
-//				e.printStackTrace();
-//			}
 		}
 	}
 
