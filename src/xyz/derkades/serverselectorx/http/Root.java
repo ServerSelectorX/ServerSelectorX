@@ -10,6 +10,7 @@ import xyz.derkades.serverselectorx.placeholders.Placeholder;
 import xyz.derkades.serverselectorx.placeholders.PlayerPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
+import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -21,6 +22,8 @@ public class Root extends HttpHandler {
 	@SuppressWarnings("unchecked")
 	@Override
 	public void service(Request request, Response response) throws Exception {
+		request.getParameters().setEncoding(StandardCharsets.UTF_8);
+
 		switch (request.getMethod().getMethodString()) {
 			case "GET":
 				response.setContentType("text/json");
