@@ -11,6 +11,7 @@ import org.glassfish.grizzly.http.util.HttpStatus;
 import xyz.derkades.serverselectorx.Main;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayDeque;
 import java.util.Deque;
 import java.util.logging.Logger;
@@ -22,6 +23,7 @@ public class ListFiles extends HttpHandler {
 	@Override
 	public void service(Request request, Response response) throws Exception {
 		Preconditions.checkArgument(request.getMethod() == Method.GET, "Must use GET method");
+		request.getParameters().setEncoding(StandardCharsets.UTF_8);
 
 		final FileConfiguration api = Main.getConfigurationManager().getApiConfiguration();
 

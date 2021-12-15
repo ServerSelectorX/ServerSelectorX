@@ -9,6 +9,7 @@ import org.glassfish.grizzly.http.server.Response;
 import org.glassfish.grizzly.http.util.HttpStatus;
 import xyz.derkades.serverselectorx.Main;
 
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
@@ -17,6 +18,7 @@ public class GetFile extends HttpHandler {
 	@Override
 	public void service(Request request, Response response) throws Exception {
 		Preconditions.checkArgument(request.getMethod() == Method.GET, "Must use GET method");
+		request.getParameters().setEncoding(StandardCharsets.UTF_8);
 
 		final FileConfiguration api = Main.getConfigurationManager().getApiConfiguration();
 
