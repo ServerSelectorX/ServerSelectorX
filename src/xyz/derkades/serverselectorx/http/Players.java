@@ -10,11 +10,14 @@ import org.glassfish.grizzly.http.server.Request;
 import org.glassfish.grizzly.http.server.Response;
 import xyz.derkades.serverselectorx.Main;
 
+import java.nio.charset.StandardCharsets;
+
 public class Players extends HttpHandler {
 
 	@Override
 	public void service(Request request, Response response) throws Exception {
 		Preconditions.checkArgument(request.getMethod() == Method.GET, "Must use GET method");
+		request.getParameters().setEncoding(StandardCharsets.UTF_8);
 
 		response.setContentType("text/json");
 		final JsonWriter writer = Main.GSON.newJsonWriter(response.getWriter());
