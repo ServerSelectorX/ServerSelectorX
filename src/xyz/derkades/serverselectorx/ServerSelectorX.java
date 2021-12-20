@@ -1,22 +1,19 @@
 package xyz.derkades.serverselectorx;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.stream.Collectors;
-
 import org.bukkit.entity.Player;
-
 import org.jetbrains.annotations.NotNull;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.serverselectorx.actions.Action;
 import xyz.derkades.serverselectorx.placeholders.Server;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
+import java.util.Set;
+import java.util.stream.Collectors;
 
 public class ServerSelectorX {
 
@@ -41,7 +38,7 @@ public class ServerSelectorX {
 	}
 	
 	public static @NotNull Set<Server> getOnlineServers() {
-		return getServers().stream().filter(Server::isOnline).collect(Collectors.toUnmodifiableSet());
+		return Collections.unmodifiableSet(getServers().stream().filter(Server::isOnline).collect(Collectors.toSet()));
 	}
 	
 	public static int getGlobalPlayerCount() {
