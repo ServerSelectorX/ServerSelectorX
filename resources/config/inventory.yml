@@ -7,7 +7,7 @@ clear-inv: false
 cancel-item-drop: false
 
 # Cancel item move for players that do not have the permission ssx.move
-# this includes swapping items between hands for 1.9+)
+# this includes swapping items between hands for 1.9+
 cancel-item-move: false
 
 # Apply 'cancel-item-drop' and 'cancel-item-move' to SSX items only
