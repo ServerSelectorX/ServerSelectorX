@@ -26,9 +26,17 @@ public class SelectorMenu extends IconMenu {
 	private final FileConfiguration config;
 
 	public SelectorMenu(final Player player, final FileConfiguration config) {
-		super(Main.getPlugin(), Colors.parseColors(config.getString("title")), config.getInt("rows"), player);
+		super(Main.getPlugin(),
+				Colors.parseColors(config == null ? "error" : config.getString("title")),
+				config == null ? 1 : config.getInt("rows"),
+				player);
 
 		this.config = config;
+
+		if (config == null) {
+			player.sendMessage("The config file for this menu isn't loaded, check the file for YAML syntax errors.");
+			return;
+		}
 
 		for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
 			final ConfigurationSection section = config.getConfigurationSection("menu." + key);
