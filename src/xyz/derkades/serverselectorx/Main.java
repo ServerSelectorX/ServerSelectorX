@@ -4,7 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import de.tr7zw.changeme.nbtapi.NBTCompound;
+import de.tr7zw.changeme.nbtapi.NBTContainer;
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import de.tr7zw.changeme.nbtapi.NbtApiException;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import net.kyori.adventure.text.Component;
@@ -195,21 +198,19 @@ public class Main extends JavaPlugin {
 			builder.damage(section.getInt("durability"));
 		}
 
-		if (section.isConfigurationSection("nbt")) {
-			final NBTItem nbt = new NBTItem(builder.create());
-			final ConfigurationSection nbtSection = section.getConfigurationSection("nbt");
-			for (final String key : nbtSection.getKeys(false)) {
-				if (nbtSection.isBoolean(key)) {
-					nbt.setBoolean(key, nbtSection.getBoolean(key));
-				} else if (nbtSection.isString(key)) {
-					nbt.setString(key, nbtSection.getString(key));
-				} else if (nbtSection.isInt(key)) {
-					nbt.setInteger(key, nbtSection.getInt(key));
+		if (section.isString("nbt")) {
+			try {
+				NBTContainer container = new NBTContainer(section.getString("nbt"));
+				Object compound = container.getCompound();
+				if (compound instanceof NBTCompound) {
+					builder.editNbt(nbt -> nbt.mergeCompound((NBTCompound) compound));
 				} else {
-					player.sendMessage("Unsupported NBT option '" + key + "'");
+					player.sendMessage("Custom NBT is not a compound? " + compound.getClass().getSimpleName());
 				}
+			} catch (NbtApiException e) {
+				player.sendMessage("Skipped adding custom NBT to an item because of an error, please see the console for more info.");
+				e.printStackTrace();
 			}
-			return new NbtItemBuilder(nbt.getItem());
 		}
 
 		return builder;
