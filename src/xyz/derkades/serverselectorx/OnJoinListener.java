@@ -14,7 +14,7 @@ public class OnJoinListener implements Listener {
 
 	@EventHandler(priority = EventPriority.MONITOR)
 	public void onJoin(final PlayerJoinEvent event) {
-		for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
+		for (final FileConfiguration config : Main.getConfigurationManager().allFiles()) {
 			final boolean putItemInInventory = config.getBoolean("on-join");
 			if (!putItemInInventory) {
 				continue;

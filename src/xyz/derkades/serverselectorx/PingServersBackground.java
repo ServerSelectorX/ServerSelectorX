@@ -46,7 +46,7 @@ public class PingServersBackground implements Runnable {
 	public static void generatePingJobs() {
 		PING_JOBS.clear();
 		SERVER_INFO.clear();
-		for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
+		for (final FileConfiguration config : Main.getConfigurationManager().allFiles()) {
 			// Ignore if config failed to load
 			if (config == null || config.getConfigurationSection("menu") == null) {
 				Main.getPlugin().getLogger().warning("Config is not loaded, stopping server ping thread.");
