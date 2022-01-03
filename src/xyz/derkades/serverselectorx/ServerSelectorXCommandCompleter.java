@@ -32,7 +32,6 @@ public class ServerSelectorXCommandCompleter implements TabCompleter {
 							"items",
 							"menus",
 							"commands",
-							"lagdebug",
 							"itemdebug",
 							"sync",
 							"synclist",
