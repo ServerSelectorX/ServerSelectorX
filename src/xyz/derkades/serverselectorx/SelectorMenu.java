@@ -38,6 +38,12 @@ public class SelectorMenu extends IconMenu {
 			return;
 		}
 
+		if (!config.isConfigurationSection("menu")) {
+			player.sendMessage("The config file for this menu doesn't contain a menu section.");
+			player.sendMessage("If it is there, maybe the config failed to load entirely. Please check for earlier YAML syntax errors in the console.");
+			return;
+		}
+
 		for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
 			final ConfigurationSection section = config.getConfigurationSection("menu." + key);
 
