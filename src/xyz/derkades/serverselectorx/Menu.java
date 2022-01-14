@@ -1,9 +1,6 @@
 package xyz.derkades.serverselectorx;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
@@ -13,14 +10,10 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.jetbrains.annotations.Nullable;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
-import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
-import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.derkutils.bukkit.menu.IconMenu;
 import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
 import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
@@ -29,6 +22,10 @@ import xyz.derkades.serverselectorx.placeholders.GlobalPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.Placeholder;
 import xyz.derkades.serverselectorx.placeholders.PlayerPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.Server;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Menu extends IconMenu {
 
@@ -286,6 +283,7 @@ public class Menu extends IconMenu {
 				}
 			}
 
+			final ConfigurationSection chosenSectionFinal = chosenSection;
 			final int amountOverrideFinal = amountOverride;
 			final Map<String, String> placeholdersFinal = placeholders;
 
@@ -296,7 +294,7 @@ public class Menu extends IconMenu {
 				if (placeholdersFinal != null) {
 					builder.namePlaceholders(placeholdersFinal).lorePlaceholders(placeholdersFinal);
 				}
-				addToMenu(key, player, section, builder);
+				addToMenu(key, player, chosenSectionFinal, builder);
 			});
 		}
 	}
