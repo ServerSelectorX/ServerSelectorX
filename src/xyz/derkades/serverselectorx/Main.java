@@ -6,7 +6,6 @@ import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import de.tr7zw.changeme.nbtapi.NBTCompound;
 import de.tr7zw.changeme.nbtapi.NBTContainer;
-import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.NbtApiException;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
@@ -14,11 +13,11 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
-import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
@@ -34,11 +33,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.UUID;
+import java.util.*;
 import java.util.function.Consumer;
 
 public class Main extends JavaPlugin {
@@ -135,6 +130,12 @@ public class Main extends JavaPlugin {
 		return adventure;
 	}
 
+	private static final LegacyComponentSerializer LEGACY_COMPONENT_SERIALIZER = LegacyComponentSerializer.builder()
+			.character(ChatColor.COLOR_CHAR)
+			.hexColors()
+			.useUnusualXRepeatedCharacterHexFormat()
+			.build();
+
     public static void getItemBuilderFromItemSection(final Player player, final ConfigurationSection section, Consumer<NbtItemBuilder> itemConsumer) {
     	final String materialString = section.getString("material");
 		getItemBuilderFromMaterialString(player, materialString, builder -> {
@@ -152,7 +153,7 @@ public class Main extends JavaPlugin {
 				title = PlaceholderUtil.parsePapiPlaceholders(player, title, additionalPlaceholders);
 				if (useMiniMessage) {
 					Component c = MiniMessage.get().deserialize(title);
-					title = LegacyComponentSerializer.legacySection().serialize(c);
+					title = LEGACY_COMPONENT_SERIALIZER.serialize(c);
 					builder.name(title);
 				} else {
 					title = "&r&f" + title;
@@ -170,7 +171,7 @@ public class Main extends JavaPlugin {
 					line = PlaceholderUtil.parsePapiPlaceholders(player, line, additionalPlaceholders);
 					if (useMiniMessage) {
 						Component c = MiniMessage.get().deserialize(line);
-						line = LegacyComponentSerializer.legacySection().serialize(c);
+						line = LEGACY_COMPONENT_SERIALIZER.serialize(c);
 					} else {
 						line = "&r&f" + line;
 					}
