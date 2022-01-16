@@ -156,7 +156,7 @@ public class Menu extends IconMenu {
 
 									final Placeholder placeholder = server.getPlaceholder(placeholderKeyInConfig);
 									if (placeholder == null) {
-										Main.getPlugin().getLogger().warning("Dynamic feature contains rule with placeholder " + placeholder + " which has not been received from the server.");
+										Main.getPlugin().getLogger().warning("Dynamic feature contains rule with placeholder " + placeholderKeyInConfig + " which has not been received from the server.");
 										continue;
 									}
 
