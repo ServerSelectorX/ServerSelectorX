@@ -17,13 +17,13 @@ public class Stats {
 //		metrics.addCustomChart(new Metrics.SimplePie("placeholderapi", () -> Main.PLACEHOLDER_API instanceof PapiEnabled ? "yes" : "no"));
 
 		metrics.addCustomChart(new SimplePie("number_of_selectors", () -> {
-			return Main.getConfigurationManager().getAll().size() + "";
+			return Main.getConfigurationManager().allFiles().size() + "";
 		}));
 
 		metrics.addCustomChart(new AdvancedPie("selector_item", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
-			for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
+			for (final FileConfiguration config : Main.getConfigurationManager().allFiles()) {
 				final Material material = Material.getMaterial(config.getString("item"));
 				if (material == null)
 				 {
@@ -43,7 +43,7 @@ public class Stats {
 		metrics.addCustomChart(new AdvancedPie("type", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
-			for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
+			for (final FileConfiguration config : Main.getConfigurationManager().allFiles()) {
 				for (final String slot : config.getConfigurationSection("menu").getKeys(false)) {
 					final String action = config.getString("menu." + slot + ".action").split(":")[0].toLowerCase();
 					if (map.containsKey(action)) {
@@ -60,7 +60,7 @@ public class Stats {
 		metrics.addCustomChart(new AdvancedPie("server_pinging", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
-			for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
+			for (final FileConfiguration config : Main.getConfigurationManager().allFiles()) {
 				for (final String slot : config.getConfigurationSection("menu").getKeys(false)) {
 					if (config.getBoolean("menu." + slot + ".ping-server", false)) {
 						if (map.containsKey("Enabled")) {
@@ -104,7 +104,7 @@ public class Stats {
 		metrics.addCustomChart(new AdvancedPie("menu_item_slot", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
-			for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
+			for (final FileConfiguration config : Main.getConfigurationManager().allFiles()) {
 				final int slot = config.getInt("inv-slot", 0);
 				if (slot < 0) {
 					if (map.containsKey("Auto")) {
@@ -127,7 +127,7 @@ public class Stats {
 		metrics.addCustomChart(new AdvancedPie("rows", () -> {
 			final Map<String, Integer> map = new HashMap<>();
 
-			for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
+			for (final FileConfiguration config : Main.getConfigurationManager().allFiles()) {
 				final int rows = config.getInt("rows", 6);
 				if (map.containsKey(rows + "")) {
 					map.put(rows + "", map.get(rows + "") + 1);

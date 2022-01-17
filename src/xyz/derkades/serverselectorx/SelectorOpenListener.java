@@ -28,7 +28,7 @@ public class SelectorOpenListener implements Listener {
 
 		Cooldown.addCooldown("ssx-global-open" + player.getName(), 300);
 
-		for (final FileConfiguration config : Main.getConfigurationManager().getAll()) {
+		for (final FileConfiguration config : Main.getConfigurationManager().allFiles()) {
 			if (config == null) {
 				continue;
 			}
