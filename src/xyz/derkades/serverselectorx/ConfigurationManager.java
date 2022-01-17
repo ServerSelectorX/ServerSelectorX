@@ -1,5 +1,9 @@
 package xyz.derkades.serverselectorx;
 
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import xyz.derkades.derkutils.FileUtils;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
@@ -8,11 +12,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-
-import xyz.derkades.derkutils.FileUtils;
 
 /**
  * Manages configuration files for server selectors
@@ -56,6 +55,7 @@ public class ConfigurationManager {
 		createDefaultConfig();
 
 		Main.getPlugin().reloadConfig();
+		Main.getPlugin().getConfig().setDefaults(new YamlConfiguration());
 
 		this.files = Arrays.stream(MENU_DIR.list())
 				.filter(s -> s.endsWith(".yml"))
