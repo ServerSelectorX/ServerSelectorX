@@ -1,9 +1,6 @@
 package xyz.derkades.serverselectorx;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
@@ -13,8 +10,6 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.jetbrains.annotations.Nullable;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
@@ -27,6 +22,10 @@ import xyz.derkades.serverselectorx.placeholders.GlobalPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.Placeholder;
 import xyz.derkades.serverselectorx.placeholders.PlayerPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.Server;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 public class Menu extends IconMenu {
 
@@ -72,17 +71,7 @@ public class Menu extends IconMenu {
 					return;
 				}
 
-				final long start = System.nanoTime();
-				if (Main.LAG_DEBUG) {
-					Main.getPlugin().getLogger().info("Starting menu load for player " + player.getName());
-				}
-
 				addItems();
-
-				if (Main.LAG_DEBUG) {
-					final long diff = System.nanoTime() - start;
-					Main.getPlugin().getLogger().info(String.format("--Finished (re)loading menu in %.2fμs. (one tick is 50ms)", diff / 1000f));
-				}
 
 				if (config.getBoolean("disable-updates", false)) {
 					this.cancel();
@@ -104,8 +93,6 @@ public class Menu extends IconMenu {
 
 		itemLoop:
 		for (final String key : this.config.getConfigurationSection("menu").getKeys(false)) {
-			long itemStart = System.nanoTime();
-			
 			if (!this.config.isConfigurationSection("menu." + key)) {
 				player.sendMessage("Invalid item " + key + ", check indentation.");
 				continue;
@@ -114,7 +101,8 @@ public class Menu extends IconMenu {
 			final ConfigurationSection section = this.config.getConfigurationSection("menu." + key);
 
 			ConfigurationSection chosenSection;
-			NbtItemBuilder builder;
+			int amountOverride = -1;
+			Map<String, String> placeholders = null;
 
 			if (section.contains("permission") && !player.hasPermission(section.getString("permission"))) {
 				// Use no-permission section
@@ -136,7 +124,6 @@ public class Menu extends IconMenu {
 					continue;
 				}
 
-				builder = Main.getItemBuilderFromItemSection(player, noPermissionSection);
 				chosenSection = noPermissionSection;
 			} else {
 				// Player has permission, use other sections
@@ -147,31 +134,29 @@ public class Menu extends IconMenu {
 
 					if (server.isOnline()) {
 						// to avoid "may not have been initialized" errors later
-						builder = null;
 						chosenSection = null;
 
 						if (configMisc.contains("server-name") &&
 								serverName.equalsIgnoreCase(configMisc.getString("server-name")) &&
 								section.isConfigurationSection("connected")) {
 							final ConfigurationSection connectedSection = section.getConfigurationSection("connected");
-							builder = Main.getItemBuilderFromItemSection(player, connectedSection);
 							chosenSection = connectedSection;
 						} else {
 							if (section.contains("dynamic")) {
 								for (final String dynamicKey : section.getConfigurationSection("dynamic").getKeys(false)) {
-									final long colons = dynamicKey.chars().filter(c -> c == ':').count();
-									if (colons != 1) {
-										player.sendMessage("Invalid dynamic section '" + dynamicKey + "'. Dynamic section identifiers should contain exactly one colon, this one contains " + colons + ".");
+									final String[] split = dynamicKey.split(":");
+
+									if (split.length != 2) {
+										player.sendMessage("Invalid dynamic section '" + dynamicKey + "'. Dynamic section identifiers should contain exactly one colon.");
 										return;
 									}
 
-									final String[] split = dynamicKey.split(":");
 									final String placeholderKeyInConfig = split[0];
 									final String placeholderValueInConfig = split[1];
 
 									final Placeholder placeholder = server.getPlaceholder(placeholderKeyInConfig);
 									if (placeholder == null) {
-										Main.getPlugin().getLogger().warning("Dynamic feature contains rule with placeholder " + placeholder + " which has not been received from the server.");
+										Main.getPlugin().getLogger().warning("Dynamic feature contains rule with placeholder " + placeholderKeyInConfig + " which has not been received from the server.");
 										continue;
 									}
 
@@ -206,15 +191,14 @@ public class Menu extends IconMenu {
 											continue itemLoop;
 										}
 
-										builder = Main.getItemBuilderFromItemSection(player, dynamicSection);
 										chosenSection = dynamicSection;
 										break;
 									}
 								}
 							}
 
-							if (builder == null) {
-								//No dynamic rule matched, fall back to online
+							if (chosenSection == null) {
+								// No dynamic rule matched, fall back to online
 								if (!section.isConfigurationSection("online")) {
 									player.sendMessage("Error for item " + key);
 									player.sendMessage("Online section does not exist");
@@ -234,12 +218,11 @@ public class Menu extends IconMenu {
 									continue;
 								}
 
-								builder = Main.getItemBuilderFromItemSection(player, onlineSection);
 								chosenSection = onlineSection;
 							}
 						}
 
-						final Map<String, String> placeholders = new HashMap<>();
+						placeholders = new HashMap<>();
 
 						// Add global placeholders to list (uuid = null)
 						for (final Placeholder placeholder : server.getPlaceholders()) {
@@ -254,13 +237,10 @@ public class Menu extends IconMenu {
 							placeholders.put("{" + placeholder.getKey() + "}", value);
 						}
 
-						// Now parse the collected placeholders and papi placeholders in name and lore
-						builder.namePlaceholders(placeholders).lorePlaceholders(placeholders);
-
 						// Set item amount if dynamic item count is enabled
 						if (section.getBoolean("dynamic-item-count", false)) {
 							final int amount = server.getOnlinePlayers();
-							builder.amount(amount < 1 || amount > 64 ? 1 : amount);
+							amountOverride = amount < 1 || amount > 64 ? 1 : amount;
 						}
 					} else {
 						// Server is offline
@@ -282,7 +262,6 @@ public class Menu extends IconMenu {
 							continue;
 						}
 
-						builder = Main.getItemBuilderFromItemSection(player, offlineSection);
 						chosenSection = offlineSection;
 					}
 				} else {
@@ -300,64 +279,71 @@ public class Menu extends IconMenu {
 						continue;
 					}
 
-					builder = Main.getItemBuilderFromItemSection(player, section);
 					chosenSection = section;
 				}
 			}
 
-			builder.papi(player)
-				.placeholder("{player}", player.getName())
-				.placeholder("{globalOnline}", ServerSelectorX.getGlobalPlayerCount() + "");
+			final ConfigurationSection chosenSectionFinal = chosenSection;
+			final int amountOverrideFinal = amountOverride;
+			final Map<String, String> placeholdersFinal = placeholders;
 
-			// Add actions to item as NBT
-			final NBTItem nbt = new NBTItem(builder.create());
-			nbt.setObject("SSXActions", chosenSection.getStringList("actions"));
-			nbt.setObject("SSXActionsLeft", chosenSection.getStringList("left-click-actions"));
-			nbt.setObject("SSXActionsRight", chosenSection.getStringList("right-click-actions"));
+			Main.getItemBuilderFromItemSection(player, chosenSection, builder -> {
+				if (amountOverrideFinal >= 0) {
+					builder.amount(amountOverrideFinal);
+				}
+				if (placeholdersFinal != null) {
+					builder.namePlaceholders(placeholdersFinal).lorePlaceholders(placeholdersFinal);
+				}
+				addToMenu(key, player, chosenSectionFinal, builder);
+			});
+		}
+	}
 
-			if (chosenSection.contains("cooldown")) {
-				if (!chosenSection.isList("cooldown-actions")) {
+	public void addToMenu(String key, Player player, ConfigurationSection section, NbtItemBuilder builder) {
+		// Add actions to item as NBT
+		builder.editNbt(nbt -> {
+			nbt.setObject("SSXActions", section.getStringList("actions"));
+			nbt.setObject("SSXActionsLeft", section.getStringList("left-click-actions"));
+			nbt.setObject("SSXActionsRight", section.getStringList("right-click-actions"));
+
+			if (section.contains("cooldown")) {
+				if (!section.isList("cooldown-actions")) {
 					player.sendMessage("When using the 'cooldown' option, a list of actions 'cooldown-actions' must also be specified.");
 					return;
 				}
 
-				nbt.setInteger("SSXCooldownTime", (int) (chosenSection.getDouble("cooldown") * 1000));
+				nbt.setInteger("SSXCooldownTime", (int) (section.getDouble("cooldown") * 1000));
 				nbt.setString("SSXCooldownId", player.getName() + this.getInventoryView().getTitle() + key);
-				nbt.setObject("SSXCooldownActions", chosenSection.getStringList("cooldown-actions"));
+				nbt.setObject("SSXCooldownActions", section.getStringList("cooldown-actions"));
 			}
+		});
 
-			final ItemStack item = nbt.getItem();
+		final ItemStack item = builder.create();
 
-			if (key.equals("fill") || key.equals("-1")) { // -1 for backwards compatibility
-				// Fill all blank slots
-				for (int i = 0; i < this.getInventory().getSize(); i++) {
-					if (!this.hasItem(i)) {
-						this.addItem(i, item);
-					}
-				}
-			} else {
-				for (final String split : key.split(",")) {
-					int slot;
-					try {
-						slot = Integer.parseInt(split);
-					} catch (final NumberFormatException e) {
-						player.sendMessage("Invalid slot number " + split);
-						return;
-					}
-
-					if (slot >= this.getInventory().getSize() || slot < 0) {
-						player.sendMessage("You put an item in slot " + slot + ", which is higher than the maximum number of slots in your menu.");
-						player.sendMessage("Use numbers 0 to " + (this.getInventory().getSize() - 1) + "or increase the number of rows in the config");
-						return;
-					}
-
-					this.addItem(slot, item);
+		if (key.equals("fill") || key.equals("-1")) { // -1 for backwards compatibility
+			// Fill all blank slots
+			for (int i = 0; i < this.getInventory().getSize(); i++) {
+				if (!this.hasItem(i)) {
+					this.addItem(i, item);
 				}
 			}
-			if (Main.LAG_DEBUG) {
-				long current = System.nanoTime();
-				Main.getPlugin().getLogger().info(String.format("  item %s took %.2fμs", key, (current - itemStart) / 1000f));
-				itemStart = current;
+		} else {
+			for (final String split : key.split(",")) {
+				int slot;
+				try {
+					slot = Integer.parseInt(split);
+				} catch (final NumberFormatException e) {
+					player.sendMessage("Invalid slot number " + split);
+					return;
+				}
+
+				if (slot >= this.getInventory().getSize() || slot < 0) {
+					player.sendMessage("You put an item in slot " + slot + ", which is higher than the maximum number of slots in your menu.");
+					player.sendMessage("Use numbers 0 to " + (this.getInventory().getSize() - 1) + "or increase the number of rows in the config");
+					return;
+				}
+
+				this.addItem(slot, item);
 			}
 		}
 	}

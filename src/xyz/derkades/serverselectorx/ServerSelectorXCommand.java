@@ -132,10 +132,6 @@ public class ServerSelectorXCommand implements CommandExecutor {
 				case "commands":
 					Main.getConfigurationManager().listCommandConfigurations().forEach(sender::sendMessage);
 					return true;
-				case "lagdebug":
-					Main.LAG_DEBUG = true;
-					sender.sendMessage("Lag related debug console messages are now enabled until the next server restart/reload.");
-					return true;
 				case "itemdebug":
 					Main.ITEM_DEBUG = true;
 					sender.sendMessage("Debug messages related to items on join are now enabled until the next server restart/reload.");

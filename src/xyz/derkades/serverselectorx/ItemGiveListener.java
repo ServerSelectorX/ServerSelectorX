@@ -125,33 +125,32 @@ public class ItemGiveListener implements Listener {
 				continue;
 			}
 
-			ItemStack item = Main.getItemBuilderFromItemSection(player, config.getConfigurationSection("item")).create();
+			Main.getItemBuilderFromItemSection(player, config.getConfigurationSection("item"), builder -> {
+				builder.editNbt(nbt -> nbt.setString("SSXItem", name));
+				ItemStack item = builder.create();
 
-			final NBTItem nbt = new NBTItem(item);
-			nbt.setString("SSXItem", name);
-			item = nbt.getItem();
+				final int slot = config.getInt("give.inv-slot", 0);
+				final int delay = config.getInt("give.delay", 0);
+				debug("Give delay: " + delay);
 
-			final int slot = config.getInt("give.inv-slot", 0);
-			final int delay = config.getInt("give.delay", 0);
-			debug("Give delay: " + delay);
-
-			if (slot < 0) {
-				if (!inv.containsAtLeast(item, item.getAmount())) {
+				if (slot < 0) {
+					if (!inv.containsAtLeast(item, item.getAmount())) {
+						if (delay == 0) {
+							inv.addItem(item);
+						} else {
+							final ItemStack itemF = item;
+							Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> inv.addItem(itemF), delay);
+						}
+					}
+				} else {
 					if (delay == 0) {
-						inv.addItem(item);
+						inv.setItem(slot, item);
 					} else {
 						final ItemStack itemF = item;
-						Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> inv.addItem(itemF), delay);
+						Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> inv.setItem(slot, itemF), delay);
 					}
 				}
-			} else {
-				if (delay == 0) {
-					inv.setItem(slot, item);
-				} else {
-					final ItemStack itemF = item;
-					Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> inv.setItem(slot, itemF), delay);
-				}
-			}
+			});
 		}
 	}
 
