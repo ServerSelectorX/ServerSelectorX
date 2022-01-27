@@ -144,13 +144,13 @@ public class Menu extends IconMenu {
 						} else {
 							if (section.contains("dynamic")) {
 								for (final String dynamicKey : section.getConfigurationSection("dynamic").getKeys(false)) {
-									final long colons = dynamicKey.chars().filter(c -> c == ':').count();
-									if (colons != 1) {
-										player.sendMessage("Invalid dynamic section '" + dynamicKey + "'. Dynamic section identifiers should contain exactly one colon, this one contains " + colons + ".");
+									final String[] split = dynamicKey.split(":");
+
+									if (split.length != 2) {
+										player.sendMessage("Invalid dynamic section '" + dynamicKey + "'. Dynamic section identifiers should contain exactly one colon.");
 										return;
 									}
 
-									final String[] split = dynamicKey.split(":");
 									final String placeholderKeyInConfig = split[0];
 									final String placeholderValueInConfig = split[1];
 
