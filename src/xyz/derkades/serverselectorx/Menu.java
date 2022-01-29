@@ -26,6 +26,7 @@ import xyz.derkades.serverselectorx.placeholders.Server;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 
 public class Menu extends IconMenu {
 
@@ -98,13 +99,13 @@ public class Menu extends IconMenu {
 				continue;
 			}
 
-			final ConfigurationSection section = this.config.getConfigurationSection("menu." + key);
+			final ConfigurationSection section = Objects.requireNonNull(this.config.getConfigurationSection("menu." + key), "Null configuration section: menu." + key);
 
 			ConfigurationSection chosenSection = null;
 			int amountOverride = -1;
 			Map<String, String> placeholders = null;
 
-			if (section.contains("permission") && !player.hasPermission(section.getString("permission"))) {
+			if (section.isString("permission") && !player.hasPermission(Objects.requireNonNull(section.getString("permission"), "null permission"))) {
 				// Use no-permission section
 				final ConfigurationSection noPermissionSection = section.getConfigurationSection("no-permission");
 
@@ -127,9 +128,9 @@ public class Menu extends IconMenu {
 				chosenSection = noPermissionSection;
 			} else {
 				// Player has permission, use other sections
-				if (section.contains("connector")) {
+				if (section.isString("connector")) {
 					// Advanced server section. Use online, offline, dynamic sections.
-					final String serverName = section.getString("connector");
+					final String serverName = Objects.requireNonNull(section.getString("connector"), "connector server name null");
 
 					if (section.isConfigurationSection("connected")) {
 						if (!configMisc.contains("server-name")) {
@@ -146,7 +147,7 @@ public class Menu extends IconMenu {
 						final Server server = Server.getServer(serverName);
 
 						if (server.isOnline()) {
-							if (section.contains("dynamic")) {
+							if (section.isConfigurationSection("dynamic")) {
 								for (final String dynamicKey : section.getConfigurationSection("dynamic").getKeys(false)) {
 									final String[] split = dynamicKey.split(":");
 
