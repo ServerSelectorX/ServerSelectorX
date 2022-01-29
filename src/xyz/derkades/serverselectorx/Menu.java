@@ -100,7 +100,7 @@ public class Menu extends IconMenu {
 
 			final ConfigurationSection section = this.config.getConfigurationSection("menu." + key);
 
-			ConfigurationSection chosenSection;
+			ConfigurationSection chosenSection = null;
 			int amountOverride = -1;
 			Map<String, String> placeholders = null;
 
@@ -130,18 +130,22 @@ public class Menu extends IconMenu {
 				if (section.contains("connector")) {
 					// Advanced server section. Use online, offline, dynamic sections.
 					final String serverName = section.getString("connector");
-					final Server server = Server.getServer(serverName);
 
-					if (server.isOnline()) {
-						// to avoid "may not have been initialized" errors later
-						chosenSection = null;
+					if (section.isConfigurationSection("connected")) {
+						if (!configMisc.contains("server-name")) {
+							player.sendMessage("To use the connected section, specify server-name in misc.yml");
+							return;
+						}
 
-						if (configMisc.contains("server-name") &&
-								serverName.equalsIgnoreCase(configMisc.getString("server-name")) &&
-								section.isConfigurationSection("connected")) {
-							final ConfigurationSection connectedSection = section.getConfigurationSection("connected");
-							chosenSection = connectedSection;
-						} else {
+						if (serverName.equalsIgnoreCase(configMisc.getString("server-name"))) {
+							chosenSection = section.getConfigurationSection("connected");
+						}
+					}
+
+					if (chosenSection != null) {
+						final Server server = Server.getServer(serverName);
+
+						if (server.isOnline()) {
 							if (section.contains("dynamic")) {
 								for (final String dynamicKey : section.getConfigurationSection("dynamic").getKeys(false)) {
 									final String[] split = dynamicKey.split(":");
@@ -176,9 +180,9 @@ public class Menu extends IconMenu {
 
 									if (
 											mode.equals("equals") && placeholderValueInConfig.equals(placeholderValueFromConnector) ||
-											mode.equals("less") && Double.parseDouble(placeholderValueInConfig) > Double.parseDouble(placeholderValueFromConnector) ||
-											mode.equals("more") && Double.parseDouble(placeholderValueInConfig) < Double.parseDouble(placeholderValueFromConnector)
-											) {
+													mode.equals("less") && Double.parseDouble(placeholderValueInConfig) > Double.parseDouble(placeholderValueFromConnector) ||
+													mode.equals("more") && Double.parseDouble(placeholderValueInConfig) < Double.parseDouble(placeholderValueFromConnector)
+									) {
 
 										final String materialString = dynamicSection.getString("material");
 
@@ -220,49 +224,49 @@ public class Menu extends IconMenu {
 
 								chosenSection = onlineSection;
 							}
-						}
 
-						placeholders = new HashMap<>();
+							placeholders = new HashMap<>();
 
-						// Add global placeholders to list (uuid = null)
-						for (final Placeholder placeholder : server.getPlaceholders()) {
-							final String value;
-							if (placeholder instanceof GlobalPlaceholder) {
-								final GlobalPlaceholder global = (GlobalPlaceholder) placeholder;
-								value = global.getValue();
-							} else {
-								final PlayerPlaceholder playerPlaceholder = (PlayerPlaceholder) placeholder;
-								value = playerPlaceholder.getValue(player);
+							// Add global placeholders to list (uuid = null)
+							for (final Placeholder placeholder : server.getPlaceholders()) {
+								final String value;
+								if (placeholder instanceof GlobalPlaceholder) {
+									final GlobalPlaceholder global = (GlobalPlaceholder) placeholder;
+									value = global.getValue();
+								} else {
+									final PlayerPlaceholder playerPlaceholder = (PlayerPlaceholder) placeholder;
+									value = playerPlaceholder.getValue(player);
+								}
+								placeholders.put("{" + placeholder.getKey() + "}", value);
 							}
-							placeholders.put("{" + placeholder.getKey() + "}", value);
+
+							// Set item amount if dynamic item count is enabled
+							if (section.getBoolean("dynamic-item-count", false)) {
+								final int amount = server.getOnlinePlayers();
+								amountOverride = amount < 1 || amount > 64 ? 1 : amount;
+							}
+						} else {
+							// Server is offline
+							if (!section.isConfigurationSection("offline")) {
+								player.sendMessage("Offline section does not exist");
+								return;
+							}
+
+							final ConfigurationSection offlineSection = section.getConfigurationSection("offline");
+
+							final String materialString = offlineSection.getString("material");
+
+							if (materialString == null) {
+								player.sendMessage("Error for item " + key);
+								player.sendMessage("Offline section does not have a material option");
+							}
+
+							if (materialString.equals("NONE") || materialString.equals("AIR")) {
+								continue;
+							}
+
+							chosenSection = offlineSection;
 						}
-
-						// Set item amount if dynamic item count is enabled
-						if (section.getBoolean("dynamic-item-count", false)) {
-							final int amount = server.getOnlinePlayers();
-							amountOverride = amount < 1 || amount > 64 ? 1 : amount;
-						}
-					} else {
-						// Server is offline
-						if (!section.isConfigurationSection("offline")) {
-							player.sendMessage("Offline section does not exist");
-							return;
-						}
-
-						final ConfigurationSection offlineSection = section.getConfigurationSection("offline");
-
-						final String materialString = offlineSection.getString("material");
-
-						if (materialString == null) {
-							player.sendMessage("Error for item " + key);
-							player.sendMessage("Offline section does not have a material option");
-						}
-
-						if (materialString.equals("NONE") || materialString.equals("AIR")) {
-							continue;
-						}
-
-						chosenSection = offlineSection;
 					}
 				} else {
 					// Simple section
