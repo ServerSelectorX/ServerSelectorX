@@ -143,7 +143,7 @@ public class Menu extends IconMenu {
 						}
 					}
 
-					if (chosenSection != null) {
+					if (chosenSection == null) {
 						final Server server = Server.getServer(serverName);
 
 						if (server.isOnline()) {
