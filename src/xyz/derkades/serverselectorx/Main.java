@@ -136,7 +136,9 @@ public class Main extends JavaPlugin {
 			.useUnusualXRepeatedCharacterHexFormat()
 			.build();
 
-    public static void getItemBuilderFromItemSection(final Player player, final ConfigurationSection section, Consumer<NbtItemBuilder> itemConsumer) {
+    public static void getItemBuilderFromItemSection(final @NotNull Player player,
+													 final @NotNull ConfigurationSection section,
+													 final @NotNull Consumer<NbtItemBuilder> itemConsumer) {
     	final String materialString = section.getString("material");
 		getItemBuilderFromMaterialString(player, materialString, builder -> {
 			boolean useMiniMessage = section.getBoolean("minimessage", false);
