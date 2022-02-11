@@ -34,4 +34,5 @@ public class PapiCondition extends Condition {
 		Objects.requireNonNull(actualValue, "Placeholder value returned by PlaceholderAPI is null! This probably means the expansion or plugin that added the placeholder is broken (not an SSX bug).");
 		return actualValue.equals(expectedValue);
 	}
+
 }

@@ -18,6 +18,7 @@ import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.serverselectorx.Main;
 import xyz.derkades.serverselectorx.ServerSelectorX;
 import xyz.derkades.serverselectorx.conditional.condition.Condition;
+import xyz.derkades.serverselectorx.conditional.condition.Conditions;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -31,7 +32,7 @@ public class ConditionalItem {
 				throw new InvalidConfigurationException("Missing 'type' option for a conditional");
 			}
 			String type = (String) map.get("type");
-			Condition condition = Condition.getConditionByType(type);
+			Condition condition = Conditions.getConditionByType(type);
 			if (condition.isTrue(player, map)) {
 				return map;
 			}
