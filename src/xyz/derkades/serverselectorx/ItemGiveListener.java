@@ -2,6 +2,7 @@ package xyz.derkades.serverselectorx;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -15,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 
 import de.tr7zw.changeme.nbtapi.NBTItem;
+import xyz.derkades.serverselectorx.conditional.ConditionalItem;
 
 public class ItemGiveListener implements Listener {
 
@@ -108,32 +110,37 @@ public class ItemGiveListener implements Listener {
 				continue;
 			}
 
-			Main.getItemBuilderFromItemSection(player, config.getConfigurationSection("item"), builder -> {
-				builder.editNbt(nbt -> nbt.setString("SSXItem", name));
-				ItemStack item = builder.create();
+			try {
+				ConditionalItem.getItemBuilder(player, config.getConfigurationSection("item"), builder -> {
+					builder.editNbt(nbt -> nbt.setString("SSXItem", name));
+					ItemStack item = builder.create();
 
-				final int slot = config.getInt("give.inv-slot", 0);
-				final int delay = config.getInt("give.delay", 0);
-				debug("Give delay: " + delay);
+					final int slot = config.getInt("give.inv-slot", 0);
+					final int delay = config.getInt("give.delay", 0);
+					debug("Give delay: " + delay);
 
-				if (slot < 0) {
-					if (!inv.containsAtLeast(item, item.getAmount())) {
+					if (slot < 0) {
+						if (!inv.containsAtLeast(item, item.getAmount())) {
+							if (delay == 0) {
+								inv.addItem(item);
+							} else {
+								final ItemStack itemF = item;
+								Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> inv.addItem(itemF), delay);
+							}
+						}
+					} else {
 						if (delay == 0) {
-							inv.addItem(item);
+							inv.setItem(slot, item);
 						} else {
 							final ItemStack itemF = item;
-							Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> inv.addItem(itemF), delay);
+							Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> inv.setItem(slot, itemF), delay);
 						}
 					}
-				} else {
-					if (delay == 0) {
-						inv.setItem(slot, item);
-					} else {
-						final ItemStack itemF = item;
-						Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> inv.setItem(slot, itemF), delay);
-					}
-				}
-			});
+				});
+			} catch (InvalidConfigurationException e) {
+				player.sendMessage(String.format("Invalid item config (in %s.yaml): %s",
+						name, e.getMessage()));
+			}
 		}
 	}
 

@@ -4,25 +4,14 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import de.tr7zw.changeme.nbtapi.NBTCompound;
-import de.tr7zw.changeme.nbtapi.NBTContainer;
-import de.tr7zw.changeme.nbtapi.NbtApiException;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.Material;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
-import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
-import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
 import xyz.derkades.serverselectorx.configuration.ConfigSync;
 import xyz.derkades.serverselectorx.configuration.ConfigurationManager;
 import xyz.derkades.serverselectorx.placeholders.PapiExpansionRegistrar;
@@ -33,7 +22,9 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.*;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.UUID;
 import java.util.function.Consumer;
 
 public class Main extends JavaPlugin {
@@ -130,99 +121,7 @@ public class Main extends JavaPlugin {
 		return adventure;
 	}
 
-	private static final LegacyComponentSerializer LEGACY_COMPONENT_SERIALIZER = LegacyComponentSerializer.builder()
-			.character(ChatColor.COLOR_CHAR)
-			.hexColors()
-			.useUnusualXRepeatedCharacterHexFormat()
-			.build();
-
-    public static void getItemBuilderFromItemSection(final @NotNull Player player,
-													 final @NotNull ConfigurationSection section,
-													 final @NotNull Consumer<NbtItemBuilder> itemConsumer) {
-    	final String materialString = section.getString("material");
-		getItemBuilderFromMaterialString(player, materialString, builder -> {
-			boolean useMiniMessage = section.getBoolean("minimessage", false);
-
-			final Placeholder playerPlaceholder = new Placeholder("{player}", player.getName());
-			final Placeholder globalOnlinePlaceholder = new Placeholder("{globalOnline}", String.valueOf(ServerSelectorX.getGlobalPlayerCount()));
-			final Placeholder[] additionalPlaceholders = new Placeholder[] {
-					playerPlaceholder,
-					globalOnlinePlaceholder,
-			};
-
-			if (section.contains("title")) {
-				String title = section.getString("title");
-				title = PlaceholderUtil.parsePapiPlaceholders(player, title, additionalPlaceholders);
-				if (useMiniMessage) {
-					Component c = MiniMessage.get().deserialize(title);
-					title = LEGACY_COMPONENT_SERIALIZER.serialize(c);
-					builder.name(title);
-				} else {
-					title = "&r&f" + title;
-					builder.coloredName(title);
-				}
-			} else {
-				builder.name(" ");
-			}
-
-			if (section.contains("lore")) {
-				List<String> lore = new ArrayList<>(section.getStringList("lore"));
-				for (int i = 0; i < lore.size(); i++) {
-					String line = lore.get(i);
-
-					line = PlaceholderUtil.parsePapiPlaceholders(player, line, additionalPlaceholders);
-					if (useMiniMessage) {
-						Component c = MiniMessage.get().deserialize(line);
-						line = LEGACY_COMPONENT_SERIALIZER.serialize(c);
-					} else {
-						line = "&r&f" + line;
-					}
-					lore.set(i, line);
-				}
-				if (useMiniMessage) {
-					builder.lore(lore);
-				} else {
-					builder.coloredLore(lore);
-				}
-			}
-			boolean hideFlagsDefault = false;
-			if (section.getBoolean("enchanted")) {
-				builder.unsafeEnchant(Enchantment.DURABILITY, 1);
-				hideFlagsDefault = true;
-			}
-
-			if (section.getBoolean("hide-flags", hideFlagsDefault)) {
-				builder.hideFlags();
-			}
-
-			if (section.isInt("amount")) {
-				builder.amount(section.getInt("amount"));
-			}
-
-			if (section.isInt("durability")) {
-				builder.damage(section.getInt("durability"));
-			}
-
-			if (section.isString("nbt")) {
-				try {
-					NBTContainer container = new NBTContainer(section.getString("nbt"));
-					Object compound = container.getCompound();
-					if (compound instanceof NBTCompound) {
-						builder.editNbt(nbt -> nbt.mergeCompound((NBTCompound) compound));
-					} else {
-						player.sendMessage("Custom NBT is not a compound? " + compound.getClass().getSimpleName());
-					}
-				} catch (NbtApiException e) {
-					player.sendMessage("Skipped adding custom NBT to an item because of an error, please see the console for more info.");
-					e.printStackTrace();
-				}
-			}
-
-			itemConsumer.accept(builder);
-		});
-    }
-
-    private static void getItemBuilderFromMaterialString(final Player player, final String materialString, Consumer<NbtItemBuilder> builderConsumer) {
+    public static void getItemBuilderFromMaterialString(final Player player, final String materialString, Consumer<NbtItemBuilder> builderConsumer) {
 		if (materialString == null) {
 			player.sendMessage("Material is null, either specify a material or remove the material option completely");
 		} else if (materialString.startsWith("head:")) {
