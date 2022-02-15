@@ -34,6 +34,7 @@ menu:
   2:
     actions:
       - 'message:&cSorry, you cannot connect to this server at the moment.'
+    server-name: kitpvp
     material: WOODEN_SWORD
     hide-flags: true # hide attack damage info
     title: '&cKitPvP Server'
@@ -45,7 +46,6 @@ menu:
     conditional:
         # Override options defined above when the server is online
       - type: server-online
-        server-name: kitpvp
         actions:
           - 'server:kitpvp'
         material: IRON_SWORD
@@ -69,46 +69,49 @@ menu:
   4:
     permission: ssx.dirt
     actions:
-     - 'consolecommand:give {player} dirt 64'
-     - 'playercommand:say I am too lazy to get dirt myself'
+      - 'consolecommand:give {player} dirt 64'
+      - 'playercommand:say I am too lazy to get dirt myself'
     material: DIRT
-    title: '&aFree dirt'
-    
-    no-permission:
-      actions:
-       - 'message:No free dirt for you'
-      material: DIRT
-      title: '&cFree dirt'
+    title: '&cFree dirt'
+
+    conditional:
+        # Override the action and title if the player has a permission
+      - type: permission
+        permission: ssx.dirt
+        actions:
+          - 'consolecommand:give {player} dirt 64'
+          - 'playercommand:say I am too lazy to get dirt myself'
+        title: '&aFree dirt'
  
   # Server item with permissions 
   5:
-    connector: 'vip'
-    permission: 'ssx.vip' # require permission ssx.vip to click on the icon
-    online:
-      actions:
-       - 'server:vip'
-      material: DIAMOND
-      enchanted: true
-      hide-flags: true # hide the enchantment
-      title: '&6VIP Server'
-      lore:
-       - 'You are VIP, join the server!'
-       - 'There are {online} players online.'
-    offline:
-      actions: 
-       - 'message:&cSorry, you cannot connect to this server at the moment.'
-       - 'close'
+    server-name: vip
+    actions:
+      - 'message:&cSorry, you cannot connect to this server at the moment.'
+      - 'close'
       material: DIAMOND
       title: '&cVIP Server'
       lore:
-       - '&7Unfortunately, the server is offline.'
-    no-permission:
-      actions: 
-       - 'message:&cThis server is VIP-only'
-      material: DIAMOND
-      title: '&cVIP Server'
-      lore:
-       - '&7Only players with the VIP rank can join this server.'    
+        - '&7Unfortunately, the server is offline.'
+
+    conditional:
+      - type: permission
+        permission: ssx.vip
+        invert: true
+        actions: ['message:&cThis server is VIP-only']
+        title: '&cVIP Server'
+        lore:
+          - '&7Only players with the VIP rank can join this server.'
+
+      - type: server-online
+        actions:
+          - 'server:vip'
+        material: DIAMOND
+        title: '&6VIP Server'
+        lore:
+          - 'You are VIP, join the server!'
+          - 'There are {online} players online.'
+
   
   fill:
     material: GRAY_STAINED_GLASS_PANE
