@@ -117,11 +117,13 @@ public class ConditionalItem {
 
 			if (serverName != null) {
 				Server server = Server.getServer(serverName);
-				for (final Placeholder placeholder : server.getPlaceholders()) {
-					final String value = placeholder instanceof GlobalPlaceholder
-							? ((GlobalPlaceholder) placeholder).getValue()
-							: ((PlayerPlaceholder) placeholder).getValue(player);
-					additionalPlaceholders.add(new PlaceholderUtil.Placeholder("{" + placeholder.getKey() + "}", value));
+				if (server.isOnline()) {
+					for (final Placeholder placeholder : server.getPlaceholders()) {
+						final String value = placeholder instanceof GlobalPlaceholder
+								? ((GlobalPlaceholder) placeholder).getValue()
+								: ((PlayerPlaceholder) placeholder).getValue(player);
+						additionalPlaceholders.add(new PlaceholderUtil.Placeholder("{" + placeholder.getKey() + "}", value));
+					}
 				}
 			}
 
