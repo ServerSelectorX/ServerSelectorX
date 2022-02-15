@@ -97,7 +97,7 @@ menu:
     conditional:
       - type: permission
         permission: ssx.vip
-        invert: true
+        invert-condition: true
         actions: ['message:&cThis server is VIP-only']
         title: '&cVIP Server'
         lore:

@@ -36,7 +36,7 @@ public class ConditionalItem {
 				throw new InvalidConfigurationException("Missing 'type' option for a conditional");
 			}
 			String type = (String) map.get("type");
-			boolean invert = (boolean) map.getOrDefault("invert", false);
+			boolean invert = (boolean) map.getOrDefault("invert-condition", false);
 			Condition condition = Conditions.getConditionByType(type);
 			if (condition.isTrue(player, map) != invert) {
 				return map;
