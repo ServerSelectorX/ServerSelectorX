@@ -32,31 +32,28 @@ menu:
     
   # Advanced server item 
   2:
-    # define which server to use for placeholders and status
-    # when the 'connector' option is set, you must use online/offline sections
-    # you may use the dynamic section as well, see the wiki for more info
-    connector: 'kitpvp' 
-    
-    online:
-      actions:
-       - 'server:kitpvp'
-      material: IRON_SWORD
-      enchanted: true
-      hide-flags: true # hide the enchantment and attack damage info
-      title: '&aKitPvP Server'
-      lore:
-       - '&7There are {online} out of {max} players online.'
-       - '&7For more placeholders, download SSX-Connector addons!'
-    offline:
-      actions: 
-       - 'message:&cSorry, you cannot connect to this server at the moment.'
-      material: WOODEN_SWORD
-      hide-flags: true # hide attack damage info
-      title: '&cKitPvP Server'
-      lore:
-       - 'Ipsum lorem'
-       - 'Amet sit dolor'
-       - 'The server is offline'
+    actions:
+      - 'message:&cSorry, you cannot connect to this server at the moment.'
+    material: WOODEN_SWORD
+    hide-flags: true # hide attack damage info
+    title: '&cKitPvP Server'
+    lore:
+      - 'Ipsum lorem'
+      - 'Amet sit dolor'
+      - 'The server is offline'
+
+    conditional:
+        # Override options defined above when the server is online
+      - type: server-online
+        server-name: kitpvp
+        actions:
+          - 'server:kitpvp'
+        material: IRON_SWORD
+        enchanted: true
+        title: '&aKitPvP Server'
+        lore:
+          - '&7There are {online} out of {max} players online.'
+          - '&7For more placeholders, download SSX-Connector addons!'
   
   # Example of head items. You can use a UUID instead of auto if you want a specific player head.    
   3:

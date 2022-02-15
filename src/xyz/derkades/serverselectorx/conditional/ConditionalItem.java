@@ -19,6 +19,10 @@ import xyz.derkades.serverselectorx.Main;
 import xyz.derkades.serverselectorx.ServerSelectorX;
 import xyz.derkades.serverselectorx.conditional.condition.Condition;
 import xyz.derkades.serverselectorx.conditional.condition.Conditions;
+import xyz.derkades.serverselectorx.placeholders.GlobalPlaceholder;
+import xyz.derkades.serverselectorx.placeholders.Placeholder;
+import xyz.derkades.serverselectorx.placeholders.PlayerPlaceholder;
+import xyz.derkades.serverselectorx.placeholders.Server;
 
 import java.util.*;
 import java.util.function.Consumer;
@@ -32,8 +36,9 @@ public class ConditionalItem {
 				throw new InvalidConfigurationException("Missing 'type' option for a conditional");
 			}
 			String type = (String) map.get("type");
+			boolean invert = (boolean) map.getOrDefault("invert", false);
 			Condition condition = Conditions.getConditionByType(type);
-			if (condition.isTrue(player, map)) {
+			if (condition.isTrue(player, map) != invert) {
 				return map;
 			}
 		}
@@ -70,7 +75,8 @@ public class ConditionalItem {
 			final @NotNull List<String> leftClickActions; // default: empty list
 			final @NotNull List<String> rightClickActions; // default: empty list
 			final int cooldownTime; // default: 0
-			final @NotNull List<String> cooldownActions; // default: empty list;
+			final @NotNull List<String> cooldownActions; // default: empty list
+			final @Nullable String serverName; // default: null
 			if (matchedSection != null) {
 				useMiniMessage = (boolean) matchedSection.getOrDefault("minimessage", false);
 				title = (String) matchedSection.getOrDefault("title", " ");
@@ -85,6 +91,7 @@ public class ConditionalItem {
 				rightClickActions = (List<String>) matchedSection.getOrDefault("right-click-actions", Collections.emptyList());
 				cooldownTime = (int) matchedSection.getOrDefault("cooldown", 0);
 				cooldownActions = (List<String>) matchedSection.getOrDefault("cooldown-actions", Collections.emptyList());
+				serverName = (String) matchedSection.get("server-name");
 			} else {
 				useMiniMessage = section.getBoolean("minimessage", false);
 				title = Objects.requireNonNull(section.getString("title", " "));
@@ -99,21 +106,30 @@ public class ConditionalItem {
 				rightClickActions = section.getStringList("right-click-actions");
 				cooldownTime = section.getInt("cooldown");
 				cooldownActions = section.getStringList("cooldown-actions");
+				serverName = section.getString("server-name");
 			}
 
-			final PlaceholderUtil.Placeholder playerPlaceholder = new PlaceholderUtil.Placeholder("{player}", player.getName());
+			final PlaceholderUtil.Placeholder playerNamePlaceholder = new PlaceholderUtil.Placeholder("{player}", player.getName());
 			final PlaceholderUtil.Placeholder globalOnlinePlaceholder = new PlaceholderUtil.Placeholder("{globalOnline}", String.valueOf(ServerSelectorX.getGlobalPlayerCount()));
-			final PlaceholderUtil.Placeholder[] additionalPlaceholders = new PlaceholderUtil.Placeholder[] {
-					playerPlaceholder,
-					globalOnlinePlaceholder,
-			};
+			final List<PlaceholderUtil.Placeholder> additionalPlaceholders = new ArrayList<>(2);
+			additionalPlaceholders.add(playerNamePlaceholder);
+			additionalPlaceholders.add(globalOnlinePlaceholder);
 
+			if (serverName != null) {
+				Server server = Server.getServer(serverName);
+				for (final Placeholder placeholder : server.getPlaceholders()) {
+					final String value = placeholder instanceof GlobalPlaceholder
+							? ((GlobalPlaceholder) placeholder).getValue()
+							: ((PlayerPlaceholder) placeholder).getValue(player);
+					additionalPlaceholders.add(new PlaceholderUtil.Placeholder("{" + placeholder.getKey() + "}", value));
+				}
+			}
 
 			String parsedTitle = PlaceholderUtil.parsePapiPlaceholders(player, title, additionalPlaceholders);
 			if (useMiniMessage) {
 				Component c = MiniMessage.get().deserialize(parsedTitle);
 				parsedTitle = LEGACY_COMPONENT_SERIALIZER.serialize(c);
-				builder.name(title);
+				builder.name(parsedTitle);
 			} else {
 				parsedTitle = "&r&f" + parsedTitle;
 				builder.coloredName(parsedTitle);
@@ -182,10 +198,6 @@ public class ConditionalItem {
 			});
 
 			consumer.accept(builder.create());
-
-
-
-//			consumer.accept(new ConditionalItemReturn();
 		});
 	}
 
