@@ -50,7 +50,12 @@ public class ServerPlaceholderCondition extends Condition {
 			} else {
 				throw new IllegalStateException();
 			}
-			return actualPlaceholderValue.equals(expectedPlaceholderValue);
+
+			String comparisonMode = (String) options.getOrDefault("comparison", "equals");
+
+			return comparisonMode.equals("equals") && expectedPlaceholderValue.equals(actualPlaceholderValue) ||
+					comparisonMode.equals("less") && Double.parseDouble(expectedPlaceholderValue) > Double.parseDouble(actualPlaceholderValue) ||
+					comparisonMode.equals("more") && Double.parseDouble(expectedPlaceholderValue) < Double.parseDouble(actualPlaceholderValue);
 		} else {
 			Main.getPlugin().getLogger().info(String.format(
 					"Cannot obtain placeholder %s for server %s, the server is offline. Consider adding condition checking if the server is online.",

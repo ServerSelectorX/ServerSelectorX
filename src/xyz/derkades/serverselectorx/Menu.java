@@ -5,32 +5,29 @@ import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
-import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
 import xyz.derkades.derkutils.bukkit.menu.IconMenu;
 import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
 import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 import xyz.derkades.serverselectorx.actions.Action;
-import xyz.derkades.serverselectorx.placeholders.GlobalPlaceholder;
-import xyz.derkades.serverselectorx.placeholders.Placeholder;
-import xyz.derkades.serverselectorx.placeholders.PlayerPlaceholder;
-import xyz.derkades.serverselectorx.placeholders.Server;
+import xyz.derkades.serverselectorx.conditional.ConditionalItem;
 
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
 
 public class Menu extends IconMenu {
 
 	private final FileConfiguration config;
+	private final String configName;
 
 	private boolean closed = false;
 
@@ -41,6 +38,7 @@ public class Menu extends IconMenu {
 				player);
 
 		this.config = config;
+		this.configName = configName;
 
 		if (this.config == null ||
 				this.config.getConfigurationSection("menu") == null) {
@@ -99,230 +97,21 @@ public class Menu extends IconMenu {
 				continue;
 			}
 
-			final ConfigurationSection section = Objects.requireNonNull(this.config.getConfigurationSection("menu." + key), "Null configuration section: menu." + key);
+			final ConfigurationSection section = Objects.requireNonNull(this.config.getConfigurationSection("menu." + key),
+					"Null configuration section: menu." + key);
 
-			ConfigurationSection chosenSection = null;
-			int amountOverride = -1;
-			Map<String, String> placeholders = null;
-
-			if (section.isString("permission") && !player.hasPermission(Objects.requireNonNull(section.getString("permission"), "null permission"))) {
-				// Use no-permission section
-				final ConfigurationSection noPermissionSection = section.getConfigurationSection("no-permission");
-
-				if (noPermissionSection == null) {
-					player.sendMessage("Missing no-permission section for item " + key + ". Remove the permission option or add a no-permission section.");
-					return;
-				}
-
-				final String materialString = noPermissionSection.getString("material");
-
-				if (materialString == null) {
-					player.sendMessage("No permission section is missing the material option");
-					return;
-				}
-
-				if (materialString.equals("NONE") || materialString.equals("AIR")) {
-					continue;
-				}
-
-				chosenSection = noPermissionSection;
-			} else {
-				// Player has permission, use other sections
-				// Advanced server section. Use online, offline, dynamic sections.
-				if (section.isString("connector")) {
-					final String serverName = Objects.requireNonNull(section.getString("connector"), "connector server name null");
-					final Server server = Server.getServer(serverName);
-
-					if (server.isOnline()) {
-						if (section.isConfigurationSection("connected")) {
-							if (!configMisc.contains("server-name")) {
-								player.sendMessage("To use the connected section, specify server-name in misc.yml");
-								return;
-							}
-
-							if (serverName.equalsIgnoreCase(configMisc.getString("server-name"))) {
-								chosenSection = section.getConfigurationSection("connected");
-							}
-						}
-
-						// Connected section didn't match, try dynamic section next
-						if (chosenSection == null &&
-								section.isConfigurationSection("dynamic")) {
-							for (final String dynamicKey : section.getConfigurationSection("dynamic").getKeys(false)) {
-								final String[] split = dynamicKey.split(":");
-
-								if (split.length != 2) {
-									player.sendMessage("Invalid dynamic section '" + dynamicKey + "'. Dynamic section identifiers should contain exactly one colon.");
-									return;
-								}
-
-								final String placeholderKeyInConfig = split[0];
-								final String placeholderValueInConfig = split[1];
-
-								final Placeholder placeholder = server.getPlaceholder(placeholderKeyInConfig);
-								if (placeholder == null) {
-									Main.getPlugin().getLogger().warning("Dynamic feature contains rule with placeholder " + placeholderKeyInConfig + " which has not been received from the server.");
-									continue;
-								}
-
-								final String placeholderValueFromConnector;
-
-								if (placeholder instanceof GlobalPlaceholder) {
-									final GlobalPlaceholder global = (GlobalPlaceholder) placeholder;
-									placeholderValueFromConnector = global.getValue();
-								} else {
-									final PlayerPlaceholder playerPlaceholder = (PlayerPlaceholder) placeholder;
-									placeholderValueFromConnector = playerPlaceholder.getValue(player);
-								}
-
-								final ConfigurationSection dynamicSection = section.getConfigurationSection("dynamic." + dynamicKey);
-
-								final String mode = dynamicSection.getString("mode", "equals");
-
-								if (
-										mode.equals("equals") && placeholderValueInConfig.equals(placeholderValueFromConnector) ||
-												mode.equals("less") && Double.parseDouble(placeholderValueInConfig) > Double.parseDouble(placeholderValueFromConnector) ||
-												mode.equals("more") && Double.parseDouble(placeholderValueInConfig) < Double.parseDouble(placeholderValueFromConnector)
-								) {
-
-									final String materialString = dynamicSection.getString("material");
-
-									if (materialString == null) {
-										player.sendMessage("Dynamic section '" + dynamicKey + "' is missing the material option");
-										return;
-									}
-
-									if (materialString.equals("NONE") || materialString.equals("AIR")) {
-										continue itemLoop;
-									}
-
-									chosenSection = dynamicSection;
-									break;
-								}
-							}
-						}
-
-						// If dynamic section didn't match either, fall back to online section
-						if (chosenSection == null) {
-							if (!section.isConfigurationSection("online")) {
-								player.sendMessage("Error for item " + key);
-								player.sendMessage("Online section does not exist");
-								return;
-							}
-
-							final ConfigurationSection onlineSection = section.getConfigurationSection("online");
-
-							final String materialString = onlineSection.getString("material");
-
-							if (materialString == null) {
-								player.sendMessage("Error for item " + key);
-								player.sendMessage("Online section does not have a material option");
-							}
-
-							if (materialString.equals("NONE") || materialString.equals("AIR")) {
-								continue;
-							}
-
-							chosenSection = onlineSection;
-						}
-
-						// Build placeholder map
-						placeholders = new HashMap<>();
-						for (final Placeholder placeholder : server.getPlaceholders()) {
-							final String value;
-							if (placeholder instanceof GlobalPlaceholder) {
-								final GlobalPlaceholder global = (GlobalPlaceholder) placeholder;
-								value = global.getValue();
-							} else {
-								final PlayerPlaceholder playerPlaceholder = (PlayerPlaceholder) placeholder;
-								value = playerPlaceholder.getValue(player);
-							}
-							placeholders.put("{" + placeholder.getKey() + "}", value);
-						}
-
-						// Set item amount override if dynamic item count is enabled
-						if (section.getBoolean("dynamic-item-count", false)) {
-							final int amount = server.getOnlinePlayers();
-							amountOverride = amount < 1 || amount > 64 ? 1 : amount;
-						}
-					} else {
-						// Server is offline
-						if (!section.isConfigurationSection("offline")) {
-							player.sendMessage("Offline section does not exist");
-							return;
-						}
-
-						final ConfigurationSection offlineSection = section.getConfigurationSection("offline");
-
-						final String materialString = offlineSection.getString("material");
-
-						if (materialString == null) {
-							player.sendMessage("Error for item " + key);
-							player.sendMessage("Offline section does not have a material option");
-						}
-
-						if (materialString.equals("NONE") || materialString.equals("AIR")) {
-							continue;
-						}
-
-						chosenSection = offlineSection;
-					}
-				} else {
-					// Simple section
-					final String materialString = section.getString("material");
-
-					if (materialString == null) {
-						player.sendMessage("Error for item " + key);
-						player.sendMessage("Missing material option. Remember, this is not an advanced section, so don't use online/offline/dynamic sections in the config.");
-						player.sendMessage("If you want to use these sections, add a connector option.");
-						player.sendMessage("Read more here: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Menu-items-v2");
-					}
-
-					if (materialString.equals("NONE") || materialString.equals("AIR")) {
-						continue;
-					}
-
-					chosenSection = section;
-				}
+			final String cooldownId = player.getName() + this.configName + key;
+			try {
+				ConditionalItem.getItem(player, section, cooldownId, item -> {
+					addToMenu(key, player, item);
+				});
+			} catch (InvalidConfigurationException e) {
+				player.sendMessage("Invalid configuration: " + e.getMessage());
 			}
-
-			final ConfigurationSection chosenSectionFinal = chosenSection;
-			final int amountOverrideFinal = amountOverride;
-			final Map<String, String> placeholdersFinal = placeholders;
-
-			Main.getItemBuilderFromItemSection(player, chosenSection, builder -> {
-				if (amountOverrideFinal >= 0) {
-					builder.amount(amountOverrideFinal);
-				}
-				if (placeholdersFinal != null) {
-					builder.namePlaceholders(placeholdersFinal).lorePlaceholders(placeholdersFinal);
-				}
-				addToMenu(key, player, chosenSectionFinal, builder);
-			});
 		}
 	}
 
-	public void addToMenu(String key, Player player, ConfigurationSection section, NbtItemBuilder builder) {
-		// Add actions to item as NBT
-		builder.editNbt(nbt -> {
-			nbt.setObject("SSXActions", section.getStringList("actions"));
-			nbt.setObject("SSXActionsLeft", section.getStringList("left-click-actions"));
-			nbt.setObject("SSXActionsRight", section.getStringList("right-click-actions"));
-
-			if (section.contains("cooldown")) {
-				if (!section.isList("cooldown-actions")) {
-					player.sendMessage("When using the 'cooldown' option, a list of actions 'cooldown-actions' must also be specified.");
-					return;
-				}
-
-				nbt.setInteger("SSXCooldownTime", (int) (section.getDouble("cooldown") * 1000));
-				nbt.setString("SSXCooldownId", player.getName() + this.getInventoryView().getTitle() + key);
-				nbt.setObject("SSXCooldownActions", section.getStringList("cooldown-actions"));
-			}
-		});
-
-		final ItemStack item = builder.create();
-
+	public void addToMenu(@NotNull String key, @NotNull Player player, @NotNull ItemStack item) {
 		if (key.equals("fill") || key.equals("-1")) { // -1 for backwards compatibility
 			// Fill all blank slots
 			for (int i = 0; i < this.getInventory().getSize(); i++) {
@@ -354,8 +143,13 @@ public class Menu extends IconMenu {
 	@Override
 	public boolean onOptionClick(final OptionClickEvent event) {
 		final Player player = event.getPlayer();
+		ItemStack item = event.getItemStack();
+		if (item == null) {
+			Main.getPlugin().getLogger().warning("Received click event for null item. This is a bug.");
+			return false;
+		}
 
-		final NBTItem nbt = new NBTItem(event.getItemStack());
+		final NBTItem nbt = new NBTItem(item);
 
 		@SuppressWarnings("unchecked")
 		final List<String> actions = nbt.getObject("SSXActions", List.class);

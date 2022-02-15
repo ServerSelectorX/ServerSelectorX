@@ -1,5 +1,6 @@
 package xyz.derkades.serverselectorx;
 
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -14,8 +15,7 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-
-import de.tr7zw.changeme.nbtapi.NBTItem;
+import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
 import xyz.derkades.serverselectorx.conditional.ConditionalItem;
 
 public class ItemGiveListener implements Listener {
@@ -65,7 +65,7 @@ public class ItemGiveListener implements Listener {
 			if (item == null || item.getType() == Material.AIR) {
 				continue;
 			}
-			final NBTItem nbt = new NBTItem(item);
+				final NBTItem nbt = new NBTItem(item);
 			if (nbt.hasKey("SSXItem")) {
 				debug("Removed item at position " + i);
 				contents[i] = null;
@@ -75,10 +75,10 @@ public class ItemGiveListener implements Listener {
 
 		debug("Now giving items");
 
-		for (final String name : Main.getConfigurationManager().listItemConfigurations()) {
-			final FileConfiguration config = Main.getConfigurationManager().getItemConfiguration(name);
+		for (final String configName : Main.getConfigurationManager().listItemConfigurations()) {
+			final FileConfiguration config = Main.getConfigurationManager().getItemConfiguration(configName);
 
-			debug("Preparing to give item '" + name + "'");
+			debug("Preparing to give item '" + configName + "'");
 
 			if (!config.getBoolean("give." + type)) {
 				debug("Item skipped, give is disabled");
@@ -87,7 +87,7 @@ public class ItemGiveListener implements Listener {
 
 			if (config.getBoolean("give.permission")) {
 				debug("Permissions are enabled, checking permission");
-				final String permission = "ssx.item." + name;
+				final String permission = "ssx.item." + configName;
 				if (!player.hasPermission(permission)) {
 					debug("Player does not have permission '" + permission + "', skipping item");
 					continue;
@@ -106,14 +106,17 @@ public class ItemGiveListener implements Listener {
 			debug("All checks done, giving item");
 
 			if (!config.isConfigurationSection("item")) {
-				player.sendMessage("Missing 'item' section in item config '" + name + "'");
+				player.sendMessage("Missing 'item' section in item config '" + configName + "'");
 				continue;
 			}
 
+			String cooldownId = player.getUniqueId() + configName;
+
 			try {
-				ConditionalItem.getItemBuilder(player, config.getConfigurationSection("item"), builder -> {
-					builder.editNbt(nbt -> nbt.setString("SSXItem", name));
-					ItemStack item = builder.create();
+				ConditionalItem.getItem(player, config.getConfigurationSection("item"), cooldownId, itemBeforeModify -> {
+					ItemStack item = new NbtItemBuilder(itemBeforeModify)
+							.editNbt(nbt -> nbt.setString("SSXItem", configName))
+							.create();
 
 					final int slot = config.getInt("give.inv-slot", 0);
 					final int delay = config.getInt("give.delay", 0);
@@ -139,7 +142,7 @@ public class ItemGiveListener implements Listener {
 				});
 			} catch (InvalidConfigurationException e) {
 				player.sendMessage(String.format("Invalid item config (in %s.yaml): %s",
-						name, e.getMessage()));
+						configName, e.getMessage()));
 			}
 		}
 	}

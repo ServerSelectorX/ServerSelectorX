@@ -12,7 +12,9 @@ public class Conditions {
 
 	static {
 		Condition[] conditions = new Condition[] {
+				new CurrentServerCondition(),
 				new PapiCondition(),
+				new PermissionCondition(),
 				new ServerPlaceholderCondition(),
 				new ServerStatusCondition(),
 		};
