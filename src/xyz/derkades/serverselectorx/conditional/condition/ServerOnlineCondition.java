@@ -6,9 +6,9 @@ import xyz.derkades.serverselectorx.placeholders.Server;
 
 import java.util.Map;
 
-public class ServerStatusCondition extends Condition {
+public class ServerOnlineCondition extends Condition {
 
-	ServerStatusCondition() {
+	ServerOnlineCondition() {
 		super("server-online");
 	}
 
@@ -21,16 +21,6 @@ public class ServerStatusCondition extends Condition {
 		String serverName = (String) options.get("server-name");
 		Server server = Server.getServer(serverName);
 
-		final boolean expectedStatus;
-		if (options.containsKey("online")) {
-			if (!(options.get("online") instanceof Boolean)) {
-				throw new InvalidConfigurationException("Option 'online' must be boolean");
-			}
-			expectedStatus = (boolean) options.get("online");
-		} else {
-			expectedStatus = true;
-		}
-
-		return server.isOnline() == expectedStatus;
+		return server.isOnline();
 	}
 }

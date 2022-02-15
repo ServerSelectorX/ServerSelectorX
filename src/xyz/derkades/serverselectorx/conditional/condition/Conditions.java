@@ -17,7 +17,7 @@ public class Conditions {
 				new PapiCondition(),
 				new PermissionCondition(),
 				new ServerPlaceholderCondition(),
-				new ServerStatusCondition(),
+				new ServerOnlineCondition(),
 		};
 
 		CONDITIONS_BY_TYPE = new HashMap<>(conditions.length);

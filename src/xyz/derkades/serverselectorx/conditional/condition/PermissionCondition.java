@@ -18,7 +18,6 @@ public class PermissionCondition extends Condition {
 		}
 
 		String permissionNode = (String) options.get("permissions");
-		boolean shouldHavePermission = (boolean) options.getOrDefault("has-permission", true);
-		return player.hasPermission(permissionNode) == shouldHavePermission;
+		return player.hasPermission(permissionNode);
 	}
 }
