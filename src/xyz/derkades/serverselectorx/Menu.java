@@ -158,7 +158,17 @@ public class Menu extends IconMenu {
 		@SuppressWarnings("unchecked")
 		final List<String> rightActions = nbt.getObject("SSXActionsRight", List.class);
 
-		if (nbt.hasKey("SSXCooldownTime")) {
+		final ClickType click = event.getClickType();
+		boolean rightClick = click == ClickType.RIGHT || click == ClickType.SHIFT_RIGHT;
+		boolean leftClick = click == ClickType.LEFT || click == ClickType.SHIFT_LEFT;
+
+		if (nbt.hasKey("SSXCooldownTime") &&
+				( // Only apply cooldown if an action is about to be performed
+					!actions.isEmpty() ||
+					rightClick && !rightActions.isEmpty() ||
+					leftClick && !leftActions.isEmpty()
+				)
+			) {
 			final int cooldownTime = nbt.getInteger("SSXCooldownTime");
 			final String cooldownId = nbt.getString("SSXCooldownId");
 			if (Cooldown.getCooldown(cooldownId) > 0) {
@@ -171,9 +181,9 @@ public class Menu extends IconMenu {
 		}
 
 		boolean close = Action.runActions(player, actions);
-		if (event.getClickType() == ClickType.RIGHT || event.getClickType() == ClickType.SHIFT_RIGHT) {
+		if (rightClick) {
 			close = close || Action.runActions(player, rightActions);
-		} else if (event.getClickType() == ClickType.LEFT || event.getClickType() == ClickType.SHIFT_LEFT) {
+		} else if (leftClick) {
 			close = close || Action.runActions(player, leftActions);
 		}
 		return close;

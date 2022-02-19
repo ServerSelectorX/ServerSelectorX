@@ -75,7 +75,7 @@ public class Main extends JavaPlugin {
 
 		this.getCommand("serverselectorx").setExecutor(new ServerSelectorXCommand());
 		this.getCommand("serverselectorx").setTabCompleter(new ServerSelectorXCommandCompleter());
-		
+
 		// Register custom selector commands
 		Commands.registerCustomCommands();
 
