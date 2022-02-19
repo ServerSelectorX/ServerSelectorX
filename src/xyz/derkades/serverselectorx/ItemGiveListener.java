@@ -66,7 +66,7 @@ public class ItemGiveListener implements Listener {
 				continue;
 			}
 				final NBTItem nbt = new NBTItem(item);
-			if (nbt.hasKey("SSXItem")) {
+			if (nbt.hasKey("SSXActions")) {
 				debug("Removed item at position " + i);
 				contents[i] = null;
 			}
@@ -114,10 +114,6 @@ public class ItemGiveListener implements Listener {
 
 			try {
 				ConditionalItem.getItem(player, config.getConfigurationSection("item"), cooldownId, itemBeforeModify -> {
-					ItemStack item = new NbtItemBuilder(itemBeforeModify)
-							.editNbt(nbt -> nbt.setString("SSXItem", configName))
-							.create();
-
 					final int slot = config.getInt("give.inv-slot", 0);
 					final int delay = config.getInt("give.delay", 0);
 					debug("Give delay: " + delay);

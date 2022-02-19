@@ -38,7 +38,7 @@ public class ItemClickListener implements Listener {
 		final Player player = event.getPlayer();
 		final ItemStack item = player.getInventory().getItemInMainHand();
 
-		if (item == null || item.getType() == Material.AIR) {
+		if (item.getType() == Material.AIR) {
 			return;
 		}
 
@@ -50,18 +50,19 @@ public class ItemClickListener implements Listener {
 			return;
 		}
 
+		final NBTItem nbt = new NBTItem(item);
+
+		if (!nbt.hasKey("SSXActions")) {
+			// Not an SSX item
+			return;
+		}
+
 		// this cooldown is added when the menu closes
 		String globalCooldownId = player.getName() + "ssxitemglobal";
 		if (Cooldown.getCooldown(globalCooldownId) > 0) {
 			return;
 		}
 		Cooldown.addCooldown(globalCooldownId, 100);
-
-		final NBTItem nbt = new NBTItem(item);
-
-		if (!nbt.hasKey("SSXItem")) {
-			return;
-		}
 
 		List<String> actions = new ArrayList<>(nbt.getStringList("SSXActions"));
 		if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
