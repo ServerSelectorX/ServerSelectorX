@@ -17,9 +17,6 @@ import xyz.derkades.derkutils.Cooldown;
 import java.util.ArrayList;
 import java.util.List;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class ItemClickListener implements Listener {
 
 	@EventHandler(priority = EventPriority.HIGH)
@@ -66,7 +63,18 @@ public class ItemClickListener implements Listener {
 			return;
 		}
 
-		// TODO Only apply cooldown if there is at least one action to run
+		List<String> actions = new ArrayList<>(nbt.getStringList("SSXActions"));
+		if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+			actions.addAll(nbt.getStringList("SSXActionsLeft"));
+		}
+		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			actions.addAll(nbt.getStringList("SSXActionsRight"));
+		}
+
+		if (actions.isEmpty()) {
+			return;
+		}
+
 		if (nbt.hasKey("SSXCooldownId")) {
 			String cooldownId = nbt.getString("SSXCooldownId");
 			if (Cooldown.getCooldown(cooldownId) > 0) {
@@ -76,20 +84,6 @@ public class ItemClickListener implements Listener {
 			}
 			int cooldownTime = nbt.getInteger("SSXCooldownTime");
 			Cooldown.addCooldown(cooldownId, cooldownTime);
-		}
-
-		List<String> actions = new ArrayList<>(nbt.getStringList("SSXActions"));
-		if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-			actions.addAll(nbt.getStringList("SSXActionsLeft"));
-		}
-		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			actions.addAll(nbt.getStringList("SSXActionsRight"));
-		}
-
-		if (!actions.isEmpty() &&
-				config.isInt("cooldown") &&
-				!checkCooldown(player, "ssxitem" + itemName, config.getInt("cooldown"), true)) {
-			return;
 		}
 
 		xyz.derkades.serverselectorx.actions.Action.runActions(player, actions);
