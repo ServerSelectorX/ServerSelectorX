@@ -12,6 +12,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
+import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.serverselectorx.configuration.ConfigSync;
 import xyz.derkades.serverselectorx.configuration.ConfigurationManager;
 import xyz.derkades.serverselectorx.placeholders.PapiExpansionRegistrar;
@@ -121,7 +122,11 @@ public class Main extends JavaPlugin {
 		return adventure;
 	}
 
-    public static void getItemBuilderFromMaterialString(final Player player, final String materialString, Consumer<NbtItemBuilder> builderConsumer) {
+    public static void getItemBuilderFromMaterialString(final Player player, String materialString, Consumer<NbtItemBuilder> builderConsumer) {
+		if (materialString.charAt(0) == '!') {
+			materialString = PlaceholderUtil.parsePapiPlaceholders(player, materialString.substring(1));
+		}
+
 		if (materialString == null) {
 			player.sendMessage("Material is null, either specify a material or remove the material option completely");
 		} else if (materialString.startsWith("head:")) {
