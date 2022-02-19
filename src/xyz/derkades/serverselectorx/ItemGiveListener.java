@@ -15,7 +15,6 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
 import xyz.derkades.serverselectorx.conditional.ConditionalItem;
 
 public class ItemGiveListener implements Listener {
@@ -113,7 +112,7 @@ public class ItemGiveListener implements Listener {
 			String cooldownId = player.getUniqueId() + configName;
 
 			try {
-				ConditionalItem.getItem(player, config.getConfigurationSection("item"), cooldownId, itemBeforeModify -> {
+				ConditionalItem.getItem(player, config.getConfigurationSection("item"), cooldownId, item -> {
 					final int slot = config.getInt("give.inv-slot", 0);
 					final int delay = config.getInt("give.delay", 0);
 					debug("Give delay: " + delay);
