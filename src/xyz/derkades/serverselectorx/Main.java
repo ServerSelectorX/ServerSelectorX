@@ -22,7 +22,6 @@ import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
 import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
-import xyz.derkades.derkutils.bukkit.PlaceholderUtil.Placeholder;
 import xyz.derkades.serverselectorx.configuration.ConfigSync;
 import xyz.derkades.serverselectorx.configuration.ConfigurationManager;
 import xyz.derkades.serverselectorx.placeholders.PapiExpansionRegistrar;
@@ -143,9 +142,9 @@ public class Main extends JavaPlugin {
 		getItemBuilderFromMaterialString(player, materialString, builder -> {
 			boolean useMiniMessage = section.getBoolean("minimessage", false);
 
-			final Placeholder playerPlaceholder = new Placeholder("{player}", player.getName());
-			final Placeholder globalOnlinePlaceholder = new Placeholder("{globalOnline}", String.valueOf(ServerSelectorX.getGlobalPlayerCount()));
-			final Placeholder[] additionalPlaceholders = new Placeholder[] {
+			final PlaceholderUtil.Placeholder playerPlaceholder = new PlaceholderUtil.Placeholder("{player}", player.getName());
+			final PlaceholderUtil.Placeholder globalOnlinePlaceholder = new PlaceholderUtil.Placeholder("{globalOnline}", String.valueOf(ServerSelectorX.getGlobalPlayerCount()));
+			final PlaceholderUtil.Placeholder[] additionalPlaceholders = new PlaceholderUtil.Placeholder[] {
 					playerPlaceholder,
 					globalOnlinePlaceholder,
 			};
@@ -227,7 +226,11 @@ public class Main extends JavaPlugin {
 		});
     }
 
-    private static void getItemBuilderFromMaterialString(final Player player, final String materialString, Consumer<NbtItemBuilder> builderConsumer) {
+    private static void getItemBuilderFromMaterialString(final Player player, String materialString, Consumer<NbtItemBuilder> builderConsumer) {
+		if (materialString.charAt(0) == '!') {
+			materialString = PlaceholderUtil.parsePapiPlaceholders(player, materialString.substring(1));
+		}
+
 		if (materialString == null) {
 			player.sendMessage("Material is null, either specify a material or remove the material option completely");
 		} else if (materialString.startsWith("head:")) {

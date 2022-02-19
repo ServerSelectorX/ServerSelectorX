@@ -1,8 +1,6 @@
 package xyz.derkades.serverselectorx;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -12,10 +10,11 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
-
-import de.tr7zw.changeme.nbtapi.NBTItem;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ItemClickListener implements Listener {
 
@@ -58,10 +57,6 @@ public class ItemClickListener implements Listener {
 			return;
 		}
 
-		if (config.isInt("cooldown") && !checkCooldown(player, "ssxitem" + itemName, config.getInt("cooldown"), true)) {
-			return;
-		}
-
 		final List<String> actions = new ArrayList<>(config.getStringList("actions"));
 
 		if (config.isList("left-click-actions") &&
@@ -72,6 +67,12 @@ public class ItemClickListener implements Listener {
 		if (config.isList("right-click-actions") &&
 				(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
 			actions.addAll(config.getStringList("right-click-actions"));
+		}
+
+		if (!actions.isEmpty() &&
+				config.isInt("cooldown") &&
+				!checkCooldown(player, "ssxitem" + itemName, config.getInt("cooldown"), true)) {
+			return;
 		}
 
 		xyz.derkades.serverselectorx.actions.Action.runActions(player, actions);
