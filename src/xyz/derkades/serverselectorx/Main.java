@@ -154,7 +154,7 @@ public class Main extends JavaPlugin {
 				String title = section.getString("title");
 				title = PlaceholderUtil.parsePapiPlaceholders(player, title, additionalPlaceholders);
 				if (useMiniMessage) {
-					Component c = MiniMessage.get().deserialize(title);
+					Component c = MiniMessage.miniMessage().deserialize(title);
 					title = LEGACY_COMPONENT_SERIALIZER.serialize(c);
 					builder.name(title);
 				} else {
@@ -172,7 +172,7 @@ public class Main extends JavaPlugin {
 
 					line = PlaceholderUtil.parsePapiPlaceholders(player, line, additionalPlaceholders);
 					if (useMiniMessage) {
-						Component c = MiniMessage.get().deserialize(line);
+						Component c = MiniMessage.miniMessage().deserialize(line);
 						line = LEGACY_COMPONENT_SERIALIZER.serialize(c);
 					} else {
 						line = "&r&f" + line;
