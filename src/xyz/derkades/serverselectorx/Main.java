@@ -20,6 +20,7 @@ import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import xyz.derkades.derkutils.bukkit.NbtItemBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.serverselectorx.configuration.ConfigSync;
@@ -153,7 +154,7 @@ public class Main extends JavaPlugin {
 				String title = section.getString("title");
 				title = PlaceholderUtil.parsePapiPlaceholders(player, title, additionalPlaceholders);
 				if (useMiniMessage) {
-					Component c = MiniMessage.get().deserialize(title);
+					Component c = MiniMessage.miniMessage().deserialize(title);
 					title = LEGACY_COMPONENT_SERIALIZER.serialize(c);
 					builder.name(title);
 				} else {
@@ -171,7 +172,7 @@ public class Main extends JavaPlugin {
 
 					line = PlaceholderUtil.parsePapiPlaceholders(player, line, additionalPlaceholders);
 					if (useMiniMessage) {
-						Component c = MiniMessage.get().deserialize(line);
+						Component c = MiniMessage.miniMessage().deserialize(line);
 						line = LEGACY_COMPONENT_SERIALIZER.serialize(c);
 					} else {
 						line = "&r&f" + line;
@@ -226,14 +227,16 @@ public class Main extends JavaPlugin {
 		});
     }
 
-    private static void getItemBuilderFromMaterialString(final Player player, String materialString, Consumer<NbtItemBuilder> builderConsumer) {
+    private static void getItemBuilderFromMaterialString(final Player player, @Nullable String materialString, Consumer<NbtItemBuilder> builderConsumer) {
+		if (materialString == null) {
+			return;
+		}
+
 		if (materialString.charAt(0) == '!') {
 			materialString = PlaceholderUtil.parsePapiPlaceholders(player, materialString.substring(1));
 		}
 
-		if (materialString == null) {
-			player.sendMessage("Material is null, either specify a material or remove the material option completely");
-		} else if (materialString.startsWith("head:")) {
+		if (materialString.startsWith("head:")) {
 			final String owner = materialString.split(":")[1];
 			if (owner.equals("auto")) {
 				if (getConfigurationManager().getMiscConfiguration().getBoolean("mojang-api-head-auto", false)) {
@@ -262,26 +265,33 @@ public class Main extends JavaPlugin {
 					builderConsumer.accept(new NbtItemBuilder(Material.SKULL_ITEM).damage(3).skullTexture(owner));
 				}
 			}
-		} else if (materialString.startsWith("hdb")) {
+			return;
+		}
+
+		if (materialString.startsWith("hdb")) {
 			final String id = materialString.substring(4);
 			builderConsumer.accept(HDBHandler.getBuilder(id));
-		} else {
-			final String[] materialsToTry = materialString.split("\\|");
-			Material material = null;
-			for (final String materialString2 : materialsToTry) {
-				try {
-					material = Material.valueOf(materialString2);
-					break;
-				} catch (final IllegalArgumentException ignored) {
-				}
-			}
+			return;
+		}
 
-			if (material == null) {
-				player.sendMessage("Invalid item name '" + materialString + "'");
-				player.sendMessage("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Item-names");
-				return;
-			}
 
+		final String[] materialsToTry = materialString.split("\\|");
+		Material material = null;
+		for (final String materialString2 : materialsToTry) {
+			try {
+				material = Material.valueOf(materialString2);
+				break;
+			} catch (final IllegalArgumentException ignored) {
+			}
+		}
+
+		if (material == null) {
+			player.sendMessage("Invalid item name '" + materialString + "'");
+			player.sendMessage("https://github.com/ServerSelectorX/ServerSelectorX/wiki/Item-names");
+			return;
+		}
+
+		if (material != Material.AIR) {
 			builderConsumer.accept(new NbtItemBuilder(material));
 		}
 	}

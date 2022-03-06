@@ -14,7 +14,7 @@ public class AdvMessageAction extends Action {
 
 	@Override
 	public boolean apply(final Player player, final String value) {
-		final Component message = MiniMessage.get().deserialize(value);
+		final Component message = MiniMessage.miniMessage().deserialize(value);
 		Main.adventure().player(player).sendMessage(message);
 		return false;
 	}
