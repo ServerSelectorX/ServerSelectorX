@@ -129,7 +129,7 @@ public class ConditionalItem {
 
 			String parsedTitle = PlaceholderUtil.parsePapiPlaceholders(player, title, additionalPlaceholders);
 			if (useMiniMessage) {
-				Component c = MiniMessage.get().deserialize(parsedTitle);
+				Component c = MiniMessage.miniMessage().deserialize(parsedTitle);
 				parsedTitle = LEGACY_COMPONENT_SERIALIZER.serialize(c);
 				builder.name(parsedTitle);
 			} else {
@@ -142,7 +142,7 @@ public class ConditionalItem {
 				for (String line : lore) {
 					String parsedLine = PlaceholderUtil.parsePapiPlaceholders(player, line, additionalPlaceholders);
 					parsedLine = useMiniMessage
-							? LEGACY_COMPONENT_SERIALIZER.serialize(MiniMessage.get().deserialize(parsedLine))
+							? LEGACY_COMPONENT_SERIALIZER.serialize(MiniMessage.miniMessage().deserialize(parsedLine))
 							: "&r&f" + parsedLine;
 					parsedLore.add(parsedLine);
 				}
