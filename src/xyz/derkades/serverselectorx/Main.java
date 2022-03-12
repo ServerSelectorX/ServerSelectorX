@@ -170,7 +170,6 @@ public class Main extends JavaPlugin {
 			return;
 		}
 
-
 		final String[] materialsToTry = materialString.split("\\|");
 		Material material = null;
 		for (final String materialString2 : materialsToTry) {
