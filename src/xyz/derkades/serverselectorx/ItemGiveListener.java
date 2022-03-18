@@ -17,6 +17,8 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import xyz.derkades.serverselectorx.conditional.ConditionalItem;
 
+import java.util.Objects;
+
 public class ItemGiveListener implements Listener {
 
 	// Event priorities are set to high so the items are given after other plugins clear the player's inventory.
@@ -76,6 +78,7 @@ public class ItemGiveListener implements Listener {
 
 		for (final String configName : Main.getConfigurationManager().listItemConfigurations()) {
 			final FileConfiguration config = Main.getConfigurationManager().getItemConfiguration(configName);
+			Objects.requireNonNull(config, "Config is null");
 
 			debug("Preparing to give item '" + configName + "'");
 

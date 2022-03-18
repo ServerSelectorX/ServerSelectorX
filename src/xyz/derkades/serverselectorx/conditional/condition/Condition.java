@@ -14,7 +14,7 @@ public abstract class Condition {
 		this.type = type;
 	}
 
-	public String getType() {
+	public @NotNull String getType() {
 		return type;
 	}
 

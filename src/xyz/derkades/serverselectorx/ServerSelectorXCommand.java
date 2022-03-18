@@ -1,21 +1,20 @@
 package xyz.derkades.serverselectorx;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import xyz.derkades.serverselectorx.placeholders.GlobalPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.Placeholder;
 import xyz.derkades.serverselectorx.placeholders.PlayerPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.Server;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ServerSelectorXCommand implements CommandExecutor {
 
@@ -38,7 +37,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 			}
 
 			FileConfiguration config = Main.getConfigurationManager().getMenuConfiguration(menuName);
-			if (config != null) {
+			if (config == null) {
 				sender.sendMessage("No menu exists with name '" + menuName + "'.");
 				sender.sendMessage("The menu name is the name of the menu file, without its extension.");
 				sender.sendMessage("For example, for a menu file called 'serverselector.yml', enter 'serverselector'.");

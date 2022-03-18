@@ -3,6 +3,7 @@ package xyz.derkades.serverselectorx.conditional.condition;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.potion.PotionEffectType;
+import xyz.derkades.serverselectorx.Main;
 
 import java.util.Map;
 
@@ -20,6 +21,10 @@ public class EffectCondition extends Condition {
 
 		String effectTypeStr = (String) options.get("effect-type");
 		PotionEffectType effectType = PotionEffectType.getByName(effectTypeStr);
+		if (effectType == null) {
+			Main.getPlugin().getLogger().warning(
+					String.format("Skipped effect condition for %s, effect type %s is invalid", player.getName(), effectTypeStr));
+		}
 		return player.hasPotionEffect(effectType);
 	}
 }

@@ -8,6 +8,7 @@ import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
+import org.bukkit.command.PluginCommand;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -26,6 +27,7 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Objects;
 import java.util.UUID;
 import java.util.function.Consumer;
 
@@ -74,8 +76,10 @@ public class Main extends JavaPlugin {
 
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		this.getCommand("serverselectorx").setExecutor(new ServerSelectorXCommand());
-		this.getCommand("serverselectorx").setTabCompleter(new ServerSelectorXCommandCompleter());
+		PluginCommand command = Objects.requireNonNull(this.getCommand("serverselectorx"),
+				"Command missing from plugin.yml");
+		command.setExecutor(new ServerSelectorXCommand());
+		command.setTabCompleter(new ServerSelectorXCommandCompleter());
 
 		// Register custom selector commands
 		Commands.registerCustomCommands();

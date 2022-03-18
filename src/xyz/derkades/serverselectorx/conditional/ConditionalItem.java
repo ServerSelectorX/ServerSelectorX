@@ -29,6 +29,7 @@ import java.util.function.Consumer;
 
 public class ConditionalItem {
 
+	@SuppressWarnings("unchecked")
 	private static @Nullable Map<String, Object> matchSection(Player player, List<Map<?, ?>> conditionalsList) throws InvalidConfigurationException {
 		for (Map<?, ?> genericMap : conditionalsList) {
 			Map<String, Object> map = (Map<String, Object>) genericMap;
@@ -51,16 +52,21 @@ public class ConditionalItem {
 			.useUnusualXRepeatedCharacterHexFormat()
 			.build();
 
+	@SuppressWarnings("unchecked")
 	public static void getItem(@NotNull Player player, @NotNull ConfigurationSection section,
-									  @NotNull String cooldownId, @NotNull Consumer<@NotNull ItemStack> consumer)
+							   @NotNull String cooldownId, @NotNull Consumer<@NotNull ItemStack> consumer)
 			throws InvalidConfigurationException {
 		final @Nullable Map<String, Object> matchedSection = section.contains("conditional") ?
 				matchSection(player, section.getMapList("conditional")) :
 				null;
 
-		@NotNull String materialString = matchedSection != null ?
+		String materialString = matchedSection != null ?
 				(String) matchedSection.get("material") :
 				section.getString("material");
+
+		if (materialString == null) {
+			throw new InvalidConfigurationException("Material is missing from config or null")
+		}
 
 		Main.getItemBuilderFromMaterialString(player, materialString, builder -> {
 			final boolean useMiniMessage; // default: false

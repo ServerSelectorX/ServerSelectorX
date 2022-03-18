@@ -80,8 +80,6 @@ public class Menu extends IconMenu {
 	}
 
 	private void addItems() {
-		final FileConfiguration configMisc = Main.getConfigurationManager().getMiscConfiguration();
-
 		final OfflinePlayer potentiallyOffline = this.getPlayer();
 		if (!(potentiallyOffline instanceof Player)) {
 			Main.getPlugin().getLogger().warning("Player " + potentiallyOffline.getUniqueId() + " went offline?");
@@ -90,8 +88,13 @@ public class Menu extends IconMenu {
 
 		final Player player = (Player) potentiallyOffline;
 
-		itemLoop:
-		for (final String key : this.config.getConfigurationSection("menu").getKeys(false)) {
+		ConfigurationSection menuSection = this.config.getConfigurationSection("menu");
+		if (menuSection == null) {
+			player.sendMessage("Config file is missing a 'menu' section.");
+			return;
+		}
+
+		for (final String key : menuSection.getKeys(false)) {
 			if (!this.config.isConfigurationSection("menu." + key)) {
 				player.sendMessage("Invalid item " + key + ", check indentation.");
 				continue;
@@ -102,9 +105,8 @@ public class Menu extends IconMenu {
 
 			final String cooldownId = player.getName() + this.configName + key;
 			try {
-				ConditionalItem.getItem(player, section, cooldownId, item -> {
-					addToMenu(key, player, item);
-				});
+				ConditionalItem.getItem(player, section, cooldownId,
+						item -> addToMenu(key, player, item));
 			} catch (InvalidConfigurationException e) {
 				player.sendMessage("Invalid configuration: " + e.getMessage());
 			}
