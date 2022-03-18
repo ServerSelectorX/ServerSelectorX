@@ -194,12 +194,17 @@ public class Menu extends IconMenu {
 	public void onClose(final MenuCloseEvent event) {
 		this.closed = true;
 
+		if (this.config == null) {
+			Main.getPlugin().getLogger().warning("Ignoring menu close event, config failed to load");
+			return;
+		}
+
 		// this cooldown is checked in the item click event
 		// 1.16 clients for some inexplicable reason interact with hotbar items when
 		// a menu item is clicked. To avoid the menu re-opening right after it is closed,
 		// I use this cooldown.
 		Cooldown.addCooldown("ssxitemglobal" + this.getPlayer().getName(), 100);
-
+		
 		if (!this.config.contains("on-close")) {
 			return;
 		}
