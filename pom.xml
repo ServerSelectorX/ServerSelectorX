@@ -58,7 +58,7 @@
 							<shadedPattern>xyz.derkades.serverselectorx.lib.gson</shadedPattern>
 						</relocation>
 					</relocations>
-					
+
 					<filters>
 						<filter>
 							<artifact>*:*</artifact>
@@ -71,6 +71,14 @@
 						</filter>
 					</filters>
 				</configuration>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+					</execution>
+				</executions>
 			</plugin>
 
 		</plugins>
@@ -104,7 +112,7 @@
 			<version>2.11.1</version>
 			<scope>provided</scope>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>com.google.code.gson</groupId>
 			<artifactId>gson</artifactId>
