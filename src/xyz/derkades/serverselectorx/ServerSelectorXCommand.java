@@ -27,16 +27,16 @@ public class ServerSelectorXCommand implements CommandExecutor {
 
 		if (args.length == 3 &&
 			args[0].equals("openmenu")) {
-			String menuName = args[1];
-			String playerName = args[2];
+			final String menuName = args[1];
+			final String playerName = args[2];
 
-			Player player = Bukkit.getPlayerExact(playerName);
+			final Player player = Bukkit.getPlayerExact(playerName);
 			if (player == null) {
 				sender.sendMessage("No online player found with name '" + playerName + "'.");
 				return true;
 			}
 
-			FileConfiguration config = Main.getConfigurationManager().getMenuConfiguration(menuName);
+			final FileConfiguration config = Main.getConfigurationManager().getMenuConfiguration(menuName);
 			if (config == null) {
 				sender.sendMessage("No menu exists with name '" + menuName + "'.");
 				sender.sendMessage("The menu name is the name of the menu file, without its extension.");
