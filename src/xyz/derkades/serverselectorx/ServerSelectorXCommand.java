@@ -1,21 +1,20 @@
 package xyz.derkades.serverselectorx;
 
-import java.util.List;
-import java.util.stream.Collectors;
-
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.Bukkit;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
-
-import net.md_5.bungee.api.ChatColor;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 import xyz.derkades.serverselectorx.placeholders.GlobalPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.Placeholder;
 import xyz.derkades.serverselectorx.placeholders.PlayerPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.Server;
+
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class ServerSelectorXCommand implements CommandExecutor {
 
@@ -28,17 +27,17 @@ public class ServerSelectorXCommand implements CommandExecutor {
 
 		if (args.length == 3 &&
 			args[0].equals("openmenu")) {
-			String menuName = args[1];
-			String playerName = args[2];
+			final String menuName = args[1];
+			final String playerName = args[2];
 
-			Player player = Bukkit.getPlayerExact(playerName);
+			final Player player = Bukkit.getPlayerExact(playerName);
 			if (player == null) {
 				sender.sendMessage("No online player found with name '" + playerName + "'.");
 				return true;
 			}
 
-			FileConfiguration config = Main.getConfigurationManager().getMenuConfiguration(menuName);
-			if (config != null) {
+			final FileConfiguration config = Main.getConfigurationManager().getMenuConfiguration(menuName);
+			if (config == null) {
 				sender.sendMessage("No menu exists with name '" + menuName + "'.");
 				sender.sendMessage("The menu name is the name of the menu file, without its extension.");
 				sender.sendMessage("For example, for a menu file called 'serverselector.yml', enter 'serverselector'.");
