@@ -71,8 +71,11 @@ public class ListFiles extends HttpHandler {
 			}
 
 			if (file.isDirectory()) {
-				for (final File f : file.listFiles()) {
-					directories.push(f);
+				File[] files = file.listFiles();
+				if (files != null) {
+					for (final File f : files) {
+						directories.push(f);
+					}
 				}
 			}
 		}

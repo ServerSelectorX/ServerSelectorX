@@ -4,10 +4,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.glassfish.grizzly.http.server.HttpServer;
 import org.glassfish.grizzly.http.server.NetworkListener;
 import org.glassfish.grizzly.http.server.ServerConfiguration;
-import xyz.derkades.serverselectorx.http.GetFile;
-import xyz.derkades.serverselectorx.http.ListFiles;
-import xyz.derkades.serverselectorx.http.Players;
-import xyz.derkades.serverselectorx.http.Root;
+import xyz.derkades.serverselectorx.http.*;
 
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
@@ -25,6 +22,7 @@ public class WebServer {
 		config.addHttpHandler(new ListFiles(), "/listfiles");
 		config.addHttpHandler(new Root());
 		config.addHttpHandler(new Players(), "/players");
+		config.addHttpHandler(new GetPostJoinCommand(), "/post-join-command");
 
 		try {
 			this.server.start();

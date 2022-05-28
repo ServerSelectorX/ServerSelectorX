@@ -32,31 +32,28 @@ menu:
 
   # Advanced server item
   2:
-    # define which server to use for placeholders and status
-    # when the 'connector' option is set, you must use online/offline sections
-    # you may use the dynamic section as well, see the wiki for more info
-    connector: 'kitpvp'
+    actions:
+      - 'message:&cSorry, you cannot connect to this server at the moment.'
+    server-name: kitpvp
+    material: WOOD_SWORD
+    hide-flags: true # hide attack damage info
+    title: '&cKitPvP Server'
+    lore:
+      - 'Ipsum lorem'
+      - 'Amet sit dolor'
+      - 'The server is offline'
 
-    online:
-      actions:
-       - 'server:kitpvp'
-      material: IRON_SWORD
-      enchanted: true
-      hide-flags: true # hide the enchantment and attack damage info
-      title: '&aKitPvP Server'
-      lore:
-       - '&7There are {online} out of {max} players online.'
-       - '&7For more placeholders, download SSX-Connector addons!'
-    offline:
-      actions:
-       - 'message:&cSorry, you cannot connect to this server at the moment.'
-      material: WOOD_SWORD
-      hide-flags: true # hide attack damage info
-      title: '&cKitPvP Server'
-      lore:
-       - 'Ipsum lorem'
-       - 'Amet sit dolor'
-       - 'The server is offline'
+    conditional:
+        # Override options defined above when the server is online
+      - type: server-online
+        actions:
+          - 'server:kitpvp'
+        material: IRON_SWORD
+        enchanted: true
+        title: '&aKitPvP Server'
+        lore:
+          - '&7There are {online} out of {max} players online.'
+          - '&7For more placeholders, download SSX-Connector addons!'
 
   # Example of head items. You can use a UUID instead of auto if you want a specific player head.
   3:
@@ -72,46 +69,49 @@ menu:
   4:
     permission: ssx.dirt
     actions:
-     - 'consolecommand:give {player} dirt 64'
-     - 'playercommand:say I am too lazy to get dirt myself'
+      - 'consolecommand:give {player} dirt 64'
+      - 'playercommand:say I am too lazy to get dirt myself'
     material: DIRT
-    title: '&aFree dirt'
+    title: '&cFree dirt'
 
-    no-permission:
-      actions:
-       - 'message:No free dirt for you'
-      material: DIRT
-      title: '&cFree dirt'
+    conditional:
+        # Override the action and title if the player has a permission
+      - type: permission
+        permission: ssx.dirt
+        actions:
+          - 'consolecommand:give {player} dirt 64'
+          - 'playercommand:say I am too lazy to get dirt myself'
+        title: '&aFree dirt'
 
   # Server item with permissions
   5:
-    connector: 'vip'
-    permission: 'ssx.vip' # require permission ssx.vip to click on the icon
-    online:
-      actions:
-       - 'server:vip'
-      material: DIAMOND
-      enchanted: true
-      hide-flags: true # hide the enchantment
-      title: '&6VIP Server'
-      lore:
-       - 'You are VIP, join the server!'
-       - 'There are {online} players online.'
-    offline:
-      actions:
-       - 'message:&cSorry, you cannot connect to this server at the moment.'
-       - 'close'
+    server-name: vip
+    actions:
+      - 'message:&cSorry, you cannot connect to this server at the moment.'
+      - 'close'
       material: DIAMOND
       title: '&cVIP Server'
       lore:
-       - '&7Unfortunately, the server is offline.'
-    no-permission:
-      actions:
-       - 'message:&cThis server is VIP-only'
-      material: DIAMOND
-      title: '&cVIP Server'
-      lore:
-       - '&7Only players with the VIP rank can join this server.'
+        - '&7Unfortunately, the server is offline.'
+
+    conditional:
+      - type: permission
+        permission: ssx.vip
+        invert-condition: true
+        actions: ['message:&cThis server is VIP-only']
+        title: '&cVIP Server'
+        lore:
+          - '&7Only players with the VIP rank can join this server.'
+
+      - type: server-online
+        actions:
+          - 'server:vip'
+        material: DIAMOND
+        title: '&6VIP Server'
+        lore:
+          - 'You are VIP, join the server!'
+          - 'There are {online} players online.'
+
 
   fill:
     material: STAINED_GLASS_PANE

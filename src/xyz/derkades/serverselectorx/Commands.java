@@ -1,18 +1,18 @@
 package xyz.derkades.serverselectorx;
 
-import java.util.List;
-
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandMap;
 import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-
 import org.jetbrains.annotations.NotNull;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.reflection.ReflectionUtil;
 import xyz.derkades.serverselectorx.actions.Action;
+
+import java.util.List;
+import java.util.Objects;
 
 public class Commands {
 
@@ -21,8 +21,8 @@ public class Commands {
 
 		for (final String commandName : Main.getConfigurationManager().listCommandConfigurations()) {
 			final FileConfiguration config = Main.getConfigurationManager().getCommandConfiguration(commandName);
-			final String description = config.getString("description", "Opens menu");
-			final String usage = config.getString("usage", "/<command>");
+			final String description = Objects.requireNonNull(config.getString("description", "Opens menu"));
+			final String usage = Objects.requireNonNull(config.getString("usage", "/<command>"));
 			final List<String> aliases = config.getStringList("aliases");
 			final List<String> actions = config.getStringList("actions");
 
@@ -43,7 +43,10 @@ public class Commands {
 						if (config.isInt("cooldown")) {
 							final long timeLeft = Cooldown.getCooldown("ssxcommand" + commandName);
 							if (timeLeft > 0) {
-								player.sendMessage(Colors.parseColors(String.format(configMisc.getString("cooldown-message"), timeLeft / 1000.0)));
+								String cooldownMessage = configMisc.getString("cooldown-message");
+								if (cooldownMessage != null) {
+									player.sendMessage(Colors.parseColors(String.format(cooldownMessage, timeLeft / 1000.0)));
+								}
 								return true;
 							}
 
@@ -51,9 +54,9 @@ public class Commands {
 						}
 
 						if (config.getBoolean("permission", false) && !player.hasPermission("ssx.command." + commandName)) {
-
-							if (configMisc.isString("no-permission")) {
-								player.sendMessage(Colors.parseColors(configMisc.getString("no-permission")));
+							String permissionMessage = configMisc.getString("no-permission");
+							if (permissionMessage != null) {
+								player.sendMessage(Colors.parseColors(permissionMessage));
 							}
 							return true;
 						}

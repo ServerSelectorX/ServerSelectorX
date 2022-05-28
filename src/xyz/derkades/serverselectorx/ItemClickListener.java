@@ -11,7 +11,6 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import xyz.derkades.derkutils.Cooldown;
-import xyz.derkades.derkutils.bukkit.Colors;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -33,46 +32,45 @@ public class ItemClickListener implements Listener {
 		final Player player = event.getPlayer();
 		final ItemStack item = player.getInventory().getItemInHand();
 
-		if (item == null || item.getType() == Material.AIR) {
-			return;
-		}
-
-		// this cooldown is added when the menu closes
-		if (!checkCooldown(player, "ssxitemglobal", 100, false)) {
+		if (item.getType() == Material.AIR) {
 			return;
 		}
 
 		final NBTItem nbt = new NBTItem(item);
 
-		if (!nbt.hasKey("SSXItem")) {
+		if (!nbt.hasKey("SSXActions")) {
+			// Not an SSX item
 			return;
 		}
 
-		final String itemName = nbt.getString("SSXItem");
+		// this cooldown is added when the menu closes
+		String globalCooldownId = player.getName() + "ssxitemglobal";
+		if (Cooldown.getCooldown(globalCooldownId) > 0) {
+			return;
+		}
+		Cooldown.addCooldown(globalCooldownId, 100);
 
-		final FileConfiguration config = Main.getConfigurationManager().getItemConfiguration(itemName);
+		List<String> actions = new ArrayList<>(nbt.getStringList("SSXActions"));
+		if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
+			actions.addAll(nbt.getStringList("SSXActionsLeft"));
+		}
+		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+			actions.addAll(nbt.getStringList("SSXActionsRight"));
+		}
 
-		if (config == null) {
-			player.sendMessage("No configuration file exists for an item with the name '" + itemName + "'.");
+		if (actions.isEmpty()) {
 			return;
 		}
 
-		final List<String> actions = new ArrayList<>(config.getStringList("actions"));
-
-		if (config.isList("left-click-actions") &&
-				(event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK)) {
-			actions.addAll(config.getStringList("left-click-actions"));
-		}
-
-		if (config.isList("right-click-actions") &&
-				(event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK)) {
-			actions.addAll(config.getStringList("right-click-actions"));
-		}
-
-		if (!actions.isEmpty() &&
-				config.isInt("cooldown") &&
-				!checkCooldown(player, "ssxitem" + itemName, config.getInt("cooldown"), true)) {
-			return;
+		if (nbt.hasKey("SSXCooldownId")) {
+			String cooldownId = nbt.getString("SSXCooldownId");
+			if (Cooldown.getCooldown(cooldownId) > 0) {
+				List<String> cooldownActions = nbt.getStringList("SSXCooldownActions");
+				xyz.derkades.serverselectorx.actions.Action.runActions(player, cooldownActions);
+				return;
+			}
+			int cooldownTime = nbt.getInteger("SSXCooldownTime");
+			Cooldown.addCooldown(cooldownId, cooldownTime);
 		}
 
 		xyz.derkades.serverselectorx.actions.Action.runActions(player, actions);
@@ -83,17 +81,4 @@ public class ItemClickListener implements Listener {
 		}
 	}
 
-	private boolean checkCooldown(final Player player, String id, final long duration, final boolean message) {
-		id = id + player.getName();
-		final long timeLeft = Cooldown.getCooldown(id);
-		if (timeLeft > 0) {
-			if (message && Main.getConfigurationManager().getMiscConfiguration().isString("cooldown-message")) {
-				player.sendMessage(Colors.parseColors(String.format(Main.getConfigurationManager().getMiscConfiguration().getString("cooldown-message"), timeLeft / 1000.0)));
-			}
-			return false;
-		}
-
-		Cooldown.addCooldown(id, duration);
-		return true;
-	}
 }
