@@ -15,17 +15,17 @@ public class PapiCondition extends Condition {
 
 	@Override
 	public boolean isTrue(Player player, Map<String, Object> options) throws InvalidConfigurationException {
-		if (!options.containsKey("name")) {
-			throw new InvalidConfigurationException("Missing required option 'name' (placeholder name, no %)");
+		if (!options.containsKey("placeholder-name")) {
+			throw new InvalidConfigurationException("Missing required option 'placeholder-name' (placeholder name, no %)");
 		}
 
-		if (!options.containsKey("value")) {
-			throw new InvalidConfigurationException("Missing required option 'value' (expected placeholder value)");
+		if (!options.containsKey("placeholder-value")) {
+			throw new InvalidConfigurationException("Missing required option 'placeholder-value' (expected placeholder value)");
 		}
 
-		String name = (String) options.get("name");
-		String expectedValue = (String) options.get("value");
-		String comparisonMode = (String) options.getOrDefault("comparison", "equals");
+		String name = (String) options.get("placeholder-name");
+		String expectedValue = (String) options.get("placeholder-value");
+		String comparisonMode = (String) options.getOrDefault("placeholder-comparison", "equals");
 
 		if (name.contains("%")) {
 			throw new InvalidConfigurationException("Placeholder name must not contain percentage symbols");

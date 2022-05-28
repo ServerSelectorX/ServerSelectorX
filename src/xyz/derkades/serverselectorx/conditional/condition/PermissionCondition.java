@@ -17,7 +17,7 @@ public class PermissionCondition extends Condition {
 			throw new InvalidConfigurationException("Missing required option: 'permission' (the permission node to check)");
 		}
 
-		String permissionNode = (String) options.get("permissions");
+		String permissionNode = (String) options.get("permission");
 		return player.hasPermission(permissionNode);
 	}
 }
