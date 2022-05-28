@@ -65,7 +65,7 @@ public class ConditionalItem {
 				section.getString("material");
 
 		if (materialString == null) {
-			throw new InvalidConfigurationException("Material is missing from config or null")
+			throw new InvalidConfigurationException("Material is missing from config or null");
 		}
 
 		Main.getItemBuilderFromMaterialString(player, materialString, builder -> {
