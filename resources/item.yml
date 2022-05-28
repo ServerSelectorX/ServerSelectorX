@@ -3,9 +3,6 @@
 
 item:
   material: COMPASS
-  enchanted: false
-  hide-flags: true
-  amount: 1
   title: '&7Server Selector'
   lore:
    - '&7Right click this item to select a server'
@@ -24,20 +21,7 @@ give:
 
   # delay: 1
 
-# Actions to run when clicking the item (right or left click)
-actions:
- - 'openmenu:serverselector' # Open default menu (config file in ../menu/serverselector.yml)
-
-# Actions to run when right clicking the item
-right-click-actions: []
-
-# Actions to run when left clicking the item
-left-click-actions: []
-
 # Uncomment to define a world whitelist. Players who are not in one of the worlds defined
 # below will not receive the item on join and will not be able to use the item.
 #worlds:
 # - hub
-
-# Click cooldown in milliseconds. Not recommended to set lower than 500ms.
-cooldown: 500

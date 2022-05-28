@@ -1,14 +1,13 @@
 package xyz.derkades.serverselectorx;
 
-import java.util.HashMap;
-import java.util.Map;
-
 import org.bstats.bukkit.Metrics;
 import org.bstats.charts.AdvancedPie;
 import org.bstats.charts.SimplePie;
 import org.bukkit.Bukkit;
-import org.bukkit.Material;
 import org.bukkit.configuration.file.FileConfiguration;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class Stats extends Metrics {
 
@@ -25,25 +24,26 @@ public class Stats extends Metrics {
 
 		this.addCustomChart(new SimplePie("number_of_selectors", () -> Main.getConfigurationManager().listMenuConfigurations().size() + ""));
 
-		this.addCustomChart(new AdvancedPie("selector_item", () -> {
-			final Map<String, Integer> map = new HashMap<>();
-
-			for (final String itemName : Main.getConfigurationManager().listItemConfigurations()) {
-				final FileConfiguration item = Main.getConfigurationManager().getItemConfiguration(itemName);
-				final Material material = Material.getMaterial(item.getString("item.material"));
-				if (material == null) {
-					continue; //Do not count invalid items
-				}
-
-				if (map.containsKey(material.toString())) {
-					map.put(material.toString(), map.get(material.toString() + 1));
-				} else {
-					map.put(material.toString(), 1);
-				}
-			}
-
-			return map;
-		}));
+		// TODO update for conditionals
+//		this.addCustomChart(new AdvancedPie("selector_item", () -> {
+//			final Map<String, Integer> map = new HashMap<>();
+//
+//			for (final String itemName : Main.getConfigurationManager().listItemConfigurations()) {
+//				final FileConfiguration item = Main.getConfigurationManager().getItemConfiguration(itemName);
+//				final Material material = Material.getMaterial(item.getString("item.material"));
+//				if (material == null) {
+//					continue; // Do not count invalid items
+//				}
+//
+//				if (map.containsKey(material.toString())) {
+//					map.put(material.toString(), map.get(material.toString() + 1));
+//				} else {
+//					map.put(material.toString(), 1);
+//				}
+//			}
+//
+//			return map;
+//		}));
 
 //		this.addCustomChart(new Metrics.AdvancedPie("type", () -> {
 //			final Map<String, Integer> map = new HashMap<>();
