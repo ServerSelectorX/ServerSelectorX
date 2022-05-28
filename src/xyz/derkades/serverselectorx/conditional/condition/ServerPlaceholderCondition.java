@@ -31,8 +31,8 @@ public class ServerPlaceholderCondition extends Condition {
 		}
 
 
-		String placeholderName = (String) options.get("name");
-		String expectedPlaceholderValue = (String) options.get("value");
+		String placeholderName = (String) options.get("placeholder-name");
+		String expectedPlaceholderValue = (String) options.get("placeholder-value");
 
 		if (placeholderName.contains("%")) {
 			throw new InvalidConfigurationException("Placeholder name must not contain percentage symbols");
