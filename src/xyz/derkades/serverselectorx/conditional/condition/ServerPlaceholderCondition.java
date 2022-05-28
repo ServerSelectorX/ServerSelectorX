@@ -51,7 +51,7 @@ public class ServerPlaceholderCondition extends Condition {
 				throw new IllegalStateException();
 			}
 
-			String comparisonMode = (String) options.getOrDefault("comparison", "equals");
+			String comparisonMode = (String) options.getOrDefault("placeholder-comparison", "equals");
 
 			return comparisonMode.equals("equals") && expectedPlaceholderValue.equals(actualPlaceholderValue) ||
 					comparisonMode.equals("less") && Double.parseDouble(expectedPlaceholderValue) > Double.parseDouble(actualPlaceholderValue) ||
