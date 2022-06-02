@@ -15,6 +15,10 @@ ssx-items-only: false
 
 # -------------------- Advanced -------------------- #
 
+# Prevent SSX items from being dropped when players die. If you want players to keep all items, just use
+# '/gamerule keepInventory true' instead.
+remove-ssx-items-on-death: false
+
 # World whitelist for 'cancel-item-drop' and 'cancel-item-move'. If empty, these options are active in all
 # worlds. Otherwise, they are only active in the specified worlds.
 only-in-worlds: []
