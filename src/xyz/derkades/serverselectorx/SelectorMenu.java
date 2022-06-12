@@ -204,6 +204,8 @@ public class SelectorMenu extends IconMenu {
 			return true;
 		} else if (action.equals("close")) {
 			return true; // Return true = close
+		} else if (action.equals("none")) {
+			return false;
 		} else {
 			player.sendMessage("Invalid action '" + action + "'");
 			player.sendMessage("Action list: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Actions");
