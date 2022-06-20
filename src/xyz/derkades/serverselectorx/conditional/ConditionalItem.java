@@ -75,19 +75,6 @@ public class ConditionalItem {
 		return map;
 	}
 
-	private static <T> T getOption(@Nullable Map<String, Object> matchedSection,
-								   ConfigurationSection section,
-								   String name,
-								   @Nullable T def) {
-		if (matchedSection != null && matchedSection.containsKey(name)) {
-			return (T) matchedSection.get(name);
-		} else if (section.contains(name)) {
-			return (T) section.get(name);
-		} else {
-			return def;
-		}
-	}
-
 	@SuppressWarnings("unchecked")
 	public static void getItem(@NotNull Player player, @NotNull ConfigurationSection section,
 							   @NotNull String cooldownId, @NotNull Consumer<@NotNull ItemStack> consumer)
@@ -95,7 +82,7 @@ public class ConditionalItem {
 
 		Map<String, Object> matchedSection = matchSection(player, section);
 
-		final String materialString = getOption(matchedSection, section, "material", null);
+		final String materialString = (String) matchedSection.getOrDefault("material", null);
 
 		if (materialString == null) {
 			throw new InvalidConfigurationException("Material is missing from config or null");
