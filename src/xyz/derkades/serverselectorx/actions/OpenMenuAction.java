@@ -1,13 +1,12 @@
 package xyz.derkades.serverselectorx.actions;
 
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-
 import xyz.derkades.serverselectorx.Main;
 import xyz.derkades.serverselectorx.Menu;
+
+import java.util.UUID;
 
 public class OpenMenuAction extends Action {
 

@@ -189,9 +189,9 @@ public class ConditionalItem {
 			}
 
 			builder.editNbt(nbt -> {
-				nbt.setObject("SSXActions", actions);
-				nbt.setObject("SSXActionsLeft", leftClickActions);
-				nbt.setObject("SSXActionsRight", rightClickActions);
+				nbt.getStringList("SSXActions").addAll(actions);
+				nbt.getStringList("SSXActionsLeft").addAll(leftClickActions);
+				nbt.getStringList("SSXActionsRight").addAll(rightClickActions);
 
 				if (section.contains("cooldown")) {
 					if (!section.isList("cooldown-actions")) {
