@@ -19,7 +19,7 @@ menu:
     title: 'Toggle speed'
     lore:
      - '&7Click to toggle speed effect'
-     
+
   # Simple server item
   1:
     actions:
@@ -29,8 +29,8 @@ menu:
     title: 'SMP server'
     lore:
      - '&7Click to go to our SMP server'
-    
-  # Advanced server item 
+
+  # Advanced server item
   2:
     actions:
       - 'message:&cSorry, you cannot connect to this server at the moment.'
@@ -54,8 +54,8 @@ menu:
         lore:
           - '&7There are {online} out of {max} players online.'
           - '&7For more placeholders, download SSX-Connector addons!'
-  
-  # Example of head items. You can use a UUID instead of auto if you want a specific player head.    
+
+  # Example of head items. You can use a UUID instead of auto if you want a specific player head.
   3:
     actions:
      - 'message:&8This is a message'
@@ -64,7 +64,7 @@ menu:
     title: '&aThis is you!'
     lore:
      - '&6Click this item to receive a message'
-     
+
   # Item with permission
   4:
     permission: ssx.dirt
@@ -82,17 +82,17 @@ menu:
           - 'consolecommand:give {player} dirt 64'
           - 'playercommand:say I am too lazy to get dirt myself'
         title: '&aFree dirt'
- 
-  # Server item with permissions 
+
+  # Server item with permissions
   5:
     server-name: vip
     actions:
       - 'message:&cSorry, you cannot connect to this server at the moment.'
       - 'close'
-      material: DIAMOND
-      title: '&cVIP Server'
-      lore:
-        - '&7Unfortunately, the server is offline.'
+    material: DIAMOND
+    title: '&cVIP Server'
+    lore:
+      - '&7Unfortunately, the server is offline.'
 
     conditional:
       - type: permission
@@ -112,7 +112,7 @@ menu:
           - 'You are VIP, join the server!'
           - 'There are {online} players online.'
 
-  
+
   fill:
     material: GRAY_STAINED_GLASS_PANE
     title: ' '
