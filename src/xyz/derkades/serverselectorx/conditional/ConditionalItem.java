@@ -30,20 +30,35 @@ import java.util.function.Consumer;
 public class ConditionalItem {
 
 	@SuppressWarnings("unchecked")
-	private static @Nullable Map<String, Object> matchSection(Player player, List<Map<?, ?>> conditionalsList) throws InvalidConfigurationException {
+	private static Map<String, Object> matchSection(Player player, ConfigurationSection globalSection) throws InvalidConfigurationException {
+		if (!globalSection.contains("conditional")) {
+			return sectionToMap(globalSection);
+		}
+
+		List<Map<?, ?>> conditionalsList = globalSection.getMapList("conditional");
+
 		for (Map<?, ?> genericMap : conditionalsList) {
 			Map<String, Object> map = (Map<String, Object>) genericMap;
+
+			// Add options from global section to this map
+			for (String key : globalSection.getKeys(false)) {
+				map.putIfAbsent(key, globalSection.get(key));
+			}
+
 			if (!map.containsKey("type")) {
 				throw new InvalidConfigurationException("Missing 'type' option for a conditional");
 			}
+
 			String type = (String) map.get("type");
 			boolean invert = (boolean) map.getOrDefault("invert-condition", false);
+
 			Condition condition = Conditions.getConditionByType(type);
 			if (condition.isTrue(player, map) != invert) {
 				return map;
 			}
 		}
-		return null;
+
+		return sectionToMap(globalSection);
 	}
 
 	private static final LegacyComponentSerializer LEGACY_COMPONENT_SERIALIZER = LegacyComponentSerializer.builder()
@@ -52,68 +67,55 @@ public class ConditionalItem {
 			.useUnusualXRepeatedCharacterHexFormat()
 			.build();
 
+	private static Map<String, Object> sectionToMap(ConfigurationSection section) {
+		Map<String, Object> map = new HashMap<>();
+		for (String key : section.getKeys(false)) {
+			map.put(key, section.get(key));
+		}
+		return map;
+	}
+
+	private static <T> T getOption(@Nullable Map<String, Object> matchedSection,
+								   ConfigurationSection section,
+								   String name,
+								   @Nullable T def) {
+		if (matchedSection != null && matchedSection.containsKey(name)) {
+			return (T) matchedSection.get(name);
+		} else if (section.contains(name)) {
+			return (T) section.get(name);
+		} else {
+			return def;
+		}
+	}
+
 	@SuppressWarnings("unchecked")
 	public static void getItem(@NotNull Player player, @NotNull ConfigurationSection section,
 							   @NotNull String cooldownId, @NotNull Consumer<@NotNull ItemStack> consumer)
 			throws InvalidConfigurationException {
-		final @Nullable Map<String, Object> matchedSection = section.contains("conditional") ?
-				matchSection(player, section.getMapList("conditional")) :
-				null;
 
-		String materialString = matchedSection != null ?
-				(String) matchedSection.get("material") :
-				section.getString("material");
+		Map<String, Object> matchedSection = matchSection(player, section);
+
+		final String materialString = getOption(matchedSection, section, "material", null);
 
 		if (materialString == null) {
 			throw new InvalidConfigurationException("Material is missing from config or null");
 		}
 
 		Main.getItemBuilderFromMaterialString(player, materialString, builder -> {
-			final boolean useMiniMessage; // default: false
-			final @NotNull String title; // default: space
-			final @NotNull List<String> lore; // default: empty list
-			final boolean enchanted; // default: false
-			final boolean hideFlags; // default true
-			final int amount; // default: 1
-			final int durability; // default: -1 (ignored by if statement)
-			final @Nullable String nbtJson; // default: null (ignored by if statement)
-			final @NotNull List<String> actions; // default: empty list
-			final @NotNull List<String> leftClickActions; // default: empty list
-			final @NotNull List<String> rightClickActions; // default: empty list
-			final int cooldownTime; // default: 0
-			final @NotNull List<String> cooldownActions; // default: empty list
-			final @Nullable String serverName; // default: null
-			if (matchedSection != null) {
-				useMiniMessage = (boolean) matchedSection.getOrDefault("minimessage", false);
-				title = (String) matchedSection.getOrDefault("title", " ");
-				lore = (List<String>) matchedSection.getOrDefault("lore", Collections.emptyList());
-				enchanted = (boolean) matchedSection.getOrDefault("enchanted", false);
-				hideFlags = (boolean) matchedSection.getOrDefault("hide-flags", true);
-				amount = (int) matchedSection.getOrDefault("amount", 1);
-				durability = (int) matchedSection.getOrDefault("durability", -1);
-				nbtJson = (String) matchedSection.getOrDefault("nbt", null);
-				actions = (List<String>) matchedSection.getOrDefault("actions", Collections.emptyList());
-				leftClickActions = (List<String>) matchedSection.getOrDefault("left-click-actions", Collections.emptyList());
-				rightClickActions = (List<String>) matchedSection.getOrDefault("right-click-actions", Collections.emptyList());
-				cooldownTime = (int) matchedSection.getOrDefault("cooldown", 0);
-				cooldownActions = (List<String>) matchedSection.getOrDefault("cooldown-actions", Collections.emptyList());
-				serverName = (String) matchedSection.get("server-name");
-			} else {
-				useMiniMessage = section.getBoolean("minimessage", false);
-				title = Objects.requireNonNull(section.getString("title", " "));
-				lore = section.getStringList("lore");
-				enchanted = section.getBoolean("enchanted", false);
-				hideFlags = section.getBoolean("hide-flags", true);
-				amount = section.getInt("amount", 1);
-				durability = section.getInt("durability", -1);
-				nbtJson = section.getString("nbt", null);
-				actions = section.getStringList("actions");
-				leftClickActions = section.getStringList("left-click-actions");
-				rightClickActions = section.getStringList("right-click-actions");
-				cooldownTime = section.getInt("cooldown");
-				cooldownActions = section.getStringList("cooldown-actions");
-				serverName = section.getString("server-name");
-			}
+			final boolean useMiniMessage = (boolean) matchedSection.getOrDefault("minimessage", false);
+			final @NotNull String title = (String) matchedSection.getOrDefault("title", " ");
+			final @NotNull List<String> lore = (List<String>) matchedSection.getOrDefault("lore", Collections.emptyList());
+			final boolean enchanted = (boolean) matchedSection.getOrDefault("enchanted", false);
+			final boolean hideFlags = (boolean) matchedSection.getOrDefault("hideFlags", false);
+			final int amount = (int) matchedSection.getOrDefault("amount", 1);
+			final int durability = (int) matchedSection.getOrDefault("durability", -1);
+			final @Nullable String nbtJson = (String) matchedSection.getOrDefault("nbt", null);
+			final @NotNull List<String> actions = (List<String>) matchedSection.getOrDefault("actions", Collections.emptyList());
+			final @NotNull List<String> leftClickActions = (List<String>) matchedSection.getOrDefault("left-click-actions", Collections.emptyList());
+			final @NotNull List<String> rightClickActions = (List<String>) matchedSection.getOrDefault("right-click-actions", Collections.emptyList());
+			final int cooldownTime = (int) matchedSection.getOrDefault("cooldown", 0);
+			final @NotNull List<String> cooldownActions = (List<String>) matchedSection.getOrDefault("cooldown-actions", Collections.emptyList());
+			final @Nullable String serverName = (String) matchedSection.getOrDefault("server-name", null);
 
 			final PlaceholderUtil.Placeholder playerNamePlaceholder = new PlaceholderUtil.Placeholder("{player}", player.getName());
 			final PlaceholderUtil.Placeholder globalOnlinePlaceholder = new PlaceholderUtil.Placeholder("{globalOnline}", String.valueOf(ServerSelectorX.getGlobalPlayerCount()));

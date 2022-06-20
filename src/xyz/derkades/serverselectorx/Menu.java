@@ -100,7 +100,7 @@ public class Menu extends IconMenu {
 				continue;
 			}
 
-			final ConfigurationSection section = Objects.requireNonNull(this.config.getConfigurationSection("menu." + key),
+			final ConfigurationSection section = Objects.requireNonNull(menuSection.getConfigurationSection(key),
 					"Null configuration section: menu." + key);
 
 			final String cooldownId = player.getName() + this.configName + key;

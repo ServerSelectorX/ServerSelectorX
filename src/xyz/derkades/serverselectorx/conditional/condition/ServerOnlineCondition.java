@@ -15,7 +15,7 @@ public class ServerOnlineCondition extends Condition {
 	@Override
 	public boolean isTrue(Player player, Map<String, Object> options) throws InvalidConfigurationException {
 		if (!options.containsKey("server-name")) {
-			throw new InvalidConfigurationException("Missing option: server-name");
+			throw new InvalidConfigurationException("Option 'server-name' missing, this is required to use the 'server-online' condition");
 		}
 
 		String serverName = (String) options.get("server-name");
