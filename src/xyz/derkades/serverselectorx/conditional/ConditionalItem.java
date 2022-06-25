@@ -191,7 +191,7 @@ public class ConditionalItem {
 				if (cooldownTime > 0) {
 					nbt.setInteger("SSXCooldownTime", cooldownTime);
 					nbt.setString("SSXCooldownId", cooldownId);
-					nbt.setObject("SSXCooldownActions", cooldownActions);
+					nbt.getStringList("SSXCooldownActions").addAll(cooldownActions);
 				}
 			});
 
@@ -220,11 +220,9 @@ public class ConditionalItem {
 
 		NBTItem nbt = new NBTItem(item);
 
-		final List<String> actions = nbt.getObject("SSXActions", List.class);
-		@SuppressWarnings("unchecked")
-		final List<String> leftActions = nbt.getObject("SSXActionsLeft", List.class);
-		@SuppressWarnings("unchecked")
-		final List<String> rightActions = nbt.getObject("SSXActionsRight", List.class);
+		final List<String> actions = nbt.getStringList("SSXActions");
+		final List<String> leftActions = nbt.getStringList("SSXActionsLeft");
+		final List<String> rightActions = nbt.getStringList("SSXActionsRight");
 		if (nbt.hasKey("SSXCooldownTime") &&
 				( // Only apply cooldown if an action is about to be performed
 						!actions.isEmpty() ||
@@ -235,8 +233,7 @@ public class ConditionalItem {
 			final int cooldownTime = nbt.getInteger("SSXCooldownTime");
 			final String cooldownId = nbt.getString("SSXCooldownId");
 			if (Cooldown.getCooldown(cooldownId) > 0) {
-				@SuppressWarnings("unchecked")
-				final List<String> cooldownActions = nbt.getObject("SSXCooldownActions", List.class);
+				final List<String> cooldownActions = nbt.getStringList("SSXCooldownActions");
 				return Action.runActions(player, cooldownActions);
 			} else {
 				Cooldown.addCooldown(cooldownId, cooldownTime);
