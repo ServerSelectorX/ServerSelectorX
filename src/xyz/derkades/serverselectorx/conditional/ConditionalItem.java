@@ -2,6 +2,7 @@ package xyz.derkades.serverselectorx.conditional;
 
 import de.tr7zw.changeme.nbtapi.NBTCompound;
 import de.tr7zw.changeme.nbtapi.NBTContainer;
+import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.NbtApiException;
 import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
@@ -11,12 +12,17 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
+import org.bukkit.event.inventory.ClickType;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
+import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 import xyz.derkades.serverselectorx.Main;
 import xyz.derkades.serverselectorx.ServerSelectorX;
+import xyz.derkades.serverselectorx.actions.Action;
 import xyz.derkades.serverselectorx.conditional.condition.Condition;
 import xyz.derkades.serverselectorx.conditional.condition.Conditions;
 import xyz.derkades.serverselectorx.placeholders.GlobalPlaceholder;
@@ -26,6 +32,8 @@ import xyz.derkades.serverselectorx.placeholders.Server;
 
 import java.util.*;
 import java.util.function.Consumer;
+
+import static org.bukkit.event.block.Action.*;
 
 public class ConditionalItem {
 
@@ -180,22 +188,72 @@ public class ConditionalItem {
 				nbt.getStringList("SSXActionsLeft").addAll(leftClickActions);
 				nbt.getStringList("SSXActionsRight").addAll(rightClickActions);
 
-				if (section.contains("cooldown")) {
-					if (!section.isList("cooldown-actions")) {
-						player.sendMessage("When using the 'cooldown' option, a list of actions 'cooldown-actions' must also be specified.");
-						return;
-					}
-
-					if (cooldownTime > 0) {
-						nbt.setInteger("SSXCooldownTime", cooldownTime);
-						nbt.setString("SSXCooldownId", cooldownId);
-						nbt.setObject("SSXCooldownActions", cooldownActions);
-					}
+				if (cooldownTime > 0) {
+					nbt.setInteger("SSXCooldownTime", cooldownTime);
+					nbt.setString("SSXCooldownId", cooldownId);
+					nbt.setObject("SSXCooldownActions", cooldownActions);
 				}
 			});
 
 			consumer.accept(builder.create());
 		});
+	}
+
+	public static boolean runActions(OptionClickEvent event) {
+		final ClickType click = event.getClickType();
+		boolean leftClick = click == ClickType.LEFT || click == ClickType.SHIFT_LEFT;
+		boolean rightClick = click == ClickType.RIGHT || click == ClickType.SHIFT_RIGHT;
+		return runActions(event.getPlayer(), event.getItemStack(), leftClick, rightClick);
+	}
+
+	public static boolean runActions(PlayerInteractEvent event) {
+		boolean leftClick = event.getAction() == LEFT_CLICK_AIR || event.getAction() == LEFT_CLICK_BLOCK;
+		boolean rightClick = event.getAction() == RIGHT_CLICK_AIR || event.getAction() == RIGHT_CLICK_BLOCK;
+		return runActions(event.getPlayer(), event.getItem(), leftClick, rightClick);
+	}
+
+	private static boolean runActions(Player player, ItemStack item, boolean isLeftClick, boolean isRightClick) {
+		if (item == null) {
+			Main.getPlugin().getLogger().warning("Received click event for null item. This is a bug.");
+			return false;
+		}
+
+		NBTItem nbt = new NBTItem(item);
+
+		final List<String> actions = nbt.getObject("SSXActions", List.class);
+		@SuppressWarnings("unchecked")
+		final List<String> leftActions = nbt.getObject("SSXActionsLeft", List.class);
+		@SuppressWarnings("unchecked")
+		final List<String> rightActions = nbt.getObject("SSXActionsRight", List.class);
+		if (nbt.hasKey("SSXCooldownTime") &&
+				( // Only apply cooldown if an action is about to be performed
+						!actions.isEmpty() ||
+								isRightClick && !rightActions.isEmpty() ||
+								isLeftClick && !leftActions.isEmpty()
+				)
+		) {
+			final int cooldownTime = nbt.getInteger("SSXCooldownTime");
+			final String cooldownId = nbt.getString("SSXCooldownId");
+			if (Cooldown.getCooldown(cooldownId) > 0) {
+				@SuppressWarnings("unchecked")
+				final List<String> cooldownActions = nbt.getObject("SSXCooldownActions", List.class);
+				return Action.runActions(player, cooldownActions);
+			} else {
+				Cooldown.addCooldown(cooldownId, cooldownTime);
+			}
+		}
+
+		boolean close = false;
+		if (actions != null) {
+			close = Action.runActions(player, actions);
+		}
+		if (isRightClick && rightActions != null) {
+			close |= Action.runActions(player, rightActions);
+		} else if (isLeftClick && leftActions != null) {
+			close |= Action.runActions(player, leftActions);
+		}
+		return close;
+
 	}
 
 }

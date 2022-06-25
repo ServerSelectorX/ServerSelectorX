@@ -13,9 +13,8 @@ import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import xyz.derkades.derkutils.Cooldown;
+import xyz.derkades.serverselectorx.conditional.ConditionalItem;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.logging.Logger;
 
 public class ItemClickListener implements Listener {
@@ -92,36 +91,7 @@ public class ItemClickListener implements Listener {
 		}
 		Cooldown.addCooldown(globalCooldownId, 100);
 
-		List<String> actions = new ArrayList<>(nbt.getStringList("SSXActions"));
-		if (event.getAction() == Action.LEFT_CLICK_AIR || event.getAction() == Action.LEFT_CLICK_BLOCK) {
-			actions.addAll(nbt.getStringList("SSXActionsLeft"));
-		}
-		if (event.getAction() == Action.RIGHT_CLICK_AIR || event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-			actions.addAll(nbt.getStringList("SSXActionsRight"));
-		}
-
-		if (actions.isEmpty()) {
-			if (Main.ITEM_DEBUG) {
-				logger.info("[Click debug] Event was ignored because the item has no actions");
-			}
-			return;
-		}
-
-		if (nbt.hasKey("SSXCooldownId")) {
-			String cooldownId = nbt.getString("SSXCooldownId");
-			if (Cooldown.getCooldown(cooldownId) > 0) {
-				List<String> cooldownActions = nbt.getStringList("SSXCooldownActions");
-				xyz.derkades.serverselectorx.actions.Action.runActions(player, cooldownActions);
-				if (Main.ITEM_DEBUG) {
-					logger.info("[Click debug] Event was ignored because the configured cooldown was in effect");
-				}
-				return;
-			}
-			int cooldownTime = nbt.getInteger("SSXCooldownTime");
-			Cooldown.addCooldown(cooldownId, cooldownTime);
-		}
-
-		xyz.derkades.serverselectorx.actions.Action.runActions(player, actions);
+		ConditionalItem.runActions(event);
 
 		if (Main.ITEM_DEBUG) {
 			logger.info("[Click debug] Event handling completed, actions have been run.");
