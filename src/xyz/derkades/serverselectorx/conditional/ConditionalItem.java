@@ -101,7 +101,7 @@ public class ConditionalItem {
 			final @NotNull String title = (String) matchedSection.getOrDefault("title", " ");
 			final @NotNull List<String> lore = (List<String>) matchedSection.getOrDefault("lore", Collections.emptyList());
 			final boolean enchanted = (boolean) matchedSection.getOrDefault("enchanted", false);
-			final boolean hideFlags = (boolean) matchedSection.getOrDefault("hideFlags", false);
+			final boolean hideFlags = (boolean) matchedSection.getOrDefault("hide-flags", true);
 			final int amount = (int) matchedSection.getOrDefault("amount", 1);
 			final int durability = (int) matchedSection.getOrDefault("durability", -1);
 			final @Nullable String nbtJson = (String) matchedSection.getOrDefault("nbt", null);
