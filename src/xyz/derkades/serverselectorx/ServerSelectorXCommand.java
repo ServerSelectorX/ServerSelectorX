@@ -133,7 +133,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 					return true;
 				case "itemdebug":
 					Main.ITEM_DEBUG = true;
-					sender.sendMessage("Debug messages related to items on join are now enabled until the next server restart/reload.");
+					sender.sendMessage("Debug messages related to item giving and clicking are now enabled until the next server restart/reload.");
 					return true;
 				case "sync":
 					sender.sendMessage("Synchronising configuration files.. For more information have a look at the console.");

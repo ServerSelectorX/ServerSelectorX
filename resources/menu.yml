@@ -89,10 +89,10 @@ menu:
     actions:
       - 'message:&cSorry, you cannot connect to this server at the moment.'
       - 'close'
-      material: DIAMOND
-      title: '&cVIP Server'
-      lore:
-        - '&7Unfortunately, the server is offline.'
+    material: DIAMOND
+    title: '&cVIP Server'
+    lore:
+      - '&7Unfortunately, the server is offline.'
 
     conditional:
       - type: permission

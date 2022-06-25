@@ -6,6 +6,8 @@ item:
   title: '&7Server Selector'
   lore:
    - '&7Right click this item to select a server'
+  actions:
+    - 'openmenu:serverselector' # Open the serverselector.yml menu
 
 # Give the server selector?
 give:

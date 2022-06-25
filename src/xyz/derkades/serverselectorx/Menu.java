@@ -1,6 +1,5 @@
 package xyz.derkades.serverselectorx;
 
-import de.tr7zw.changeme.nbtapi.NBTItem;
 import org.bukkit.Bukkit;
 import org.bukkit.OfflinePlayer;
 import org.bukkit.Sound;
@@ -8,7 +7,6 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-import org.bukkit.event.inventory.ClickType;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
@@ -100,7 +98,7 @@ public class Menu extends IconMenu {
 				continue;
 			}
 
-			final ConfigurationSection section = Objects.requireNonNull(this.config.getConfigurationSection("menu." + key),
+			final ConfigurationSection section = Objects.requireNonNull(menuSection.getConfigurationSection(key),
 					"Null configuration section: menu." + key);
 
 			final String cooldownId = player.getName() + this.configName + key;
@@ -144,51 +142,7 @@ public class Menu extends IconMenu {
 
 	@Override
 	public boolean onOptionClick(final OptionClickEvent event) {
-		final Player player = event.getPlayer();
-		ItemStack item = event.getItemStack();
-		if (item == null) {
-			Main.getPlugin().getLogger().warning("Received click event for null item. This is a bug.");
-			return false;
-		}
-
-		final NBTItem nbt = new NBTItem(item);
-
-		@SuppressWarnings("unchecked")
-		final List<String> actions = nbt.getObject("SSXActions", List.class);
-		@SuppressWarnings("unchecked")
-		final List<String> leftActions = nbt.getObject("SSXActionsLeft", List.class);
-		@SuppressWarnings("unchecked")
-		final List<String> rightActions = nbt.getObject("SSXActionsRight", List.class);
-
-		final ClickType click = event.getClickType();
-		boolean rightClick = click == ClickType.RIGHT || click == ClickType.SHIFT_RIGHT;
-		boolean leftClick = click == ClickType.LEFT || click == ClickType.SHIFT_LEFT;
-
-		if (nbt.hasKey("SSXCooldownTime") &&
-				( // Only apply cooldown if an action is about to be performed
-					!actions.isEmpty() ||
-					rightClick && !rightActions.isEmpty() ||
-					leftClick && !leftActions.isEmpty()
-				)
-			) {
-			final int cooldownTime = nbt.getInteger("SSXCooldownTime");
-			final String cooldownId = nbt.getString("SSXCooldownId");
-			if (Cooldown.getCooldown(cooldownId) > 0) {
-				@SuppressWarnings("unchecked")
-				final List<String> cooldownActions = nbt.getObject("SSXCooldownActions", List.class);
-				return Action.runActions(player, cooldownActions);
-			} else {
-				Cooldown.addCooldown(cooldownId, cooldownTime);
-			}
-		}
-
-		boolean close = Action.runActions(player, actions);
-		if (rightClick) {
-			close = close || Action.runActions(player, rightActions);
-		} else if (leftClick) {
-			close = close || Action.runActions(player, leftActions);
-		}
-		return close;
+		return ConditionalItem.runActions(event);
 	}
 
 	@SuppressWarnings("unchecked")

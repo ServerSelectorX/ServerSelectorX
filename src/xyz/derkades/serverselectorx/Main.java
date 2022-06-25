@@ -128,7 +128,7 @@ public class Main extends JavaPlugin {
 	}
 
     public static void getItemBuilderFromMaterialString(final Player player, @Nullable String materialString, Consumer<NbtItemBuilder> builderConsumer) {
-		if (materialString == null) {
+		if (materialString == null || materialString.isEmpty()) {
 			return;
 		}
 
