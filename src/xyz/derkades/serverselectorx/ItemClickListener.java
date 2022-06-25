@@ -22,7 +22,7 @@ public class ItemClickListener implements Listener {
 		Logger logger = Main.getPlugin().getLogger();
 
 		if (Main.ITEM_DEBUG) {
-			logger.info("[Click debug] Player " + event.getPlayer().getName() + " performed action " + event.getAction() + " on item using " + event.getHand());
+			logger.info("[Click debug] Player " + event.getPlayer().getName() + " performed action " + event.getAction() + " on item");
 		}
 
 		if (event.getAction() == Action.PHYSICAL) {
