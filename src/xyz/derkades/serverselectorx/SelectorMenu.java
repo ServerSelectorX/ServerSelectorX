@@ -7,10 +7,10 @@ import org.bukkit.ChatColor;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import xyz.derkades.derkutils.Cooldown;
-import xyz.derkades.derkutils.ListUtils;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
@@ -19,7 +19,9 @@ import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
 import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class SelectorMenu extends IconMenu {
 
@@ -44,87 +46,54 @@ public class SelectorMenu extends IconMenu {
 			return;
 		}
 
+		fillMenu(player);
+	}
+
+	private void fillMenu(final Player player) {
 		for (final String key : config.getConfigurationSection("menu").getKeys(false)) {
 			final ConfigurationSection section = config.getConfigurationSection("menu." + key);
 
-			String materialString;
-			String name;
-			List<String> lore;
-			int amount = 1;
+			final Map<String, String> placeholders = new HashMap<>();
+			placeholders.put("{player}", player.getName());
+			final ConfigurationSection chosenSection = chooseSection(section, placeholders);
 
-			if (!section.getBoolean("ping-server")) {
-				// Server pinging is turned off, get item info from 'offline' section
-				materialString = section.getString("offline.item");
-				name = section.getString("offline.name", " ");
-				lore = section.getStringList("offline.lore");
-			} else {
-				final String ip = section.getString("ip");
-				final int port = section.getInt("port");
-				final String serverId = ip + ":" + port;
-
-				final ServerPinger pinger = PingServersBackground.SERVER_INFO.get(serverId);
-
-				// If server is online
-				if (pinger != null && pinger.isOnline()) {
-					final int online = pinger.getOnlinePlayers();
-					final int max = pinger.getMaximumPlayers();
-					final String motd = pinger.getMotd();
-
-					ConfigurationSection subSection = section.getConfigurationSection("online");
-
-					if (section.isConfigurationSection("dynamic")) {
-						final ConfigurationSection dyn = section.getConfigurationSection("dynamic");
-						if (dyn.isConfigurationSection(motd)) {
-							subSection = dyn.getConfigurationSection(motd);
-						}
-					}
-
-					materialString = subSection.getString("item");
-					name = subSection.getString("name");
-					lore = subSection.getStringList("lore");
-
-					if (section.getBoolean("change-item-count", false)) {
-						amount = online;
-					}
-
-					if (amount > 64 || amount < 1) {
-						amount = 1;
-					}
-
-					// Replace placeholders in lore and name
-					name = name.replace("{online}", online + "").replace("{max}", max + "").replace("{motd}", motd).replace("{player}", player.getName());
-					lore = ListUtils.replaceInStringList(lore,
-							new Object[] { "{online}", "{max}", "{motd}", "{player}" },
-							new Object[] { online, max, motd, player.getName() });
-				} else {
-					// Server is offline, use offline section
-					final ConfigurationSection offlineSection = section.getConfigurationSection("offline");
-
-					materialString = offlineSection.getString("item");
-					name = offlineSection.getString("name", " ");
-					lore = offlineSection.getStringList("lore");
-				}
-			}
+			final String materialString = chosenSection.getString("item");
+			final String name = chosenSection.getString("name", " ");
+			final List<String> lore = chosenSection.getStringList("lore");
+			int amount = chosenSection.getInt("amount");
 
 			if (materialString == null) {
 				player.sendMessage("Missing item option for item " + key);
 				return;
 			}
 
-			if (materialString.equals("AIR")) {
+			if (materialString.equals("AIR") || materialString.equals("NONE")) {
 				return;
+			}
+
+			if (placeholders.containsKey("{online}")) {
+				if (section.getBoolean("change-item-count", false)) {
+					final int online = Integer.parseInt(placeholders.get("{online}"));
+					amount = Math.max(Math.min(online, 64), 1);
+				}
 			}
 
 			final ItemBuilder builder = Main.getItemFromMaterialString(player, materialString);
 
 			builder.amount(amount)
-					.coloredName(PlaceholderUtil.parsePapiPlaceholders(player, name))
-					.coloredLore(PlaceholderUtil.parsePapiPlaceholders(player, lore))
+					.placeholders(placeholders)
+					.papi(player)
+					.coloredName(name)
+					.coloredLore(lore)
 					.hideFlags();
+
+			if (section.getBoolean("enchanted")) {
+				builder.unsafeEnchant(Enchantment.DURABILITY, 1);
+			}
 
 			final ItemStack item = builder.create();
 
-			final int slot = Integer.valueOf(key);
+			final int slot = Integer.parseInt(key);
 			if (slot < 0) {
 				for (int i = 0; i < this.getInventory().getSize(); i++) {
 					if (!this.hasItem(i)) {
@@ -137,8 +106,49 @@ public class SelectorMenu extends IconMenu {
 		}
 	}
 
+	private ConfigurationSection chooseSection(ConfigurationSection slotSection, Map<String, String> placeholders) {
+		if (!slotSection.getBoolean("ping-server")) {
+			// Server pinging is turned off, get item info from 'offline' section
+			return slotSection.getConfigurationSection("offline");
+		}
+
+		final String ip = slotSection.getString("ip");
+		final int port = slotSection.getInt("port");
+		final String serverId = ip + ":" + port;
+
+		final ServerPinger pinger = PingServersBackground.SERVER_INFO.get(serverId);
+
+		// If server is online
+		if (pinger == null || !pinger.isOnline()) {
+			// Server is offline (or hasn't been pinged yet), use offline section
+			return slotSection.getConfigurationSection("offline");
+		}
+
+		final String motd = pinger.getMotd();
+
+		placeholders.put("{online}", String.valueOf(pinger.getOnlinePlayers()));
+		placeholders.put("{max}", String.valueOf(pinger.getMaximumPlayers()));
+		placeholders.put("{motd}", motd);
+
+		if (slotSection.isConfigurationSection("dynamic")) {
+			final ConfigurationSection dyn = slotSection.getConfigurationSection("dynamic");
+			if (dyn.isConfigurationSection(motd)) {
+				return dyn.getConfigurationSection(motd);
+			} else {
+				return slotSection.getConfigurationSection("online");
+			}
+		} else {
+			return slotSection.getConfigurationSection("online");
+		}
+	}
+
 	@Override
 	public boolean onOptionClick(final OptionClickEvent event) {
+		if (this.config == null) {
+			Main.getPlugin().getLogger().warning("Ignoring menu click, config isn't loaded");
+			return false;
+		}
+
 		final int slot = event.getPosition();
 		final Player player = event.getPlayer();
 
