@@ -55,6 +55,9 @@ public class Main extends JavaPlugin {
 
 	private static final Map<UUID, String> HEAD_TEXTURE_CACHE = new HashMap<>();
 
+	private HotbarItemManager hotbarItemManager = new HotbarItemManager(this);
+	public HotbarItemManager getHotbarItemManager() { return this.hotbarItemManager; }
+
 	@SuppressWarnings("null")
 	@NotNull
 	public static Main getPlugin(){
@@ -92,7 +95,7 @@ public class Main extends JavaPlugin {
 		configSync = new ConfigSync();
 		new Stats();
 		new ItemMoveDropCancelListener();
-		new HotbarItemManager(this);
+		this.hotbarItemManager.enable();
 
 		Bukkit.getPluginManager().registerEvents(new ItemClickListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BetaMessageJoinListener(), this);

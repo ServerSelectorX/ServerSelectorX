@@ -22,8 +22,20 @@ import java.util.Set;
 
 public class HotbarItemManager implements Listener {
 
+	private final Main plugin;
+
 	HotbarItemManager(Main plugin) {
+		this.plugin = plugin;
+	}
+
+	void enable() {
 		Bukkit.getPluginManager().registerEvents(this, plugin);
+	}
+
+	void reload() {
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			this.updateSsxItems(player);
+		}
 	}
 
 	private void debug(String message) {
