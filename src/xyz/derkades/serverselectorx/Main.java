@@ -92,9 +92,9 @@ public class Main extends JavaPlugin {
 		configSync = new ConfigSync();
 		new Stats();
 		new ItemMoveDropCancelListener();
+		new HotbarItemManager(this);
 
 		Bukkit.getPluginManager().registerEvents(new ItemClickListener(), this);
-		Bukkit.getPluginManager().registerEvents(new ItemGiveListener(), this);
 		Bukkit.getPluginManager().registerEvents(new BetaMessageJoinListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ActionsOnJoinListener(), this);
 

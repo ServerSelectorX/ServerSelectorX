@@ -11,17 +11,10 @@ item:
 
 # Give the server selector?
 give:
-  join: true
-  world-switch: false
-  death: true
-  clear: false # give item after using '/clear', doesn't work when using the command on other players
-
   inv-slot: 0
 
   # If set to true, require permission ssx.item.<name> to receive the item.
   permission: false
-
-  # delay: 1
 
 # Uncomment to define a world whitelist. Players who are not in one of the worlds defined
 # below will not receive the item on join and will not be able to use the item.
