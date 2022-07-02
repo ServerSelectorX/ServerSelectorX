@@ -34,9 +34,28 @@ public class PapiCondition extends Condition {
 		String actualValue = PlaceholderUtil.parsePapiPlaceholders(player, "%" + name + "%");
 		Objects.requireNonNull(actualValue, "Placeholder value returned by PlaceholderAPI is null! This probably means the expansion or plugin that added the placeholder is broken (not an SSX bug).");
 
-		return comparisonMode.equals("equals") && expectedValue.equals(actualValue) ||
-						comparisonMode.equals("less") && Double.parseDouble(expectedValue) > Double.parseDouble(actualValue) ||
-						comparisonMode.equals("more") && Double.parseDouble(expectedValue) < Double.parseDouble(actualValue);
+		if (comparisonMode.equals("equals")) {
+			return expectedValue.equals(actualValue);
+		}
+
+		try {
+			if (comparisonMode.equals("less") || comparisonMode.equals("more")) {
+				double actualValueD = Double.parseDouble(actualValue);
+				double expectedValueD = Double.parseDouble(expectedValue);
+				if (!Double.isFinite(actualValueD)) {
+					throw new InvalidConfigurationException("Placeholder '" + name + "' has value '" + actualValue + "' which is not a valid finite floating point number");
+				}
+				if (!Double.isFinite(expectedValueD)) {
+					throw new InvalidConfigurationException("A conditional section for placeholder '" + name + "' is configured with expected value '" + expectedValue + "' which is not a valid finite floating point number");
+				}
+				return comparisonMode.equals("less") && Double.parseDouble(actualValue) < Double.parseDouble(expectedValue) ||
+						comparisonMode.equals("more") && Double.parseDouble(actualValue) > Double.parseDouble(expectedValue);
+			}
+		} catch (NumberFormatException e) {
+			throw new InvalidConfigurationException("Used placeholder-comparison less/more but the actual or configured placeholder value cannot be parsed as a number.");
+		}
+
+		throw new InvalidConfigurationException("Invalid placeholder-comparison mode, it should be equals, less or more");
 	}
 
 }
