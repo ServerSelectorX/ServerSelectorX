@@ -76,8 +76,8 @@ public class HotbarItemManager implements Listener {
 	private void giveItem(Player player, String configName, int currentSlot) {
 		Configuration config = Main.getConfigurationManager().getItemConfiguration(configName);
 
-		if (config.isConfigurationSection("item")) {
-			Main.getPlugin().getLogger().warning("Item " + configName + " has no menu section, it has been ignored.");
+		if (!config.isConfigurationSection("item")) {
+			Main.getPlugin().getLogger().warning("Item '" + configName + "' has no item section, it has been ignored.");
 			return;
 		}
 
