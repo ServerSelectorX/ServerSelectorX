@@ -17,6 +17,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import xyz.derkades.serverselectorx.conditional.ConditionalItem;
 
+import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -185,7 +186,15 @@ public class HotbarItemManager implements Listener {
 		if (config.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
 			debug("Clearing inventory for " + player.getName());
 			final PlayerInventory inv = player.getInventory();
-			inv.setStorageContents(new ItemStack[inv.getStorageContents().length]);
+			inv.setContents(new ItemStack[inv.getContents().length]);
+			inv.setArmorContents(new ItemStack[inv.getArmorContents().length]);
+			try {
+				final int length = ((ItemStack[]) inv.getClass().getMethod("getStorageContents").invoke(inv)).length;
+				inv.getClass().getMethod("setStorageContents", ItemStack[].class).invoke(inv, (Object) new ItemStack[length]);
+			} catch (final NoSuchMethodException ignored) { // This method does not exist on <1.9
+			} catch (final InvocationTargetException | IllegalAccessException e) {
+				e.printStackTrace();
+			}
 		}
 
 		this.updateSsxItems(player);
