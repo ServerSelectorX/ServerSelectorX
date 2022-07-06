@@ -90,6 +90,8 @@ public class ServerSelectorXCommand implements CommandExecutor {
 					// Clear server status cache to remove any old server names
 					Server.clear();
 
+					Main.getPlugin().getHotbarItemManager().reload();
+
 					sender.sendMessage("Run " + ChatColor.GRAY + "/ssx reloadcommands" + ChatColor.RESET + " to reload commands.");
 					return true;
 				case "reloadcommands":

@@ -36,7 +36,7 @@ public class WebServer {
 			Main.getPlugin().getLogger().info("Stopping embedded webserver...");
 			this.server.shutdown().get(5000, TimeUnit.MILLISECONDS);
 		} catch (final Exception e) {
-			Main.getPlugin().getLogger().severe("An error occured while stopping webserver: " + e.getMessage());
+			Main.getPlugin().getLogger().severe("An error occurred while stopping webserver: " + e.getMessage());
 		}
 	}
 
