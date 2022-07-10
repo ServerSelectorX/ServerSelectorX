@@ -230,4 +230,24 @@ public class SelectorMenu extends IconMenu {
 		}
 	}
 
+	static boolean checkPermission(Player player, FileConfiguration config) {
+		if (config.getBoolean("require-permission")) {
+			String permissionNode = config.getString("permission-node", null);
+			String noPermissionMessage = config.getString("no-permission-message", null);
+			if (permissionNode == null) {
+				player.sendMessage("require-permission is enabled but permission-node is not configured");
+				return false;
+			}
+			if (noPermissionMessage == null) {
+				player.sendMessage("require-permission is enabled but no-permission-message is not configured");
+				return false;
+			}
+			if (!player.hasPermission(permissionNode)) {
+				player.sendMessage(Colors.parseColors(noPermissionMessage));
+				return false;
+			}
+		}
+		return true;
+	}
+
 }

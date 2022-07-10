@@ -1,11 +1,5 @@
 package xyz.derkades.serverselectorx;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
-import java.lang.reflect.Field;
-import java.util.UUID;
-
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
@@ -15,9 +9,14 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitTask;
-
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
+
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
+import java.lang.reflect.Field;
+import java.util.UUID;
 
 public class Main extends JavaPlugin {
 
@@ -107,15 +106,23 @@ public class Main extends JavaPlugin {
 
 					@Override
 					public boolean execute(final CommandSender sender, final String label, final String[] args) {
-						if (sender instanceof Player){
-							final Player player = (Player) sender;
-							final FileConfiguration config = configurationManager.getByName(configName);
-							if (config == null) {
-								player.sendMessage("The menu '" + configName + "' has disappeared? Restart to remove this command.");
-							} else {
-								new SelectorMenu(player, config);
-							}
+						if (!(sender instanceof Player)) {
+							sender.sendMessage("Can't open menu from console");
+							return true;
 						}
+
+						final Player player = (Player) sender;
+						final FileConfiguration config = configurationManager.getByName(configName);
+						if (config == null) {
+							player.sendMessage("The menu '" + configName + "' has disappeared? Restart to remove this command.");
+							return true;
+						}
+
+						if (!SelectorMenu.checkPermission(player, config)) {
+							return true;
+						}
+
+						new SelectorMenu(player, config);
 						return true;
 					}
 

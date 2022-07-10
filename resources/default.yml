@@ -26,6 +26,12 @@ url-message: '&3&lClick here'
 # Command to open the menu. Specify "none" for no command. (without /)
 command: "menu"
 
+# Require permission to open menu?
+require-permission: false
+# Which permission node to require?
+permission-node: 'ssx.menu.default'
+no-permission-message: "&cYou don't have permission to open this menu."
+
 # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Free-%7C-Items-in-the-server-selector
 menu:
 

@@ -9,7 +9,6 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.inventory.EquipmentSlot;
-
 import xyz.derkades.derkutils.Cooldown;
 
 public class SelectorOpenListener implements Listener {
@@ -55,6 +54,10 @@ public class SelectorOpenListener implements Listener {
 
 			if (player.getInventory().getItemInMainHand().getType() != material){
 				continue;
+			}
+
+			if (!SelectorMenu.checkPermission(player, config)) {
+				return;
 			}
 
 			new SelectorMenu(player, config);
