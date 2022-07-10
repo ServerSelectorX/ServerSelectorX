@@ -8,7 +8,6 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
-
 import xyz.derkades.derkutils.Cooldown;
 
 public class SelectorOpenListener implements Listener {
@@ -50,6 +49,10 @@ public class SelectorOpenListener implements Listener {
 
 			if (player.getItemInHand().getType() != material){
 				continue;
+			}
+
+			if (!SelectorMenu.checkPermission(player, config)) {
+				return;
 			}
 
 			new SelectorMenu(player, config);
