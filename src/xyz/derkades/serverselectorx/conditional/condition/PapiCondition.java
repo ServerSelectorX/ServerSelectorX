@@ -40,7 +40,7 @@ public class PapiCondition extends Condition {
 
 		try {
 			if (comparisonMode.equals("less") || comparisonMode.equals("more")) {
-				if (!(options.get("placeholder-value") instanceof Double)) {
+				if (!(options.get("placeholder-value") instanceof Number)) {
 					throw new InvalidConfigurationException("A conditional section for placeholder '" + name + "' is configured with an expected value that is a string, not an number.");
 				}
 				double actualValueD = Double.parseDouble(actualValue);
