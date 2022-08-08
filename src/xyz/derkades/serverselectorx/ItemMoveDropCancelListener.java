@@ -81,7 +81,10 @@ public class ItemMoveDropCancelListener implements Listener {
 				Main.getConfigurationManager().getInventoryConfiguration().getBoolean("cancel-item-move") &&
 				!event.getWhoClicked().hasPermission("ssx.move") &&
 				isCancelledWorld(event.getWhoClicked().getWorld()) &&
-				isSsxItem(event.getCursor())
+				(
+						!Main.getConfigurationManager().getInventoryConfiguration().getBoolean("ssx-items-only") ||
+						isSsxItem(event.getCursor())
+				)
 		);
 	}
 
@@ -92,6 +95,7 @@ public class ItemMoveDropCancelListener implements Listener {
 				!event.getPlayer().hasPermission("ssx.move") &&
 				isCancelledWorld(event.getPlayer().getWorld()) &&
 				(
+						!Main.getConfigurationManager().getInventoryConfiguration().getBoolean("ssx-items-only") ||
 						isSsxItem(event.getMainHandItem()) ||
 						isSsxItem(event.getOffHandItem())
 				)
