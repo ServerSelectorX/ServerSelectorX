@@ -1,6 +1,5 @@
 package xyz.derkades.serverselectorx.conditional;
 
-import de.tr7zw.changeme.nbtapi.NBTCompound;
 import de.tr7zw.changeme.nbtapi.NBTContainer;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.NbtApiException;
@@ -171,12 +170,7 @@ public class ConditionalItem {
 			if (nbtJson != null) {
 				try {
 					NBTContainer container = new NBTContainer(nbtJson);
-					Object compound = container.getCompound();
-					if (compound instanceof NBTCompound) {
-						builder.editNbt(nbt -> nbt.mergeCompound((NBTCompound) compound));
-					} else {
-						player.sendMessage("Custom NBT is not a compound? " + compound.getClass().getSimpleName());
-					}
+					builder.editNbt(nbt -> nbt.mergeCompound(container));
 				} catch (NbtApiException e) {
 					player.sendMessage("Skipped adding custom NBT to an item because of an error, please see the console for more info.");
 					e.printStackTrace();

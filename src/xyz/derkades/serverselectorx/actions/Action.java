@@ -9,13 +9,14 @@ import java.util.List;
 public abstract class Action {
 
 	private static final Action[] DEFAULT_ACTIONS = {
-			new AdvMessageAction(),
 			new AddEffectAction(),
+			new AdvMessageAction(),
+			new ChatAction(),
 			new CloseAction(),
 			new ConsoleCommandAction(),
 			new DelayAction(),
-			new MessageAction(),
 			new FirstAvailableServerAction(),
+			new MessageAction(),
 			new OpenMenuAction(),
 			new PlayerCommandAction(),
 			new PostJoinCommandAction(),

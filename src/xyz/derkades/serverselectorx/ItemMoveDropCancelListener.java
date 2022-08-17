@@ -33,7 +33,10 @@ public class ItemMoveDropCancelListener implements Listener {
 			return false;
 		} else {
 			final NBTItem nbt = new NBTItem(item);
-			return nbt.hasKey("SSXItem");
+			// "SSXItem" and "SSXActions" is for items from older versions, this can be removed later
+			return nbt.hasKey("SSXItem") ||
+					nbt.hasKey("SSXActions") ||
+					nbt.hasKey("SSXItemConfigName");
 		}
 	}
 
@@ -80,7 +83,10 @@ public class ItemMoveDropCancelListener implements Listener {
 				Main.getConfigurationManager().getInventoryConfiguration().getBoolean("cancel-item-move") &&
 				!event.getWhoClicked().hasPermission("ssx.move") &&
 				isCancelledWorld(event.getWhoClicked().getWorld()) &&
-				isSsxItem(event.getCursor())
+				(
+						!Main.getConfigurationManager().getInventoryConfiguration().getBoolean("ssx-items-only") ||
+						isSsxItem(event.getCursor())
+				)
 		);
 	}
 

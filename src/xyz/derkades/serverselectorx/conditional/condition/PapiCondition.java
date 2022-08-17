@@ -40,19 +40,16 @@ public class PapiCondition extends Condition {
 
 		try {
 			if (comparisonMode.equals("less") || comparisonMode.equals("more")) {
-				if (!(options.get("placeholder-value") instanceof Double)) {
+				if (!(options.get("placeholder-value") instanceof Number)) {
 					throw new InvalidConfigurationException("A conditional section for placeholder '" + name + "' is configured with an expected value that is a string, not an number.");
 				}
 				double actualValueD = Double.parseDouble(actualValue);
-				double expectedValue = (double) options.get("placeholder-value");
+				Number expectedValue = (Number) options.get("placeholder-value");
 				if (!Double.isFinite(actualValueD)) {
 					throw new InvalidConfigurationException("Placeholder '" + name + "' has value '" + actualValue + "' which is not a valid finite floating point number");
 				}
-				if (!Double.isFinite(expectedValue)) {
-					throw new InvalidConfigurationException("Placeholder '" + name + "' has value '" + actualValue + "' which is not a valid finite floating point number");
-				}
-				return comparisonMode.equals("less") && actualValueD < expectedValue ||
-						comparisonMode.equals("more") && actualValueD > expectedValue;
+				return comparisonMode.equals("less") && actualValueD < expectedValue.doubleValue() ||
+						comparisonMode.equals("more") && actualValueD > expectedValue.doubleValue();
 			}
 		} catch (NumberFormatException e) {
 			throw new InvalidConfigurationException("Used placeholder-comparison less/more but the actual or configured placeholder value cannot be parsed as a number.");
