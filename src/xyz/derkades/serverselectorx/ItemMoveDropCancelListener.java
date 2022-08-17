@@ -34,7 +34,10 @@ public class ItemMoveDropCancelListener implements Listener {
 			return false;
 		} else {
 			final NBTItem nbt = new NBTItem(item);
-			return nbt.hasKey("SSXItem");
+			// "SSXItem" and "SSXActions" is for items from older versions, this can be removed later
+			return nbt.hasKey("SSXItem") ||
+					nbt.hasKey("SSXActions") ||
+					nbt.hasKey("SSXItemConfigName");
 		}
 	}
 
