@@ -34,7 +34,15 @@ public class PapiCondition extends Condition {
 		Objects.requireNonNull(actualValue, "Placeholder value returned by PlaceholderAPI is null! This probably means the expansion or plugin that added the placeholder is broken (not an SSX bug).");
 
 		if (comparisonMode.equals("equals")) {
-			String expectedValue = (String) options.get("placeholder-value");
+			Object expectedValueO = options.get("placeholder-value");
+			String expectedValue;
+			if (expectedValueO instanceof String) {
+				expectedValue = (String) expectedValueO;
+			} else if (expectedValueO instanceof Integer || expectedValueO instanceof Long) {
+				expectedValue = String.valueOf(expectedValueO);
+			} else {
+				throw new InvalidConfigurationException("When using 'placeholder-comparison: true', placeholder-value must be a string or an integer.");
+			}
 			return expectedValue.equals(actualValue);
 		}
 
