@@ -52,7 +52,7 @@ public class ServerSelectorX {
 
 		Cooldown.addCooldown("servertp" + player.getName() + server, 1000);
 
-		// Send message to bungeecord
+		// Send message to BungeeCord
 		try (
 				ByteArrayOutputStream baos = new ByteArrayOutputStream();
 				DataOutputStream dos = new DataOutputStream(baos)
@@ -64,6 +64,10 @@ public class ServerSelectorX {
 		} catch (final IOException e){
 			throw new RuntimeException(e);
 		}
+	}
+
+	public static HotbarItemManager getHotbarItemManager() {
+		return Main.getPlugin().getHotbarItemManager();
 	}
 
 }

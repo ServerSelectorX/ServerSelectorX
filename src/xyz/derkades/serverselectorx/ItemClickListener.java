@@ -104,6 +104,9 @@ public class ItemClickListener implements Listener {
 			}
 			event.setCancelled(true);
 		}
+
+		logger.info("[Click debug] Refreshing hotbar items, in case there are items using the 'open-menu' condition.");
+		Main.getPlugin().getHotbarItemManager().updateSsxItems(player);
 	}
 
 }
