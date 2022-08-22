@@ -60,6 +60,9 @@ public class ConditionalItem {
 			boolean invert = (boolean) map.getOrDefault("invert-condition", false);
 
 			Condition condition = Conditions.getConditionByType(type);
+			if (condition == null) {
+				throw new InvalidConfigurationException("Unknown condition type: " + type);
+			}
 			if (condition.isTrue(player, map) != invert) {
 				return map;
 			}
