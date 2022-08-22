@@ -184,6 +184,10 @@ public class Menu extends IconMenu {
 			return;
 		}
 
+		if (event.getOfflinePlayer() instanceof Player) {
+			ServerSelectorX.getHotbarItemManager().updateSsxItems((Player) event.getOfflinePlayer());
+		}
+
 		this.config.getMapList("on-close").forEach(map -> {
 			final List<String> reasons = (List<String>) map.get("reasons");
 			if (reasons.contains(reason)) {
