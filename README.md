@@ -11,5 +11,5 @@ branch | name | minecraft version
 | - | - | -
 free | SSX Free | 1.13+
 free-legacy | SSX Free legacy | <1.13
-master | SSX Premium | 1.13+
-v2-legacy | SSX Premium legacy | <1.13
+premium | SSX Premium | 1.13+
+premium-legacy | SSX Premium legacy | <1.13
