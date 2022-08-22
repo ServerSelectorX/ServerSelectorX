@@ -22,6 +22,11 @@ public class OnJoinListener implements Listener {
 
 			final Player player = event.getPlayer();
 
+			if (config.contains("only-in-worlds") &&
+					!config.getStringList("only-in-worlds").contains(player.getWorld().getName())) {
+				return;
+			}
+
 			final String materialString = config.getString("item");
 
 			final ItemBuilder builder = Main.getItemFromMaterialString(player, materialString)

@@ -32,6 +32,11 @@ require-permission: false
 permission-node: 'ssx.menu.default'
 no-permission-message: "&cYou don't have permission to open this menu."
 
+# Uncomment to configure an allow list of worlds. The compass won't be given to players joining other
+# worlds. However, they might still keep the compass when switching between worlds. You should install
+# a per-world inventories plugin.
+#only-in-worlds: [hub1, hub2]
+
 # https://github.com/ServerSelectorX/ServerSelectorX/wiki/Free-%7C-Items-in-the-server-selector
 menu:
 
