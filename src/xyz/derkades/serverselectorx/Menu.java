@@ -150,6 +150,10 @@ public class Menu extends IconMenu {
 	public void onClose(final MenuCloseEvent event) {
 		this.closed = true;
 
+		if (event.getOfflinePlayer() instanceof Player) {
+			ServerSelectorX.getHotbarItemManager().updateSsxItems((Player) event.getOfflinePlayer());
+		}
+
 		if (this.config == null) {
 			Main.getPlugin().getLogger().warning("Ignoring menu close event, config failed to load");
 			return;
@@ -182,10 +186,6 @@ public class Menu extends IconMenu {
 
 		if (reason == null) {
 			return;
-		}
-
-		if (event.getOfflinePlayer() instanceof Player) {
-			ServerSelectorX.getHotbarItemManager().updateSsxItems((Player) event.getOfflinePlayer());
 		}
 
 		this.config.getMapList("on-close").forEach(map -> {
