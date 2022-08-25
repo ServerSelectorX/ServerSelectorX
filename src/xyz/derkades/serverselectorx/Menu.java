@@ -16,6 +16,7 @@ import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.menu.IconMenu;
 import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
 import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
+import xyz.derkades.derkutils.bukkit.menu.SlotClickEvent;
 import xyz.derkades.serverselectorx.actions.Action;
 import xyz.derkades.serverselectorx.conditional.ConditionalItem;
 
@@ -143,6 +144,42 @@ public class Menu extends IconMenu {
 	@Override
 	public boolean onOptionClick(final OptionClickEvent event) {
 		return ConditionalItem.runActions(event);
+	}
+
+	@Override
+	public boolean onBlankClick(final SlotClickEvent event) {
+		if (!config.contains("empty-slot-actions")) {
+			return false;
+		}
+
+		ConfigurationSection section = config.getConfigurationSection("empty-slot-actions");
+
+		String matchedKey = null;
+
+		for (String key : section.getKeys(false)) {
+			if (key.equals("other")) {
+				continue;
+			}
+
+			for (final String split : key.split(",")) {
+				int slot = Integer.parseInt(split);
+				if (event.getPosition() == slot) {
+					matchedKey = key;
+					break;
+				}
+			}
+		}
+
+		if (matchedKey == null && section.contains("other")) {
+			matchedKey = "other";
+		}
+
+		if (matchedKey == null) {
+			return false;
+		}
+
+		final List<String> actions = section.getStringList(matchedKey);
+		return Action.runActions(event.getPlayer(), actions);
 	}
 
 	@SuppressWarnings("unchecked")
