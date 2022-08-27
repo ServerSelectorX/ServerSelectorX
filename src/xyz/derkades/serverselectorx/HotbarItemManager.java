@@ -21,7 +21,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.HashSet;
 import java.util.Set;
 
-public class HotbarItemManager implements Listener {
+public class HotbarItemManager {
 
 	private final Main plugin;
 
@@ -30,7 +30,7 @@ public class HotbarItemManager implements Listener {
 	}
 
 	void enable() {
-		Bukkit.getPluginManager().registerEvents(this, plugin);
+		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), plugin);
 	}
 
 	void reload() {
@@ -116,7 +116,7 @@ public class HotbarItemManager implements Listener {
 		}
 	}
 
-	private void updateSsxItems(final Player player) {
+	public void updateSsxItems(final Player player) {
 		debug("Updating items for: " + player.getName());
 		ItemStack[] contents = player.getInventory().getContents();
 
@@ -178,43 +178,45 @@ public class HotbarItemManager implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGH)
-	public void onJoin(final PlayerJoinEvent event) {
-		final Player player = event.getPlayer();
-		final FileConfiguration config = Main.getConfigurationManager().getInventoryConfiguration();
+	private class BukkitEventListener implements Listener {
 
-		if (config.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
-			debug("Clearing inventory for " + player.getName());
-			final PlayerInventory inv = player.getInventory();
-			inv.setContents(new ItemStack[inv.getContents().length]);
-			inv.setArmorContents(new ItemStack[inv.getArmorContents().length]);
-			try {
-				final int length = ((ItemStack[]) inv.getClass().getMethod("getStorageContents").invoke(inv)).length;
-				inv.getClass().getMethod("setStorageContents", ItemStack[].class).invoke(inv, (Object) new ItemStack[length]);
-			} catch (final NoSuchMethodException ignored) { // This method does not exist on <1.9
-			} catch (final InvocationTargetException | IllegalAccessException e) {
-				e.printStackTrace();
+		@EventHandler(priority = EventPriority.HIGH)
+		public void onJoin(final PlayerJoinEvent event) {
+			final Player player = event.getPlayer();
+			final FileConfiguration config = Main.getConfigurationManager().getInventoryConfiguration();
+
+			if (config.getBoolean("clear-inv", false) && !player.hasPermission("ssx.clearinvbypass")) {
+				debug("Clearing inventory for " + player.getName());
+				final PlayerInventory inv = player.getInventory();
+				try {
+					final int length = ((ItemStack[]) inv.getClass().getMethod("getStorageContents").invoke(inv)).length;
+					inv.getClass().getMethod("setStorageContents", ItemStack[].class).invoke(inv, (Object) new ItemStack[length]);
+				} catch (final NoSuchMethodException ignored) { // This method does not exist on <1.9
+				} catch (final InvocationTargetException | IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			}
+
+			HotbarItemManager.this.updateSsxItems(player);
+		}
+
+		@EventHandler(priority = EventPriority.HIGH)
+		public void onWorldChange(final PlayerChangedWorldEvent event) {
+			HotbarItemManager.this.updateSsxItems(event.getPlayer());
+		}
+
+		@EventHandler(priority = EventPriority.HIGH)
+		public void onRespawn(final PlayerRespawnEvent event) {
+			HotbarItemManager.this.updateSsxItems(event.getPlayer());
+		}
+
+		@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
+		public void onClear(final PlayerCommandPreprocessEvent event) {
+			if (event.getMessage().equals("/clear") && event.getPlayer().hasPermission("minecraft.command.clear")) {
+				Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> HotbarItemManager.this.updateSsxItems(event.getPlayer()), 1);
 			}
 		}
 
-		this.updateSsxItems(player);
-	}
-
-	@EventHandler(priority = EventPriority.HIGH)
-	public void onWorldChange(final PlayerChangedWorldEvent event) {
-		this.updateSsxItems(event.getPlayer());
-	}
-
-	@EventHandler(priority = EventPriority.HIGH)
-	public void onRespawn(final PlayerRespawnEvent event) {
-		this.updateSsxItems(event.getPlayer());
-	}
-
-	@EventHandler(ignoreCancelled = true, priority = EventPriority.MONITOR)
-	public void onClear(final PlayerCommandPreprocessEvent event) {
-		if (event.getMessage().equals("/clear") && event.getPlayer().hasPermission("minecraft.command.clear")) {
-			Bukkit.getScheduler().runTaskLater(Main.getPlugin(), () -> this.updateSsxItems(event.getPlayer()), 1);
-		}
 	}
 
 }

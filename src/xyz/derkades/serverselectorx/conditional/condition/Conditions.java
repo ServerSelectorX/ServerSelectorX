@@ -1,10 +1,10 @@
 package xyz.derkades.serverselectorx.conditional.condition;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 
 public class Conditions {
 
@@ -14,6 +14,7 @@ public class Conditions {
 		Condition[] conditions = new Condition[] {
 				new CurrentServerCondition(),
 				new EffectCondition(),
+				new OpenMenuCondition(),
 				new PapiCondition(),
 				new PermissionCondition(),
 				new ServerPlaceholderCondition(),
@@ -27,8 +28,8 @@ public class Conditions {
 		}
 	}
 
-	public static @NotNull Condition getConditionByType(@NotNull String type) {
-		return Objects.requireNonNull(CONDITIONS_BY_TYPE.get(type), "No condition registered with type: " + type);
+	public static @Nullable Condition getConditionByType(@NotNull String type) {
+		return CONDITIONS_BY_TYPE.get(type);
 	}
 
 }

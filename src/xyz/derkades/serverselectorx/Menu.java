@@ -13,9 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
-import xyz.derkades.derkutils.bukkit.menu.IconMenu;
-import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
-import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
+import xyz.derkades.derkutils.bukkit.menu.*;
 import xyz.derkades.serverselectorx.actions.Action;
 import xyz.derkades.serverselectorx.conditional.ConditionalItem;
 
@@ -88,7 +86,8 @@ public class Menu extends IconMenu {
 
 		ConfigurationSection menuSection = this.config.getConfigurationSection("menu");
 		if (menuSection == null) {
-			player.sendMessage("Config file is missing a 'menu' section.");
+			Main.getPlugin().getLogger().warning("Menu " + this.configName + " is missing a menu section. The menu will not contain any items.");
+//			player.sendMessage("Config file is missing a 'menu' section.");
 			return;
 		}
 
@@ -145,10 +144,50 @@ public class Menu extends IconMenu {
 		return ConditionalItem.runActions(event);
 	}
 
+	@Override
+	public boolean onBlankClick(final SlotClickEvent event) {
+		if (!config.contains("empty-slot-actions")) {
+			return false;
+		}
+
+		ConfigurationSection section = config.getConfigurationSection("empty-slot-actions");
+
+		String matchedKey = null;
+
+		for (String key : section.getKeys(false)) {
+			if (key.equals("other")) {
+				continue;
+			}
+
+			for (final String split : key.split(",")) {
+				int slot = Integer.parseInt(split);
+				if (event.getPosition() == slot) {
+					matchedKey = key;
+					break;
+				}
+			}
+		}
+
+		if (matchedKey == null && section.contains("other")) {
+			matchedKey = "other";
+		}
+
+		if (matchedKey == null) {
+			return false;
+		}
+
+		final List<String> actions = section.getStringList(matchedKey);
+		return Action.runActions(event.getPlayer(), actions);
+	}
+
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onClose(final MenuCloseEvent event) {
 		this.closed = true;
+
+		if (event.getOfflinePlayer() instanceof Player) {
+			ServerSelectorX.getHotbarItemManager().updateSsxItems((Player) event.getOfflinePlayer());
+		}
 
 		if (this.config == null) {
 			Main.getPlugin().getLogger().warning("Ignoring menu close event, config failed to load");
