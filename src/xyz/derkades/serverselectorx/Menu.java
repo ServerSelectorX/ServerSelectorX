@@ -13,10 +13,7 @@ import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
-import xyz.derkades.derkutils.bukkit.menu.IconMenu;
-import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
-import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
-import xyz.derkades.derkutils.bukkit.menu.SlotClickEvent;
+import xyz.derkades.derkutils.bukkit.menu.*;
 import xyz.derkades.serverselectorx.actions.Action;
 import xyz.derkades.serverselectorx.conditional.ConditionalItem;
 
@@ -89,7 +86,8 @@ public class Menu extends IconMenu {
 
 		ConfigurationSection menuSection = this.config.getConfigurationSection("menu");
 		if (menuSection == null) {
-			player.sendMessage("Config file is missing a 'menu' section.");
+			Main.getPlugin().getLogger().warning("Menu " + this.configName + " is missing a menu section. The menu will not contain any items.");
+//			player.sendMessage("Config file is missing a 'menu' section.");
 			return;
 		}
 
