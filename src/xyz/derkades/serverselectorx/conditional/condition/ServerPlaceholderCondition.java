@@ -30,6 +30,9 @@ public class ServerPlaceholderCondition extends Condition {
 			throw new InvalidConfigurationException("Missing required option 'placeholder-value' (expected placeholder value)");
 		}
 
+		if (!(options.get("placeholder-value") instanceof String)) {
+			throw new InvalidConfigurationException("Invalid type for placeholder-value option. It has to be a string, but it is: " + options.get("placeholder-value").getClass().getSimpleName());
+		}
 
 		String placeholderName = (String) options.get("placeholder-name");
 		String expectedPlaceholderValue = (String) options.get("placeholder-value");

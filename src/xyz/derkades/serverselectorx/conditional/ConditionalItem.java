@@ -7,6 +7,7 @@ import net.kyori.adventure.text.Component;
 import net.kyori.adventure.text.minimessage.MiniMessage;
 import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.ChatColor;
+import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.enchantments.Enchantment;
@@ -112,7 +113,8 @@ public class ConditionalItem {
 			final @NotNull List<String> rightClickActions = (List<String>) matchedSection.getOrDefault("right-click-actions", Collections.emptyList());
 			final int cooldownTime = (int) matchedSection.getOrDefault("cooldown", 0);
 			final @NotNull List<String> cooldownActions = (List<String>) matchedSection.getOrDefault("cooldown-actions", Collections.emptyList());
-			final @Nullable String serverName = (String) matchedSection.getOrDefault("server-name", null);
+			final @Nullable String serverName = (String) matchedSection.get("server-name");
+			final @Nullable String color = (String) matchedSection.get("color");
 
 			final PlaceholderUtil.Placeholder playerNamePlaceholder = new PlaceholderUtil.Placeholder("{player}", player.getName());
 			final PlaceholderUtil.Placeholder globalOnlinePlaceholder = new PlaceholderUtil.Placeholder("{globalOnline}", String.valueOf(ServerSelectorX.getGlobalPlayerCount()));
@@ -168,6 +170,18 @@ public class ConditionalItem {
 
 			if (durability >= 0) {
 				builder.damage(durability);
+			}
+
+			if (color != null) {
+				if (color.length() != 7 || color.charAt(0) != '#') {
+					player.sendMessage("Invalid color '" + color + "', should be a # followed by 6 hex digits");
+					return;
+				}
+				
+				int r = Integer.parseInt(color.substring(1, 3), 16);
+				int g = Integer.parseInt(color.substring(3, 5), 16);
+				int b = Integer.parseInt(color.substring(5, 7), 16);
+				builder.leatherArmorColor(Color.fromRGB(r, g, b));
 			}
 
 			if (nbtJson != null) {
