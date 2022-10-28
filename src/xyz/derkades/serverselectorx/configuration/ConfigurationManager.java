@@ -1,19 +1,18 @@
 package xyz.derkades.serverselectorx.configuration;
 
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.configuration.file.YamlConfiguration;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+import xyz.derkades.derkutils.FileUtils;
+import xyz.derkades.serverselectorx.Main;
+
 import java.io.File;
 import java.io.IOException;
 import java.util.EnumMap;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-
-import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.configuration.file.YamlConfiguration;
-
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
-import xyz.derkades.derkutils.FileUtils;
-import xyz.derkades.serverselectorx.Main;
 
 /**
  * Manages configuration files
@@ -61,6 +60,21 @@ public class ConfigurationManager {
 			this.defaultFileOutsideJar = defaultFileOutsideJar;
 		}
 
+		private void loadDirectory(final String prefix, final File dir, final Map<String, FileConfiguration> dest) {
+			final File[] files = dir.listFiles();
+			if (files == null) {
+				return;
+			}
+
+			for (final File file : files) {
+				if (file.isDirectory()) {
+					loadDirectory(prefix + file.getName() + "/", file, dest);
+				} else if (file.getName().endsWith(".yml") || file.getName().endsWith(".yaml")) {
+					dest.put(prefix + configName(file), YamlConfiguration.loadConfiguration(file));
+				}
+			}
+		}
+
 		private void copyLoad(final @NotNull Map<String, FileConfiguration> dest) throws IOException {
 			if (!this.dir.exists()) {
 				this.dir.mkdir();
@@ -68,18 +82,17 @@ public class ConfigurationManager {
 						new File(this.dir, this.defaultFileOutsideJar));
 			}
 
-			File[] files = this.dir.listFiles();
-			if (files != null) {
-				for (final File file : files) {
-					if (file.getName().endsWith(".yml")) {
-						dest.put(configName(file), YamlConfiguration.loadConfiguration(file));
-					}
-				}
-			}
+			loadDirectory("", this.dir, dest);
 		}
 
 		private static String configName(final File file) {
-			return file.getName().substring(0, file.getName().length() - 4);
+			if (file.getName().endsWith(".yml")) {
+				return file.getName().substring(0, file.getName().length() - 4);
+			} else if (file.getName().endsWith(".yaml")) {
+				return file.getName().substring(0, file.getName().length() - 5);
+			} else {
+				throw new IllegalArgumentException(file.getName());
+			}
 		}
 
 	}
