@@ -86,7 +86,13 @@ public class ConfigurationManager {
 		}
 
 		private static String configName(final File file) {
-			return file.getName().substring(0, file.getName().length() - 4);
+			if (file.getName().endsWith(".yml")) {
+				return file.getName().substring(0, file.getName().length() - 4);
+			} else if (file.getName().endsWith(".yaml")) {
+				return file.getName().substring(0, file.getName().length() - 5);
+			} else {
+				throw new IllegalArgumentException(file.getName());
+			}
 		}
 
 	}
