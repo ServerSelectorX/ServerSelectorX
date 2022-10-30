@@ -107,6 +107,7 @@ public class ConditionalItem {
 			final boolean hideFlags = (boolean) matchedSection.getOrDefault("hide-flags", true);
 			final int amount = (int) matchedSection.getOrDefault("amount", 1);
 			final int durability = (int) matchedSection.getOrDefault("durability", -1);
+			final int data = (int) matchedSection.getOrDefault("data", -1); // the same as durability, for compatibility
 			final @Nullable String nbtJson = (String) matchedSection.getOrDefault("nbt", null);
 			final @NotNull List<String> actions = (List<String>) matchedSection.getOrDefault("actions", Collections.emptyList());
 			final @NotNull List<String> leftClickActions = (List<String>) matchedSection.getOrDefault("left-click-actions", Collections.emptyList());
@@ -170,6 +171,10 @@ public class ConditionalItem {
 
 			if (durability >= 0) {
 				builder.damage(durability);
+			}
+
+			if (data >= 0) {
+				builder.damage(data);
 			}
 
 			if (color != null) {
