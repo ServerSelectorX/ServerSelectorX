@@ -14,6 +14,7 @@ public class Conditions {
 		Condition[] conditions = new Condition[] {
 				new CurrentServerCondition(),
 				new EffectCondition(),
+				new InWorldCondition(),
 				new OpenMenuCondition(),
 				new PapiCondition(),
 				new PermissionCondition(),
