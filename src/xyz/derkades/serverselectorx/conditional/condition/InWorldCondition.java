@@ -29,8 +29,11 @@ public class InWorldCondition extends Condition {
                 }
             }
             return false;
+        } else if (options.containsKey("world-regex")) {
+            String worldRegex = (String) options.get("world-regex");
+            return player.getWorld().getName().matches(worldRegex);
         } else {
-            throw new InvalidConfigurationException("Missing required 'worlds' option (list of world names) or 'world' option (single world name)");
+            throw new InvalidConfigurationException("Missing required option: 'worlds' (list of world names), 'world' (single world name) or 'world-regex' (regular expression)");
         }
     }
 }
