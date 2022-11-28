@@ -60,7 +60,7 @@ menu:
     actions:
      - 'message:&8This is a message'
      - 'close'
-    material: 'head:auto'
+    material: 'head:self'
     title: '&aThis is you!'
     lore:
      - '&6Click this item to receive a message'
