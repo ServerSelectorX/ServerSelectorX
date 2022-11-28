@@ -2,13 +2,12 @@ package xyz.derkades.serverselectorx;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.command.PluginCommand;
+import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.jetbrains.annotations.NotNull;
@@ -21,14 +20,11 @@ import xyz.derkades.serverselectorx.placeholders.PapiExpansionRegistrar;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
 import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
 public class Main extends JavaPlugin {
@@ -55,8 +51,10 @@ public class Main extends JavaPlugin {
 
 	private static final Map<UUID, String> HEAD_TEXTURE_CACHE = new HashMap<>();
 
-	private HotbarItemManager hotbarItemManager = new HotbarItemManager(this);
+	private final HotbarItemManager hotbarItemManager = new HotbarItemManager(this);
 	public HotbarItemManager getHotbarItemManager() { return this.hotbarItemManager; }
+
+	private final Heads heads = new Heads(this);
 
 	@SuppressWarnings("null")
 	@NotNull
@@ -130,7 +128,7 @@ public class Main extends JavaPlugin {
 		return adventure;
 	}
 
-    public static void getItemBuilderFromMaterialString(final Player player, @Nullable String materialString, Consumer<NbtItemBuilder> builderConsumer) {
+    public static void getItemBuilderFromMaterialString(final Player player, @Nullable String materialString, Consumer<NbtItemBuilder> builderConsumer) throws InvalidConfigurationException {
 		if (materialString == null || materialString.isEmpty()) {
 			return;
 		}
@@ -140,34 +138,30 @@ public class Main extends JavaPlugin {
 		}
 
 		if (materialString.startsWith("head:")) {
-			final String owner = materialString.split(":")[1];
-			if (owner.equals("auto")) {
+			String headValue = materialString.split(":")[1];
+			if (headValue.equals("self") || headValue.equals("auto")) {
 				if (getConfigurationManager().getMiscConfiguration().getBoolean("mojang-api-head-auto", false)) {
-					getHeadTexture(player.getUniqueId(), texture -> {
-						if (texture != null) {
-							builderConsumer.accept(new NbtItemBuilder(Material.PLAYER_HEAD).skullTexture(texture));
-						} else {
-							builderConsumer.accept(new NbtItemBuilder(Material.PLAYER_HEAD));
-						}
-					});
-				} else {
+					// Bypass head system, just return player's own head. No need to get a texture, because the server caches it for online players
 					builderConsumer.accept(new NbtItemBuilder(Material.PLAYER_HEAD).skullOwner(player));
-				}
-			} else {
-				try {
-					final UUID ownerUuid = UUID.fromString(owner);
-					getHeadTexture(ownerUuid, texture -> {
-						if (texture != null) {
-							builderConsumer.accept(new NbtItemBuilder(Material.PLAYER_HEAD).skullTexture(texture));
-						} else {
-							builderConsumer.accept(new NbtItemBuilder(Material.PLAYER_HEAD));
-						}
-					});
-				} catch (final IllegalArgumentException e) {
-					// Invalid UUID, parse as texture
-					builderConsumer.accept(new NbtItemBuilder(Material.PLAYER_HEAD).skullTexture(owner));
+					return;
+				} else {
+					headValue = "uuid:" + player.getUniqueId();
 				}
 			}
+
+			CompletableFuture<@Nullable String> headTextureFuture = plugin.heads.getHead(headValue);
+
+			Futures.whenCompleteOnMainThread(plugin, headTextureFuture, (headTexture, exception) -> {
+				if (exception != null) {
+					exception.printStackTrace();
+				}
+
+				if (headTexture != null) {
+					builderConsumer.accept(new NbtItemBuilder(Material.PLAYER_HEAD).skullTexture(headTexture));
+				} else {
+					builderConsumer.accept(new NbtItemBuilder(Material.PLAYER_HEAD));
+				}
+			});
 			return;
 		}
 
@@ -197,28 +191,5 @@ public class Main extends JavaPlugin {
 			builderConsumer.accept(new NbtItemBuilder(material));
 		}
 	}
-
-    public static void getHeadTexture(final UUID uuid, Consumer<String> textureConsumer) {
-    	if (HEAD_TEXTURE_CACHE.containsKey(uuid)) {
-    		textureConsumer.accept(HEAD_TEXTURE_CACHE.get(uuid));
-    	}
-
-		Main.getPlugin().getLogger().info("Getting texture value for " + uuid + " from Mojang API");
-		Bukkit.getScheduler().runTaskAsynchronously(getPlugin(), () -> {
-			try {
-
-				final HttpURLConnection connection = (HttpURLConnection) new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString()).openConnection();
-				try (final Reader reader = new InputStreamReader(connection.getInputStream())) {
-					final JsonObject jsonResponse = (JsonObject) JsonParser.parseReader(reader);
-					final String texture = jsonResponse.get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
-					HEAD_TEXTURE_CACHE.put(uuid, texture);
-					Main.getPlugin().getLogger().info("Got " + texture);
-					Bukkit.getScheduler().runTask(getPlugin(), () -> textureConsumer.accept(texture));
-				}
-			} catch (final IOException | IllegalArgumentException | NullPointerException | ClassCastException | IllegalStateException | IndexOutOfBoundsException e) {
-				Main.getPlugin().getLogger().warning("Failed to get base64 texture value for " + uuid + ". Is the UUID valid? Error details: " + e.getClass().getSimpleName() + " " + e.getMessage());
-			}
-		});
-    }
 
 }
