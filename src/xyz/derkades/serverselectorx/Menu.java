@@ -9,11 +9,13 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.derkades.derkutils.Cooldown;
 import xyz.derkades.derkutils.bukkit.Colors;
-import xyz.derkades.derkutils.bukkit.menu.*;
+import xyz.derkades.derkutils.bukkit.menu.IconMenu;
+import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
+import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
+import xyz.derkades.derkutils.bukkit.menu.SlotClickEvent;
 import xyz.derkades.serverselectorx.actions.Action;
 import xyz.derkades.serverselectorx.conditional.ConditionalItem;
 
@@ -103,18 +105,22 @@ public class Menu extends IconMenu {
 			final String cooldownId = player.getName() + this.configName + key;
 			try {
 				ConditionalItem.getItem(player, section, cooldownId,
-						item -> addToMenu(key, player, item));
+						item -> addToMenu(menuSection, key, player, item));
 			} catch (InvalidConfigurationException e) {
 				player.sendMessage("Invalid configuration: " + e.getMessage());
 			}
 		}
 	}
 
-	public void addToMenu(@NotNull String key, @NotNull Player player, @NotNull ItemStack item) {
+	public void addToMenu(final ConfigurationSection menuSection,
+						  final String key,
+						  final Player player,
+						  final ItemStack item) {
 		if (key.equals("fill") || key.equals("-1")) { // -1 for backwards compatibility
+			final List<Integer> skip = menuSection.getConfigurationSection(key).getIntegerList("fill-skip");
 			// Fill all blank slots
 			for (int i = 0; i < this.getInventory().getSize(); i++) {
-				if (!this.hasItem(i)) {
+				if (!this.hasItem(i) && !skip.contains(i)) {
 					this.addItem(i, item);
 				}
 			}
