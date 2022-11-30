@@ -44,14 +44,14 @@ public class Heads {
 	public CompletableFuture<@Nullable String> getHead(final String identifier) throws InvalidConfigurationException {
 		final String[] split = identifier.split(":");
 		if (split.length != 2) {
-			throw new InvalidConfigurationException("Invalid head '" + identifier + "'. Valid syntax is 'head:<type>:<value>' or 'head:self'");
+			throw new InvalidConfigurationException("Invalid head '" + identifier + "'. Valid syntax is 'head:<type>:<value>' or 'head:self'.");
 		}
 
 		final String type = split[0];
 		final String value = split[1];
 
 		if (!handlers.containsKey(type)) {
-			throw new InvalidConfigurationException("Invalid head type: " + identifier);
+			throw new InvalidConfigurationException("Invalid head type: " + type);
 		}
 
 		return handlers.get(type).getHeadTexture(value);

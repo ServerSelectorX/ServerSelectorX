@@ -138,7 +138,7 @@ public class Main extends JavaPlugin {
 		}
 
 		if (materialString.startsWith("head:")) {
-			String headValue = materialString.split(":")[1];
+			String headValue = materialString.substring(5);
 			if (headValue.equals("self") || headValue.equals("auto")) {
 				if (getConfigurationManager().getMiscConfiguration().getBoolean("mojang-api-head-auto", false)) {
 					// Bypass head system, just return player's own head. No need to get a texture, because the server caches it for online players
