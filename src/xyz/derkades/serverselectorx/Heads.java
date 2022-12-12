@@ -33,7 +33,7 @@ public class Heads {
 		} catch (Exception ignored) {}
 
 		try {
-			handlers.put("silent-hdb", new ArcaniaxHandler());
+			handlers.put("silent-hdb", new SilentHandler());
 			logger.info("Integration with TheSilentPro's Head Database plugin is active");
 		} catch (Exception ignored) {}
 
