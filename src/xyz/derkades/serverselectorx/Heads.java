@@ -119,6 +119,7 @@ public class Heads {
 	private static class UuidHandler implements HeadHandler {
 
 		private final JavaPlugin plugin;
+		private final Map<String, String> cachedTextures = new HashMap<>();
 
 		private UuidHandler(JavaPlugin plugin) {
 			this.plugin = plugin;
@@ -126,15 +127,21 @@ public class Heads {
 
 		@Override
 		public CompletableFuture<@Nullable String> getHeadTexture(String name) {
+			final String cachedTexture = cachedTextures.get(name);
+			if (cachedTexture != null) {
+				return CompletableFuture.completedFuture(cachedTexture);
+			}
+
 			final CompletableFuture<String> future = new CompletableFuture<>();
 			Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
 				final UUID uuid = UUID.fromString(name);
 				Main.getPlugin().getLogger().info("Getting texture value for " + uuid + " from Mojang API");
 				try {
-					final HttpURLConnection connection = (HttpURLConnection) new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid.toString()).openConnection();
+					final HttpURLConnection connection = (HttpURLConnection) new URL("https://sessionserver.mojang.com/session/minecraft/profile/" + uuid).openConnection();
 					try (final Reader reader = new InputStreamReader(connection.getInputStream())) {
 						final JsonObject jsonResponse = (JsonObject) JsonParser.parseReader(reader);
 						final String texture = jsonResponse.get("properties").getAsJsonArray().get(0).getAsJsonObject().get("value").getAsString();
+						cachedTextures.put(name, texture);
 						future.complete(texture);
 					}
 				} catch (final Exception e) {
