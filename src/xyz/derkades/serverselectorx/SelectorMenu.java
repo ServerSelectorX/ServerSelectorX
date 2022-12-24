@@ -60,15 +60,15 @@ public class SelectorMenu extends IconMenu {
 			final String materialString = chosenSection.getString("item");
 			final String name = chosenSection.getString("name", " ");
 			final List<String> lore = chosenSection.getStringList("lore");
-			int amount = chosenSection.getInt("amount");
+			int amount = chosenSection.getInt("amount", 1);
 
 			if (materialString == null) {
 				player.sendMessage("Missing item option for item " + key);
-				return;
+				continue;
 			}
 
 			if (materialString.equals("AIR") || materialString.equals("NONE")) {
-				return;
+				continue;
 			}
 
 			if (placeholders.containsKey("{online}")) {
