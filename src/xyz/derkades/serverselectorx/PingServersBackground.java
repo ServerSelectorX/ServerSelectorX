@@ -1,17 +1,16 @@
 package xyz.derkades.serverselectorx;
 
+import org.bukkit.Bukkit;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+import xyz.derkades.serverselectorx.utils.HolographicPinger;
+import xyz.derkades.serverselectorx.utils.MinetoolsPinger;
+import xyz.derkades.serverselectorx.utils.ServerPinger;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import org.bukkit.Bukkit;
-import org.bukkit.configuration.ConfigurationSection;
-import org.bukkit.configuration.file.FileConfiguration;
-
-import xyz.derkades.serverselectorx.utils.HolographicPinger;
-import xyz.derkades.serverselectorx.utils.MinetoolsPinger;
-import xyz.derkades.serverselectorx.utils.ServerPinger;
 
 public class PingServersBackground implements Runnable {
 
@@ -22,13 +21,13 @@ public class PingServersBackground implements Runnable {
 	@Override
 	public void run() {
 		if (PING_JOBS.isEmpty()) {
-			reschedule(10*20);
+			reschedule();
 			return;
 		}
 
 		if (pos >= PING_JOBS.size()) {
 			pos = 0;
-			reschedule(5*20);
+			reschedule();
 			return;
 		}
 
@@ -40,7 +39,7 @@ public class PingServersBackground implements Runnable {
 		}
 		pinger.ping();
 
-		reschedule(20);
+		reschedule();
 	}
 
 	public static void generatePingJobs() {
@@ -78,8 +77,8 @@ public class PingServersBackground implements Runnable {
 		}
 	}
 
-	private void reschedule(final int delay) {
-		Main.pingTask = Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), this, delay);
+	private void reschedule() {
+		Main.pingTask = Bukkit.getScheduler().runTaskLaterAsynchronously(Main.getPlugin(), this, 20);
 	}
 
 }
