@@ -81,10 +81,10 @@ public class SelectorMenu extends IconMenu {
 			final ItemBuilder builder = Main.getItemFromMaterialString(player, materialString);
 
 			builder.amount(amount)
-					.placeholders(placeholders)
-					.papi(player)
 					.coloredName(name)
 					.coloredLore(lore)
+					.placeholders(placeholders)
+					.papi(player)
 					.hideFlags();
 
 			if (section.getBoolean("enchanted")) {
