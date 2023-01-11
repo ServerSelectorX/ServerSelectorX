@@ -1,6 +1,8 @@
 package xyz.derkades.serverselectorx.actions;
 
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import xyz.derkades.serverselectorx.Main;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -93,12 +95,26 @@ public abstract class Action {
 	}
 
 	public static boolean runActions(final Player player, final List<String> actionStrings) {
+		if (actionStrings.isEmpty()) {
+			return false;
+		}
+
 		boolean close = false;
 		for (final String actionString : actionStrings) {
 			if (runAction(player, actionString)) {
 				close = true;
 			}
 		}
+
+		// Hotbar items may need changing, if the actions that have been run affects conditions.
+		// For example, for the 'open-menu', 'has-effect', or 'has-hidden-others' conditions.
+		// Menus are opened in the next tick. Items need to be refreshed after the menu is opened,
+		// so updateSsxItems() should be in a scheduled task as well.
+		Bukkit.getScheduler().runTaskLater(
+				Main.getPlugin(),
+				() -> Main.getPlugin().getHotbarItemManager().updateSsxItems(player),
+				0);
+
 		return close;
 	}
 

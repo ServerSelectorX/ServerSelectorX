@@ -32,8 +32,6 @@ public class OpenMenuAction extends Action {
 				return;
 			}
 			new Menu(player, menu, value);
-			// Hotbar items may need changing if the 'open-menu' condition is used
-			Main.getPlugin().getHotbarItemManager().updateSsxItems(player);
 		}, 0);
 		return false;
 	}
