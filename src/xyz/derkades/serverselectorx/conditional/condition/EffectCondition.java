@@ -2,6 +2,7 @@ package xyz.derkades.serverselectorx.conditional.condition;
 
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.entity.Player;
+import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import xyz.derkades.serverselectorx.Main;
 
@@ -24,7 +25,21 @@ public class EffectCondition extends Condition {
 		if (effectType == null) {
 			Main.getPlugin().getLogger().warning(
 					String.format("Skipped effect condition for %s, effect type %s is invalid", player.getName(), effectTypeStr));
+			return false;
 		}
-		return player.hasPotionEffect(effectType);
+
+		final PotionEffect activeEffect = player.getPotionEffect(effectType);
+
+		if (activeEffect == null) {
+			return false;
+		}
+
+		if (!options.containsKey("effect-minimum-strength")) {
+			return true;
+		}
+
+		int minimumStrength = (int) options.get("effect-minimum-strength");
+		// Bukkit amplifier is 0 when displayed strength is 1
+		return activeEffect.getAmplifier() + 1 >= minimumStrength;
 	}
 }
