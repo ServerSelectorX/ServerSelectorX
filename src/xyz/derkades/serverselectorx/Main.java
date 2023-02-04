@@ -165,12 +165,6 @@ public class Main extends JavaPlugin {
 			return;
 		}
 
-		if (materialString.startsWith("hdb")) {
-			final String id = materialString.substring(4);
-			builderConsumer.accept(HDBHandler.getBuilder(id));
-			return;
-		}
-
 		final String[] materialsToTry = materialString.split("\\|");
 		Material material = null;
 		for (final String materialString2 : materialsToTry) {
