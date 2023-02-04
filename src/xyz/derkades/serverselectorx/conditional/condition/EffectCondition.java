@@ -28,14 +28,20 @@ public class EffectCondition extends Condition {
 			return false;
 		}
 
-		final PotionEffect activeEffect = player.getPotionEffect(effectType);
-
-		if (activeEffect == null) {
+		if (!player.hasPotionEffect(effectType)) {
 			return false;
 		}
 
 		if (!options.containsKey("effect-minimum-strength")) {
 			return true;
+		}
+
+		PotionEffect activeEffect = null;
+		for (PotionEffect effect : player.getActivePotionEffects()) {
+			if (effect.getType() == effectType) {
+				activeEffect = effect;
+				break;
+			}
 		}
 
 		int minimumStrength = (int) options.get("effect-minimum-strength");
