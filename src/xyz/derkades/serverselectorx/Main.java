@@ -141,11 +141,11 @@ public class Main extends JavaPlugin {
 			String headValue = materialString.substring(5);
 			if (headValue.equals("self") || headValue.equals("auto")) {
 				if (getConfigurationManager().getMiscConfiguration().getBoolean("mojang-api-head-auto", false)) {
+					headValue = "uuid:" + player.getUniqueId();
+				} else {
 					// Bypass head system, just return player's own head. No need to get a texture, because the server caches it for online players
 					builderConsumer.accept(new NbtItemBuilder(Material.PLAYER_HEAD).skullOwner(player));
 					return;
-				} else {
-					headValue = "uuid:" + player.getUniqueId();
 				}
 			}
 
