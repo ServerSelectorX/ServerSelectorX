@@ -133,9 +133,9 @@ public class HotbarItemManager {
 
 			NBTItem nbt = new NBTItem(item);
 
-			if (!nbt.hasKey("SSXItemConfigName")) {
+			if (!nbt.hasTag("SSXItemConfigName")) {
 				// Not our item
-				if (nbt.hasKey("SSXActions")) {
+				if (nbt.hasTag("SSXActions")) {
 					// actually, it is our item from an old SSX version
 					debug("Removing item from old SSX version from slot " + slot);
 					player.getInventory().setItem(slot, null);
