@@ -32,12 +32,6 @@ public class HotbarItemManager {
 		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), plugin);
 	}
 
-	void reload() {
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			this.updateSsxItems(player);
-		}
-	}
-
 	private void debug(String message) {
 		if (Main.ITEM_DEBUG) {
 			Main.getPlugin().getLogger().info("[Item debug] " + message);
@@ -112,6 +106,15 @@ public class HotbarItemManager {
 		} catch (InvalidConfigurationException e) {
 			player.sendMessage(String.format("Invalid item config (in %s.yaml): %s",
 					configName, e.getMessage()));
+		}
+	}
+
+	/**
+	 * Update SSX items for all online players
+	 */
+	public void updateSsxItems() {
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			this.updateSsxItems(player);
 		}
 	}
 
