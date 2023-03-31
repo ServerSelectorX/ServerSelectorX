@@ -239,7 +239,7 @@ public class ConditionalItem {
 		final List<String> actions = nbt.getStringList("SSXActions");
 		final List<String> leftActions = nbt.getStringList("SSXActionsLeft");
 		final List<String> rightActions = nbt.getStringList("SSXActionsRight");
-		if (nbt.hasKey("SSXCooldownTime") &&
+		if (nbt.hasTag("SSXCooldownTime") &&
 				( // Only apply cooldown if an action is about to be performed
 						!actions.isEmpty() ||
 								isRightClick && !rightActions.isEmpty() ||

@@ -33,12 +33,6 @@ public class HotbarItemManager {
 		Bukkit.getPluginManager().registerEvents(new BukkitEventListener(), plugin);
 	}
 
-	void reload() {
-		for (Player player : Bukkit.getOnlinePlayers()) {
-			this.updateSsxItems(player);
-		}
-	}
-
 	private void debug(String message) {
 		if (Main.ITEM_DEBUG) {
 			Main.getPlugin().getLogger().info("[Item debug] " + message);
@@ -116,6 +110,15 @@ public class HotbarItemManager {
 		}
 	}
 
+	/**
+	 * Update SSX items for all online players
+	 */
+	public void updateSsxItems() {
+		for (Player player : Bukkit.getOnlinePlayers()) {
+			this.updateSsxItems(player);
+		}
+	}
+
 	public void updateSsxItems(final Player player) {
 		debug("Updating items for: " + player.getName());
 		ItemStack[] contents = player.getInventory().getContents();
@@ -134,9 +137,9 @@ public class HotbarItemManager {
 
 			NBTItem nbt = new NBTItem(item);
 
-			if (!nbt.hasKey("SSXItemConfigName")) {
+			if (!nbt.hasTag("SSXItemConfigName")) {
 				// Not our item
-				if (nbt.hasKey("SSXActions")) {
+				if (nbt.hasTag("SSXActions")) {
 					// actually, it is our item from an old SSX version
 					debug("Removing item from old SSX version from slot " + slot);
 					player.getInventory().setItem(slot, null);

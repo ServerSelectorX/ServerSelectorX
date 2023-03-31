@@ -53,7 +53,7 @@ public class ItemClickListener implements Listener {
 
 		final NBTItem nbt = new NBTItem(item);
 
-		if (!nbt.hasKey("SSXActions")) {
+		if (!nbt.hasTag("SSXActions")) {
 			if (Main.ITEM_DEBUG) {
 				logger.info("[Click debug] Event was ignored because the clicked item is not an SSX item");
 			}

@@ -46,29 +46,41 @@ public class ServerSelectorXCommand implements CommandExecutor {
 
 			new Menu(player, config, menuName);
 			return true;
-		} else if (args.length == 2 &&
-			args[0].equals("placeholders")) {
-			final String serverName = args[1];
+		} else if (args.length == 2) {
+			switch(args[0]) {
+				case "placeholders":
+					final String serverName = args[1];
 
-			final Server server = Server.getServer(serverName);
+					final Server server = Server.getServer(serverName);
 
-			if (!server.isOnline()) {
-				sender.sendMessage("The server '" + serverName + "' does not exist or is currently offline");
-				return true;
+					if (!server.isOnline()) {
+						sender.sendMessage("The server '" + serverName + "' does not exist or is currently offline");
+						return true;
+					}
+
+					sender.sendMessage("Placeholders for " + serverName);
+
+					for (final Placeholder placeholder : server.getPlaceholders()) {
+						if (placeholder instanceof PlayerPlaceholder) {
+							sender.sendMessage(placeholder.getKey());
+							final PlayerPlaceholder pp = (PlayerPlaceholder) placeholder;
+							pp.getValues().forEach((uuid, value) -> sender.sendMessage("  " + uuid + ": " + value));
+						} else {
+							sender.sendMessage(placeholder.getKey() + ": " + ((GlobalPlaceholder) placeholder).getValue());
+						}
+					}
+					return true;
+				case "updateitems":
+					Player player = Bukkit.getPlayerExact(args[1]);
+					if (player == null) {
+						sender.sendMessage("No player found with the provided name");
+						return true;
+					}
+					Main.getPlugin().getHotbarItemManager().updateSsxItems(player);
+					sender.sendMessage("Updated hotbar items for: " + player.getName());
+					return true;
 			}
 
-			sender.sendMessage("Placeholders for " + serverName);
-
-			for (final Placeholder placeholder : server.getPlaceholders()) {
-				if (placeholder instanceof PlayerPlaceholder) {
-					sender.sendMessage(placeholder.getKey());
-					final PlayerPlaceholder pp = (PlayerPlaceholder) placeholder;
-					pp.getValues().forEach((uuid, value) -> sender.sendMessage("  " + uuid + ": " + value));
-				} else {
-					sender.sendMessage(placeholder.getKey() + ": " + ((GlobalPlaceholder) placeholder).getValue());
-				}
-			}
-			return true;
 		} else if (args.length == 1) {
 			switch (args[0]) {
 				case "rl":
@@ -90,7 +102,7 @@ public class ServerSelectorXCommand implements CommandExecutor {
 					// Clear server status cache to remove any old server names
 					Server.clear();
 
-					Main.getPlugin().getHotbarItemManager().reload();
+					Main.getPlugin().getHotbarItemManager().updateSsxItems();
 
 					sender.sendMessage("Run " + ChatColor.GRAY + "/ssx reloadcommands" + ChatColor.RESET + " to reload commands.");
 					return true;
@@ -144,6 +156,10 @@ public class ServerSelectorXCommand implements CommandExecutor {
 				case "synclist":
 					Bukkit.getScheduler().runTaskAsynchronously(Main.getPlugin(), () ->
 							Main.getConfigSync().getFilesToSync().forEach(sender::sendMessage));
+					return true;
+				case "updateitems":
+					Main.getPlugin().getHotbarItemManager().updateSsxItems();
+					sender.sendMessage("Updated hotbar items for all online players");
 					return true;
 			}
 		}
