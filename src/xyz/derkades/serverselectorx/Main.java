@@ -131,6 +131,10 @@ public class Main extends JavaPlugin {
 			return;
 		}
 
+		if (materialString.charAt(0) == '!') {
+			materialString = PlaceholderUtil.parsePapiPlaceholders(player, materialString.substring(1));
+		}
+
 		if (materialString.startsWith("head:")) {
 			String headValue = materialString.substring(5);
 			if (headValue.equals("self") || headValue.equals("auto")) {
@@ -162,9 +166,6 @@ public class Main extends JavaPlugin {
 		final String[] materialsToTry = materialString.split("\\|");
 		Material material = null;
 		for (String materialString2 : materialsToTry) {
-			if (materialString2.charAt(0) == '!') {
-				materialString2 = PlaceholderUtil.parsePapiPlaceholders(player, materialString2.substring(1));
-			}
 			try {
 				material = Material.valueOf(materialString2);
 				break;
