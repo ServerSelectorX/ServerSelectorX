@@ -153,11 +153,7 @@ public class ConditionalItem {
 							: "&r&f" + parsedLine;
 					parsedLore.add(parsedLine);
 				}
-				if (useMiniMessage) {
-					builder.lore(parsedLore);
-				} else {
-					builder.coloredLore(parsedLore);
-				}
+				builder.coloredLore(parsedLore);
 			}
 
 			if (enchanted) {
