@@ -134,15 +134,15 @@ public class ConditionalItem {
 				}
 			}
 
-			String parsedTitle = PlaceholderUtil.parsePapiPlaceholders(player, title, additionalPlaceholders);
+			final String parsedTitle;
 			if (useMiniMessage) {
-				Component c = MiniMessage.miniMessage().deserialize(parsedTitle);
+				Component c = MiniMessage.miniMessage().deserialize(title);
 				parsedTitle = LEGACY_COMPONENT_SERIALIZER.serialize(c);
-				builder.name(parsedTitle);
 			} else {
-				parsedTitle = "&r&f" + parsedTitle;
-				builder.coloredName(parsedTitle);
+				parsedTitle = "&r&f" + title;
 			}
+
+			builder.coloredName(PlaceholderUtil.parsePapiPlaceholders(player, parsedTitle, additionalPlaceholders));
 
 			if (!lore.isEmpty()) {
 				List<String> parsedLore = new ArrayList<>(lore.size());
