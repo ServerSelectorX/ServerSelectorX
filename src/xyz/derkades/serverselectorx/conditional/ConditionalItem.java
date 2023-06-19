@@ -105,7 +105,8 @@ public class ConditionalItem {
 			final @NotNull List<String> lore = (List<String>) matchedSection.getOrDefault("lore", Collections.emptyList());
 			final boolean enchanted = (boolean) matchedSection.getOrDefault("enchanted", false);
 			final boolean hideFlags = (boolean) matchedSection.getOrDefault("hide-flags", true);
-			final int amount = (int) matchedSection.getOrDefault("amount", 1);
+			final boolean amountOnline = (boolean) matchedSection.getOrDefault("amount-online", false);
+			int amount = (int) matchedSection.getOrDefault("amount", 1);
 			final int durability = (int) matchedSection.getOrDefault("durability", -1);
 			final int data = (int) matchedSection.getOrDefault("data", -1); // the same as durability, for compatibility
 			final @Nullable String nbtJson = (String) matchedSection.getOrDefault("nbt", null);
@@ -132,18 +133,23 @@ public class ConditionalItem {
 								: ((PlayerPlaceholder) placeholder).getValue(player);
 						additionalPlaceholders.add(new PlaceholderUtil.Placeholder("{" + placeholder.getKey() + "}", value));
 					}
+
+					if (amountOnline && server.isOnline()) {
+						int online = server.getOnlinePlayers();
+						amount = online >= 1 && online <= 64 ? online : 1;
+					}
 				}
 			}
 
-			String parsedTitle = PlaceholderUtil.parsePapiPlaceholders(player, title, additionalPlaceholders);
+			final String parsedTitle;
 			if (useMiniMessage) {
-				Component c = MiniMessage.miniMessage().deserialize(parsedTitle);
+				Component c = MiniMessage.miniMessage().deserialize(title);
 				parsedTitle = LEGACY_COMPONENT_SERIALIZER.serialize(c);
-				builder.name(parsedTitle);
 			} else {
-				parsedTitle = "&r&f" + parsedTitle;
-				builder.coloredName(parsedTitle);
+				parsedTitle = "&r&f" + title;
 			}
+
+			builder.coloredName(PlaceholderUtil.parsePapiPlaceholders(player, parsedTitle, additionalPlaceholders));
 
 			if (!lore.isEmpty()) {
 				List<String> parsedLore = new ArrayList<>(lore.size());
@@ -154,11 +160,7 @@ public class ConditionalItem {
 							: "&r&f" + parsedLine;
 					parsedLore.add(parsedLine);
 				}
-				if (useMiniMessage) {
-					builder.lore(parsedLore);
-				} else {
-					builder.coloredLore(parsedLore);
-				}
+				builder.coloredLore(parsedLore);
 			}
 
 			if (enchanted) {
