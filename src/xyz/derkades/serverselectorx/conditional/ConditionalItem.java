@@ -3,10 +3,6 @@ package xyz.derkades.serverselectorx.conditional;
 import de.tr7zw.changeme.nbtapi.NBTContainer;
 import de.tr7zw.changeme.nbtapi.NBTItem;
 import de.tr7zw.changeme.nbtapi.NbtApiException;
-import net.kyori.adventure.text.Component;
-import net.kyori.adventure.text.minimessage.MiniMessage;
-import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
-import org.bukkit.ChatColor;
 import org.bukkit.Color;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -72,11 +68,7 @@ public class ConditionalItem {
 		return sectionToMap(globalSection);
 	}
 
-	private static final LegacyComponentSerializer LEGACY_COMPONENT_SERIALIZER = LegacyComponentSerializer.builder()
-			.character(ChatColor.COLOR_CHAR)
-			.hexColors()
-			.useUnusualXRepeatedCharacterHexFormat()
-			.build();
+
 
 	private static Map<String, Object> sectionToMap(ConfigurationSection section) {
 		Map<String, Object> map = new HashMap<>();
@@ -142,8 +134,7 @@ public class ConditionalItem {
 
 			final String parsedTitle;
 			if (useMiniMessage) {
-				Component c = MiniMessage.miniMessage().deserialize(title);
-				parsedTitle = LEGACY_COMPONENT_SERIALIZER.serialize(c);
+				parsedTitle = Main.miniMessageToLegacy(title);
 			} else {
 				parsedTitle = "&r&f" + title;
 			}
@@ -155,7 +146,7 @@ public class ConditionalItem {
 				for (String line : lore) {
 					String parsedLine = PlaceholderUtil.parsePapiPlaceholders(player, line, additionalPlaceholders);
 					parsedLine = useMiniMessage
-							? LEGACY_COMPONENT_SERIALIZER.serialize(MiniMessage.miniMessage().deserialize(parsedLine))
+							? Main.miniMessageToLegacy(parsedLine)
 							: "&r&f" + parsedLine;
 					parsedLore.add(parsedLine);
 				}

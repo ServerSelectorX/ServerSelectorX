@@ -4,7 +4,10 @@ import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import de.tr7zw.changeme.nbtapi.utils.MinecraftVersion;
 import net.kyori.adventure.platform.bukkit.BukkitAudiences;
+import net.kyori.adventure.text.minimessage.MiniMessage;
+import net.kyori.adventure.text.serializer.legacy.LegacyComponentSerializer;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.PluginCommand;
 import org.bukkit.configuration.InvalidConfigurationException;
@@ -20,10 +23,7 @@ import xyz.derkades.serverselectorx.placeholders.PapiExpansionRegistrar;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
 import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Consumer;
 
@@ -182,6 +182,16 @@ public class Main extends JavaPlugin {
 		if (material != Material.AIR) {
 			builderConsumer.accept(new NbtItemBuilder(material));
 		}
+	}
+
+	private static final LegacyComponentSerializer LEGACY_COMPONENT_SERIALIZER = LegacyComponentSerializer.builder()
+			.character(ChatColor.COLOR_CHAR)
+			.hexColors()
+			.useUnusualXRepeatedCharacterHexFormat()
+			.build();
+
+	public static String miniMessageToLegacy(String miniMessage) {
+		return LEGACY_COMPONENT_SERIALIZER.serialize(MiniMessage.miniMessage().deserialize(miniMessage));
 	}
 
 }
