@@ -14,6 +14,7 @@ import org.bukkit.inventory.ItemStack;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 import xyz.derkades.derkutils.Cooldown;
+import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
 import xyz.derkades.serverselectorx.Main;
@@ -21,13 +22,11 @@ import xyz.derkades.serverselectorx.ServerSelectorX;
 import xyz.derkades.serverselectorx.actions.Action;
 import xyz.derkades.serverselectorx.conditional.condition.Condition;
 import xyz.derkades.serverselectorx.conditional.condition.Conditions;
-import xyz.derkades.serverselectorx.placeholders.GlobalPlaceholder;
-import xyz.derkades.serverselectorx.placeholders.Placeholder;
-import xyz.derkades.serverselectorx.placeholders.PlayerPlaceholder;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
 import java.util.*;
 import java.util.function.Consumer;
+import java.util.function.Function;
 
 import static org.bukkit.event.block.Action.*;
 
@@ -93,64 +92,53 @@ public class ConditionalItem {
 
 		Main.getItemBuilderFromMaterialString(player, materialString, builder -> {
 			final boolean useMiniMessage = (boolean) matchedSection.getOrDefault("minimessage", false);
-			final @NotNull String title = (String) matchedSection.getOrDefault("title", " ");
-			final @NotNull List<String> lore = (List<String>) matchedSection.getOrDefault("lore", Collections.emptyList());
+			final String title = (String) matchedSection.getOrDefault("title", " ");
+			final List<String> lore = (List<String>) matchedSection.getOrDefault("lore", Collections.emptyList());
 			final boolean enchanted = (boolean) matchedSection.getOrDefault("enchanted", false);
 			final boolean hideFlags = (boolean) matchedSection.getOrDefault("hide-flags", true);
 			final boolean amountOnline = (boolean) matchedSection.getOrDefault("amount-online", false);
 			int amount = (int) matchedSection.getOrDefault("amount", 1);
 			final int durability = (int) matchedSection.getOrDefault("durability", -1);
 			final @Nullable String nbtJson = (String) matchedSection.getOrDefault("nbt", null);
-			final @NotNull List<String> actions = (List<String>) matchedSection.getOrDefault("actions", Collections.emptyList());
-			final @NotNull List<String> leftClickActions = (List<String>) matchedSection.getOrDefault("left-click-actions", Collections.emptyList());
-			final @NotNull List<String> rightClickActions = (List<String>) matchedSection.getOrDefault("right-click-actions", Collections.emptyList());
+			final List<String> actions = (List<String>) matchedSection.getOrDefault("actions", Collections.emptyList());
+			final List<String> leftClickActions = (List<String>) matchedSection.getOrDefault("left-click-actions", Collections.emptyList());
+			final List<String> rightClickActions = (List<String>) matchedSection.getOrDefault("right-click-actions", Collections.emptyList());
 			final int cooldownTime = (int) matchedSection.getOrDefault("cooldown", 0);
-			final @NotNull List<String> cooldownActions = (List<String>) matchedSection.getOrDefault("cooldown-actions", Collections.emptyList());
+			final List<String> cooldownActions = (List<String>) matchedSection.getOrDefault("cooldown-actions", Collections.emptyList());
 			final @Nullable String serverName = (String) matchedSection.get("server-name");
 			final @Nullable String color = (String) matchedSection.get("color");
 
-			final PlaceholderUtil.Placeholder playerNamePlaceholder = new PlaceholderUtil.Placeholder("{player}", player.getName());
-			final PlaceholderUtil.Placeholder globalOnlinePlaceholder = new PlaceholderUtil.Placeholder("{globalOnline}", String.valueOf(ServerSelectorX.getGlobalPlayerCount()));
-			final List<PlaceholderUtil.Placeholder> additionalPlaceholders = new ArrayList<>(2);
-			additionalPlaceholders.add(playerNamePlaceholder);
-			additionalPlaceholders.add(globalOnlinePlaceholder);
+			final @Nullable Server server = serverName != null ? Server.getServer(serverName) : null;
 
-			if (serverName != null) {
-				Server server = Server.getServer(serverName);
-				if (server.isOnline()) {
-					for (final Placeholder placeholder : server.getPlaceholders()) {
-						final String value = placeholder instanceof GlobalPlaceholder
-								? ((GlobalPlaceholder) placeholder).getValue()
-								: ((PlayerPlaceholder) placeholder).getValue(player);
-						additionalPlaceholders.add(new PlaceholderUtil.Placeholder("{" + placeholder.getKey() + "}", value));
-					}
+			if (server != null && server.isOnline() && amountOnline) {
+				int online = server.getOnlinePlayers();
+				amount = online >= 1 && online <= 64 ? online : 1;
+			}
 
-					if (amountOnline && server.isOnline()) {
-						int online = server.getOnlinePlayers();
-						amount = online >= 1 && online <= 64 ? online : 1;
-					}
+			final Function<String, String> stringConverter = string -> {
+				string = PlaceholderUtil.parsePapiPlaceholders(player, string);
+				if (server != null) {
+					string = server.parsePlaceholders(player, string);
 				}
-			}
+				string = string.replace("{player}", player.getName());
+				string = string.replace("{globalOnline", String.valueOf(ServerSelectorX.getGlobalPlayerCount()));
+				if (useMiniMessage) {
+					string = Main.miniMessageToLegacy(string);
+				} else {
+					string = "&r&f" + string;
+				}
+				string = Colors.parseColors(string);
+				return string;
+			};
 
-			final String parsedTitle;
-			if (useMiniMessage) {
-				parsedTitle = Main.miniMessageToLegacy(title);
-			} else {
-				parsedTitle = "&r&f" + title;
-			}
-
-			builder.coloredName(PlaceholderUtil.parsePapiPlaceholders(player, parsedTitle, additionalPlaceholders));
+			builder.name(stringConverter.apply(title));
 
 			if (!lore.isEmpty()) {
 				List<String> parsedLore = new ArrayList<>(lore.size());
 				for (String line : lore) {
-					String parsedLine = PlaceholderUtil.parsePapiPlaceholders(player, line, additionalPlaceholders);
-					parsedLine = useMiniMessage
-							? Main.miniMessageToLegacy(parsedLine)
-							: "&r&f" + parsedLine;
-					parsedLore.add(parsedLine);
+					parsedLore.add(stringConverter.apply(line));
 				}
-				builder.coloredLore(parsedLore);
+				builder.lore(parsedLore);
 			}
 
 			if (enchanted) {
