@@ -29,6 +29,7 @@
 				<configuration>
 					<source>11</source>
 					<target>11</target>
+					<showDeprecation>true</showDeprecation>
 				</configuration>
 			</plugin>
 
