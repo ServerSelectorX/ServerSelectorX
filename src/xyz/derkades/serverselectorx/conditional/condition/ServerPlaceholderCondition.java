@@ -45,7 +45,7 @@ public class ServerPlaceholderCondition extends Condition {
 		Server server = Server.getServer(serverName);
 		if (server.isOnline()) {
 			Placeholder placeholder = server.getPlaceholder(placeholderName);
-			final String actualPlaceholderValue;
+			String actualPlaceholderValue;
 			if (placeholder instanceof GlobalPlaceholder) {
 				actualPlaceholderValue = ((GlobalPlaceholder) placeholder).getValue();
 			} else if (placeholder instanceof PlayerPlaceholder) {
@@ -53,6 +53,8 @@ public class ServerPlaceholderCondition extends Condition {
 			} else {
 				throw new IllegalStateException();
 			}
+
+			actualPlaceholderValue = server.parsePlaceholders(player, actualPlaceholderValue);
 
 			String comparisonMode = (String) options.getOrDefault("placeholder-comparison", "equals");
 

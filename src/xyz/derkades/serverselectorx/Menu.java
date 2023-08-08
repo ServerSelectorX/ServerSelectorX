@@ -29,9 +29,19 @@ public class Menu extends IconMenu {
 
 	private boolean closed = false;
 
+	private static String getTitle(FileConfiguration config) {
+		if (config == null) return "error";
+		if (!config.isString("title")) return "title missing";
+		if (config.getBoolean("title-minimessage")) {
+			return Main.miniMessageToLegacy(config.getString("title"));
+		} else {
+			return Colors.parseColors(config.getString("title"));
+		}
+	}
+
 	public Menu(final Player player, final @Nullable FileConfiguration config, final String configName) {
 		super(Main.getPlugin(),
-				config == null ? "error" : Colors.parseColors(config.getString("title", "TITLE MISSING")),
+				getTitle(config),
 				config == null ? 1 : config.getInt("rows", 6),
 				player);
 

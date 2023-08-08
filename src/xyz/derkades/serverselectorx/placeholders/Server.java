@@ -1,16 +1,15 @@
 package xyz.derkades.serverselectorx.placeholders;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonSerializer;
+import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.Player;
+import xyz.derkades.serverselectorx.Main;
+
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Objects;
-
-import org.bukkit.configuration.file.FileConfiguration;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonSerializer;
-
-import xyz.derkades.serverselectorx.Main;
 
 public class Server {
 
@@ -85,6 +84,21 @@ public class Server {
 	public void updatePlaceholders(final Map<String, Placeholder> placeholders) {
 		this.placeholders = placeholders;
 		this.lastInfoTime = System.currentTimeMillis();
+	}
+
+	public String parsePlaceholders(final Player player, String string) {
+		for (final Placeholder placeholder : this.getPlaceholders()) {
+			String value;
+			if (placeholder instanceof GlobalPlaceholder) {
+				value = ((GlobalPlaceholder) placeholder).getValue();
+			} else if (placeholder instanceof PlayerPlaceholder && player != null) {
+				value = ((PlayerPlaceholder) placeholder).getValue(player);
+			} else {
+				continue;
+			}
+			string = string.replace("{" + placeholder.getKey() + "}", value);
+		}
+		return string;
 	}
 
 	public static Map<String, Server> getServers() {
