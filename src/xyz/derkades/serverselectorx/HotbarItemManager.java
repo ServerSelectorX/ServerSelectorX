@@ -5,10 +5,12 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.PlayerChangedWorldEvent;
 import org.bukkit.event.player.PlayerCommandPreprocessEvent;
 import org.bukkit.event.player.PlayerJoinEvent;
@@ -220,6 +222,33 @@ public class HotbarItemManager {
 			}
 		}
 
+		@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
+		public void onPickUpItem(final EntityPickupItemEvent event) {
+			if (event.getEntity().getType() != EntityType.PLAYER) {
+				return;
+			}
+
+			final ItemStack pickedUpItem = event.getItem().getItemStack();
+			final NBTItem nbt = new NBTItem(pickedUpItem);
+			if (!nbt.hasTag(("SSXItemConfigName"))) {
+				return;
+			}
+
+			// Scan player inventory for an item with the same config name
+			// If found, the item should not be picked up
+
+			final Player player = (Player) event.getEntity();
+			final String itemConfigName = nbt.getString("SSXItemConfigName");
+			for (final ItemStack item2 : player.getInventory().getStorageContents()) {
+				final NBTItem nbt2 = new NBTItem(item2);
+				if (nbt2.hasTag("SSXItemConfigName") && nbt2.getString("SSXItemConfigName").equals(itemConfigName)) {
+					Main.getPlugin().getLogger().info("Deleted duplicate item picked up by " + event.getEntity().getName());
+					event.setCancelled(true);
+					event.getItem().remove();
+					return;
+				}
+			}
+		}
 	}
 
 }
