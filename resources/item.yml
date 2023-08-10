@@ -11,6 +11,7 @@ item:
 
 # Give the server selector?
 give:
+  # Set a specific slot, or set to -1 to add the item in the first available free slot
   inv-slot: 0
 
   # If set to true, require permission ssx.item.<name> to receive the item.
