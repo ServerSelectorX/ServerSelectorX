@@ -8,9 +8,9 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
+import xyz.derkades.serverselectorx.utils.PingManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -23,12 +23,10 @@ public class Main extends JavaPlugin {
 	private static ConfigurationManager configurationManager;
 
 	private static JavaPlugin plugin;
+	public static JavaPlugin getPlugin() { return plugin; }
 
-	public static JavaPlugin getPlugin(){
-		return plugin;
-	}
-
-	public static BukkitTask pingTask;
+	private static PingManager pingManager;
+	public static PingManager getPingManager() { return pingManager; }
 
 	@Override
 	public void onEnable(){
@@ -37,25 +35,25 @@ public class Main extends JavaPlugin {
 		configurationManager = new ConfigurationManager();
 		configurationManager.reload();
 
-		//Register listeners
+		pingManager = new PingManager();
+		pingManager.start();
+
+		// Register listeners
 		Bukkit.getPluginManager().registerEvents(new SelectorOpenListener(), this);
 		Bukkit.getPluginManager().registerEvents(new OnJoinListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemMoveDropCancelListener(), this);
 		Bukkit.getPluginManager().registerEvents(new OffHandMoveCancel(), this);
 
-		//Register messaging channels
+		// Register messaging channels
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		PingServersBackground.generatePingJobs();
-		pingTask = Bukkit.getScheduler().runTaskLaterAsynchronously(this, new PingServersBackground(), 40);
-
-		//Register command
+		// Register command
 		this.getCommand("serverselectorx").setExecutor(new ReloadCommand());
 
-		//Start bStats
+		// Start bStats
 		Stats.initialize();
 
-		//Register custom selector commands
+		// Register custom selector commands
 		this.registerCommands();
 
 		this.getLogger().info("Thank you for using ServerSelectorX. If you enjoy using this plugin, consider buying the premium version for more features: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium");
@@ -63,24 +61,9 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		if (pingTask != null) {
-			int attempts = 0;
-			while (!pingTask.isCancelled()) {
-				attempts++;
-				if (attempts > 30) {
-					getLogger().warning("Was not able to stop ping task, giving up. You may see a \"Nag author\" warning.");
-					break;
-				}
-
-				pingTask.cancel();
-
-				try {
-					Thread.sleep(100);
-				} catch (final InterruptedException e) {
-					e.printStackTrace();
-				}
-			}
-		}
+		this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
+		this.getServer().getMessenger().unregisterIncomingPluginChannel(this);
+		pingManager.stop();
 	}
 
 	/**

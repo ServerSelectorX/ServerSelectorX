@@ -1,10 +1,9 @@
 package xyz.derkades.serverselectorx;
 
+import net.md_5.bungee.api.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
-
-import net.md_5.bungee.api.ChatColor;
 
 public class ReloadCommand implements CommandExecutor {
 
@@ -21,7 +20,7 @@ public class ReloadCommand implements CommandExecutor {
 			}
 
 			Main.getConfigurationManager().reload();
-			PingServersBackground.generatePingJobs();
+			Main.getPingManager().loadServers();
 			sender.sendMessage("The configuration file has been reloaded.");
 			return true;
 		}
