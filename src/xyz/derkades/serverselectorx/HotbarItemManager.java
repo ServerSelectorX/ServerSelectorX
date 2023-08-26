@@ -11,10 +11,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityPickupItemEvent;
-import org.bukkit.event.player.PlayerChangedWorldEvent;
-import org.bukkit.event.player.PlayerCommandPreprocessEvent;
-import org.bukkit.event.player.PlayerJoinEvent;
-import org.bukkit.event.player.PlayerRespawnEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
 import xyz.derkades.serverselectorx.conditional.ConditionalItem;
@@ -223,11 +220,7 @@ public class HotbarItemManager {
 		}
 
 		@EventHandler(ignoreCancelled = true, priority = EventPriority.HIGHEST)
-		public void onPickUpItem(final EntityPickupItemEvent event) {
-			if (event.getEntity().getType() != EntityType.PLAYER) {
-				return;
-			}
-
+		public void onPickUpItem(final PlayerPickupItemEvent event) {
 			final ItemStack pickedUpItem = event.getItem().getItemStack();
 			final NBTItem nbt = new NBTItem(pickedUpItem);
 			if (!nbt.hasTag(("SSXItemConfigName"))) {
@@ -237,12 +230,12 @@ public class HotbarItemManager {
 			// Scan player inventory for an item with the same config name
 			// If found, the item should not be picked up
 
-			final Player player = (Player) event.getEntity();
+			final Player player = event.getPlayer();
 			final String itemConfigName = nbt.getString("SSXItemConfigName");
 			for (final ItemStack item2 : player.getInventory().getStorageContents()) {
 				final NBTItem nbt2 = new NBTItem(item2);
 				if (nbt2.hasTag("SSXItemConfigName") && nbt2.getString("SSXItemConfigName").equals(itemConfigName)) {
-					Main.getPlugin().getLogger().info("Deleted duplicate item picked up by " + event.getEntity().getName());
+					Main.getPlugin().getLogger().info("Deleted duplicate item picked up by " + player.getName());
 					event.setCancelled(true);
 					event.getItem().remove();
 					return;
