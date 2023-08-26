@@ -34,22 +34,13 @@ public class PingManager implements PluginMessageListener {
 
     public void stop() {
         if (runningPingTask != null) {
-            int attempts = 0;
-            while (!runningPingTask.isCancelled()) {
-                attempts++;
-                if (attempts > 30) {
-                    Main.getPlugin().getLogger().warning("Was not able to stop ping task, giving up. You may see a \"Nag author\" warning.");
-                    break;
-                }
-
-                runningPingTask.cancel();
-                runningPingTask = null;
-
-                try {
-                    Thread.sleep(100);
-                } catch (final InterruptedException e) {
-                    e.printStackTrace();
-                }
+            // Unfortunately not possible to wait until ping task is cancelled,
+            // isCancelled() is missing in 1.8
+            runningPingTask.cancel();
+            try {
+                Thread.sleep(200);
+            } catch (final InterruptedException e) {
+                e.printStackTrace();
             }
         }
     }
