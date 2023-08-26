@@ -5,12 +5,10 @@ import org.bukkit.Bukkit;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.EntityPickupItemEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
@@ -232,7 +230,7 @@ public class HotbarItemManager {
 
 			final Player player = event.getPlayer();
 			final String itemConfigName = nbt.getString("SSXItemConfigName");
-			for (final ItemStack item2 : player.getInventory().getStorageContents()) {
+			for (final ItemStack item2 : player.getInventory().getContents()) {
 				final NBTItem nbt2 = new NBTItem(item2);
 				if (nbt2.hasTag("SSXItemConfigName") && nbt2.getString("SSXItemConfigName").equals(itemConfigName)) {
 					Main.getPlugin().getLogger().info("Deleted duplicate item picked up by " + player.getName());
