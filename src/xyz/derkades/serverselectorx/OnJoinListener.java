@@ -6,8 +6,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
 
 public class OnJoinListener implements Listener {
@@ -36,12 +36,13 @@ public class OnJoinListener implements Listener {
 
 			final int slot = config.getInt("inv-slot", 0);
 			final PlayerInventory inv = player.getInventory();
+			final ItemStack item = builder.create();
 			if (slot < 0) {
-				if (!inv.containsAtLeast(builder.create(), 1)) {
-					inv.addItem(builder.create());
+				if (!inv.contains(item.getType())) {
+					inv.addItem(item);
 				}
 			} else {
-				inv.setItem(slot, builder.create());
+				inv.setItem(slot, item);
 			}
 
 		}
