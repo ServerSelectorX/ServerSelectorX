@@ -9,9 +9,9 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.player.PlayerSwapHandItemsEvent;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.bukkit.scheduler.BukkitTask;
 import xyz.derkades.derkutils.bukkit.Colors;
 import xyz.derkades.derkutils.bukkit.ItemBuilder;
+import xyz.derkades.serverselectorx.utils.PingManager;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
@@ -23,12 +23,10 @@ public class Main extends JavaPlugin {
 	private static ConfigurationManager configurationManager;
 
 	private static JavaPlugin plugin;
+	public static JavaPlugin getPlugin() { return plugin; }
 
-	public static JavaPlugin getPlugin(){
-		return plugin;
-	}
-
-	public static BukkitTask pingTask;
+	private static PingManager pingManager;
+	public static PingManager getPingManager() { return pingManager; }
 
 	@Override
 	public void onEnable(){
@@ -37,6 +35,10 @@ public class Main extends JavaPlugin {
 		configurationManager = new ConfigurationManager();
 		configurationManager.reload();
 
+		pingManager = new PingManager();
+		pingManager.start();
+
+		// Register listeners
 		Bukkit.getPluginManager().registerEvents(new SelectorOpenListener(), this);
 		Bukkit.getPluginManager().registerEvents(new OnJoinListener(), this);
 		Bukkit.getPluginManager().registerEvents(new ItemMoveDropCancelListener(), this);
@@ -47,15 +49,16 @@ public class Main extends JavaPlugin {
 			getLogger().info("Skipping offhand listener (this is fine on <1.9)");
 		}
 
+		// Register messaging channels
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
-		PingServersBackground.generatePingJobs();
-		pingTask = Bukkit.getScheduler().runTaskLaterAsynchronously(this, new PingServersBackground(), 40);
-
+		// Register command
 		this.getCommand("serverselectorx").setExecutor(new ReloadCommand());
 
+		// Start bStats
 		Stats.initialize();
 
+		// Register custom selector commands
 		this.registerCommands();
 
 		this.getLogger().info("Thank you for using ServerSelectorX. If you enjoy using this plugin, consider buying the premium version for more features: https://github.com/ServerSelectorX/ServerSelectorX/wiki/Premium");
@@ -63,17 +66,9 @@ public class Main extends JavaPlugin {
 
 	@Override
 	public void onDisable() {
-		if (pingTask != null) {
-			// Unfortunately not possible to wait until ping task is cancelled,
-			// isCancelled() is missing in 1.8
-			pingTask.cancel();
-
-			try {
-				Thread.sleep(200);
-			} catch (final InterruptedException e) {
-				e.printStackTrace();
-			}
-		}
+		this.getServer().getMessenger().unregisterOutgoingPluginChannel(this);
+		this.getServer().getMessenger().unregisterIncomingPluginChannel(this);
+		pingManager.stop();
 	}
 
 	/**

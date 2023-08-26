@@ -43,11 +43,8 @@ menu:
 
   # Server item
   3:
-
-    # Enable to show server status and placeholders
-    ping-server: false
-    ip: play.example.com
-    port: 1234
+    # Enter a server name to show server status and placeholders
+    ping-server: kitpvp
 
     # Action to run when the item is clicked
     action: 'srv:kitpvp'

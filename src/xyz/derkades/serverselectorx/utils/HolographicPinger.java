@@ -1,12 +1,12 @@
 package xyz.derkades.serverselectorx.utils;
 
-import java.io.IOException;
-
 import xyz.derkades.serverselectorx.holographicdisplays_serverpinger.PingResponse;
+
+import java.io.IOException;
 
 public class HolographicPinger extends ServerPinger {
 	
-	public HolographicPinger(final String serverId, final String ip, final int port, final int timeout) {
+	protected HolographicPinger(final String serverId, final String ip, final int port, final int timeout) {
 		super(serverId, ip, port, timeout);
 	}
 

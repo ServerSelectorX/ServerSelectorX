@@ -1,18 +1,17 @@
 package xyz.derkades.serverselectorx.utils;
 
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+
+import javax.net.ssl.HttpsURLConnection;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
 
-import javax.net.ssl.HttpsURLConnection;
-
-import com.google.gson.JsonObject;
-import com.google.gson.JsonParser;
-
 public class MinetoolsPinger extends ServerPinger {
 	
-	public MinetoolsPinger(final String serverId, final String ip, final int port, final int timeout) {
+	protected MinetoolsPinger(final String serverId, final String ip, final int port, final int timeout) {
 		super(serverId, ip, port, timeout);
 	}
 

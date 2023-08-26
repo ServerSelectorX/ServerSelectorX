@@ -17,6 +17,7 @@ import xyz.derkades.derkutils.bukkit.PlaceholderUtil;
 import xyz.derkades.derkutils.bukkit.menu.IconMenu;
 import xyz.derkades.derkutils.bukkit.menu.MenuCloseEvent;
 import xyz.derkades.derkutils.bukkit.menu.OptionClickEvent;
+import xyz.derkades.serverselectorx.utils.PingTask;
 import xyz.derkades.serverselectorx.utils.ServerPinger;
 
 import java.util.HashMap;
@@ -121,7 +122,7 @@ public class SelectorMenu extends IconMenu {
 		final int port = slotSection.getInt("port");
 		final String serverId = ip + ":" + port;
 
-		final ServerPinger pinger = PingServersBackground.SERVER_INFO.get(serverId);
+		final ServerPinger pinger = PingTask.SERVER_INFO.get(serverId);
 
 		// If server is online
 		if (pinger == null || !pinger.isOnline()) {

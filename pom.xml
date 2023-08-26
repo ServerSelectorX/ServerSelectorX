@@ -4,7 +4,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>xyz.derkades</groupId>
 	<artifactId>ServerSelectorX</artifactId>
-	<version>3.7.3-beta-legacy</version>
+	<version>3.8.0-beta-legacy</version>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -25,7 +25,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
-				<version>3.10.1</version>
+				<version>3.11.0</version>
 				<configuration>
 					<source>1.8</source>
 					<target>1.8</target>
@@ -35,7 +35,7 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
-				<version>3.4.1</version>
+				<version>3.5.0</version>
 				<configuration>
 					<createDependencyReducedPom>false</createDependencyReducedPom>
 					<minimizeJar>true</minimizeJar>
@@ -102,14 +102,14 @@
 		<dependency>
 			<groupId>org.bstats</groupId>
 			<artifactId>bstats-bukkit</artifactId>
-			<version>3.0.0</version>
+			<version>3.0.2</version>
 			<scope>compile</scope>
 		</dependency>
 
 		<dependency>
 			<groupId>me.clip</groupId>
 			<artifactId>placeholderapi</artifactId>
-			<version>2.11.2</version>
+			<version>2.11.3</version>
 			<scope>provided</scope>
 		</dependency>
 
