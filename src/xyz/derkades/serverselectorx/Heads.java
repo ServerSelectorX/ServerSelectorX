@@ -30,12 +30,20 @@ public class Heads {
 		try {
 			handlers.put("arc-hdb", new ArcaniaxHandler());
 			logger.info("Integration with Arcaniax's Head Database plugin is active");
-		} catch (Exception ignored) {}
+		} catch (Exception e) {
+			if (Main.getConfigurationManager().getMiscConfiguration().getBoolean("head-api-debug")) {
+				e.printStackTrace();
+			}
+		}
 
 		try {
 			handlers.put("silent-hdb", new SilentHandler());
 			logger.info("Integration with TheSilentPro's Head Database plugin is active");
-		} catch (Exception ignored) {}
+		} catch (Exception e) {
+			if (Main.getConfigurationManager().getMiscConfiguration().getBoolean("head-api-debug")) {
+				e.printStackTrace();
+			}
+		}
 
 		handlers.put("uuid", new UuidHandler(plugin));
 		handlers.put("texture", new TextureLiteralHandler());
