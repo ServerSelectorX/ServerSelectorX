@@ -15,7 +15,6 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Objects;
 import java.util.UUID;
 import java.util.concurrent.CompletableFuture;
 import java.util.logging.Logger;
@@ -87,7 +86,10 @@ public class Heads {
 		public CompletableFuture<@Nullable String> getHeadTexture(String name) {
 			final CompletableFuture<String> future = new CompletableFuture<>();
 			try {
-				final String value = (String) Objects.requireNonNull(getBase64Method.invoke(apiInstance, name));
+				final String value = (String) getBase64Method.invoke(apiInstance, name);
+				if (value == null) {
+					Main.getPlugin().getLogger().warning("Head is not in head database: " + name);
+				}
 				future.complete(value);
 			} catch (Exception e) {
 				future.completeExceptionally(e);
