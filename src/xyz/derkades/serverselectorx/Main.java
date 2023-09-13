@@ -52,7 +52,7 @@ public class Main extends JavaPlugin {
 	private final HotbarItemManager hotbarItemManager = new HotbarItemManager(this);
 	public HotbarItemManager getHotbarItemManager() { return this.hotbarItemManager; }
 
-	private final Heads heads = new Heads(this);
+	private Heads heads;
 
 	@SuppressWarnings("null")
 	@NotNull
@@ -72,6 +72,8 @@ public class Main extends JavaPlugin {
 		} catch (final IOException e) {
 			throw new RuntimeException(e);
 		}
+
+		heads = new Heads(this);
 
 		this.getServer().getMessenger().registerOutgoingPluginChannel(this, "BungeeCord");
 
