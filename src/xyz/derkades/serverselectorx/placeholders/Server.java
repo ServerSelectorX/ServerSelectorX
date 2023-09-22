@@ -87,6 +87,10 @@ public class Server {
 	}
 
 	public String parsePlaceholders(final Player player, String string) {
+		if (this.placeholders == null) {
+			return string;
+		}
+
 		for (final Placeholder placeholder : this.getPlaceholders()) {
 			String value;
 			if (placeholder instanceof GlobalPlaceholder) {
