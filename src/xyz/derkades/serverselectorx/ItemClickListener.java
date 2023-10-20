@@ -52,6 +52,16 @@ public class ItemClickListener implements Listener {
 			return;
 		}
 		
+		final NBTItem nbt = new NBTItem(item);
+
+		if (!nbt.hasTag("SSXActions")) {
+			if (Main.ITEM_DEBUG) {
+				logger.info("[Click debug] Event was ignored because the clicked item is not an SSX item");
+			}
+			// Not an SSX item
+			return;
+		}
+		
 		// Event canceling needs to happen before the menu open check, because we don't want
 		// the player to be able to place blocks due to interact events while the menu is open.
 		final boolean cancel = inventory.getBoolean("cancel-click-event", false);
@@ -72,16 +82,6 @@ public class ItemClickListener implements Listener {
 			if (Main.ITEM_DEBUG) {
 				logger.info("[Click debug] Event was ignored because the player had an open inventory: " + player.getOpenInventory().getType());
 			}
-			return;
-		}
-
-		final NBTItem nbt = new NBTItem(item);
-
-		if (!nbt.hasTag("SSXActions")) {
-			if (Main.ITEM_DEBUG) {
-				logger.info("[Click debug] Event was ignored because the clicked item is not an SSX item");
-			}
-			// Not an SSX item
 			return;
 		}
 
