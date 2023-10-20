@@ -34,13 +34,6 @@ public class ItemClickListener implements Listener {
 			return;
 		}
 
-		if (event.getHand() == EquipmentSlot.OFF_HAND) {
-			if (Main.ITEM_DEBUG) {
-				logger.info("[Click debug] Event was ignored because it was caused by the off hand");
-			}
-			return;
-		}
-
 		final FileConfiguration inventory = Main.getConfigurationManager().getInventoryConfiguration();
 
 		if (event.isCancelled() && inventory.getBoolean("ignore-cancelled", false)) {
@@ -50,8 +43,7 @@ public class ItemClickListener implements Listener {
 			return;
 		}
 
-		final Player player = event.getPlayer();
-		final ItemStack item = player.getInventory().getItemInMainHand();
+		final ItemStack item = event.getItem();
 
 		if (item.getType() == Material.AIR) {
 			if (Main.ITEM_DEBUG) {
@@ -59,7 +51,19 @@ public class ItemClickListener implements Listener {
 			}
 			return;
 		}
+		
+		// Event canceling needs to happen before the menu open check, because we don't want
+		// the player to be able to place blocks due to interact events while the menu is open.
+		final boolean cancel = inventory.getBoolean("cancel-click-event", false);
+		if (cancel) {
+			if (Main.ITEM_DEBUG) {
+				logger.info("[Click debug] The event has been cancelled, because cancel-click-event is enabled");
+			}
+			event.setCancelled(true);
+		}
 
+		final Player player = event.getPlayer();
+		
 		// 1.16 triggers interact events when clicking items in a menu for some reason
 		// We need to ignore these
 		// If the player does not have an open inventory, getOpenInventory returns their crafting or creative inventory
@@ -95,14 +99,6 @@ public class ItemClickListener implements Listener {
 
 		if (Main.ITEM_DEBUG) {
 			logger.info("[Click debug] Event handling completed, actions have been run.");
-		}
-
-		final boolean cancel = inventory.getBoolean("cancel-click-event", false);
-		if (cancel) {
-			if (Main.ITEM_DEBUG) {
-				logger.info("[Click debug] The event has been cancelled, because cancel-click-event is enabled");
-			}
-			event.setCancelled(true);
 		}
 	}
 
