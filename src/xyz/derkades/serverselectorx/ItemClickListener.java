@@ -40,9 +40,8 @@ public class ItemClickListener implements Listener {
 			}
 			return;
 		}
-
-		final Player player = event.getPlayer();
-		final ItemStack item = player.getInventory().getItemInHand();
+		
+		final ItemStack item = event.getItem();
 
 		if (item.getType() == Material.AIR) {
 			if (Main.ITEM_DEBUG) {
@@ -50,7 +49,7 @@ public class ItemClickListener implements Listener {
 			}
 			return;
 		}
-
+		
 		final NBTItem nbt = new NBTItem(item);
 
 		if (!nbt.hasTag("SSXActions")) {
@@ -60,7 +59,17 @@ public class ItemClickListener implements Listener {
 			// Not an SSX item
 			return;
 		}
+		
+		final boolean cancel = inventory.getBoolean("cancel-click-event", false);
+		if (cancel) {
+			if (Main.ITEM_DEBUG) {
+				logger.info("[Click debug] The event has been cancelled, because cancel-click-event is enabled");
+			}
+			event.setCancelled(true);
+		}
 
+		final Player player = event.getPlayer();
+		
 		// this cooldown is added when the menu closes
 		String globalCooldownId = player.getName() + "ssxitemglobal";
 		if (Cooldown.getCooldown(globalCooldownId) > 0) {
@@ -75,14 +84,6 @@ public class ItemClickListener implements Listener {
 
 		if (Main.ITEM_DEBUG) {
 			logger.info("[Click debug] Event handling completed, actions have been run.");
-		}
-
-		final boolean cancel = inventory.getBoolean("cancel-click-event", false);
-		if (cancel) {
-			if (Main.ITEM_DEBUG) {
-				logger.info("[Click debug] The event has been cancelled, because cancel-click-event is enabled");
-			}
-			event.setCancelled(true);
 		}
 	}
 
