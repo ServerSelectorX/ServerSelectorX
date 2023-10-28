@@ -55,7 +55,7 @@ public class AddEffectAction extends Action {
 		if (Bukkit.getVersion().contains("1.7")) {
 			player.addPotionEffect(new PotionEffect(effect, duration, amplifier, true));
 		} else {
-			player.addPotionEffect(new PotionEffect(effect, duration, amplifier, true, true));
+			player.addPotionEffect(new PotionEffect(effect, duration, amplifier, true, false));
 		}
 
 		return false;
