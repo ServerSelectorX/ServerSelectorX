@@ -43,7 +43,7 @@ public class ItemClickListener implements Listener {
 		
 		final ItemStack item = event.getItem();
 
-		if (item.getType() == Material.AIR) {
+		if (item == null || item.getType() == Material.AIR) {
 			if (Main.ITEM_DEBUG) {
 				logger.info("[Click debug] Event was ignored because the item was AIR");
 			}
