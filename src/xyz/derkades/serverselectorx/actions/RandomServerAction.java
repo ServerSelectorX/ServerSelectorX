@@ -24,16 +24,13 @@ public class RandomServerAction extends Action {
 		for (final String serverName : serverNames) {
 			final Server server = Server.getServer(serverName);
 			if (!server.isOnline()) {
-				System.out.println("[randomserver - debug] Skipping " + serverName + ", the server is offline.");
 				continue;
 			}
 
 			if (server.getOnlinePlayers() >= server.getMaximumPlayers()) {
-				System.out.println("[randomserver - debug] Skipping " + serverName + ", player count is too high.");
 				continue;
 			}
 
-			System.out.println("[randomserver - debug] Teleporting to " + serverName);
 			ServerSelectorX.teleportPlayerToServer(player, serverName);
 			return false;
 		}

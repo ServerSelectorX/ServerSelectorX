@@ -46,7 +46,6 @@ public class RoundRobinServerAction extends Action {
 		if (ATTEMPTS.containsKey(value)) {
 			final int attempts = ATTEMPTS.get(value);
 			if (attempts >= MAX_ATTEMPTS) {
-				System.out.println("[roundrobinserver - debug] Too many attempts, stopping.");
 				return;
 			}
 
@@ -57,16 +56,13 @@ public class RoundRobinServerAction extends Action {
 
 		final Server server = Server.getServer(serverName);
 		if (!server.isOnline()) {
-			System.out.println("[roundrobinserver - debug] Skipping " + serverName + ", the server is offline.");
 			apply(player, value);
 		}
 
 		if (server.getOnlinePlayers() >= server.getMaximumPlayers()) {
-			System.out.println("[roundrobinserver - debug] Skipping " + serverName + ", player count is too high.");
 			apply(player, value);
 		}
 
-		System.out.println("[roundrobinserver - debug] Teleporting to " + serverName);
 		ServerSelectorX.teleportPlayerToServer(player, serverName);
 	}
 
