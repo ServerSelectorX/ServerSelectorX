@@ -35,7 +35,6 @@ public class RandomServerAction extends Action {
 			return false;
 		}
 
-		System.out.println("[randomserver - debug] No servers available.");
 		return false;
 	}
 
