@@ -1,7 +1,10 @@
 package xyz.derkades.serverselectorx;
 
-import de.tr7zw.changeme.nbtapi.NBTItem;
+import java.util.HashSet;
+import java.util.Set;
+
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.configuration.Configuration;
 import org.bukkit.configuration.InvalidConfigurationException;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,10 +20,9 @@ import org.bukkit.event.player.PlayerJoinEvent;
 import org.bukkit.event.player.PlayerRespawnEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
-import xyz.derkades.serverselectorx.conditional.ConditionalItem;
 
-import java.util.HashSet;
-import java.util.Set;
+import de.tr7zw.changeme.nbtapi.NBTItem;
+import xyz.derkades.serverselectorx.conditional.ConditionalItem;
 
 public class HotbarItemManager {
 
@@ -233,6 +235,9 @@ public class HotbarItemManager {
 			final Player player = (Player) event.getEntity();
 			final String itemConfigName = nbt.getString("SSXItemConfigName");
 			for (final ItemStack item2 : player.getInventory().getStorageContents()) {
+				if (item2 == null || item2.getType() == Material.AIR) {
+					continue;
+				}
 				final NBTItem nbt2 = new NBTItem(item2);
 				if (nbt2.hasTag("SSXItemConfigName") && nbt2.getString("SSXItemConfigName").equals(itemConfigName)) {
 					Main.getPlugin().getLogger().info("Deleted duplicate item picked up by " + event.getEntity().getName());
