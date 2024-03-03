@@ -2,6 +2,7 @@ package xyz.derkades.serverselectorx.actions;
 
 import org.bukkit.entity.Player;
 
+import xyz.derkades.serverselectorx.Main;
 import xyz.derkades.serverselectorx.ServerSelectorX;
 import xyz.derkades.serverselectorx.placeholders.Server;
 
@@ -19,12 +20,10 @@ public class FirstAvailableServerAction extends Action {
 			final Server server = Server.getServer(serverName);
 
 			if (!server.isOnline()) {
-				System.out.println("[firstavailableserver - debug] Skipping " + serverName + ", the server is offline.");
 				continue;
 			}
 
 			if (server.getOnlinePlayers() >= server.getMaximumPlayers()) {
-				System.out.println("[firstavailableserver - debug] Skipping " + serverName + ", player count is too high.");
 				continue;
 			}
 
